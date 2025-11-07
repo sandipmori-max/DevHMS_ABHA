@@ -1,0 +1,43 @@
+# React Native Git Ignore
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/app/debug/
+android/app/release/
+android/app/gradle/
+*.keystore
+
+# Gradle
+.gradle/
+build/
+*.iml
+
+# iOS
+ios/Pods/
+ios/build/
+ios/DerivedData/
+*.xcuserstate
+*.xcworkspace
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+
+# Mac/IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Output files
+*.apk
+*.aab
+*.ipa
+
+# Misc
+.env

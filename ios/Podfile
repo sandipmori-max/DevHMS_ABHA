@@ -1,0 +1,27 @@
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+
+platform :ios, '16.0'  # 👈 MLKit requires iOS 13.0+
+
+prepare_react_native_project!
+
+use_frameworks! :linkage => :static
+use_modular_headers!
+
+target 'DevERP' do
+  config = use_native_modules!
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    :hermes_enabled => true, # or false, depending on your setup
+  )
+
+  # 👇 Add this line for MLKit integration
+  pod 'GoogleMLKit/TextRecognitionChinese', '8.0.0'
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath]
+    )
+  end
+end
