@@ -352,11 +352,12 @@ const ListScreen = () => {
     setAlertVisible(true);
   };
 
-  const handleDeleteNotification = async (item) => {
-    console.log("i++++++d", item);
-    await dispatch(
+  const handleDeleteNotification = async (item: any) => {
+            console.log("i---------++++++---------d", item);
+            await dispatch(
               handleDeleteActionThunk({
                 id: item.id.toString(),
+                remarks: "",
                 page: "DEVNOTIFY",
               }),
             ).unwrap();

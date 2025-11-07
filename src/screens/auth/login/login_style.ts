@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
     height: Dimensions.get('screen').height,
     padding: 16,
-    marginTop: 50,
+    marginTop: 90,
   },
   helperText: {
     fontSize: 12,
