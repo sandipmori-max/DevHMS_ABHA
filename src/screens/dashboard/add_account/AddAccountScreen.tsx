@@ -30,6 +30,10 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
   const { accounts, user } = useAppSelector(state => state.auth);
 
   const { token: fcmToken } = useFcmToken();
+  const [isInputEditCC, setIsInputEditCC] = useState(false);
+  const [isInputEditUSer, setIsInputEditUser] = useState(false);
+  const [isInputEditPass, setIsInputEditPass] = useState(false);
+
 
   const [deviceId, setDeviceId] = useState<string>('');
   const [showPassword, setShowPassword] = useState(false);
@@ -205,18 +209,38 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                                 borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
                                 paddingLeft: 12,
                               },
+                              touched?.company_code && errors?.company_code  && 
+                              {
+                                borderColor: ERP_COLOR_CODE.ERP_ERROR,
+                                borderWidth: 0.8,
+                              },
+                              isInputEditCC && {
+                                borderColor: '#81b5e4',
+                                borderWidth: 0.8,
+                              },
                             ]}
                           >
                             <MaterialIcons name="closed-caption-off" size={20} color={ERP_COLOR_CODE.ERP_999} />
 
                             <TextInput
-                              style={styles.input}
+                              style={[styles.input, 
+                                
+                              ]}
                               placeholder={t('auth.enterCompanyCode')}
                               placeholderTextColor={ERP_COLOR_CODE.ERP_999}
                               autoCapitalize="none"
                               onChangeText={handleChange('company_code')}
-                              onBlur={handleBlur('company_code')}
-                              value={values?.company_code}
+                               value={values?.company_code}
+                               onFocus={e => {
+                               setIsInputEditCC(true);
+                              }}
+                              onBlur={() => {
+                                if (!values?.company_code) {
+                                  handleBlur('company_code')
+                                setIsInputEditCC(false);
+
+                                }
+                              }}
                             />
                           </View>
 
@@ -240,6 +264,15 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                                 borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
                                 paddingLeft: 12,
                               },
+                               touched?.user && errors?.user  && {
+                                            borderColor: ERP_COLOR_CODE.ERP_ERROR,
+                                            borderWidth: 0.8,
+                                          },
+                               isInputEditUSer && {
+            borderColor: '#81b5e4',
+            borderWidth: 0.8,
+          },
+                            
                             ]}
                           >
                             <MaterialIcons name="person" size={20} color={ERP_COLOR_CODE.ERP_999} />
@@ -249,8 +282,17 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                               placeholderTextColor={ERP_COLOR_CODE.ERP_999}
                               autoCapitalize="none"
                               onChangeText={handleChange('user')}
-                              onBlur={handleBlur('user')}
-                              value={values?.user}
+                               value={values?.user}
+                               onFocus={e => {
+                               setIsInputEditUser(true);
+                              }}
+                              onBlur={() => {
+                                if (!values?.company_code) {
+                                  handleBlur('user')
+                                setIsInputEditUser(false);
+
+                                }
+                              }}
                             />
                           </View>
                           {touched?.user && errors?.user && (
@@ -274,6 +316,14 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                                 borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
                                 paddingLeft: 12,
                               },
+                                 touched?.password && errors?.password  && {
+                                            borderColor: ERP_COLOR_CODE.ERP_ERROR,
+                                            borderWidth: 0.8,
+                                          },
+                                                isInputEditPass && {
+            borderColor: '#81b5e4',
+            borderWidth: 0.8,
+          },
                             ]}
                           >
                             <MaterialIcons name="password" size={20} color={ERP_COLOR_CODE.ERP_999} />
@@ -285,7 +335,16 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                               placeholderTextColor={ERP_COLOR_CODE.ERP_999}
                               value={values?.password}
                               onChangeText={handleChange('password')}
-                              onBlur={handleBlur('password')}
+                                onFocus={e => {
+                               setIsInputEditPass(true);
+                              }}
+                              onBlur={() => {
+                                if (!values?.company_code) {
+                                  handleBlur('password')
+                                setIsInputEditPass(false);
+
+                                }
+                              }}
                             />
                             <TouchableOpacity
                               onPress={() => setShowPassword(s => !s)}

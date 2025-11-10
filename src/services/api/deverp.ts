@@ -164,7 +164,7 @@ class DevERPService {
     );
 
     if (String(response?.data.success) !== '1')
-      throw new Error(response?.data?.message || 'Failed to get token');
+      throw new Error(response?.data?.message || 'Please check your internet connection');
 
     this.token = response?.data?.token || '';
     this.tokenValidTill = response?.data?.validTill || '';

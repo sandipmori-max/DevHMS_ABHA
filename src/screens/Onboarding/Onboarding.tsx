@@ -8,53 +8,64 @@ import {
   SafeAreaView,
   Animated,
   Pressable,
+  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { ERP_GIF } from '../../assets';
+//  import { ERP_GIF } from '../../assets';
 import { ERP_COLOR_CODE } from '../../utils/constants';
 import FullViewLoader from '../../components/loader/FullViewLoader';
+import MaterialIcons from '@react-native-vector-icons/material-icons';
+import FastImage from 'react-native-fast-image';
+import { ERP_GIF } from '../../assets';
 
 const { width, height } = Dimensions.get('window');
 const slides = [
   {
     id: '1',
-    title: 'Welcome to ERP Connect',
-    desc: 'Simplify your Ready-Mix Concrete operations with real-time control and insights.',
-    image: ERP_GIF.NO_DATA,
+    title: 'Welcome to DevERP Connect',
+    desc: 'Experience the power of integrated ERP and RMC software — manage your entire Ready-Mix Concrete business with real-time control and efficiency.',
+    image: ERP_GIF.Dashboards,
     bgColor: ['#f8b6c1', '#FAD4D8'],
     statusBar: '#f8b6c1',
     layout: { titleY: -40, descY: 0, align: 'center' },
   },
   {
     id: '2',
-    title: 'Manage Every Batch',
-    desc: 'Track production, dispatch, and delivery from one centralized ERP dashboard.',
-    image: ERP_GIF.NO_DATA,
+    title: 'End-to-End Business Control',
+    desc: 'From customer orders to invoicing, ERP Connect unifies sales, finance, inventory, HR, and plant operations in one seamless platform.',
+    image: ERP_GIF.Analytics,
     bgColor: ['#b2cffa', '#D4E6F1'],
     statusBar: '#b2cffa',
     layout: { titleY: -20, descY: 10, align: 'left' },
   },
   {
     id: '3',
-    title: 'Stay Connected on Site',
-    desc: 'Monitor plant performance, vehicle status, and orders anywhere, anytime.',
-    image: ERP_GIF.NO_DATA,
+    title: 'Smart RMC Operations',
+    desc: 'Monitor batching, raw materials, truck dispatch, and delivery in real time. Ensure accuracy and efficiency across every concrete mix and pour.',
+    image: ERP_GIF.money,
     bgColor: ['#8de0d2', '#D1F2EB'],
     statusBar: '#8de0d2',
     layout: { titleY: -30, descY: 10, align: 'right' },
   },
   {
     id: '4',
-    title: 'Optimize & Grow',
-    desc: 'Use analytics and reports to improve efficiency, reduce costs, and boost profits.',
-    image: ERP_GIF.NO_DATA,
+    title: 'Real-Time Tracking & Insights',
+    desc: 'Track plant performance, vehicle routes, and order status live — with instant analytics to help you make data-driven decisions.',
+    image: ERP_GIF.DataManagement,
     bgColor: ['#f7ce9c', '#FDEBD0'],
     statusBar: '#f7ce9c',
     layout: { titleY: -10, descY: 20, align: 'center' },
   },
+  {
+    id: '5',
+    title: 'Grow with Confidence',
+    desc: 'Use built-in reports and dashboards to reduce waste, optimize costs, and scale your ERP + RMC operations efficiently.',
+    image: ERP_GIF.RemoteMonitoring,
+    bgColor: ['#c6b6f8', '#E8DAEF'],
+    statusBar: '#c6b6f8',
+    layout: { titleY: -20, descY: 10, align: 'center' },
+  },
 ];
-
 
 const Onboarding = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -63,15 +74,13 @@ const Onboarding = ({ navigation }) => {
   const waveAnim = useRef(new Animated.Value(0)).current;
   const bgAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
-const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if(!loading){
-    startWaveAnimation();
-
+      startWaveAnimation();
     }
     checkOnboardStatus();
-
   }, []);
 
   useEffect(() => {
@@ -161,6 +170,16 @@ if (loading) return <>
 
     return (
       <View style={[styles.slide, { width }]}>
+         <FastImage
+              source={item?.image}
+              style={{
+                height: 190,
+                width: 180,
+                marginBottom: 20
+              }}
+              resizeMode={FastImage.resizeMode.contain}
+            />
+
         <Animated.Text
           style={[
             styles.title,
@@ -283,7 +302,6 @@ export default Onboarding;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-
   wave: {
     position: 'absolute',
     bottom: -height * 0.15,
@@ -323,7 +341,7 @@ const styles = StyleSheet.create({
   inactiveDot: { backgroundColor: '#bbb' },
 
   skipBtn: {
-    marginTop: 45,
+    marginTop:  Platform.OS === 'ios' ? 0 : 45,
     alignSelf: 'flex-end',
     padding: 15,
     zIndex: 10,

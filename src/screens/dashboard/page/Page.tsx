@@ -152,7 +152,7 @@ const PageScreen = () => {
   const appState = useRef(AppState.currentState);
 
   const hasLocationField = controls.some(
-    item => item?.defaultvalue && item?.defaultvalue === '#location',
+    item => item?.defaultvalue && item?.defaultvalue === '#location' && item?.visible === "0",
   );
 
    const hasMediaField = controls.some(
@@ -416,7 +416,19 @@ const PageScreen = () => {
                   const enabled = await DeviceInfo.isLocationEnabled();
                   const permissionStatus = hasLocationField && await requestLocationPermissions();
                   const hasPermission = hasMediaField && await requestCameraPermission();
-                   if (!hasPermission && hasMediaField) {
+                  
+                  console.log("---------")
+                  console.log("enabled---------", enabled)
+                  console.log("permissionStatus---------", permissionStatus)
+                  console.log("hasLocationField ---------", hasLocationField)
+                  console.log("hasPermission---------", hasPermission)
+                  console.log("hasMediaField---------", hasMediaField)
+                  console.log("---------")
+
+                  // if(hasLocationField && hasMediaField){
+
+                  // }
+                  if (!hasPermission && hasMediaField) {
                     setAlertConfig({
                       title: 'Camera Status',
                       message:
