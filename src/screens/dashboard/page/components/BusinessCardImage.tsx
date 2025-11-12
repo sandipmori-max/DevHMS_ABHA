@@ -152,43 +152,76 @@ const BusinessCardView = ({ setValue, controls, item, baseLink, infoData }: any)
     })();
   }, [imageUri]);
 
-  const parseCard = (text: string): any => {
-    const cleanedData = text.replace(/\s+/g, ' ').trim();
+ const parseCard = (text: string): any => {
+  // Split text into trimmed lines
+  const lines = text
+    .split(/\n|\\n/)
+    .map(l => l.trim())
+    .filter(l => l.length > 0);
 
-    const emails = [
-      ...cleanedData.matchAll(/\b[A-Za-z0-9._%+-]+ *@ *[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g),
-    ].map(e => e[0].replace(/\s+/g, ''));
-
-    const phones = [...cleanedData.matchAll(/\+?\d{0,3}[-\s()]?\d{5}[-\s()]?\d{5}/g)].map(p =>
-      p[0].replace(/\D+/g, ''),
-    );
-    const websites = [...cleanedData.matchAll(/\b(www\.[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\b/g)].map(
-      w => w[0],
-    );
-
-    const companyMatch = text.match(/^(.*?)(Development|Company)/i);
-    const company = companyMatch ? companyMatch[1].trim().replace(/\s+$/, '') : '';
-
-    const addressMatch = text.match(/Company\s+(.*?)Mobile:/is);
-    const address = addressMatch ? addressMatch[1].trim().replace(/\s+/g, ' ') : '';
-
-    const result = {
-      name: '',
-      emailid: emails[0] || '',
-      emailid2: emails[1] || '',
-      designation: '',
-      mobileno: phones[0] || '',
-      mobileno2: phones[1] || '',
-      company,
-      address,
-      website: websites[0] || '',
-      [item?.field]: base64,
-      cardtext: text,
-    };
-    console.log('🚀 ~ parseCard ~ result:', result);
-    setValue(result);
-    return result;
+  const result: any = {
+    name: '',
+    designation: '',
+    company: '',
+    emailid: '',
+    emailid2: '',
+    mobileno: '',
+    mobileno2: '',
+    website: '',
+    address: '',
+    [item?.field]: base64,
+    cardtext: text,
   };
+
+  // Extract emails
+  const emails = [
+    ...text.matchAll(/\b[A-Za-z0-9._%+-]+ *@ *[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g),
+  ].map(e => e[0].replace(/\s+/g, ''));
+  result.emailid = emails[0] || '';
+  result.emailid2 = emails[1] || '';
+
+  // Extract phones
+  const phones = [...text.matchAll(/(\+?\d[\d\s().-]{7,}\d)/g)].map(p =>
+    p[0].replace(/[^\d+]/g, '')
+  );
+  result.mobileno = phones[0] || '';
+  result.mobileno2 = phones[1] || '';
+
+  // Extract website
+  const websites = [...text.matchAll(/\b((https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,})\b/g)].map(
+    w => w[0]
+  );
+  result.website = websites[0] || '';
+
+  // Guess company — look for words like Pvt, Ltd, Inc, Technologies, etc.
+  const companyLine = lines.find(l =>
+    /(pvt|ltd|inc|corp|company|technologies|solutions|systems)/i.test(l)
+  );
+  if (companyLine) result.company = companyLine;
+
+  // Guess name — usually the first line that contains 2+ words, no digits, no '@'
+  const nameLine = lines.find(
+    l => /^[A-Za-z ,.'-]+$/.test(l) && l.split(' ').length <= 4 && !/@/.test(l)
+  );
+  if (nameLine) result.name = nameLine;
+
+  // Guess designation — line after name that includes typical job titles
+  const jobKeywords = /(engineer|developer|manager|director|designer|consultant|executive|officer|lead|analyst|specialist|founder|owner|ceo|cto|cfo)/i;
+  const designationLine = lines.find(l => jobKeywords.test(l));
+  if (designationLine) result.designation = designationLine;
+
+  // Guess address — last 2 lines that have numbers and commas or “Street”, “Road”, “Ave”
+  const addressLine = lines
+    .filter(l => /(street|st\.|road|rd\.|ave|block|city|building|#|,|\d{3,})/i.test(l))
+    .slice(-2)
+    .join(', ');
+  if (addressLine) result.address = addressLine;
+
+  console.log('📇 Parsed OCR Result:', result);
+  setValue(result);
+  return result;
+};
+
 
   return (
     <ScrollView>

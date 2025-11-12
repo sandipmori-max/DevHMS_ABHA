@@ -23,7 +23,7 @@ const slides = [
   {
     id: '1',
     title: 'Welcome to DevERP Connect',
-    desc: 'Experience the power of integrated ERP and RMC software — manage your entire Ready-Mix Concrete business with real-time control and efficiency.',
+    desc: 'Experience the power of integrated ERP software to manage entire business processes with real-time control and efficiency.',
     image: ERP_GIF.Dashboards,
     bgColor: ['#f8b6c1', '#FAD4D8'],
     statusBar: '#f8b6c1',
@@ -32,7 +32,7 @@ const slides = [
   {
     id: '2',
     title: 'End-to-End Business Control',
-    desc: 'From customer orders to invoicing, ERP Connect unifies sales, finance, inventory, HR, and plant operations in one seamless platform.',
+    desc: 'From customer orders to invoicing, DevERP Connect unifies sales, finance, inventory, HR, and plant operations in one seamless platform.',
     image: ERP_GIF.Analytics,
     bgColor: ['#b2cffa', '#D4E6F1'],
     statusBar: '#b2cffa',
@@ -40,8 +40,8 @@ const slides = [
   },
   {
     id: '3',
-    title: 'Smart RMC Operations',
-    desc: 'Monitor batching, raw materials, truck dispatch, and delivery in real time. Ensure accuracy and efficiency across every concrete mix and pour.',
+    title: 'Smart Production Operations',
+    desc: 'Monitor plc scada and manual procedure to track raw materials, semi finished goods and finish goods with packing and dispatch in real time. Ensure accuracy and efficiency across every production process.',
     image: ERP_GIF.money,
     bgColor: ['#8de0d2', '#D1F2EB'],
     statusBar: '#8de0d2',
@@ -50,7 +50,7 @@ const slides = [
   {
     id: '4',
     title: 'Real-Time Tracking & Insights',
-    desc: 'Track plant performance, vehicle routes, and order status live — with instant analytics to help you make data-driven decisions.',
+    desc: 'Track plant & machinery performance, vehicle routes, and order status live — with instant analytics to help you make data-driven decisions.',
     image: ERP_GIF.DataManagement,
     bgColor: ['#f7ce9c', '#FDEBD0'],
     statusBar: '#f7ce9c',
@@ -59,7 +59,7 @@ const slides = [
   {
     id: '5',
     title: 'Grow with Confidence',
-    desc: 'Use built-in reports and dashboards to reduce waste, optimize costs, and scale your ERP + RMC operations efficiently.',
+    desc: 'Use built-in reports and dashboards to reduce waste, optimize costs, and scale business operations efficiently with DevERP.',
     image: ERP_GIF.RemoteMonitoring,
     bgColor: ['#c6b6f8', '#E8DAEF'],
     statusBar: '#c6b6f8',
@@ -105,7 +105,7 @@ const Onboarding = ({ navigation }) => {
 };
 
 if (loading) return <>
-<FullViewLoader />
+  <FullViewLoader />
 </>;
 
   const startWaveAnimation = () => {
