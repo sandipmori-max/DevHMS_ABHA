@@ -6,9 +6,9 @@ import { useCurrentAddress } from '../../../../hooks/useCurrentLocation';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 
 const LocationRow = ({ locationEnabled, locationVisible, isValidate, item, value, setValue }: any) => {
-  console.log("locationEnabled ***********************-******---------------- ", locationEnabled)
   const { coords, address: hookAddress, loading, error, refetch } = useCurrentAddress();
   const [address, setAddress] = useState<string>('');
+  console.log("hookAddress ***********************-******---------------- ", locationEnabled)
 
   useEffect(() => {
     if(!locationEnabled){
@@ -23,9 +23,9 @@ const LocationRow = ({ locationEnabled, locationVisible, isValidate, item, value
       return;
     }
 
-    if (!loading && coords) {
+    if (!loading && hookAddress) {
       setValue({
-        [item?.field]: `${coords?.latitude.toString()},${coords?.longitude.toString()}`,
+        [item?.field]: hookAddress,
       });
       setAddress(hookAddress || `${coords?.latitude},${coords?.longitude}`);
     }
@@ -34,7 +34,7 @@ const LocationRow = ({ locationEnabled, locationVisible, isValidate, item, value
   return (
     <View style={{ marginBottom: 16 }}>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-        <Text style={styles.label}>{item?.fieldtitle}</Text>
+        <Text style={[styles.label, ]}>{item?.fieldtitle}</Text>
         {item?.fieldtitle !== item?.tooltip && <Text> - ( {item?.tooltip} )</Text>}
         {item?.mandatory === '1' && <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>}
       </View>

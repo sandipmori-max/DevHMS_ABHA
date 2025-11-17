@@ -23,7 +23,6 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const { t } = useTranslations();
   const { token: fcmToken } = useFcmToken();
 
-  // ✅ FIX: track which input is focused
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const {
@@ -162,17 +161,17 @@ const LoginForm: React.FC<LoginFormProps> = ({
                         : 'enterPassword'
                     }`,
                   )}
-                  isInputEdit={focusedField === field} // ✅ only active for current input
+                  isInputEdit={focusedField === field}
                   field={field}
                   placeholderTextColor={ERP_COLOR_CODE.ERP_999}
                   autoCapitalize="none"
                   secureTextEntry={field === 'password'}
                   showToggle={field === 'password'}
                   onChangeText={handleChange(field)}
-                  onFocus={() => setFocusedField(field)} // ✅ set focus
+                  onFocus={() => setFocusedField(field)} 
                   onBlur={() => {
                     handleBlur(field);
-                    setFocusedField(null); // ✅ reset focus
+                    setFocusedField(null);
                   }}
                   value={values[field as keyof typeof values] as string}
                   error={errors[field as keyof typeof errors]}

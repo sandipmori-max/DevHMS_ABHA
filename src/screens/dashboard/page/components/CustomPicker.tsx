@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { useAppDispatch } from '../../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { styles } from '../page_style';
-import { ERP_COLOR_CODE } from '../../../../utils/constants';
+import { DARK_COLOR, ERP_COLOR_CODE } from '../../../../utils/constants';
 import { getDDLThunk } from '../../../../store/slices/dropdown/thunk';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import FullViewLoader from '../../../../components/loader/FullViewLoader';
@@ -13,6 +13,7 @@ const CustomPicker = ({isValidate, label, selectedValue, onValueChange, item, er
   const dispatch = useAppDispatch();
   const [loader, setLoader] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
+  const theme = useAppSelector(state => state?.theme.mode);
   
   const optionsCache = useRef<{ [key: string]: any[] }>({});
 
@@ -53,8 +54,12 @@ const CustomPicker = ({isValidate, label, selectedValue, onValueChange, item, er
   return (
     <View style={{ marginBottom: 16 }}>
       <View style={{ flexDirection: 'row' }}>
-        <Text style={styles.label}>{label}</Text>
-        {item?.tooltip !== label && <Text> - ( {item?.tooltip} ) </Text>}
+        <Text style={[styles.label,  theme === 'dark' && {
+          color: 'white'
+        }]}>{label}</Text>
+        {item?.tooltip !== label && <Text style={[styles.label,  theme === 'dark' && {
+          color: 'white'
+        }]}> - ( {item?.tooltip} ) </Text>}
         {item?.mandatory === '1' && <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>}
       </View>
 
@@ -67,20 +72,28 @@ const CustomPicker = ({isValidate, label, selectedValue, onValueChange, item, er
             borderColor: 'green',
             borderWidth: 0.8
           },
+          theme === 'dark' && {
+            backgroundColor: DARK_COLOR
+          },
+          item?.disabled === '1' && theme === 'dark' && {
+            backgroundColor: DARK_COLOR
+          }
         ]}
         onPress={() => {
           if (item?.disabled !== '1') handleOpen();
         }}
         activeOpacity={0.7}
       >
-        <Text style={{ color: selectedOption ? ERP_COLOR_CODE.ERP_BLACK : ERP_COLOR_CODE.ERP_888, flex: 1 }}>
+        <Text style={{ color: theme === 'dark' ? 'white' : selectedOption ? ERP_COLOR_CODE.ERP_BLACK : ERP_COLOR_CODE.ERP_888, flex: 1 }}>
           {selectedOption || `Select ${label}`}
         </Text>
         <MaterialIcons name={open ? 'arrow-drop-up' : 'arrow-drop-down'} size={24} color={ERP_COLOR_CODE.ERP_555} />
       </TouchableOpacity>
 
       {open && (
-        <View style={styles.dropdownCard}>
+        <View style={[styles.dropdownCard, theme === 'dark' && {
+          backgroundColor :'black'
+        }]}>
           {loader ? (
             <FullViewLoader />
           ) : (
@@ -96,6 +109,12 @@ const CustomPicker = ({isValidate, label, selectedValue, onValueChange, item, er
                           ? ERP_COLOR_CODE.ERP_APP_COLOR
                           : ERP_COLOR_CODE.ERP_WHITE,
                     },
+                    theme === 'dark' && selectedOption === opt?.name && {
+                      backgroundColor: 'white'
+                    },
+                    theme === 'dark' && {
+                      backgroundColor: 'black',
+                    }
                   ]}
                   onPress={() => {
                     onValueChange(opt?.value);
@@ -105,7 +124,7 @@ const CustomPicker = ({isValidate, label, selectedValue, onValueChange, item, er
                 >
                   <Text
                     style={{
-                      color:
+                      color: theme === 'dark' ? 'white' :
                         selectedOption === opt?.name
                           ? ERP_COLOR_CODE.ERP_WHITE
                           : ERP_COLOR_CODE.ERP_BLACK,

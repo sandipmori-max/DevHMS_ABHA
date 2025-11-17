@@ -25,6 +25,7 @@ import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import MemoizedFooterView from './MemoizedFooterView';
 import RemarksView from './RemarksView';
+import { useAppSelector } from '../../../../store/hooks';
 
 // enable LayoutAnimation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -100,6 +101,7 @@ const ReadableView = ({
   const navigation = useNavigation();
   const screenWidth = Dimensions.get('window').width;
   const [listData, setListData] = useState(filteredData || []);
+  const theme = useAppSelector(state => state?.theme.mode);
 
   const handleDelete = (item) => {
     console.log("id", item);
@@ -134,6 +136,7 @@ const ReadableView = ({
     const btnKeys = Object.keys(item).filter((key) => key.startsWith('btn_'));
     const baseUrl = item?.image && item?.image?.replace(/^https:\/\\//i, 'http://');
     const authUser = item?.authuser;
+    const qty = item?.qty;
 
     const avatarLetter =
       name
@@ -146,7 +149,7 @@ const ReadableView = ({
     const card = (
       <View
         style={{
-          backgroundColor: isFromAlertCard ? '#f8fff8ff' : ERP_COLOR_CODE.ERP_WHITE,
+          backgroundColor: theme === 'dark' ? 'black' : isFromAlertCard ? '#f8fff8ff' : ERP_COLOR_CODE.ERP_WHITE,
           borderRadius: 8,
           paddingHorizontal: 8,
           paddingBottom: 6,
@@ -181,10 +184,12 @@ const ReadableView = ({
               width: 34,
               height: 34,
               borderRadius: 34,
-              backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+              backgroundColor:  ERP_COLOR_CODE.ERP_APP_COLOR,
               justifyContent: 'center',
               alignItems: 'center',
               marginRight: 12,
+              borderWidth: 1,
+              borderColor: theme === 'dark'  ? 'white' : 'black'
             }}
           >
             {
@@ -195,7 +200,7 @@ const ReadableView = ({
             ) : (
               <Text
                 style={{
-                  color: ERP_COLOR_CODE.ERP_WHITE,
+                  color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_WHITE,
                   fontWeight: '400',
                   fontSize: 16,
                 }}
@@ -207,10 +212,10 @@ const ReadableView = ({
           </View>
 
           <View style={{ flex: 1 }}>
-            <Text style={{ fontWeight: '700' }} numberOfLines={1}>
+            <Text style={{ fontWeight: '700' , color: theme === 'dark' ? 'white' : 'black' }} numberOfLines={1}>
               {name}
             </Text>
-            <Text style={{ fontSize: 12 }} numberOfLines={1}>
+            <Text style={{ fontSize: 12 , color: theme === 'dark' ? 'white' : 'black'}} numberOfLines={1}>
               {subName}
             </Text>
           </View>
@@ -282,7 +287,7 @@ const ReadableView = ({
                   )}
                 </View>
                 <View style={{ width: '30%', alignItems: 'flex-end' }}>
-                  {!!amount && (
+                  {!qty && !!amount && (
                     <Text
                       numberOfLines={1}
                       style={{
@@ -318,6 +323,62 @@ const ReadableView = ({
             </View>
           )}
         </TouchableOpacity>
+        {
+          qty && amount && <View style={{
+            justifyContent:'space-between',
+            width: '100%', flexDirection:'row' }}>
+                  {!!qty && (
+                    <View style={{flexDirection:'row', width: '50%'}}>
+                      <Text
+                      numberOfLines={1}
+                      style={{
+                        textAlign: 'right',
+                        fontSize: 14,
+                        fontWeight: '700', 
+                      }}
+                    >
+                    Qty:  
+                    </Text>
+                    <Text
+                      numberOfLines={1}
+                      style={{
+                        textAlign: 'right',
+                        fontSize: 14,
+                        fontWeight: '700',
+                        color: '#07581dff',
+                      }}
+                    >  {qty}
+                    </Text>
+                      </View>
+                  )}
+                   {!!amount && (
+                    <View style={{flexDirection:'row',
+                    justifyContent:'flex-end',
+                    width: '50%',}}>
+                      <Text
+                      numberOfLines={1}
+                      style={{
+                        textAlign: 'right',
+                        fontSize: 14,
+                        fontWeight: '700', 
+                      }}
+                    >
+                    Amt:  
+                    </Text>
+                    <Text
+                      numberOfLines={1}
+                      style={{
+                        textAlign: 'right',
+                        fontSize: 14,
+                        fontWeight: '700',
+                        color: 'green',
+                      }}
+                    >  {amount}
+                    </Text>
+                      </View>
+                  )}
+                </View>
+        }
 
         <View>
           {item?.html && <MemoizedFooterView item={item} index={index} />}
@@ -391,7 +452,7 @@ const ReadableView = ({
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+          backgroundColor: theme === 'dark' ?  'black' : ERP_COLOR_CODE.ERP_WHITE,
         }}
       >
         <NoData />
@@ -438,7 +499,7 @@ const ReadableView = ({
                   style={{
                     fontSize: 14,
                     fontWeight: '700',
-                    color: ERP_COLOR_CODE.ERP_333,
+                    color: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_333,
                   }}
                 >
                   Quantity :-
@@ -462,7 +523,7 @@ const ReadableView = ({
                   style={{
                     fontSize: 14,
                     fontWeight: '700',
-                    color: ERP_COLOR_CODE.ERP_333,
+                    color: theme === 'dark' ? 'black' :ERP_COLOR_CODE.ERP_333,
                   }}
                 >
                   Amount :-
@@ -486,7 +547,7 @@ const ReadableView = ({
               style={{
                 fontSize: 14,
                 fontWeight: '700',
-                color: ERP_COLOR_CODE.ERP_333,
+                color: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_333,
               }}
             >
               {listData?.length} Row(s)

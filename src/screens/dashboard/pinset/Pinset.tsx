@@ -1,7 +1,7 @@
 import MaterialIcons from '@react-native-vector-icons/material-icons';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
-import { ERP_COLOR_CODE } from '../../../utils/constants';
+import { DARK_COLOR, ERP_COLOR_CODE } from '../../../utils/constants';
 import {
   getDBConnection,
   setPinCode,
@@ -11,7 +11,7 @@ import {
 } from '../../../utils/sqlite';
 import { useNavigation } from '@react-navigation/native';
 import CustomAlert from '../../../components/alert/CustomAlert';
-import { useAppDispatch } from '../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setIsPinLoaded } from '../../../store/slices/auth/authSlice';
 
 const { width } = Dimensions.get('screen');
@@ -19,6 +19,7 @@ const { width } = Dimensions.get('screen');
 const PinSetupScreen = () => {
   const navigation = useNavigation();
     const dispatch = useAppDispatch();
+    const theme = useAppSelector(state => state.theme.mode);
   
   const [pin, setPin] = useState<string>('');
   const [storedPin, setStoredPin] = useState<string>('');
@@ -47,7 +48,28 @@ const PinSetupScreen = () => {
     };
     checkPin();
   }, []);
-
+useLayoutEffect(() => {
+    navigation.setOptions({
+       headerStyle: {
+                             backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+                           },
+                           headerTintColor: '#fff', 
+      headerTitle: () => (
+        <Text
+          numberOfLines={1}
+          style={{
+            maxWidth: 180,
+            fontSize: 18,
+            fontWeight: '700',
+            color:  theme === 'dark' ? "white" : ERP_COLOR_CODE.ERP_WHITE,
+          }}
+        >
+          {'Pinset'}
+        </Text>
+      ),
+    
+    });
+}, [navigation]);
   const handleKeyPress = (digit: string) => {
     if (pin.length < 4) setPin(pin + digit);
   };
@@ -101,12 +123,18 @@ const PinSetupScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, theme === 'dark' && {
+      backgroundColor : 'black'
+    }]}>
       {/* Header */}
-      <Text style={styles.title}>
+      <Text style={[styles.title, theme === 'dark' && {
+        color: 'white'
+      }]}>
         {mode === 'verify' ? 'Verify your old PIN' : 'Set up new PIN'}
       </Text>
-      <Text style={styles.subtitle}>
+      <Text style={[styles.subtitle,  theme === 'dark' && {
+        color: 'white'
+      }]}>
         {mode === 'verify'
           ? 'Enter your current PIN to proceed'
           : 'Enter a 4-digit PIN to secure your account'}
@@ -119,7 +147,7 @@ const PinSetupScreen = () => {
             key={i}
             style={[
               styles.pinCircle,
-              { backgroundColor: i < pin.length ? ERP_COLOR_CODE.ERP_APP_COLOR : '#e5e7eb' },
+              { backgroundColor: i < pin.length ? theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_APP_COLOR : theme === 'dark' ? DARK_COLOR :'#e5e7eb' },
             ]}
           />
         ))}

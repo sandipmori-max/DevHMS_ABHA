@@ -1,20 +1,20 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
-import { Platform } from 'react-native';
+import { Platform, ViewComponent } from 'react-native';
 
 const ENV = {
   development: {
     BASE_URL: Platform.OS === 'ios' ? 'https://support.deverp.net': 'http://support.deverp.net',
-    TIMEOUT: 30000,
+    TIMEOUT: 1800000,
   },
   staging: {
     BASE_URL: Platform.OS === 'ios' ? 'https://support.deverp.net' : 'http://support.deverp.net',
-    TIMEOUT: 30000,
+    TIMEOUT: 1800000,
   },
   production: {
     BASE_URL: Platform.OS === 'ios' ? 'https://support.deverp.net' :'http://support.deverp.net',
-    TIMEOUT: 30000,
+    TIMEOUT: 1800000,
   },
 };
 
@@ -188,3 +188,5 @@ apiClient.interceptors.response.use(
 );
 
 export default apiClient;
+
+

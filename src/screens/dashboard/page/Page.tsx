@@ -21,7 +21,7 @@ import {
 } from 'react-native';
 import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import Animated, { FadeInUp, Layout } from 'react-native-reanimated';
-import { useAppDispatch } from '../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { getERPPageThunk } from '../../../store/slices/auth/thunk';
 import { savePageThunk } from '../../../store/slices/page/thunk';
 import FullViewLoader from '../../../components/loader/FullViewLoader';
@@ -105,6 +105,7 @@ const PageScreen = () => {
   const dispatch = useAppDispatch();
   const flatListRef = useRef<FlatList>(null);
   const baseLink = useBaseLink();
+  const theme = useAppSelector(state => state?.theme.mode);
 
   const [loadingPageId, setLoadingPageId] = useState<string | null>(null);
   const [controls, setControls] = useState<any[]>([]);
@@ -166,7 +167,7 @@ const PageScreen = () => {
     let interval: NodeJS.Timeout | null = null;
 
     const checkLocation = async () => {
-      const enabled = hasLocationField && await DeviceInfo.isLocationEnabled();
+      const enabled =  await DeviceInfo.isLocationEnabled();
       console.log('locationEnabled -----enabled----------- ', enabled);
 
       setLocationEnabled(enabled);
@@ -368,6 +369,10 @@ const PageScreen = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+       headerStyle: {
+                       backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+                     },
+                     headerTintColor: '#fff', 
       headerTitle: () => (
         <View style={{ flexDirection: 'row', alignItems: 'center', maxWidth: 210 }}>
           <Text
@@ -376,7 +381,7 @@ const PageScreen = () => {
               flexShrink: 1,
               fontSize: 18,
               fontWeight: '700',
-              color: ERP_COLOR_CODE.ERP_WHITE,
+              color: theme === 'dark' ? "white" : ERP_COLOR_CODE.ERP_WHITE,
             }}
           >
             {title || pageTitle || 'Details'}
@@ -826,7 +831,7 @@ const PageScreen = () => {
   }, []);
 
   return (
-    <View style={{ flex: 1, padding: 16, backgroundColor: ERP_COLOR_CODE.ERP_WHITE }}>
+    <View style={{ flex: 1, padding: 16, backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE }}>
       {loadingPageId ? (
         <FullViewLoader />
       ) : !!error ? (
@@ -835,7 +840,7 @@ const PageScreen = () => {
             flex: 1,
             justifyContent: 'center',
             alignContent: 'center',
-            backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+            backgroundColor: theme === 'dark' ? 'black'  : ERP_COLOR_CODE.ERP_WHITE,
           }}
         >
           <ErrorMessage message={error} />
@@ -846,6 +851,8 @@ const PageScreen = () => {
             style={{
               flex: 1,
               height: Dimensions.get('screen').height,
+            backgroundColor: theme === 'dark' ? 'black'  : ERP_COLOR_CODE.ERP_WHITE,
+
             }}
           >
             <FlatList
@@ -910,7 +917,10 @@ const PageScreen = () => {
           )}
         </>
       ) : (
-        <View style={{ flex: 1 }}>
+        <View style={[{ flex: 1 ,}, theme === 'dark' && {
+          backgroundColor :'black',
+          width: '100%'
+        }]}>
           <NoData />
         </View>
       )}

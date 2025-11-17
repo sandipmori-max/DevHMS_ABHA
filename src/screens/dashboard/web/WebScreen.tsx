@@ -9,6 +9,7 @@ import { styles } from './web_style';
 import { useBaseLink } from '../../../hooks/useBaseLink';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ERPIcon from '../../../components/icon/ERPIcon';
+import { useAppSelector } from '../../../store/hooks';
 
 const WebScreen = () => {
   const { t } = useTranslations();
@@ -20,6 +21,7 @@ const WebScreen = () => {
   const [isReloading, setIsReloading] = useState(false);
   const webviewRef = useRef<WebView>(null);
   const baseLink = useBaseLink();
+    const theme = useAppSelector(state => state?.theme.mode);
 
   const url = isFromChart ? `${baseLink}app/index.html?dashboard/0/&token=${token}` : '';
 
@@ -86,7 +88,7 @@ const [webKey, setWebKey] = useState(Date.now());
       headerTitle: () => (
         <Text
           numberOfLines={1}
-          style={{ maxWidth: 180, fontSize: 18, fontWeight: '700', color: ERP_COLOR_CODE.ERP_WHITE }}
+          style={{ maxWidth: 180, fontSize: 18, fontWeight: '700', color: 'white'}}
         >
           {isFromChart ? 'Dashboard' : item?.title || t('webScreen.details')}
         </Text>
@@ -146,8 +148,12 @@ const [webKey, setWebKey] = useState(Date.now());
               incognito={true}       
              cacheMode="LOAD_DEFAULT"
             renderLoading={() => (
-              <View style={styles.webviewLoadingContainer}>
-                <View style={styles.webviewLoadingContent}>
+              <View style={[styles.webviewLoadingContainer, theme === 'dark' && {
+                backgroundColor: "black"
+              }]}>
+                <View style={[styles.webviewLoadingContent, theme === 'dark' && {
+                  backgroundColor: 'black'
+                }]}>
                   <FullViewLoader />
                 </View>
               </View>

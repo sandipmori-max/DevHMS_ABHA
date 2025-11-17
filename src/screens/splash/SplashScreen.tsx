@@ -1,15 +1,18 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Image, StatusBar, Animated, Easing } from 'react-native';
+import { View, Image, StatusBar, Animated, Easing, Dimensions } from 'react-native';
 
 import { ERP_ICON } from '../../assets';
 import { styles } from './splash_style';
 import { SplashProps } from './types';
+import { useAppSelector } from '../../store/hooks';
+import { DARK_COLOR } from '../../utils/constants';
 
 const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.5)).current;
   const textTranslateY = useRef(new Animated.Value(20)).current;
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
+  const theme = useAppSelector(state => state?.theme.mode);
 
   useEffect(() => {
     // Animate logo (fade + scale)
@@ -54,7 +57,9 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   }, [fadeAnim, scaleAnim, textTranslateY, subtitleOpacity, onFinish]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, theme === 'dark' && {
+            backgroundColor: DARK_COLOR
+          }]}>
       <StatusBar hidden />
 
       {/* Logo Animation */}
@@ -65,6 +70,9 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
             opacity: fadeAnim,
             transform: [{ scale: scaleAnim }],
           },
+          theme === 'dark' && {
+            backgroundColor: DARK_COLOR
+          }
         ]}
       >
         <Image source={ERP_ICON.APP_LOGO} style={styles.logo} resizeMode="contain" />
@@ -77,6 +85,9 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
           {
             transform: [{ translateY: textTranslateY }],
           },
+          theme === 'dark' && {
+            color: 'white'
+          }
         ]}
       >
         Welcome to DevERP
@@ -89,6 +100,9 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
           {
             opacity: subtitleOpacity,
           },
+           theme === 'dark' && {
+            color: 'white'
+          }
         ]}
       >
         Your business, simplified.
@@ -98,3 +112,4 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
 };
 
 export default CustomSplashScreen;
+//https://www.deverp.com/index.aspx?q=contact_us

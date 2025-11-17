@@ -26,7 +26,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setERPTheme, 
   // ERP_COLOR_CODE
  } from '../utils/constants';
-
+import { setTheme } from '../store/slices/theme/themeSlice';
+import { useColorScheme } from 'react-native';
+ 
 // ------------------------- Location Permission Helper -------------------------
 // export async function requestLocationPermissions(): Promise<
 //   'granted' | 'foreground-only' | 'denied' | 'blocked'
@@ -79,8 +81,10 @@ import { setERPTheme,
 // ------------------------- RootNavigator Component -------------------------
 const RootNavigator = () => {
   const dispatch = useAppDispatch();
-  const { isLoading, isAuthenticated, accounts, user } = useAppSelector(state => state.auth);
-  const theme = useAppSelector(state => state.theme);
+  const theme = useAppSelector(state => state?.theme.mode);
+  const colorScheme = useColorScheme();
+   const { isLoading, isAuthenticated, accounts, user } = useAppSelector(state => state.auth);
+  // const theme = useAppSelector(state => state.theme.mode);
 
   // const [locationEnabled, setLocationEnabled] = useState<boolean | null>(null);
   // const [alertVisible, setAlertVisible] = useState(false);
@@ -100,9 +104,16 @@ const RootNavigator = () => {
   // const appState = useRef(AppState.currentState);
 
   // ------------------------- Theme -------------------------
-  useEffect(() => {
-    setERPTheme('light');
-  }, [theme]);
+  // useEffect(() => {
+  //   if(colorScheme === 'dark' || theme === 'dark'){
+  //     setERPTheme('dark');
+  //     // dispatch(setTheme('dark'));
+  //   }else{
+  //     setERPTheme('light');
+  //     // dispatch(setTheme('light'));
+  //   }
+     
+  //  }, [colorScheme, theme]);
 
   //  useEffect(() => {
   //   const subscription = AppState.addEventListener('change', nextAppState => {
@@ -172,7 +183,7 @@ const RootNavigator = () => {
       dispatch(checkAuthStateThunk());
     };
     fetchDeviceName();
-  }, [dispatch]);
+  }, [dispatch, theme]);
 
   // ------------------------- Request Foreground Permissions -------------------------
   // const requestLocationPermission = async (): Promise<boolean> => {

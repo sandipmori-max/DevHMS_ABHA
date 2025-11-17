@@ -14,7 +14,7 @@ const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
   const { t } = useTranslations();
-  const theme = useAppSelector(state => state.theme);
+  const theme = useAppSelector(state => state.theme.mode);
 
   return (
   <>

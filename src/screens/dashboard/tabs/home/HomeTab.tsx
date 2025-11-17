@@ -8,6 +8,9 @@ import {
   Dimensions,
   Animated,
   TextInput,
+  Alert,
+  Modal,
+  Pressable,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -19,11 +22,16 @@ import NoData from '../../../../components/no_data/NoData';
 import ERPIcon from '../../../../components/icon/ERPIcon';
 import { getERPDashboardThunk } from '../../../../store/slices/auth/thunk';
 import ErrorMessage from '../../../../components/error/Error';
-import { ERP_COLOR_CODE } from '../../../../utils/constants';
+import { DARK_COLOR, ERP_COLOR_CODE } from '../../../../utils/constants';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import Footer from './Footer';
 import PieChartSection from './chartData';
-const { width } = Dimensions.get('screen');
+import TaskListScreen from '../../../task_module/task_list/TaskListScreen';
+import TaskDetailsBottomSheet from '../../../task_module/task_details/TaskDetailsScreen';
+import { formatDateForAPI, parseCustomDate } from '../../../../utils/helpers';
+ import DateTimePicker from '@react-native-community/datetimepicker';
+
+ const { width } = Dimensions.get('screen');
 
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== 'string') return false;
@@ -41,10 +49,32 @@ const HomeScreen = () => {
   console.log('🚀 ~ HomeScreen ~ dashboard:', dashboard);
   const [loadingPageId, setLoadingPageId] = useState<any>(null);
   const [isRefresh, setIsRefresh] = useState<boolean>(false);
+ const [fromDate, setFromDate] = useState<string>('');
+  const [toDate, setToDate] = useState<string>('');
+  const DUMMY_LIST = [
+  'Option 1',
+  'Option 2',
+  'Option 3',
+  'Option 4',
+  'Option 5',
+];
 
-  const theme = useAppSelector(state => state?.theme);
+  const [showDatePicker, setShowDatePicker] = useState<null | {
+      type: 'from' | 'to';
+      show: boolean;
+    }>(null);
+
+    const [visible, setVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const slideAnim = useRef(new Animated.Value(0)).current;
+
+
+  const theme = useAppSelector(state => state?.theme.mode);
+  console.log("theme", theme)
   const [actionLoader, setActionLoader] = useState(false);
   const [isHorizontal, setIsHorizontal] = useState(false);
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [filteredDashboard, setFilteredDashboard] = useState(dashboard);
@@ -85,6 +115,10 @@ const HomeScreen = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+    headerStyle: {
+      backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+    },
+    headerTintColor: '#fff',  
       headerTitle: () =>
         showSearch ? (
           <View style={{ width: width - 70, flexDirection: 'row', alignItems: 'center' }}>
@@ -115,7 +149,7 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
         ) : (
-          <Text style={{ color: ERP_COLOR_CODE.ERP_WHITE, fontSize: 18, fontWeight: '600' }}>
+          <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>
             Home
           </Text>
         ),
@@ -126,10 +160,7 @@ const HomeScreen = () => {
               {dashboard.length > 5 && (
                 <ERPIcon name="search" onPress={() => setShowSearch(true)} />
               )}
-              <ERPIcon
-                name={!isHorizontal ? 'list' : 'apps'}
-                onPress={() => setIsHorizontal(prev => !prev)}
-              />
+              
               <ERPIcon
                 name="refresh"
                 onPress={() => {
@@ -142,6 +173,14 @@ const HomeScreen = () => {
                 }}
                 isLoading={actionLoader}
               />
+              <ERPIcon
+                name={!isHorizontal ? 'list' : 'apps'}
+                onPress={() => setIsHorizontal(prev => !prev)}
+              />
+              <ERPIcon
+                name={'filter-alt'}
+                onPress={() => setIsFilterVisible(prev => !prev)}
+              />
             </>
           )}
         </>
@@ -150,7 +189,7 @@ const HomeScreen = () => {
         <ERPIcon extSize={24} isMenu={true} name="menu" onPress={() => navigation?.openDrawer()} />
       ),
     });
-  }, [navigation, isHorizontal, isRefresh, showSearch, dashboard, searchText, filteredDashboard]);
+  }, [navigation, isHorizontal, isRefresh, showSearch, dashboard, searchText, filteredDashboard, isFilterVisible]);
 
   useFocusEffect(
     useCallback(() => {
@@ -163,7 +202,35 @@ const HomeScreen = () => {
       return () => {};
     }, [isAuthenticated, dispatch]),
   );
+ const dummyUpcomingEvents = [];
 
+  const dummyUpcomingBirthdays = [
+    { id: 'b1', name: 'Amit Sharma', date: '28 sep 2025', type: 'Up-coming-Birthday' },
+  ];
+
+  const dummyUpcomingAnniversaries = [
+    { id: 'w1', name: 'Rohit & Neha', date: '03 sep 2025', type: 'Up-coming-work-anniversary' },
+  ];
+
+  const todayEvents = [{ id: 't2', date: 'Today', title: 'UX Review', type: 'Event' }];
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const todayBirthdays = [];
+
+  const todayAnniversaries = [];
+
+  const dummyTasks = [
+    {
+      id: '1',
+      title: 'Fix login bug',
+      description: 'Check the API response and fix login issue',
+      assignedTo: 'jr1',
+      createdBy: 'senior1',
+      status: 'pending',
+      updatedAt: '2025-09-10T10:00:00Z',
+    },
+  ];
   const getInitials = (text?: string) => {
     if (!text) return '?';
     const trimmed = text?.trim();
@@ -184,6 +251,57 @@ const HomeScreen = () => {
       text: item?.title,
     }));
 
+     const openSheet = () => {
+    setVisible(true);
+  };
+
+  const closeSheet = () => {
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 250,
+      useNativeDriver: true,
+    }).start(() => setVisible(false));
+  };
+
+  useEffect(() => {
+    if (visible) {
+      Animated.timing(slideAnim, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [visible]);
+
+  const handleSelect = (item: string) => {
+    if (selectedItem === item) {
+      setSelectedItem(null); // deselect if tapped again
+    } else {
+      setSelectedItem(item);
+    }
+  };
+
+  const renderItem = ({ item }: { item: string }) => {
+    const isSelected = item === selectedItem;
+    return (
+      <TouchableOpacity
+        style={[styles.item, isSelected && styles.selectedItem]}
+        onPress={() => handleSelect(item)}
+        activeOpacity={0.8}
+      >
+        <Text style={[styles.itemText, isSelected && styles.selectedText]}>
+          {item}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const translateY = slideAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [300, 0], // slide up
+  });
+
+
   const renderDashboardItem = ({ item, index, isFromHtml, isFromMenu }: any) => {
      return (
       <TouchableOpacity
@@ -199,6 +317,8 @@ const HomeScreen = () => {
             borderLeftColor: accentColors[index % accentColors.length],
             borderWidth: 1,
             borderLeftWidth: 3,
+            backgroundColor:  theme === 'dark' ?  'black' : 'white'
+            
           },
         ]}
         activeOpacity={0.7}
@@ -212,7 +332,7 @@ const HomeScreen = () => {
       >
         <View
           style={{
-            backgroundColor: theme === 'dark' ? ERP_COLOR_CODE.ERP_333 : ERP_COLOR_CODE.ERP_WHITE,
+            backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
             borderRadius: 8,
           }}
         >
@@ -225,7 +345,9 @@ const HomeScreen = () => {
                     { backgroundColor: accentColors[index % accentColors.length] },
                   ]}
                 >
-                  <MaterialIcons name={item?.image || 'widgets'} color={ERP_COLOR_CODE.ERP_WHITE} size={22} />
+                  <MaterialIcons name={item?.image || 'widgets'} color={
+                    'white'
+                    } size={22} />
                   {/* <Text style={styles.iconText}>{getInitials(item?.name)}</Text> */}
                 </View>
                 <View style={styles.headerTextWrap}>
@@ -234,7 +356,7 @@ const HomeScreen = () => {
                       styles.dashboardItemText,
                       {
                         color:
-                          theme === 'dark' ? ERP_COLOR_CODE.ERP_WHITE : ERP_COLOR_CODE.ERP_BLACK,
+                          theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK,
                         flexShrink: 1,
                         includeFontPadding: false,
                         textAlignVertical: 'top',
@@ -313,18 +435,109 @@ const HomeScreen = () => {
   };
  
   const scrollY = useRef(new Animated.Value(0)).current;
- 
+   const getCurrentMonthRange = useCallback(() => {
+     const now = new Date();
+     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+     const lastDay = new Date();
+     const fromDateStr = formatDateForAPI(firstDay);
+     const toDateStr = formatDateForAPI(lastDay);
+     setFromDate(fromDateStr);
+     setToDate(toDateStr);
+     return { fromDate: fromDateStr, toDate: toDateStr };
+   }, []);
 
+   useEffect(() => {
+      const { fromDate: initialFromDate, toDate: initialToDate } = getCurrentMonthRange();
+      
+    }, [getCurrentMonthRange]);
+
+ useFocusEffect(
+    useCallback(() => {
+      const { fromDate: initialFromDate, toDate: initialToDate } = getCurrentMonthRange();
+      // fetchListData(initialFromDate, initialToDate);
+      return () => {};
+    }, [getCurrentMonthRange,]),
+  );
+
+ const handleDateChange = (event: any, selectedDate?: Date) => {
+    if (event?.type === 'dismissed' || !selectedDate) {
+      setShowDatePicker(null);
+      return;
+    }
+    const { type } = showDatePicker!;
+    const formattedDate = formatDateForAPI(selectedDate);
+
+    if (type === 'to') {
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);
+
+      if (fromDate) {
+        const fromDateObj = new Date(fromDate.split('-').reverse().join('-'));
+        if (selectedDate < fromDateObj) {
+          Alert.alert('Invalid Date Range', 'To date cannot be before From date.', [
+            { text: 'OK' },
+          ]);
+          setShowDatePicker(null);
+          return;
+        }
+      }
+      setToDate(formattedDate);
+    } else {
+      setFromDate(formattedDate);
+      if (toDate) {
+        const toDateObj = new Date(toDate.split('-').reverse().join('-'));
+        if (selectedDate > toDateObj) {
+          setToDate('');
+        }
+      }
+    }
+    setShowDatePicker(null);
+  };
+
+
+ function SmallItem({ left, primary, secondary, type }) {
+    return (
+      <TouchableOpacity style={[styles.itemRow,  theme === 'dark' && {
+        backgroundColor: 'black'
+      }]} activeOpacity={0.8}>
+        <View style={[styles.avatar, {
+          borderWidth: 1,
+          borderColor: 'white'
+        }]}>{left}</View>
+        <View style={styles.itemText}>
+          <Text numberOfLines={1} style={[styles.itemPrimary, theme === 'dark' && {
+        color: 'white'
+      }]}>
+            {primary}
+          </Text>
+          <Text style={[styles.itemType,  theme === 'dark' && {
+        color: 'white'
+      }]}>{type}</Text>
+        </View>
+        <View>
+          <Text style={[styles.itemSecondary,  theme === 'dark' && {
+        color: 'white'
+      }]}>{secondary}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  }
   return (
-    <View style={theme === 'dark' ? styles.containerDark : styles.container}>
+    <View 
+    style={{
+      backgroundColor: isDashboardLoading ? 'black' : theme === 'dark' ?  'black' : 'white'
+    }}
+    >
       <View
         style={{
           marginTop: 1,
-          backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+          backgroundColor:  theme === 'dark' ? 'black': ERP_COLOR_CODE.ERP_APP_COLOR,
           padding: 12,
           // width: width,
           borderBottomRightRadius: 24,
           borderBottomLeftRadius: 24,
+          borderWidth: 1,
+          borderColor:'white'
         }}
       >
         <Animated.View
@@ -337,11 +550,11 @@ const HomeScreen = () => {
             // transform: [{ translateX }],
           }}
         >
-          <MaterialIcons name="business" size={24} color={ERP_COLOR_CODE.ERP_WHITE} />
+          <MaterialIcons name="business" size={24} color={"#FFF"} />
           <Text
             numberOfLines={1}
             style={{
-              color: ERP_COLOR_CODE.ERP_WHITE,
+              color: "#FFF",
               fontWeight: '600',
               fontSize: 16,
               maxWidth: 280,
@@ -349,24 +562,147 @@ const HomeScreen = () => {
           >
             {user?.companyName || ''}
           </Text>
+
         </Animated.View>
+
+         {
+      isFilterVisible && 
+      <View style={{paddingHorizontal: 0, paddingVertical: 12}}>
+       <View style={styles.dateContainer}>
+                    {/* Start Date */}
+                    <View style={styles.dateRow}>
+                      <TouchableOpacity
+                        onPress={() => setShowDatePicker({ type: 'from', show: true })}
+                        style={styles.dateButton}
+                      >
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <MaterialIcons
+                            name="calendar-today"
+                            size={18}
+                            color="#fff"
+                            style={{ marginRight: 8 }}
+                          />
+                          <Text style={[styles.dateButtonText,  {
+                            color: '#FFF'
+                          }]}>{fromDate || 'Select From Date'}</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={{ height: 1, width: 8 }}> </View>
+      
+                    <View style={styles.dateRow}>
+                      <TouchableOpacity
+                        onPress={() => setShowDatePicker({ type: 'to', show: true })}
+                        style={styles.dateButton}
+                      >
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <MaterialIcons
+                            name="calendar-today"
+                            size={18}
+                            color="#fff"
+                            style={{ marginRight: 8 }}
+                          />
+                          <Text style={[styles.dateButtonText,  {
+                            color: '#FFF'
+                          }]}>{toDate || 'Select To Date'}</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+
+      <View style={{flexDirection:'row', justifyContent:'space-between', marginTop: 4}}>
+      <TouchableOpacity style={styles.openButton} onPress={openSheet}>
+        
+         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <MaterialIcons
+                            name="apartment"
+                            size={18}
+                            color="#fff"
+                            style={{ marginRight: 8 }}
+                          />
+                          <Text style={[styles.dateButtonText,  {
+                            color: '#FFF'
+                          }]}>Branch</Text>
+                        </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.openButton} onPress={openSheet}>
+         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <MaterialIcons
+                            name="type-specimen-outlined"
+                            size={18}
+                            color="#fff"
+                            style={{ marginRight: 8 }}
+                          />
+                          <Text style={[styles.dateButtonText, {
+                            color: '#FFF'
+                          }]}>Type</Text>
+                        </View>
+      </TouchableOpacity>
+      </View>
+        {showDatePicker?.show && (
+            <DateTimePicker
+              value={
+                showDatePicker?.type === 'from' && fromDate
+                  ? parseCustomDate(fromDate)
+                  : showDatePicker?.type === 'to' && toDate
+                  ? parseCustomDate(toDate)
+                  : new Date()
+              }
+              mode="date"
+              onChange={handleDateChange}
+              minimumDate={
+                showDatePicker?.type === 'to' && fromDate
+                  ? parseCustomDate(fromDate)
+                  : new Date(new Date().getFullYear(), 0, 1)
+              }
+              maximumDate={
+                showDatePicker?.type === 'from' && toDate ? parseCustomDate(toDate) : new Date()
+              }
+            />
+          )}
+      </View>
+      
+    }
       </View>
 
+   
+
       {isDashboardLoading ? (
+         <View
+          style={{
+            height: Dimensions.get('screen').height * 0.75,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: theme === 'dark' ? 'black' : 'white' ,
+          }}
+        >
         <FullViewLoader />
+        </View>
       ) : error ? (
         <View
           style={{
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: 'white',
+            backgroundColor: theme === 'dark' ? 'black' : 'white' ,
           }}
         >
           <ErrorMessage message={error} />{' '}
         </View>
       ) : filteredDashboard?.length === 0 && !isDashboardLoading ? (
+         <View
+          style={{
+            height: Dimensions.get('screen').height * 0.75,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: theme === 'dark' ? 'black' : 'white' ,
+          }}
+        >
         <NoData />
+
+          </View>
       ) : (
         <>
           <Animated.FlatList
@@ -415,11 +751,258 @@ const HomeScreen = () => {
                   />
                 </View>
                
+                <>
+          <Animated.FlatList
+            showsVerticalScrollIndicator={false}
+            data={['']}
+            keyExtractor={(_, i) => i.toString()}
+            onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+              useNativeDriver: true,
+            })}
+            scrollEventThrottle={16}
+            renderItem={() => (
+              <>
+                 
+                <View style={[styles.grid,
+                   
+                ]}>
+                  <View style={[styles.card, {
+
+            backgroundColor:  theme === 'dark' ?  'black' : 'white'
+
+                  }]}>
+                    <View style={{ flexDirection: 'row', marginVertical: 8, gap: 6 }}>
+                      <MaterialIcons
+                        size={18}
+                          color={theme === 'dark' ? 'white' : 'black'}
+                        name="emoji-events"
+                      />
+                      <Text style={[styles.cardTitle,{
+                          color: theme === 'dark' ? 'white' : 'black'
+                      }]}>Events</Text>
+                    </View>
+                    <FlatList
+                      data={todayEvents}
+                      keyExtractor={i => i.id}
+                      scrollEnabled={false}
+                      renderItem={({ item }) => (
+                        <SmallItem
+                          left={<Text style={[styles.avatarText, {
+                            color: 'white'
+                          }]}>T</Text>}
+                          primary={item.title}
+                          secondary={item.date}
+                          type={item?.type}
+                        />
+                      )}
+                    />
+
+                    <FlatList
+                      key={`${isHorizontal}`}
+                      data={dummyUpcomingEvents}
+                      keyExtractor={i => i.id}
+                      scrollEnabled={false}
+                      renderItem={({ item }) => (
+                        <SmallItem
+                          left={<Text style={[styles.avatarText, {
+                            color: 'white'
+                          }]}>E</Text>}
+                          primary={item.title}
+                          secondary={item.date}
+                          type={item?.type}
+                        />
+                      )}
+                    />
+                  </View>
+
+                  <View style={[styles.card,{
+            backgroundColor:  theme === 'dark' ?  'black' : 'white'
+
+                  }]}>
+                    <View style={{ flexDirection: 'row', marginVertical: 8, gap: 6 }}>
+                      <MaterialIcons
+                        size={18}
+                          color={theme === 'dark' ? 'white' : 'black'}
+                        name="celebration"
+                      />
+                      <Text style={[styles.cardTitle,
+
+                        {
+                          color : theme === 'dark' ? 'white' : 'black'
+                        }
+                      ]}>Birthday & Work-anniversary</Text>
+                    </View>
+                    <FlatList
+                      data={todayBirthdays}
+                      keyExtractor={i => i.id}
+                      scrollEnabled={false}
+                      renderItem={({ item }) => (
+                        <SmallItem
+                          left={
+                            <Text style={[styles.avatarText, {
+                            color: 'white'
+                          }]}>
+                              {item.name
+                                .split(' ')
+                                .map(n => n[0])
+                                .slice(0, 2)
+                                .join('')}
+                            </Text>
+                          }
+                          primary={item.name}
+                          secondary={item.date}
+                          type={item?.type}
+                        />
+                      )}
+                    />
+
+                    <FlatList
+                      data={dummyUpcomingBirthdays}
+                      keyExtractor={i => i.id}
+                      scrollEnabled={false}
+                      renderItem={({ item }) => (
+                        <SmallItem
+                          left={
+                            <Text style={[styles.avatarText, {
+                            color: 'white'
+                          }]}>
+                              {item.name
+                                .split(' ')
+                                .map(n => n[0])
+                                .slice(0, 2)
+                                .join('')}
+                            </Text>
+                          }
+                          primary={item.name}
+                          secondary={item.date}
+                          type={item?.type}
+                        />
+                      )}
+                    />
+                    <FlatList
+                      data={todayAnniversaries}
+                      keyExtractor={i => i.id}
+                      scrollEnabled={false}
+                      renderItem={({ item }) => (
+                        <SmallItem
+                          left={<Text style={[styles.avatarText, {
+                            color: 'white'
+                          }]}>A</Text>}
+                          primary={item.name}
+                          secondary={item.date}
+                          type={item?.type}
+                        />
+                      )}
+                    />
+
+                    <FlatList
+                      data={dummyUpcomingAnniversaries}
+                      keyExtractor={i => i.id}
+                      scrollEnabled={false}
+                      renderItem={({ item }) => (
+                        <SmallItem
+                          left={<Text style={[styles.avatarText, {
+                            color: 'white',
+                          }]}>W</Text>}
+                          primary={item.name}
+                          secondary={item.date}
+                          type={item?.type}
+                        />
+                      )}
+                    />
+                  </View>
+                </View>
+                <View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      marginHorizontal: 12,
+                      marginVertical: 8,
+                    }}
+                  >
+                    <View style={{ flexDirection: 'row', gap: 6 }}>
+                      <MaterialIcons
+                        size={18}
+                        color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                        name="pending-actions"
+                      />
+                      <Text style={{ fontSize: 16, fontWeight: '700' }}>My Pending Tasks</Text>
+                    </View>
+
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.navigate('Tasks', { isFromViewAll: true });
+                      }}
+                    >
+                      <Text style={{ color: ERP_COLOR_CODE.ERP_BORDER_LINE, fontSize: 12 }}>
+                        View all
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  {/* <TaskListScreen
+                    tasks={dummyTasks}
+                    onSelectTask={task => {
+                      setSelectedTask(task);
+                      setModalVisible(true);
+                    }}
+                    showPicker={undefined}
+                    showFilter={undefined}
+                  /> */}
+                </View>
+
+                {selectedTask && (
+                  <TaskDetailsBottomSheet
+                    visible={modalVisible}
+                    task={selectedTask}
+                    role="junior"
+                    onClose={() => setModalVisible(false)}
+                    onUpdate={updatedTask => {
+                      setModalVisible(false);
+                    }}
+                  />
+                )}
+                <View style={{ height: 10, width: 100 }} />
+              </>
+            )}
+          />
+        </>
               </>
             )}
           />
         </>
       )}
+
+       <Modal
+        transparent
+        visible={visible}
+        animationType="fade"
+        statusBarTranslucent
+      >
+        <Pressable style={styles.backdrop} onPress={closeSheet} />
+
+        <Animated.View
+          style={[
+            styles.bottomSheet,
+            { transform: [{ translateY }] },
+          ]}
+        >
+          <View style={styles.header}>
+            <Text style={styles.title}>Select an Option</Text>
+            <TouchableOpacity onPress={closeSheet}>
+              <Text style={styles.closeText}>✕</Text>
+            </TouchableOpacity>
+          </View>
+
+          <FlatList
+            data={DUMMY_LIST}
+            renderItem={renderItem}
+            keyExtractor={(item) => item}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            contentContainerStyle={{ paddingBottom: 20 }}
+          />
+        </Animated.View>
+      </Modal>
     </View>
   );
 };

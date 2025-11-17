@@ -75,6 +75,8 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.6,
     marginTop: 12,
+    borderWidth: 1,
+    borderColor: '#FFF'
   },
   errorButton: {
     backgroundColor: ERP_COLOR_CODE.ERP_DE_ACTIVE_BUTTON,
@@ -87,10 +89,11 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0,
   },
   loginButtonText: {
-    color: ERP_COLOR_CODE.ERP_WHITE,
+    color: '#FFF',
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+
   },
   cancelButton: {
     backgroundColor: ERP_COLOR_CODE.ERP_f0f0f0,

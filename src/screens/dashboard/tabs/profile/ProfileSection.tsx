@@ -3,14 +3,23 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
+import { useAppSelector } from '../../../../store/hooks';
  
 const ProfileSection = ({baseLink, user, onEditPress }) => {
+    const theme = useAppSelector(state => state?.theme.mode);
+  
   if (!user) return null; 
   return (
     <TouchableOpacity 
      onPress={onEditPress}
-      style={styles.profileContainer}>
-      <View style={styles.profileCard}>
+      style={[styles.profileContainer, theme === 'dark' && {
+         borderColor: 'white',
+        borderRadius: 8,
+        backgroundColor: 'black'
+      }]}>
+      <View style={[styles.profileCard, theme === 'dark' && {
+        backgroundColor: 'black'
+      }]}>
         <View style={styles.profileHeader}>
           <View style={styles.avatarContainer}>
            <FastImage
@@ -26,19 +35,27 @@ const ProfileSection = ({baseLink, user, onEditPress }) => {
           </View>
 
           <View style={styles.profileInfo}>
-            <Text style={styles.profileName}>{user?.name || 'User Name'}</Text>
+            <Text style={[styles.profileName, theme === 'dark' && {
+              color :'white'
+            }]}>{user?.name || 'User Name'}</Text>
             <Text style={styles.profileEmail}>{user?.companyName || 'Company'}</Text>
-            <View style={styles.roleBadge}>
+            <View style={[styles.roleBadge, theme === 'dark' && {
+              backgroundColor: 'white'
+            }]}>
               <Text style={styles.roleText}>{user?.rolename || 'User Role'}</Text>
             </View>
           </View>
 
           <TouchableOpacity
             activeOpacity={0.7}
-            style={styles.editButton}
+            style={[styles.editButton, theme === 'dark' && {
+              backgroundColor: 'black',
+              borderWidth: 1,
+              borderColor: 'white'
+            }]}
             onPress={onEditPress}
           >
-            <MaterialIcons name="edit" size={20} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
+            <MaterialIcons name="edit" size={20} color={theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_APP_COLOR} />
           </TouchableOpacity>
         </View>
 

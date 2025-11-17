@@ -62,6 +62,7 @@ const ListScreen = () => {
   const route = useRoute<RouteProp<ListRouteParams, 'List'>>();
   const { item } = route?.params;
   console.log('🚀 ~ ListScreen ~ item:', item);
+  const theme = useAppSelector(state => state?.theme.mode);
 
   const pageTitle = item?.title || item?.name || 'List Data';
   const pageParamsName = item?.name || 'List Data';
@@ -91,6 +92,10 @@ const ListScreen = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+       headerStyle: {
+                             backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+                           },
+                           headerTintColor: '#fff', 
       headerTitle: () => (
         <Text
           numberOfLines={1}
@@ -98,7 +103,7 @@ const ListScreen = () => {
             maxWidth: 180,
             fontSize: 18,
             fontWeight: '700',
-            color: ERP_COLOR_CODE.ERP_WHITE,
+            color:  theme === 'dark' ? "white" : ERP_COLOR_CODE.ERP_WHITE,
           }}
         >
           {pageTitle || 'List Data'}
@@ -373,7 +378,7 @@ const ListScreen = () => {
     );
   }
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, theme === 'dark' && {backgroundColor : 'black'}]}>
       {isFilterVisible && (
         <View>
           <View style={styles.searchContainer}>
@@ -516,12 +521,15 @@ const ListScreen = () => {
             {
               bottom: filteredData.length === 0 ? 40 : totalAmount === 0 ? 64 : 78,
             },
+            theme === 'dark' && {
+              backgroundColor:'white'
+            }
           ]}
           onPress={() => {
             handleItemPressed({}, pageParamsName, pageTitle);
           }}
         >
-          <MaterialIcons size={32} name="add" color={ERP_COLOR_CODE.ERP_WHITE} />
+          <MaterialIcons size={32} name="add" color={theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE} />
         </TouchableOpacity>
       )}
 

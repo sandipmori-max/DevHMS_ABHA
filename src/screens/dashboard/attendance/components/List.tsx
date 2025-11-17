@@ -14,8 +14,8 @@ import {
 } from 'react-native';
 import NoData from '../../../../components/no_data/NoData';
 import { PieChart } from 'react-native-gifted-charts';
-import { ERP_COLOR_CODE } from '../../../../utils/constants';
-import { useAppDispatch } from '../../../../store/hooks';
+import { DARK_COLOR, ERP_COLOR_CODE } from '../../../../utils/constants';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { getERPListDataThunk } from '../../../../store/slices/auth/thunk';
 import FullViewLoader from '../../../../components/loader/FullViewLoader';
 import { useBaseLink } from '../../../../hooks/useBaseLink';
@@ -91,6 +91,7 @@ const styles = StyleSheet.create({
 
 const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
   const dispatch = useAppDispatch();
+  const theme = useAppSelector(state => state?.theme.mode);
 
   const [activeFilter, setActiveFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
@@ -138,7 +139,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
         setIsLoading(false);
       }
     },
-    [dispatch],
+    [dispatch, theme],
   );
 
   useEffect(() => {
@@ -233,7 +234,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
         selectedColor: color,
         customStyles: {
           container: { backgroundColor: color, borderRadius: 6 },
-          text: { color: ERP_COLOR_CODE.ERP_WHITE, fontWeight: '600' },
+          text: { color:  theme === 'dark' ? '#fff'  : ERP_COLOR_CODE.ERP_WHITE, fontWeight: '600' },
         },
       };
 
@@ -251,7 +252,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: ERP_COLOR_CODE.ERP_WHITE }}>
+    <View style={{ flex: 1, backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE }}>
       {showFilter && (
         <ScrollView
           horizontal
@@ -279,9 +280,9 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
             >
               <Text
                 style={{
-                  color:
-                    activeFilter === filter.key
-                      ? ERP_COLOR_CODE.ERP_WHITE
+                  color: 
+                    activeFilter === filter.key ? theme === 'dark' ? '#fff' :
+                       ERP_COLOR_CODE.ERP_WHITE
                       : ERP_COLOR_CODE.ERP_BLACK,
                   fontWeight: '600',
                 }}
@@ -308,6 +309,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                   justifyContent: 'center',
                   alignContent: 'center',
                   alignItems: 'center',
+                  backgroundColor : theme === 'dark' ? 'black' : 'white'
                 }}
               >
                 {currentView === 'pie' && listData?.length > 0 && (
@@ -325,8 +327,13 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                       donut
                       radius={90}
                       innerRadius={80}
+                      textColor={theme === 'dark' ? '#fff': "#000"}
+                      showValuesAsLabels
+                      innerCircleColor={theme === 'dark' ? '#000' : "#fff"}
                       centerLabelComponent={() => (
-                        <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '600' }}>
+                        <Text style={{ 
+                          color :theme === 'dark' ? '#fff': "#000",
+                          textAlign: 'center', fontSize: 18, fontWeight: '600' }}>
                           {total + `\n`}Days
                         </Text>
                       )}
@@ -345,7 +352,9 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                               backgroundColor: c.color,
                             }}
                           />
-                          <Text>{`${c?.text} (${c?.value})`}</Text>
+                          <Text style={{
+                            color: theme === 'dark' ? '#fff': "#000"
+                          }}> {`${c?.text} (${c?.value})`}</Text>
                         </View>
                       ))}
                     </View>
@@ -360,6 +369,9 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                         alignSelf: 'center',
                         borderRadius: 8,
                         elevation: 2,
+                        backgroundColor: theme === 'dark' ? 'black' : 'white',
+                        borderWidth: 1,
+                        borderColor: theme === 'dark' ? 'white' : 'black',
                       }}
                       monthFormat={'MMMM yyyy'}
                       hideExtraDays={false}
@@ -377,8 +389,8 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                       markedDates={markedDates}
                       theme={{
                         textDayFontWeight: '600',
-                        todayTextColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-                        arrowColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                        todayTextColor: theme === 'dark' ? '#fff'  : ERP_COLOR_CODE.ERP_APP_COLOR,
+                        arrowColor:  theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_APP_COLOR,
                       }}
                     />
                   </View>
@@ -450,13 +462,20 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                   <NoData />
                 </View>
               ) : (
-                <View style={{ marginHorizontal: 12 }}>
+                <View style={{ marginHorizontal: 12,
+
+                     backgroundColor : theme === 'dark' ? 'black' : 'white'
+                  }}>
                   <FlatList
                     data={timelineData}
                     keyExtractor={(item, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => (
-                      <View style={{ marginBottom: 8 }}>
+                      <View style={{ marginBottom: 8 , 
+
+                  backgroundColor : theme === 'dark' ? 'black' : 'white'
+
+                      }}>
                         {/* <Text style={{ 
                         backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
                         paddingHorizontal: 12,
@@ -486,7 +505,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                       width: 12,
                                       height: 12,
                                       borderRadius: 6,
-                                      backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                                      backgroundColor:   ERP_COLOR_CODE.ERP_APP_COLOR,
                                     }}
                                   />
                                   <View
@@ -507,7 +526,11 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                   marginTop: item.records.length > 1 ? 12 : 0,
                                 }}
                               >
-                                <View style={[styles.recordCard]}>
+                                <View style={[styles.recordCard,  theme === 'dark' && {
+                                  borderColor: 'white',
+                                  borderWidth: 1,
+                                  backgroundColor:'black'
+                                }]}>
                                   <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                                     {/* Images */}
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -549,8 +572,12 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                           marginBottom: 4,
                                         }}
                                       >
-                                        <Text style={styles.recordName}>{rec?.employee}</Text>
-                                        <Text style={styles.recordDateTime}>{rec?.date}</Text>
+                                        <Text style={[styles.recordName, theme === 'dark' && {
+                                          color:'white'
+                                        }]}>{rec?.employee}</Text>
+                                        <Text style={[styles.recordDateTime, theme === 'dark' && {
+                                          color:'white'
+                                        }]}>{rec?.date}</Text>
                                       </View>
 
                                       {
@@ -573,7 +600,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                               size={14}
                                               name="access-alarm"
                                             />
-                                            <Text style={styles.recordPunchTime}>
+                                            <Text style={[styles.recordPunchTime, ]}>
                                               {formatTo12Hour(rec?.intime) || '--'}
                                             </Text>
                                           </View>

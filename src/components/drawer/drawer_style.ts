@@ -27,12 +27,13 @@ export const styles = StyleSheet.create({
   },
 
   userPhone: {
-    color: ERP_COLOR_CODE.ERP_WHITE,
+    color: '#FFF',
     fontSize: 12,
     marginLeft: 6,
   },
   emailid:{
-    color: ERP_COLOR_CODE.ERP_WHITE,
+        color: '#FFF',
+
   },
   menuContainer: {
     flex: 1,

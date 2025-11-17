@@ -1,4 +1,4 @@
-import { View, Text, Image, TextInput, AppState } from 'react-native';
+import { View, Text, Image, TextInput, AppState, Dimensions } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -25,6 +25,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector(state => state?.auth);
   const baseLink = useBaseLink();
+    const theme = useAppSelector(state => state?.theme.mode);
 
   const [statusImage, setStatusImage] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
@@ -166,7 +167,10 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
   };
 
   return (
-    <View style={{ width: '100%', padding: 16 }}>
+    <View style={{ width: '100%',
+      height: Dimensions.get('screen').height,
+      padding: 16,                   backgroundColor: theme === 'dark' ? 'black' : 'white'
+     }}>
       <Formik
         initialValues={{
           name: user?.name,
@@ -223,7 +227,9 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
         }}
       >
         {({ values, errors, touched, setFieldValue, handleSubmit }) => (
-          <View style={styles.profileCard}>
+          <View style={[styles.profileCard, {
+            backgroundColor: theme === 'dark' ? 'black' : 'white'
+          }]}>
             <View style={styles.profileRow}>
               <View style={styles.imageCol}>
                 {`${baseLink}/FileUpload/1/UserMaster/${user?.id}/profileimage.jpeg` ? (
@@ -251,9 +257,16 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
 
             <View style={{}}>
               <View style={styles.formGroup}>
-                <Text style={styles.label}>{t('attendance.employeeName')}</Text>
+                <Text style={[styles.label, theme === 'dark' && {
+                  color:'white'
+                }]}>{t('attendance.employeeName')}</Text>
                 <TextInput
-                  style={[styles.input, styles.inputReadonly]}
+                  style={[styles.input, styles.inputReadonly, theme ==='dark' && {
+                    borderWidth: 1,
+                    borderColor: 'white',
+                    color:'white',
+                    backgroundColor:'black'
+                  }]}
                   value={values?.name}
                   editable={false}
                 />
@@ -263,9 +276,16 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
               </View>
 
               <View style={styles.formGroup}>
-                <Text style={styles.label}>{t('attendance.remark')}</Text>
+                <Text style={[styles.label, theme === 'dark' && {
+                  color:'white'
+                }]}>{t('attendance.remark')}</Text>
                 <TextInput
-                  style={[styles.input, { minHeight: 100, textAlignVertical: 'top' }]}
+                  style={[styles.input, { minHeight: 100, textAlignVertical: 'top' }, theme ==='dark' && {
+                    borderWidth: 1,
+                    borderColor: 'white',
+                    color:'white',
+                    backgroundColor:'black'
+                  }]}
                   value={values?.remark}
                   onChangeText={text => setFieldValue('remark', text)}
                   placeholder={t('attendance.enterRemark')}

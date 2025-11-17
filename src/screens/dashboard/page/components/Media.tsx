@@ -18,6 +18,7 @@ import { launchCamera, launchImageLibrary, Asset } from 'react-native-image-pick
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import CustomAlert from '../../../../components/alert/CustomAlert';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
+import { useAppSelector } from '../../../../store/hooks';
 
 const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNew }: any) => {
   const [imageUri, setImageUri] = useState<string | null>(null);
@@ -41,6 +42,7 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
   const translateY = useRef(new Animated.Value(0)).current;
   const lastScale = useRef(1);
   const lastTranslate = useRef({ x: 0, y: 0 });
+    const theme = useAppSelector(state => state?.theme.mode);
 
   const pendingCameraAction = useRef(false);
   const appState = useRef(AppState.currentState);
@@ -259,8 +261,12 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
     <>
       {/* <Text style={{ fontWeight: '600', marginBottom: 4 }}>{item?.fieldtitle}</Text> */}
       <View style={{ flexDirection: 'row' }}>
-              <Text style={styles.label}>{item?.fieldtitle}</Text>
-              {item?.tooltip !== item?.fieldtitle && <Text> - ( {item?.tooltip} ) </Text>}
+              <Text style={[styles.label,  theme === 'dark' && {
+          color: 'white'
+        }]}>{item?.fieldtitle}</Text>
+              {item?.tooltip !== item?.fieldtitle && <Text style={[styles.label,  theme === 'dark' && {
+          color: 'white'
+        }]}> - ( {item?.tooltip} ) </Text>}
               {item?.mandatory === '1' && <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>}
             </View>
       <View style={styles.imageWrapper}>
@@ -270,7 +276,12 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
             setModalVisible(true);
           }}
         >
-          <View style={{ width: 100, height: 100 }}>
+          <View style={[
+            theme === 'dark' && {
+              borderWidth: 1,
+              borderColor: 'white'
+            },
+            { width: 100, height: 100 , }]}>
             {loadingSmall && (
               <ActivityIndicator style={StyleSheet.absoluteFill} size="small" color="#000" />
             )}
@@ -285,7 +296,10 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleChooseImage} style={styles.editBtn}>
+        <TouchableOpacity onPress={handleChooseImage} style={[styles.editBtn, theme === 'dark' && {
+              borderWidth: 1,
+              borderColor: 'white'
+            },]}>
           <MaterialIcons name={'edit'} color={ERP_COLOR_CODE.ERP_BLACK} size={20} />
         </TouchableOpacity>
       </View>
@@ -361,11 +375,16 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
         onRequestClose={() => setPickerModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+          <View style={[styles.modalContent, theme === 'dark' && {
+            borderWidth: 1,
+            borderColor: 'white'
+          }]}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select Image</Text>
+              <Text style={[styles.modalTitle, theme === 'dark' && {
+                color: 'white'
+              }]}>Select Image</Text>
               <TouchableOpacity onPress={() => setPickerModalVisible(false)}>
-                <MaterialIcons name="close" size={24} color="#000" />
+                <MaterialIcons name="close" size={24} color={theme === 'dark' ? 'white' : 'black'} />
               </TouchableOpacity>
             </View>
 
@@ -373,14 +392,20 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
               {renderMedia().map((option, idx) => (
                 <TouchableOpacity
                   key={idx}
-                  style={styles.optionCard}
+                  style={[styles.optionCard, theme === 'dark' && {
+                    backgroundColor:'black',
+                    borderWidth: 1,
+                    borderColor: 'white'
+                  }]}
                   onPress={async () => {
                     setPickerModalVisible(false);
                     await option.onPress();
                   }}
                 >
-                  <MaterialIcons name={option?.icon} size={36} color="#000" />
-                  <Text style={styles.optionLabel}>{option?.text}</Text>
+                  <MaterialIcons name={option?.icon} size={36} color={theme === 'dark' ? 'white' : 'black'} />
+                  <Text style={[styles.optionLabel,{
+                    color: theme === 'dark' ? 'white' : 'black'
+                  }]}>{option?.text}</Text>
                 </TouchableOpacity>
               ))}
             </View>
