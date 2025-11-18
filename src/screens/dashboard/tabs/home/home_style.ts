@@ -363,7 +363,7 @@ export const styles = StyleSheet.create({
     fontSize: 12,
   },
    openButton: {
-    width:'49%',
+    width:'49.5%',
     // backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,

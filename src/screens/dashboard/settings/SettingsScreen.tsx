@@ -197,7 +197,9 @@ useLayoutEffect(() => {
         } else if (item?.title === t('settings.privacySettings')) {
           navigation.navigate('Privacy Policy');
         } else if (item?.title === t('settings.helpSupport')) {
-          // navigation.navigate('');
+          navigation.navigate('Privacy Policy', {
+            url: 'http://deverp.com/index.aspx?q=contact_us',
+          });
         } else if (item?.action) {
           setAlertConfig({
             title: t('common.navigate'),

@@ -20,16 +20,19 @@ import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import FullViewLoader from '../../../../components/loader/FullViewLoader';
 import NoData from '../../../../components/no_data/NoData';
 import ERPIcon from '../../../../components/icon/ERPIcon';
-import { getERPDashboardThunk } from '../../../../store/slices/auth/thunk';
+import { getERPDashboardThunk, getERPPageThunk } from '../../../../store/slices/auth/thunk';
 import ErrorMessage from '../../../../components/error/Error';
-import { DARK_COLOR, ERP_COLOR_CODE } from '../../../../utils/constants';
+import {  ERP_COLOR_CODE } from '../../../../utils/constants';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import Footer from './Footer';
 import PieChartSection from './chartData';
 import TaskListScreen from '../../../task_module/task_list/TaskListScreen';
-import TaskDetailsBottomSheet from '../../../task_module/task_details/TaskDetailsScreen';
+
+ import TaskDetailsBottomSheet from '../../../task_module/task_details/TaskDetailsScreen';
 import { formatDateForAPI, parseCustomDate } from '../../../../utils/helpers';
  import DateTimePicker from '@react-native-community/datetimepicker';
+ import CustomPicker from '../../page/components/CustomPicker';
+import { setActiveDashboardBranch, setActiveDashboardBranchId, setActiveDashboardFromDate, setActiveDashboardToDate, setActiveDashboardType, setActiveDashboardTypeId } from '../../../../store/slices/auth/authSlice';
 
  const { width } = Dimensions.get('screen');
 
@@ -42,35 +45,28 @@ const HomeScreen = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
+  const [controls, setControls] = useState<any[]>([]);
 
   const { dashboard, isDashboardLoading, isAuthenticated, error, user } = useAppSelector(
     state => state.auth,
   );
-  console.log('🚀 ~ HomeScreen ~ dashboard:', dashboard);
   const [loadingPageId, setLoadingPageId] = useState<any>(null);
   const [isRefresh, setIsRefresh] = useState<boolean>(false);
- const [fromDate, setFromDate] = useState<string>('');
+  const [fromDate, setFromDate] = useState<string>('');
   const [toDate, setToDate] = useState<string>('');
-  const DUMMY_LIST = [
-  'Option 1',
-  'Option 2',
-  'Option 3',
-  'Option 4',
-  'Option 5',
-];
 
+  const auth = useAppSelector(state => state?.auth);
+  console.log("auth---------------", auth)
   const [showDatePicker, setShowDatePicker] = useState<null | {
       type: 'from' | 'to';
       show: boolean;
     }>(null);
 
-    const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const slideAnim = useRef(new Animated.Value(0)).current;
 
-
   const theme = useAppSelector(state => state?.theme.mode);
-  console.log("theme", theme)
   const [actionLoader, setActionLoader] = useState(false);
   const [isHorizontal, setIsHorizontal] = useState(false);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
@@ -178,7 +174,7 @@ const HomeScreen = () => {
                 onPress={() => setIsHorizontal(prev => !prev)}
               />
               <ERPIcon
-                name={'filter-alt'}
+                name={isFilterVisible ? 'close' :'filter-alt'}
                 onPress={() => setIsFilterVisible(prev => !prev)}
               />
             </>
@@ -251,7 +247,7 @@ const HomeScreen = () => {
       text: item?.title,
     }));
 
-     const openSheet = () => {
+  const openSheet = () => {
     setVisible(true);
   };
 
@@ -273,35 +269,7 @@ const HomeScreen = () => {
     }
   }, [visible]);
 
-  const handleSelect = (item: string) => {
-    if (selectedItem === item) {
-      setSelectedItem(null); // deselect if tapped again
-    } else {
-      setSelectedItem(item);
-    }
-  };
-
-  const renderItem = ({ item }: { item: string }) => {
-    const isSelected = item === selectedItem;
-    return (
-      <TouchableOpacity
-        style={[styles.item, isSelected && styles.selectedItem]}
-        onPress={() => handleSelect(item)}
-        activeOpacity={0.8}
-      >
-        <Text style={[styles.itemText, isSelected && styles.selectedText]}>
-          {item}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
-
-  const translateY = slideAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [300, 0], // slide up
-  });
-
-
+  
   const renderDashboardItem = ({ item, index, isFromHtml, isFromMenu }: any) => {
      return (
       <TouchableOpacity
@@ -482,8 +450,13 @@ const HomeScreen = () => {
         }
       }
       setToDate(formattedDate);
+      console.log("formattedDate", formattedDate)
+      dispatch(setActiveDashboardToDate(formattedDate))
     } else {
+      console.log("formattedDate-----", formattedDate)
+
       setFromDate(formattedDate);
+      dispatch(setActiveDashboardFromDate(formattedDate))
       if (toDate) {
         const toDateObj = new Date(toDate.split('-').reverse().join('-'));
         if (selectedDate > toDateObj) {
@@ -493,6 +466,44 @@ const HomeScreen = () => {
     }
     setShowDatePicker(null);
   };
+
+
+   const fetchPageData = useCallback(async () => {
+      try {
+   
+        const parsed = await dispatch(
+          getERPPageThunk({ page: 'Dashboard', id: "" }),
+        ).unwrap();
+        console.log('🚀 ~ parsed:', parsed);
+  
+        
+  
+        const pageControls = Array.isArray(parsed?.pagectl) ? parsed?.pagectl : [];
+        console.log('🚀 ~ pageControls:', pageControls);
+  
+        const normalizedControls = pageControls?.map(c => ({
+          ...c,
+          disabled: String(c?.disabled ?? '0'),
+          visible: String(c?.visible ?? '1'),
+          mandatory: String(c?.mandatory ?? '0'),
+        }));
+  
+        setControls(normalizedControls);
+  
+        
+      } catch (e: any) {
+        console.log('🚀 ~ e:', e);
+       } finally {
+        setLoadingPageId(null);
+        setTimeout(() => {
+          setActionLoader(false);
+        }, 10);
+      }
+    }, [dispatch]);
+  
+    useEffect(() => {
+      fetchPageData();
+    }, [fetchPageData]);
 
 
  function SmallItem({ left, primary, secondary, type }) {
@@ -565,106 +576,111 @@ const HomeScreen = () => {
 
         </Animated.View>
 
-         {
-      isFilterVisible && 
-      <View style={{paddingHorizontal: 0, paddingVertical: 12}}>
-       <View style={styles.dateContainer}>
-                    {/* Start Date */}
-                    <View style={styles.dateRow}>
-                      <TouchableOpacity
-                        onPress={() => setShowDatePicker({ type: 'from', show: true })}
-                        style={styles.dateButton}
-                      >
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          <MaterialIcons
-                            name="calendar-today"
-                            size={18}
-                            color="#fff"
-                            style={{ marginRight: 8 }}
-                          />
-                          <Text style={[styles.dateButtonText,  {
-                            color: '#FFF'
-                          }]}>{fromDate || 'Select From Date'}</Text>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                    <View style={{ height: 1, width: 8 }}> </View>
       
-                    <View style={styles.dateRow}>
-                      <TouchableOpacity
-                        onPress={() => setShowDatePicker({ type: 'to', show: true })}
-                        style={styles.dateButton}
-                      >
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          <MaterialIcons
-                            name="calendar-today"
-                            size={18}
-                            color="#fff"
-                            style={{ marginRight: 8 }}
-                          />
-                          <Text style={[styles.dateButtonText,  {
-                            color: '#FFF'
-                          }]}>{toDate || 'Select To Date'}</Text>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
+      {/* Branch + Type Buttons */}
+      {
+        isFilterVisible && <>
+             <View style={[styles.dateContainer, {
+              marginTop: 8
+             }]}>
+        {/* Dynamic Render Date Fields */}
+         {isFilterVisible && controls
+          .filter((x) => x.ctltype === "DATE")
+          .map((item, index) => (
+            <View key={index} style={[styles.dateRow, {
+              width: '48%'
+            }]}>
+              <TouchableOpacity
+                onPress={() =>
+                  setShowDatePicker({ type: item.field === "fromdate" ? "from" : "to", show: true })
+                }
+                style={[styles.dateButton,{
+                   width: '98%'
+                }]}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <MaterialIcons
+                    name="calendar-today"
+                    size={18}
+                    color="#fff"
+                    style={{ marginRight: 8 }}
+                  />
+                  <Text style={[styles.dateButtonText, { color: "#FFF" }]}>
+                    {item.field === "fromdate"
+                      ? fromDate || "Select From Date"
+                      : toDate || "Select To Date"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              {index === 0 && <View style={{ height: 1, width: 8 }} />}
+            </View>
+          ))}
+      </View>
 
-
-      <View style={{flexDirection:'row', justifyContent:'space-between', marginTop: 4}}>
-      <TouchableOpacity style={styles.openButton} onPress={openSheet}>
+      {
+        isFilterVisible &&  
         
-         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          <MaterialIcons
-                            name="apartment"
-                            size={18}
-                            color="#fff"
-                            style={{ marginRight: 8 }}
-                          />
-                          <Text style={[styles.dateButtonText,  {
-                            color: '#FFF'
-                          }]}>Branch</Text>
-                        </View>
-      </TouchableOpacity>
+        
+        <View style={{ 
+          
+          flexDirection: "row", justifyContent: "space-between", marginTop: 4 }}>
 
-      <TouchableOpacity style={styles.openButton} onPress={openSheet}>
-         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          <MaterialIcons
-                            name="type-specimen-outlined"
-                            size={18}
-                            color="#fff"
-                            style={{ marginRight: 8 }}
-                          />
-                          <Text style={[styles.dateButtonText, {
-                            color: '#FFF'
-                          }]}>Type</Text>
-                        </View>
-      </TouchableOpacity>
-      </View>
-        {showDatePicker?.show && (
-            <DateTimePicker
-              value={
-                showDatePicker?.type === 'from' && fromDate
-                  ? parseCustomDate(fromDate)
-                  : showDatePicker?.type === 'to' && toDate
-                  ? parseCustomDate(toDate)
-                  : new Date()
+            {
+              controls
+          .filter((x) => x.ctltype !== "DATE" && x.field !== 'userid') 
+          .map((item, index) => ( <>
+             <View style={{width: '49.5%'}}>
+                   <CustomPicker
+            isForceOpen={false}
+            isValidate={false}
+            label={item.title}
+            selectedValue={() =>{}}
+            dtext={ item?.title === 'Branch' ?auth?.dashboardBranch || item.dtext : auth.dashboardType || item?.dtext}
+            onValueChange={(i)=>{
+               if(item?.title === 'Branch'){
+                dispatch(setActiveDashboardBranchId(i?.value?.toString()))
+                dispatch(setActiveDashboardBranch(i?.name))
+              }else{
+                dispatch(setActiveDashboardType(i?.name))
+                dispatch(setActiveDashboardTypeId(i?.value?.toString()))
               }
-              mode="date"
-              onChange={handleDateChange}
-              minimumDate={
-                showDatePicker?.type === 'to' && fromDate
-                  ? parseCustomDate(fromDate)
-                  : new Date(new Date().getFullYear(), 0, 1)
-              }
-              maximumDate={
-                showDatePicker?.type === 'from' && toDate ? parseCustomDate(toDate) : new Date()
-              }
-            />
-          )}
-      </View>
-      
-    }
+            }}
+            options={[]}
+            item={item}
+            errors={null}
+            formValues={null}
+          />
+                </View>
+          </>))
+
+            }
+            </View>
+      }
+        </>
+      }
+        
+      {/* Date Picker */}
+      {showDatePicker?.show && (
+        <DateTimePicker
+          value={
+            showDatePicker.type === "from" && fromDate
+              ? parseCustomDate(fromDate)
+              : showDatePicker.type === "to" && toDate
+              ? parseCustomDate(toDate)
+              : new Date()
+          }
+          mode="date"
+          onChange={handleDateChange}
+          minimumDate={
+            showDatePicker.type === "to" && fromDate
+              ? parseCustomDate(fromDate)
+              : new Date(new Date().getFullYear(), 0, 1)
+          }
+          maximumDate={
+            showDatePicker.type === "from" && toDate ? parseCustomDate(toDate) : new Date()
+          }
+        />
+      )}
       </View>
 
    
@@ -939,8 +955,8 @@ const HomeScreen = () => {
                         View all
                       </Text>
                     </TouchableOpacity>
-                  </View>
-                  {/* <TaskListScreen
+                  </View> 
+                  <TaskListScreen
                     tasks={dummyTasks}
                     onSelectTask={task => {
                       setSelectedTask(task);
@@ -948,8 +964,8 @@ const HomeScreen = () => {
                     }}
                     showPicker={undefined}
                     showFilter={undefined}
-                  /> */}
-                </View>
+                  /> 
+                              </View>
 
                 {selectedTask && (
                   <TaskDetailsBottomSheet
@@ -962,7 +978,7 @@ const HomeScreen = () => {
                     }}
                   />
                 )}
-                <View style={{ height: 10, width: 100 }} />
+                <View style={{ height: 100, width: 100 }} />
               </>
             )}
           />
@@ -972,37 +988,6 @@ const HomeScreen = () => {
           />
         </>
       )}
-
-       <Modal
-        transparent
-        visible={visible}
-        animationType="fade"
-        statusBarTranslucent
-      >
-        <Pressable style={styles.backdrop} onPress={closeSheet} />
-
-        <Animated.View
-          style={[
-            styles.bottomSheet,
-            { transform: [{ translateY }] },
-          ]}
-        >
-          <View style={styles.header}>
-            <Text style={styles.title}>Select an Option</Text>
-            <TouchableOpacity onPress={closeSheet}>
-              <Text style={styles.closeText}>✕</Text>
-            </TouchableOpacity>
-          </View>
-
-          <FlatList
-            data={DUMMY_LIST}
-            renderItem={renderItem}
-            keyExtractor={(item) => item}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
-            contentContainerStyle={{ paddingBottom: 20 }}
-          />
-        </Animated.View>
-      </Modal>
     </View>
   );
 };

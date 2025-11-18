@@ -101,7 +101,7 @@ const ReadableView = ({
   const navigation = useNavigation();
   const screenWidth = Dimensions.get('window').width;
   const [listData, setListData] = useState(filteredData || []);
-  const theme = useAppSelector(state => state?.theme.mode);
+  const theme = useAppSelector(state => state?.theme?.mode);
 
   const handleDelete = (item) => {
     console.log("id", item);
@@ -124,7 +124,7 @@ const ReadableView = ({
 
   const RenderCard = ({ item, index }: any) => {
     if (!item) return null;
-    const name = item?.name || `Item #${index + 1}`;
+    const name = item?.name?.toString() || `Item #${index + 1}`;
     const subName = item?.number || `Item #${index + 1}`;
     const [isRemarksExpanded, setRemarksExpanded] = useState(false);
 
@@ -138,13 +138,20 @@ const ReadableView = ({
     const authUser = item?.authuser;
     const qty = item?.qty;
 
-    const avatarLetter =
-      name
-        .split(' ')
+   const avatarLetter =
+    typeof name === "string" && name.trim() !== ""
+    ? name
+        .trim()
+        .split(" ")
         .filter(Boolean)
         .slice(0, 2)
         .map((w) => w.charAt(0).toUpperCase())
-        .join('') || name.substring(0, 2).toUpperCase();
+        .join("")
+    : (name || "")
+        .toString()
+        .substring(0, 2)
+        .toUpperCase();
+
 
     const card = (
       <View

@@ -725,6 +725,7 @@ const PageScreen = () => {
       } else if (item?.ddl && item?.ddl !== '' && item?.ajax === 0) {
         content = (
           <CustomPicker
+            isForceOpen={true}
             isValidate={isValidate}
             label={item?.fieldtitle}
             selectedValue={value}
@@ -738,6 +739,7 @@ const PageScreen = () => {
       } else if (item?.ddl && item?.ddl !== '' && item?.ajax === 1) {
         content = (
           <AjaxPicker
+            isForceOpen={true}
             isValidate={isValidate}
             label={item?.fieldtitle}
             selectedValue={value}
