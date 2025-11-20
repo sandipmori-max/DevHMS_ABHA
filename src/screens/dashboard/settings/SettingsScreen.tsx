@@ -70,15 +70,15 @@ const SettingsScreen = () => {
     type: 'info' as 'error' | 'success' | 'info',
   });
   const [settings, setSettings] = useState<SettingItem[]>([]);
-const appVersion = DeviceInfo.getVersion();
+  const appVersion = DeviceInfo.getVersion();
 
 
-useLayoutEffect(() => {
+  useLayoutEffect(() => {
     navigation.setOptions({
-       headerStyle: {
-                             backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
-                           },
-                           headerTintColor: '#fff', 
+      headerStyle: {
+        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+      },
+      headerTintColor: '#fff',
       headerTitle: () => (
         <Text
           numberOfLines={1}
@@ -86,15 +86,15 @@ useLayoutEffect(() => {
             maxWidth: 180,
             fontSize: 18,
             fontWeight: '700',
-            color:  theme === 'dark' ? "white" : ERP_COLOR_CODE.ERP_WHITE,
+            color: theme === 'dark' ? "white" : ERP_COLOR_CODE.ERP_WHITE,
           }}
         >
           {'Settings'}
         </Text>
       ),
-    
+
     });
-}, [navigation]);
+  }, [navigation]);
 
 
   useEffect(() => {
@@ -253,14 +253,14 @@ useLayoutEffect(() => {
   const renderSettingItem = ({ item }: { item: SettingItem }) => (
     <TouchableOpacity
       style={[styles.settingCard, theme === 'dark' && {
-        backgroundColor:'black'
+        backgroundColor: 'black'
       }]}
       onPress={() => handleAction(item)}
       disabled={item.type === 'toggle'}
     >
       <View style={styles.settingHeader}>
         <View style={styles.settingIcon}>
-          <MaterialIcons name={item?.icon} color={theme ==='dark' ? 'black' : ERP_COLOR_CODE.ERP_BLACK} size={22} />
+          <MaterialIcons name={item?.icon} color={theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_BLACK} size={22} />
         </View>
         <View style={styles.settingInfo}>
           <Text style={[styles.settingTitle, theme === 'dark' && {
@@ -270,23 +270,23 @@ useLayoutEffect(() => {
         </View>
         {item.type === 'toggle' ? (
           <Switch
-          value={item.title === t('settings.darkMode') ? theme === 'dark' : item.value}
-          onValueChange={() => {
-            handleToggle(item.id);
+            value={item.title === t('settings.darkMode') ? theme === 'dark' : item.value}
+            onValueChange={() => {
+              handleToggle(item.id);
 
-            if (item.title === t('settings.darkMode')) {
-              if (theme === 'dark') {
-                setERPTheme('light');
-                dispatch(setTheme('light'));
-              } else {
-                setERPTheme('dark');
-                dispatch(setTheme('dark'));
+              if (item.title === t('settings.darkMode')) {
+                if (theme === 'dark') {
+                  setERPTheme('light');
+                  dispatch(setTheme('light'));
+                } else {
+                  setERPTheme('dark');
+                  dispatch(setTheme('dark'));
+                }
               }
-            }
-          }}
-  trackColor={{ false: ERP_COLOR_CODE.ERP_e0e0e0, true: '#4CAF50' }}
-  thumbColor={ theme === 'dark' ? 'white': '#f4f3f4' }
-/>
+            }}
+            trackColor={{ false: ERP_COLOR_CODE.ERP_e0e0e0, true: '#4CAF50' }}
+            thumbColor={theme === 'dark' ? 'white' : '#f4f3f4'}
+          />
 
         ) : (
           <>{item?.title !== t('settings.aboutApp') && <Text style={styles.arrowIcon}>›</Text>}</>
@@ -331,7 +331,7 @@ useLayoutEffect(() => {
       >
         <View style={styles.sectionContainer}>
           <Text style={[styles.sectionTitle, theme === 'dark' && {
-            backgroundColor:'black',
+            backgroundColor: 'black',
             color: 'white'
           }]}>{t('settings.notifications')}</Text>
           <FlatList
@@ -345,7 +345,7 @@ useLayoutEffect(() => {
 
         <View style={styles.sectionContainer}>
           <Text style={[styles.sectionTitle, theme === 'dark' && {
-            backgroundColor:'black',
+            backgroundColor: 'black',
             color: 'white'
           }]}>{t('settings.appearance')}</Text>
           <FlatList
@@ -359,7 +359,7 @@ useLayoutEffect(() => {
 
         <View style={styles.sectionContainer}>
           <Text style={[styles.sectionTitle, theme === 'dark' && {
-            backgroundColor:'black',
+            backgroundColor: 'black',
             color: 'white'
           }]}>{t('settings.security')}</Text>
           <FlatList
@@ -373,7 +373,7 @@ useLayoutEffect(() => {
 
         <View style={styles.sectionContainer}>
           <Text style={[styles.sectionTitle, theme === 'dark' && {
-            backgroundColor:'black',
+            backgroundColor: 'black',
             color: 'white'
           }]}>{t('settings.general')}</Text>
           <FlatList
@@ -387,7 +387,7 @@ useLayoutEffect(() => {
 
         <View style={styles.sectionContainer}>
           <Text style={[styles.sectionTitle, theme === 'dark' && {
-            backgroundColor:'black',
+            backgroundColor: 'black',
             color: 'white'
           }]}>{t('settings.account')}</Text>
           <FlatList
@@ -413,7 +413,7 @@ useLayoutEffect(() => {
       >
         <View style={languageStyles.modalOverlay}>
           <View style={[languageStyles.modalContent, theme === 'dark' && {
-            backgroundColor:'black',
+            backgroundColor: 'black',
             borderWidth: 1,
             borderColor: 'white'
           }]}>

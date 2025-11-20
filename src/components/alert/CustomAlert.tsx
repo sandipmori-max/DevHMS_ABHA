@@ -42,18 +42,18 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   };
 
   useEffect(() => {
-  const onBackPress = () => {
-    if (visible) {
-      onClose?.();
-      return true; // stop propagation
-    }
-    return false;
-  };
+    const onBackPress = () => {
+      if (visible) {
+        onClose?.();
+        return true; // stop propagation
+      }
+      return false;
+    };
 
-  const backHandler = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
-  return () => backHandler.remove();
-}, [visible, onClose]);
+    return () => backHandler.remove();
+  }, [visible, onClose]);
 
 
   const handleDonePress = () => {

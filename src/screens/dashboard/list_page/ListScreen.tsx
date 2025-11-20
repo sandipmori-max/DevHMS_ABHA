@@ -92,10 +92,10 @@ const ListScreen = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-       headerStyle: {
-                             backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
-                           },
-                           headerTintColor: '#fff', 
+      headerStyle: {
+        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+      },
+      headerTintColor: '#fff',
       headerTitle: () => (
         <Text
           numberOfLines={1}
@@ -103,7 +103,7 @@ const ListScreen = () => {
             maxWidth: 180,
             fontSize: 18,
             fontWeight: '700',
-            color:  theme === 'dark' ? "white" : ERP_COLOR_CODE.ERP_WHITE,
+            color: theme === 'dark' ? "white" : ERP_COLOR_CODE.ERP_WHITE,
           }}
         >
           {pageTitle || 'List Data'}
@@ -119,15 +119,15 @@ const ListScreen = () => {
             }}
             isLoading={actionLoaders}
           />
-          {
-            !isFromAlertCard &&  <ERPIcon
-            name={isTableView ? 'list' : 'apps'}
-            onPress={() => {
-              setIsTableView(!isTableView);
-            }}
-          />
-          }
-         
+          {/* {
+            !isFromAlertCard && <ERPIcon
+              name={isTableView ? 'list' : 'apps'}
+              onPress={() => {
+                setIsTableView(!isTableView);
+              }}
+            />
+          } */}
+
 
           <ERPIcon
             name={!hasDateField ? 'search' : isFilterVisible ? 'filter-alt' : 'filter-alt'}
@@ -195,6 +195,7 @@ const ListScreen = () => {
               return allValues?.includes(trimmedQuery?.toLowerCase());
             });
           }
+          console.log("filtered-----------", filtered)
           setFilteredData(filtered);
         }, 300);
       };
@@ -294,6 +295,7 @@ const ListScreen = () => {
         }
         setConfigData(configArray);
         setListData(dataArray);
+        console.log("dataArraydataArraydataArraydataArraydataArray", dataArray)
         setFilteredData(dataArray);
       } catch (e: any) {
         console.log('Failed to load list data:', e);
@@ -324,7 +326,7 @@ const ListScreen = () => {
     useCallback(() => {
       const { fromDate: initialFromDate, toDate: initialToDate } = getCurrentMonthRange();
       fetchListData(initialFromDate, initialToDate);
-      return () => {};
+      return () => { };
     }, [getCurrentMonthRange, fetchListData]),
   );
 
@@ -346,38 +348,38 @@ const ListScreen = () => {
   };
 
   const handleActionButtonPressed = (actionValue, label, color, id, item) => {
-    // navigation.navigate('Page', {
-    //   item,
-    //   id: item?.id,
-    //   title: pageName,
-    //   isFromNew: true,
-    //   url: 'FASConfirmationMst',
-    //   pageTitle: pageTitle,
-    //   isFromBusinessCard: false,
-    // });
-    
-    setAlertConfig({
-      title: label,
-      message: `Are you sure you want to ${label.toLowerCase()} ?`,
-      type: 'info',
-      actionValue: actionValue,
-      color: color,
-      id: id,
+    navigation.navigate('Page', {
+      item,
+      id: item?.id,
+      title: pageName,
+      isFromNew: true,
+      url: 'FASConfirmationMst',
+      pageTitle: pageTitle,
+      isFromBusinessCard: false,
     });
-    setAlertVisible(true);
-    
+
+    // setAlertConfig({
+    //   title: label,
+    //   message: `Are you sure you want to ${label.toLowerCase()} ?`,
+    //   type: 'info',
+    //   actionValue: actionValue,
+    //   color: color,
+    //   id: id,
+    // });
+    // setAlertVisible(true);
+
   };
 
   const handleDeleteNotification = async (item: any) => {
-            await dispatch(
-              handleDeleteActionThunk({
-                id: item.id.toString(),
-                remarks: "",
-                page: "DEVNOTIFY",
-              }),
-            ).unwrap();
-            setAlertVisible(false);
-            onRefresh();
+    await dispatch(
+      handleDeleteActionThunk({
+        id: item.id.toString(),
+        remarks: "",
+        page: "DEVNOTIFY",
+      }),
+    ).unwrap();
+    setAlertVisible(false);
+    onRefresh();
   }
 
   if (parsedError) {
@@ -388,7 +390,7 @@ const ListScreen = () => {
     );
   }
   return (
-    <View style={[styles.container, theme === 'dark' && {backgroundColor : 'black'}]}>
+    <View style={[styles.container, theme === 'dark' && { backgroundColor: 'black' }]}>
       {isFilterVisible && (
         <View>
           <View style={styles.searchContainer}>
@@ -456,8 +458,8 @@ const ListScreen = () => {
                 showDatePicker?.type === 'from' && fromDate
                   ? parseCustomDate(fromDate)
                   : showDatePicker?.type === 'to' && toDate
-                  ? parseCustomDate(toDate)
-                  : new Date()
+                    ? parseCustomDate(toDate)
+                    : new Date()
               }
               mode="date"
               onChange={handleDateChange}
@@ -502,8 +504,8 @@ const ListScreen = () => {
               ) : (
                 <>
                   <ReadableView
-                  handleDeleteNotification={handleDeleteNotification}
-                  isFromAlertCard={isFromAlertCard}
+                    handleDeleteNotification={handleDeleteNotification}
+                    isFromAlertCard={isFromAlertCard}
                     configData={configData}
                     filteredData={filteredData}
                     loadingListId={loadingListId}
@@ -523,7 +525,7 @@ const ListScreen = () => {
           )}
         </>
       )}
-      
+
       {!isFromAlertCard && !loadingListId && configData && (
         <TouchableOpacity
           style={[
@@ -532,7 +534,7 @@ const ListScreen = () => {
               bottom: filteredData.length === 0 ? 40 : totalAmount === 0 ? 64 : 78,
             },
             theme === 'dark' && {
-              backgroundColor:'white'
+              backgroundColor: 'white'
             }
           ]}
           onPress={() => {

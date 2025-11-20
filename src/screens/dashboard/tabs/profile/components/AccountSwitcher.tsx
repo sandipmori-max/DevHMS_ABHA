@@ -73,7 +73,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
     return (
       <TouchableOpacity
         style={[styles.accountItem, isActive && styles.activeAccount, theme === 'dark' && {
-          backgroundColor:'black',
+          backgroundColor: 'black',
           borderWidth: 1,
           borderColor: 'white'
         }]}
@@ -109,9 +109,8 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
         <View style={styles.accountContent}>
           <FastImage
             source={{
-              uri: `${normalizedBase}/FileUpload/1/UserMaster/${
-                item?.user?.id
-              }/profileimage.jpeg?ts=${new Date().getTime()}`,
+              uri: `${normalizedBase}/FileUpload/1/UserMaster/${item?.user?.id
+                }/profileimage.jpeg?ts=${new Date().getTime()}`,
               priority: FastImage.priority.normal,
               cache: FastImage.cacheControl.web,
             }}
@@ -120,12 +119,12 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
 
           <View style={styles.accountInfo}>
             <Text style={[styles.accountName, isActive && styles.activeText, theme === 'dark' && {
-              color:'white'
+              color: 'white'
             }]}>
               {item?.user?.name.charAt(0).toUpperCase() + item?.user?.name.slice(1)}
             </Text>
-            <Text numberOfLines={1} style={[styles.accountEmail, isActive && styles.activeText,  theme === 'dark' && {
-              color:'white'
+            <Text numberOfLines={1} style={[styles.accountEmail, isActive && styles.activeText, theme === 'dark' && {
+              color: 'white'
             }]}>
               {item?.user?.companyName}
             </Text>
@@ -147,7 +146,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
                   alignItems: 'center',
                 }}
               >
-                <MaterialIcons name={'date-range'} color={theme === 'dark' ?  'white': ERP_COLOR_CODE.ERP_BLACK} size={18} />
+                <MaterialIcons name={'date-range'} color={theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK} size={18} />
                 <Text style={styles.lastLogin}> {lastLogin}</Text>
               </View>
 
@@ -159,7 +158,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
                   alignItems: 'center',
                 }}
               >
-                <MaterialIcons name={'access-alarm'} color={theme === 'dark' ?  'white': ERP_COLOR_CODE.ERP_BLACK} size={18} />
+                <MaterialIcons name={'access-alarm'} color={theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK} size={18} />
                 <Text style={styles.lastLogin}>{lastLoginHr}</Text>
               </View>
             </View>
@@ -177,7 +176,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
         {!isActive && accounts?.length > 1 && (
           <TouchableOpacity style={styles.removeButton} onPress={() => handleRemoveAccount(item)}>
             <Text style={[styles.removeButtonText, theme === 'dark' && {
-              color:'black'
+              color: 'black'
             }]}>✕</Text>
           </TouchableOpacity>
         )}
@@ -196,8 +195,8 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
         backgroundColor: 'black'
       }]}>
         <View style={[styles.header, theme === 'dark' && {
-          backgroundColor : 'black'
-        } ]}>
+          backgroundColor: 'black'
+        }]}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Image source={ERP_ICON.BACK} style={styles.back} />
           </TouchableOpacity>
@@ -213,14 +212,14 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
         />
 
         <TouchableOpacity style={[styles.addAccountButton, theme === 'dark' && {
-          backgroundColor:'white',
-          
+          backgroundColor: 'white',
+
         }]} onPress={onAddAccount}>
-           <MaterialIcons
-                                      name="person-add-alt"
-                                      size={24}
-                                      color={theme === 'dark' ? 'black': 'white'}
-                                    />
+          <MaterialIcons
+            name="person-add-alt"
+            size={24}
+            color={theme === 'dark' ? 'black' : 'white'}
+          />
           <Text style={[styles.addAccountText, theme === 'dark' && {
             color: 'black'
           }]}>Add account</Text>

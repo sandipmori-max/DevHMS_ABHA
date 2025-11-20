@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -70,7 +70,7 @@ const SwipeableRow = ({ children, onDelete, id }) => {
       onLayout={(e) => (rowWidth.current = e.nativeEvent.layout.width)}
       style={{ backgroundColor: ERP_COLOR_CODE.ERP_WHITE }}
     >
-      
+
 
       <Animated.View
         {...panResponder.panHandlers}
@@ -98,11 +98,15 @@ const ReadableView = ({
   isFromAlertCard,
   handleDeleteNotification
 }: any) => {
+  console.log("filteredData", filteredData.length);
   const navigation = useNavigation();
   const screenWidth = Dimensions.get('window').width;
   const [listData, setListData] = useState(filteredData || []);
   const theme = useAppSelector(state => state?.theme?.mode);
 
+  useEffect(() =>{
+    setListData(filteredData)
+  },[filteredData])
   const handleDelete = (item) => {
     console.log("id", item);
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -135,23 +139,23 @@ const ReadableView = ({
     const address = item?.address;
     const amount = item?.amount;
     const btnKeys = Object.keys(item).filter((key) => key.startsWith('btn_'));
-    const baseUrl = item?.image && item?.image?.replace(/^https:\/\\//i, 'http://');
+    const baseUrl = item?.image && item?.image?.replace(/^https:\/\\/ / i, 'http://');
     const authUser = item?.authuser;
     const qty = item?.qty;
 
-   const avatarLetter =
-    typeof name === "string" && name.trim() !== ""
-    ? name
-        .trim()
-        .split(" ")
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((w) => w.charAt(0).toUpperCase())
-        .join("")
-    : (name || "")
-        .toString()
-        .substring(0, 2)
-        .toUpperCase();
+    const avatarLetter =
+      typeof name === "string" && name.trim() !== ""
+        ? name
+          .trim()
+          .split(" ")
+          .filter(Boolean)
+          .slice(0, 2)
+          .map((w) => w.charAt(0).toUpperCase())
+          .join("")
+        : (name || "")
+          .toString()
+          .substring(0, 2)
+          .toUpperCase();
 
 
     const card = (
@@ -170,8 +174,9 @@ const ReadableView = ({
         {/* main touchable */}
         <TouchableOpacity
           activeOpacity={0.8}
-          style={{ flexDirection: 'row', alignItems: 'center', 
-           }}
+          style={{
+            flexDirection: 'row', alignItems: 'center',
+          }}
           onPress={async () => {
             if (authUser) return;
             if (item?.id !== undefined) {
@@ -187,43 +192,43 @@ const ReadableView = ({
             }
           }}
         >
-           <View
+          <View
             style={{
               width: 34,
               height: 34,
               borderRadius: 34,
-              backgroundColor:  ERP_COLOR_CODE.ERP_APP_COLOR,
+              backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
               justifyContent: 'center',
               alignItems: 'center',
               marginRight: 12,
               borderWidth: 1,
-              borderColor: theme === 'dark'  ? 'white' : 'black'
+              borderColor: theme === 'dark' ? 'white' : 'black'
             }}
           >
             {
               isFromAlertCard ? <>
-              <MaterialIcons name='notifications' size={24} color={ERP_COLOR_CODE.ERP_WHITE} />
+                <MaterialIcons name='notifications' size={24} color={ERP_COLOR_CODE.ERP_WHITE} />
               </> : <>{item?.image && item?.image !== '' ? (
-              <Image source={{ uri: baseUrl }} style={styles.profileImage} />
-            ) : (
-              <Text
-                style={{
-                  color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_WHITE,
-                  fontWeight: '400',
-                  fontSize: 16,
-                }}
-              >
-                {avatarLetter}
-              </Text>
-            )}</>
+                <Image source={{ uri: baseUrl }} style={styles.profileImage} />
+              ) : (
+                <Text
+                  style={{
+                    color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_WHITE,
+                    fontWeight: '400',
+                    fontSize: 16,
+                  }}
+                >
+                  {avatarLetter}
+                </Text>
+              )}</>
             }
           </View>
 
           <View style={{ flex: 1 }}>
-            <Text style={{ fontWeight: '700' , color: theme === 'dark' ? 'white' : 'black' }} numberOfLines={1}>
+            <Text style={{ fontWeight: '700', color: theme === 'dark' ? 'white' : 'black' }} numberOfLines={1}>
               {name}
             </Text>
-            <Text style={{ fontSize: 12 , color: theme === 'dark' ? 'white' : 'black'}} numberOfLines={1}>
+            <Text style={{ fontSize: 12, color: theme === 'dark' ? 'white' : 'black' }} numberOfLines={1}>
               {subName}
             </Text>
           </View>
@@ -235,24 +240,25 @@ const ReadableView = ({
               justifyContent: 'flex-end',
             }}
           >
-             {
-              isFromAlertCard && <View style={{height: 12, width: 12, backgroundColor:'green',
+            {
+              isFromAlertCard && <View style={{
+                height: 12, width: 12, backgroundColor: 'green',
                 borderRadius: 12,
                 marginBottom: 4
               }}> </View>
             }
             {
-              status &&  <Text
-              style={{
-                fontWeight: '600',
-                fontSize: 12,
-                color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK,
-              }}
-            >
-              {status}
-            </Text>
+              status && <Text
+                style={{
+                  fontWeight: '600',
+                  fontSize: 12,
+                  color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK,
+                }}
+              >
+                {status}
+              </Text>
             }
-           
+
             {!!date && (
               <Text
                 style={{
@@ -260,7 +266,7 @@ const ReadableView = ({
                   fontSize: 12,
                   color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK,
                 }}
-              > 
+              >
                 {formatDateToDDMMMYYYY(date) || date}
               </Text>
             )}
@@ -291,7 +297,7 @@ const ReadableView = ({
               >
                 <View style={{ width: amount ? '70%' : '100%' }}>
                   {!!remarks && (
-                     <RemarksView remarks={remarks} />
+                    <RemarksView remarks={remarks} />
                   )}
                 </View>
                 <View style={{ width: '30%', alignItems: 'flex-end' }}>
@@ -335,63 +341,66 @@ const ReadableView = ({
         </TouchableOpacity>
         {
           qty && amount && <View style={{
-            justifyContent:'space-between',
-            width: '100%', flexDirection:'row' }}>
-                  {!!qty && (
-                    <View style={{flexDirection:'row', width: '50%'}}>
-                      <Text
-                      numberOfLines={1}
-                      style={{
-                        textAlign: 'right',
-                        fontSize: 14,
-                        fontWeight: '700', 
-                        color: theme === 'dark' ? 'white' : 'black'
+            justifyContent: 'space-between',
+            width: '100%', flexDirection: 'row'
+          }}>
+            {!!qty && (
+              <View style={{ flexDirection: 'row', width: '50%' }}>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    textAlign: 'right',
+                    fontSize: 14,
+                    fontWeight: '700',
+                    color: theme === 'dark' ? 'white' : 'black'
 
-                      }}
-                    >
-                    Qty:  
-                    </Text>
-                    <Text
-                      numberOfLines={1}
-                      style={{
-                        textAlign: 'right',
-                        fontSize: 14,
-                        fontWeight: '700',
-                        color: '#07581dff',
-                      }}
-                    >  {qty}
-                    </Text>
-                      </View>
-                  )}
-                   {!!amount && (
-                    <View style={{flexDirection:'row',
-                    justifyContent:'flex-end',
-                    width: '50%',}}>
-                      <Text
-                      numberOfLines={1}
-                      style={{
-                        textAlign: 'right',
-                        fontSize: 14,
-                        fontWeight: '700', 
-                        color: theme === 'dark' ? 'white' : 'black'
+                  }}
+                >
+                  Qty:
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    textAlign: 'right',
+                    fontSize: 14,
+                    fontWeight: '700',
+                    color: '#07581dff',
+                  }}
+                >  {qty}
+                </Text>
+              </View>
+            )}
+            {!!amount && (
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+                width: '50%',
+              }}>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    textAlign: 'right',
+                    fontSize: 14,
+                    fontWeight: '700',
+                    color: theme === 'dark' ? 'white' : 'black'
 
-                      }}
-                    >
-                    Amt:  
-                    </Text>
-                    <Text
-                      numberOfLines={1}
-                      style={{
-                        textAlign: 'right',
-                        fontSize: 14,
-                        fontWeight: '700',
-                        color: 'green',
-                      }}
-                    >  {amount }
-                    </Text>
-                      </View>
-                  )}
-                </View>
+                  }}
+                >
+                  Amt:
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    textAlign: 'right',
+                    fontSize: 14,
+                    fontWeight: '700',
+                    color: 'green',
+                  }}
+                >  {amount}
+                </Text>
+              </View>
+            )}
+          </View>
         }
 
         <View>
@@ -403,7 +412,7 @@ const ReadableView = ({
             {btnKeys?.map((key, idx) => {
               const actionValue = item[key];
               const { label, color } = getButtonMeta(key);
-              console.log("label----------",label)
+              console.log("label----------", label)
               return (
                 <TouchableOpacity
                   key={`${key}-${idx}`}
@@ -446,18 +455,18 @@ const ReadableView = ({
 
     return (
       <>
-      {
-        isFromAlertCard ? <SwipeableRow id={index} onDelete={() => handleDelete(item)}>
- 
-        {card}
-      </SwipeableRow> : 
-      <>
-       {card} 
+        {
+          isFromAlertCard ? <SwipeableRow id={index} onDelete={() => handleDelete(item)}>
 
+            {card}
+          </SwipeableRow> :
+            <>
+              {card}
+
+            </>
+        }
       </>
-      }
-      </>
-      
+
     );
   };
 
@@ -468,7 +477,7 @@ const ReadableView = ({
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: theme === 'dark' ?  'black' : ERP_COLOR_CODE.ERP_WHITE,
+          backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
         }}
       >
         <NoData />
@@ -477,7 +486,7 @@ const ReadableView = ({
   }
 
   return (
-    <View style={{ flex: 1, marginTop: 0,}}>
+    <View style={{ flex: 1, marginTop: 0, }}>
       <FlatList
         keyExtractor={(_, index) => index.toString()}
         data={listData}
@@ -486,7 +495,7 @@ const ReadableView = ({
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         ListFooterComponent={() => (
-          <View style={{ height: 80 }} /> 
+          <View style={{ height: 80 }} />
         )}
       />
 
@@ -510,12 +519,11 @@ const ReadableView = ({
             }}
           >
             {totalQty && (
-              <View style={{ flexDirection: 'row' , width: '40%'}}>
+              <View style={{ flexDirection: 'row', width: '50%' }}>
                 <Text
                   style={{
                     fontSize: 14,
                     fontWeight: '700',
-                          flexShrink: 1,
 
                     color: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_333,
                   }}
@@ -524,7 +532,6 @@ const ReadableView = ({
                 </Text>
                 <Text
                   style={{
-                    flexShrink: 1,
                     fontSize: 16,
                     fontWeight: 'bold',
                     color: '#28a745',
@@ -537,15 +544,16 @@ const ReadableView = ({
             )}
 
             {totalAmount && (
-              <View style={{ 
-                
-                flexDirection: 'row', width: '40%' }}>
+              <View style={{
+
+                flexDirection: 'row', width: '50%'
+              }}>
                 <Text
                   style={{
                     fontSize: 14,
                     fontWeight: '700',
-                          flexShrink: 1,
-                    color: theme === 'dark' ? 'black' :ERP_COLOR_CODE.ERP_333,
+                    flexShrink: 1,
+                    color: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_333,
                   }}
                 >
                   Amt :-
@@ -556,7 +564,6 @@ const ReadableView = ({
                     fontWeight: 'bold',
                     color: '#28a745',
                     marginLeft: 8,
-                          flexShrink: 1,
 
                   }}
                 >
