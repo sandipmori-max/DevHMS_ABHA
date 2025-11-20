@@ -71,6 +71,43 @@ const ListScreen = () => {
   const isFromAlertCard = item?.isFromAlertCard || false;
   console.log('🚀 ~ ListScreen+++++++++++++++ ~ isFromBusinessCard:', isFromBusinessCard);
 
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(20);  // how many items per page
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  useEffect(() => {
+    if (!filteredData) return;
+    setPage(1);
+    setHasMore(true);
+
+    const firstPage = filteredData.slice(0, pageSize);
+    setListData(firstPage);
+  }, [filteredData]);
+
+  const loadMore = () => {
+  if (isLoadingMore || !hasMore) return;
+
+  setIsLoadingMore(true);
+
+  setTimeout(() => {
+    const start = page * pageSize;
+    const end = start + pageSize;
+
+    const newItems = filteredData.slice(start, end);
+
+    if (newItems.length === 0) {
+      setHasMore(false);
+    } else {
+      setListData(prev => [...prev, ...newItems]);
+      setPage(prev => prev + 1);
+    }
+
+    setIsLoadingMore(false);
+  }, 300); // simulate loading delay
+};
+
+
   const totalAmount = filteredData?.reduce((sum, item) => {
     const amount = parseFloat(item?.amount) || 0;
     return sum + amount;
@@ -127,8 +164,6 @@ const ListScreen = () => {
               }}
             />
           } */}
-
-
           <ERPIcon
             name={!hasDateField ? 'search' : isFilterVisible ? 'filter-alt' : 'filter-alt'}
             onPress={() => {
@@ -348,25 +383,25 @@ const ListScreen = () => {
   };
 
   const handleActionButtonPressed = (actionValue, label, color, id, item) => {
-    navigation.navigate('Page', {
-      item,
-      id: item?.id,
-      title: pageName,
-      isFromNew: true,
-      url: 'FASConfirmationMst',
-      pageTitle: pageTitle,
-      isFromBusinessCard: false,
-    });
-
-    // setAlertConfig({
-    //   title: label,
-    //   message: `Are you sure you want to ${label.toLowerCase()} ?`,
-    //   type: 'info',
-    //   actionValue: actionValue,
-    //   color: color,
-    //   id: id,
+    // navigation.navigate('Page', {
+    //   item,
+    //   id: item?.id,
+    //   title: pageName,
+    //   isFromNew: true,
+    //   url: 'FASConfirmationMst',
+    //   pageTitle: pageTitle,
+    //   isFromBusinessCard: false,
     // });
-    // setAlertVisible(true);
+
+    setAlertConfig({
+      title: label,
+      message: `Are you sure you want to ${label.toLowerCase()} ?`,
+      type: 'info',
+      actionValue: actionValue,
+      color: color,
+      id: id,
+    });
+    setAlertVisible(true);
 
   };
 
@@ -518,6 +553,8 @@ const ListScreen = () => {
                     setIsFilterVisible={setIsFilterVisible}
                     setSearchQuery={setSearchQuery}
                     handleActionButtonPressed={handleActionButtonPressed}
+                    isLoadingMore={isLoadingMore}
+                    loadMore={loadMore}
                   />
                 </>
               )}
@@ -526,7 +563,7 @@ const ListScreen = () => {
         </>
       )}
 
-      {!isFromAlertCard && !loadingListId && configData && (
+      {hasIdField && !isFromAlertCard && !loadingListId && configData && (
         <TouchableOpacity
           style={[
             styles.addButton,
@@ -556,13 +593,9 @@ const ListScreen = () => {
         isBottomButtonVisible={true}
         doneText={alertConfig.title}
         color={alertConfig.color}
-        onDone={async remark => {
-          console.log('🚀 ~ remark:', remark);
-          console.log('🚀 ~ alertConfig:', alertConfig);
-
+        onDone={async remark => { 
           try {
             const type = `page${alertConfig.title}`;
-            console.log('🚀 ~ type:', type);
             await dispatch(
               handlePageActionThunk({
                 action: type,

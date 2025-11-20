@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
   profileImage: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: 10,
     marginBottom: 10,
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
     borderWidth: 2,

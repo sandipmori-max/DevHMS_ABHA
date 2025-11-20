@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { DrawerContentComponentProps, DrawerContentScrollView } from '@react-navigation/drawer';
 import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
@@ -12,6 +12,7 @@ import { styles } from './drawer_style';
 import { useBaseLink } from '../../hooks/useBaseLink';
 import { DARK_COLOR, ERP_COLOR_CODE } from '../../utils/constants';
 import ContactRow from './ContactRow';
+import { ERP_ICON } from '../../assets';
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
   const navigation = useNavigation();
@@ -42,12 +43,12 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
             }}
             style={styles.profileImage}
           />
-          <View style={{ height: 25, width: 100 }} />
+          <View style={{ height: 28, width: 100 }} />
           <Text style={[styles.username, { top: 8, color:'#FFF' }]}>
             {firstLetterUpperCase(user?.name || '')}
           </Text>
-          <View style={{ height: 2, width: 100 }} />
-          <View style={{ top: 18, width: '100%', marginVertical: 8 }}>
+          <View style={{ height: 8, width: 100 }} />
+          <View style={{ top: 4, width: '100%', marginVertical: 1 }}>
             {/* Phone */}
             {user?.mobileno && (
               <View
@@ -66,7 +67,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
                   alignItems: 'center',
                   borderRadius: 8,
                   padding: 6,
-                  marginVertical: 4,
+                  marginVertical: 2,
                 }}
               >
                 <MaterialIcons name={'mail-outline'} color={'white'} size={14} />
@@ -84,7 +85,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
                   alignItems: 'center',
                   borderRadius: 8,
                   padding: 6,
-                  marginBottom: 12,
+                  marginBottom: 2,
                 }}
               >
                 <MaterialIcons name={'person'} color={'white'} size={14} />
@@ -170,6 +171,20 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
         </ScrollView>
 
         {/* Footer - stays fixed at bottom */}
+        <View style={{
+          width:'100%',
+          justifyContent:'center',
+          alignContent:'center',
+          alignItems:'center',
+          marginBottom: 10
+        }}>
+                <Image source={ERP_ICON.APP_LOGO} style={{
+                  height: 40,
+                  width: 40,
+                  
+                }} resizeMode="contain" />
+          
+        </View>
         <View style={styles.logoutButton}>
           <Text style={[styles.logoutText,
             theme === 'dark' && {

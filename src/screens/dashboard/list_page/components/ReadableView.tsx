@@ -96,7 +96,9 @@ const ReadableView = ({
   totalQty,
   isFromBusinessCard,
   isFromAlertCard,
-  handleDeleteNotification
+  handleDeleteNotification,
+  loadMore,
+  isLoadingMore
 }: any) => {
   console.log("filteredData", filteredData.length);
   const navigation = useNavigation();
@@ -123,7 +125,7 @@ const ReadableView = ({
     );
     return {
       label: configItem?.headertext || 'Action',
-      color: configItem?.colorcode || ERP_COLOR_CODE.ERP_COLOR,
+      color: configItem?.colorcode || ERP_COLOR_CODE.ERP_APP_COLOR,
     };
   };
 
@@ -174,9 +176,15 @@ const ReadableView = ({
         {/* main touchable */}
         <TouchableOpacity
           activeOpacity={0.8}
-          style={{
-            flexDirection: 'row', alignItems: 'center',
-          }}
+          style={[
+            {
+            flexDirection: 'row', 
+          },
+          status && {
+            alignItems: 'center',
+
+          }
+          ]}
           onPress={async () => {
             if (authUser) return;
             if (item?.id !== undefined) {
@@ -234,11 +242,11 @@ const ReadableView = ({
           </View>
 
           <View
-            style={{
+            style={[status && {
               alignSelf: 'flex-end',
               alignItems: 'flex-end',
               justifyContent: 'flex-end',
-            }}
+            }]}
           >
             {
               isFromAlertCard && <View style={{
@@ -252,7 +260,9 @@ const ReadableView = ({
                 style={{
                   fontWeight: '600',
                   fontSize: 12,
-                  color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK,
+                  width:'70%',
+                  textAlign:'right',
+                  color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_ERROR,
                 }}
               >
                 {status}
@@ -324,6 +334,7 @@ const ReadableView = ({
                     gap: 4,
                     marginVertical: 4,
                     marginBottom: 8,
+                    width: '98%'
                   }}
                 >
                   <MaterialIcons
@@ -331,7 +342,10 @@ const ReadableView = ({
                     size={16}
                     color={theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_APP_COLOR}
                   />
-                  <Text style={{
+                  <Text 
+                  numberOfLines={2}
+                  style={{
+                     width: '96%',
                     color: theme === 'dark' ? 'white' : 'black'
                   }}>{address}</Text>
                 </View>
@@ -422,7 +436,7 @@ const ReadableView = ({
                     paddingVertical: 4,
                     borderRadius: 4,
                     flexGrow: 1,
-                    maxWidth: (screenWidth - 64) / 2,
+                    maxWidth: (screenWidth ) / 6,
                     alignItems: 'center',
                   }}
                   onPress={() => {
@@ -494,9 +508,17 @@ const ReadableView = ({
         renderItem={({ item, index }) => <RenderCard item={item} index={index} />}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-        ListFooterComponent={() => (
-          <View style={{ height: 80 }} />
-        )}
+         
+         onEndReached={loadMore}
+          onEndReachedThreshold={0.2} // trigger when 80% scrolled
+
+          ListFooterComponent={
+            isLoadingMore ? (
+              <View style={{ padding: 20 }}>
+                <Text style={{ textAlign: 'center', color: 'gray' }}>Loading more…</Text>
+              </View>
+            ) : null
+          }
       />
 
       {listData?.length > 0 && (

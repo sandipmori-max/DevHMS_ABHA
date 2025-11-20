@@ -153,9 +153,7 @@ const HomeScreen = () => {
         <>
           {!showSearch && (
             <>
-              {dashboard.length > 5 && (
-                <ERPIcon name="search" onPress={() => setShowSearch(true)} />
-              )}
+             
               
               <ERPIcon
                 name="refresh"
@@ -169,6 +167,9 @@ const HomeScreen = () => {
                 }}
                 isLoading={actionLoader}
               />
+               {dashboard.length > 5 && (
+                <ERPIcon name="search" onPress={() => setShowSearch(true)} />
+              )}
               <ERPIcon
                 name={!isHorizontal ? 'list' : 'apps'}
                 onPress={() => setIsHorizontal(prev => !prev)}

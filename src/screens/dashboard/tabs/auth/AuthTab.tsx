@@ -136,11 +136,13 @@ const AuthTab = () => {
         <>
           {!showSearch && (
             <>
+              <ERPIcon name="refresh" onPress={() => setIsRefresh(!isRefresh)} />
+
               {allList.length > 5 && <ERPIcon name="search" onPress={() => setShowSearch(true)} />}
 
-              <ERPIcon name="refresh" onPress={() => setIsRefresh(!isRefresh)} />
+
              <ERPIcon
-                name={!isHorizontal ? 'dashboard' : 'list'}
+                name={isHorizontal ? 'dashboard' : 'list'}
                 onPress={() => setIsHorizontal(prev => !prev)}
               />
               <ERPIcon

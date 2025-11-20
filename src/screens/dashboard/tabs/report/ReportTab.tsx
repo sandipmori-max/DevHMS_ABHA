@@ -135,20 +135,23 @@ const [toast, setToast] = useState<{ visible: boolean; message: string }>({
         ),
       headerRight: () => (
         <>
+
           {allList.length > 5 && !showSearch && (
             <ERPIcon name="search" onPress={() => setShowSearch(true)} />
           )}
           {!showSearch && (
             <>
               <ERPIcon name="refresh" onPress={() => setIsRefresh(!isRefresh)} />
+
               <ERPIcon
-                name={!isHorizontal ? 'dashboard' : 'list'}
+                name={isHorizontal ? 'dashboard' : 'list'}
                 onPress={() => setIsHorizontal(prev => !prev)}
               />
               <ERPIcon
                 name={!showBookmarksOnly ? 'bookmark-outline' : 'bookmark'}
                 onPress={() => setShowBookmarksOnly(prev => !prev)}
               />
+
             </>
           )}
         </>
