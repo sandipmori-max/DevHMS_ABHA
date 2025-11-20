@@ -147,8 +147,7 @@ const BusinessCardView = ({ setValue, controls, item, baseLink, infoData }: any)
       setImageUri(uri);
     }
   };
-
-
+ 
   useEffect(() => {
     (async () => {
       if (!imageUri) return;
@@ -156,9 +155,7 @@ const BusinessCardView = ({ setValue, controls, item, baseLink, infoData }: any)
       try {
         const result = await TextRecognition.recognize(imageUri);
         const joined = result.blocks.map(b => b.text).join('\n');
-        console.log('📷 OCR Raw Text:', joined);
         const parsed = parseCard(joined);
-        console.log('📇 Final Parsed Result:', parsed);
         setValue(parsed);
       } catch (err) {
         console.error('❌ OCR error:', err);
@@ -168,9 +165,10 @@ const BusinessCardView = ({ setValue, controls, item, baseLink, infoData }: any)
     })();
   }, [imageUri]);
 
-
   // 🧠 Ultra Pro-Max OCR Algorithm
   const parseCard = (text: string): any => {
+
+    console.log("text -----------------------  ", text)
     // Normalize text
     let cleanText = text
       .replace(/[\u2018\u2019]/g, "'")
@@ -361,7 +359,7 @@ if (addrStart !== -1) {
     }
 
 
-    console.log('✅ Parsed OCR Result:', result);
+    // console.log('✅ Parsed OCR Result:', result);
     setValue(result);
     return result;
   };

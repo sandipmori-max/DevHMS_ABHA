@@ -412,7 +412,11 @@ useLayoutEffect(() => {
         }}
       >
         <View style={languageStyles.modalOverlay}>
-          <View style={languageStyles.modalContent}>
+          <View style={[languageStyles.modalContent, theme === 'dark' && {
+            backgroundColor:'black',
+            borderWidth: 1,
+            borderColor: 'white'
+          }]}>
             <View style={languageStyles.modalHeader}>
               <Text style={languageStyles.modalTitle}>{t('language.selectLanguage')}</Text>
               <TouchableOpacity

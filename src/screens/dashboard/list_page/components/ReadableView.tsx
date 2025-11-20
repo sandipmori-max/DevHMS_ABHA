@@ -111,6 +111,7 @@ const ReadableView = ({
   };
 
   const getButtonMeta = (key: string) => {
+    console.log("keykeykeykeykeykey", key, configData)
     if (!key || !configData?.length)
       return { label: 'Action', color: ERP_COLOR_CODE.ERP_COLOR };
     const configItem = configData.find(
@@ -245,7 +246,7 @@ const ReadableView = ({
               style={{
                 fontWeight: '600',
                 fontSize: 12,
-                color: ERP_COLOR_CODE.ERP_BLACK,
+                color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK,
               }}
             >
               {status}
@@ -257,7 +258,7 @@ const ReadableView = ({
                 style={{
                   fontWeight: '800',
                   fontSize: 12,
-                  color: ERP_COLOR_CODE.ERP_BLACK,
+                  color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK,
                 }}
               > 
                 {formatDateToDDMMMYYYY(date) || date}
@@ -322,9 +323,11 @@ const ReadableView = ({
                   <MaterialIcons
                     name="info-outline"
                     size={16}
-                    color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                    color={theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_APP_COLOR}
                   />
-                  <Text>{address}</Text>
+                  <Text style={{
+                    color: theme === 'dark' ? 'white' : 'black'
+                  }}>{address}</Text>
                 </View>
               )}
             </View>
@@ -342,6 +345,8 @@ const ReadableView = ({
                         textAlign: 'right',
                         fontSize: 14,
                         fontWeight: '700', 
+                        color: theme === 'dark' ? 'white' : 'black'
+
                       }}
                     >
                     Qty:  
@@ -368,6 +373,8 @@ const ReadableView = ({
                         textAlign: 'right',
                         fontSize: 14,
                         fontWeight: '700', 
+                        color: theme === 'dark' ? 'white' : 'black'
+
                       }}
                     >
                     Amt:  
@@ -380,7 +387,7 @@ const ReadableView = ({
                         fontWeight: '700',
                         color: 'green',
                       }}
-                    >  {amount}
+                    >  {amount }
                     </Text>
                       </View>
                   )}
@@ -396,6 +403,7 @@ const ReadableView = ({
             {btnKeys?.map((key, idx) => {
               const actionValue = item[key];
               const { label, color } = getButtonMeta(key);
+              console.log("label----------",label)
               return (
                 <TouchableOpacity
                   key={`${key}-${idx}`}
@@ -414,7 +422,8 @@ const ReadableView = ({
                       actionValue,
                       label,
                       color,
-                      item?.id
+                      item?.id,
+                      item
                     );
                   }}
                 >
@@ -501,18 +510,21 @@ const ReadableView = ({
             }}
           >
             {totalQty && (
-              <View style={{ flexDirection: 'row' }}>
+              <View style={{ flexDirection: 'row' , width: '40%'}}>
                 <Text
                   style={{
                     fontSize: 14,
                     fontWeight: '700',
+                          flexShrink: 1,
+
                     color: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_333,
                   }}
                 >
-                  Quantity :-
+                  Qty :-
                 </Text>
                 <Text
                   style={{
+                    flexShrink: 1,
                     fontSize: 16,
                     fontWeight: 'bold',
                     color: '#28a745',
@@ -525,15 +537,18 @@ const ReadableView = ({
             )}
 
             {totalAmount && (
-              <View style={{ flexDirection: 'row' }}>
+              <View style={{ 
+                
+                flexDirection: 'row', width: '40%' }}>
                 <Text
                   style={{
                     fontSize: 14,
                     fontWeight: '700',
+                          flexShrink: 1,
                     color: theme === 'dark' ? 'black' :ERP_COLOR_CODE.ERP_333,
                   }}
                 >
-                  Amount :-
+                  Amt :-
                 </Text>
                 <Text
                   style={{
@@ -541,6 +556,8 @@ const ReadableView = ({
                     fontWeight: 'bold',
                     color: '#28a745',
                     marginLeft: 8,
+                          flexShrink: 1,
+
                   }}
                 >
                   ₹ {totalAmount?.toFixed(2)}

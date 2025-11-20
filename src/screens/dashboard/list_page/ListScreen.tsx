@@ -345,7 +345,17 @@ const ListScreen = () => {
     });
   };
 
-  const handleActionButtonPressed = (actionValue, label, color, id) => {
+  const handleActionButtonPressed = (actionValue, label, color, id, item) => {
+    // navigation.navigate('Page', {
+    //   item,
+    //   id: item?.id,
+    //   title: pageName,
+    //   isFromNew: true,
+    //   url: 'FASConfirmationMst',
+    //   pageTitle: pageTitle,
+    //   isFromBusinessCard: false,
+    // });
+    
     setAlertConfig({
       title: label,
       message: `Are you sure you want to ${label.toLowerCase()} ?`,
@@ -355,10 +365,10 @@ const ListScreen = () => {
       id: id,
     });
     setAlertVisible(true);
+    
   };
 
   const handleDeleteNotification = async (item: any) => {
-            console.log("i---------++++++---------d", item);
             await dispatch(
               handleDeleteActionThunk({
                 id: item.id.toString(),
