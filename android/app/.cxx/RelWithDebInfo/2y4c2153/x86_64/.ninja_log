@@ -244,3 +244,5 @@
 29041	37081	1762518269151382150	rnsvg_autolinked_build/CMakeFiles/react_codegen_rnsvg.dir/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-svg/android/build/generated/source/codegen/jni/react/renderer/components/rnsvg/Props.cpp.o	d1cced57857e08a0
 37081	37137	1762518269217056532	/Users/deverp/Desktop/SandipMori/DevERP/android/app/build/intermediates/cxx/RelWithDebInfo/2y4c2153/obj/x86_64/libreact_codegen_rnsvg.so	93e0e31a3d863fd7
 37137	37269	1762518269319617073	/Users/deverp/Desktop/SandipMori/DevERP/android/app/build/intermediates/cxx/RelWithDebInfo/2y4c2153/obj/x86_64/libappmodules.so	a057d7a787e43597
+1	16	0	/Users/deverp/Desktop/SandipMori/DevERP/android/app/.cxx/RelWithDebInfo/2y4c2153/x86_64/CMakeFiles/cmake.verify_globs	691204f5cd086e9f
+0	19	0	clean	32408108b4ce60a5

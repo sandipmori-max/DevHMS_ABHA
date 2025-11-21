@@ -141,7 +141,7 @@ const ReadableView = ({
     const address = item?.address;
     const amount = item?.amount;
     const btnKeys = Object.keys(item).filter((key) => key.startsWith('btn_'));
-    const baseUrl = item?.image && item?.image?.replace(/^https:\/\\/ / i, 'http://');
+    const baseUrl = item?.image && item?.image?.replace(/^https:\/\\/, 'http://');
     const authUser = item?.authuser;
     const qty = item?.qty;
 
@@ -260,7 +260,7 @@ const ReadableView = ({
                 style={{
                   fontWeight: '600',
                   fontSize: 12,
-                  width:'70%',
+                  width:'100%',
                   textAlign:'right',
                   color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_ERROR,
                 }}
@@ -298,7 +298,7 @@ const ReadableView = ({
           }}
         >
           {(remarks || address || amount) && (
-            <View style={{ marginTop: 6 }}>
+            <View style={{ marginTop: 2 }}>
               <View
                 style={{
                   flexDirection: 'row',
@@ -332,7 +332,6 @@ const ReadableView = ({
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: 4,
-                    marginVertical: 4,
                     marginBottom: 8,
                     width: '98%'
                   }}
@@ -422,7 +421,7 @@ const ReadableView = ({
         </View>
 
         {btnKeys?.length > 0 && (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 6, gap: 1 }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 0, gap: 1 }}>
             {btnKeys?.map((key, idx) => {
               const actionValue = item[key];
               const { label, color } = getButtonMeta(key);

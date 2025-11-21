@@ -383,26 +383,31 @@ const ListScreen = () => {
   };
 
   const handleActionButtonPressed = (actionValue, label, color, id, item) => {
-    // navigation.navigate('Page', {
-    //   item,
-    //   id: item?.id,
-    //   title: pageName,
-    //   isFromNew: true,
-    //   url: 'FASConfirmationMst',
-    //   pageTitle: pageTitle,
-    //   isFromBusinessCard: false,
-    // });
-
-    setAlertConfig({
-      title: label,
-      message: `Are you sure you want to ${label.toLowerCase()} ?`,
-      type: 'info',
-      actionValue: actionValue,
-      color: color,
-      id: id,
-    });
-    setAlertVisible(true);
-
+ 
+    
+    if(item?.btn_edit && item?.btn_edit?.includes("/")){
+      const left = item?.btn_edit.substring(0, item?.btn_edit.indexOf('/'));
+      const result = item?.btn_edit.split('/')[1];
+      navigation.navigate('Page', {
+        item,
+        id:  result,
+        title: pageName,
+        isFromNew: true,
+        url: left,
+        pageTitle: pageTitle,
+        isFromBusinessCard: false,
+      });
+    }else{
+      setAlertConfig({
+        title: label,
+        message: `Are you sure you want to ${label.toLowerCase()} ?`,
+        type: 'info',
+        actionValue: actionValue,
+        color: color,
+        id: id,
+      });
+      setAlertVisible(true);
+    }
   };
 
   const handleDeleteNotification = async (item: any) => {
