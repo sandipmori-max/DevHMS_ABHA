@@ -22,19 +22,19 @@ import NoData from '../../../../components/no_data/NoData';
 import ERPIcon from '../../../../components/icon/ERPIcon';
 import { getERPDashboardThunk, getERPPageThunk } from '../../../../store/slices/auth/thunk';
 import ErrorMessage from '../../../../components/error/Error';
-import {  ERP_COLOR_CODE } from '../../../../utils/constants';
+import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import Footer from './Footer';
 import PieChartSection from './chartData';
 import TaskListScreen from '../../../task_module/task_list/TaskListScreen';
 
- import TaskDetailsBottomSheet from '../../../task_module/task_details/TaskDetailsScreen';
+import TaskDetailsBottomSheet from '../../../task_module/task_details/TaskDetailsScreen';
 import { formatDateForAPI, parseCustomDate } from '../../../../utils/helpers';
- import DateTimePicker from '@react-native-community/datetimepicker';
- import CustomPicker from '../../page/components/CustomPicker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import CustomPicker from '../../page/components/CustomPicker';
 import { setActiveDashboardBranch, setActiveDashboardBranchId, setActiveDashboardFromDate, setActiveDashboardToDate, setActiveDashboardType, setActiveDashboardTypeId } from '../../../../store/slices/auth/authSlice';
 
- const { width } = Dimensions.get('screen');
+const { width } = Dimensions.get('screen');
 
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== 'string') return false;
@@ -46,6 +46,8 @@ const HomeScreen = () => {
   const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
   const [controls, setControls] = useState<any[]>([]);
+  const [controlsLoader, setControlsLoader] = useState<any>(false);
+
 
   const { dashboard, isDashboardLoading, isAuthenticated, error, user } = useAppSelector(
     state => state.auth,
@@ -58,9 +60,9 @@ const HomeScreen = () => {
   const auth = useAppSelector(state => state?.auth);
   console.log("auth---------------", auth)
   const [showDatePicker, setShowDatePicker] = useState<null | {
-      type: 'from' | 'to';
-      show: boolean;
-    }>(null);
+    type: 'from' | 'to';
+    show: boolean;
+  }>(null);
 
   const [visible, setVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -111,10 +113,10 @@ const HomeScreen = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-    headerStyle: {
-      backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
-    },
-    headerTintColor: '#fff',  
+      headerStyle: {
+        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+      },
+      headerTintColor: '#fff',
       headerTitle: () =>
         showSearch ? (
           <View style={{ width: width - 70, flexDirection: 'row', alignItems: 'center' }}>
@@ -153,21 +155,25 @@ const HomeScreen = () => {
         <>
           {!showSearch && (
             <>
-             
-              
+
+
               <ERPIcon
                 name="refresh"
                 onPress={() => {
+                  setControlsLoader(true);
+
                   setActionLoader(true);
                   setIsRefresh(!isRefresh);
                   dispatch(getERPDashboardThunk());
                   setTimeout(() => {
                     setActionLoader(false);
+                    setControlsLoader(false);
+
                   }, 100);
                 }}
                 isLoading={actionLoader}
               />
-               {dashboard.length > 5 && (
+              {dashboard.length > 5 && (
                 <ERPIcon name="search" onPress={() => setShowSearch(true)} />
               )}
               <ERPIcon
@@ -175,7 +181,7 @@ const HomeScreen = () => {
                 onPress={() => setIsHorizontal(prev => !prev)}
               />
               <ERPIcon
-                name={isFilterVisible ? 'close' :'filter-alt'}
+                name={isFilterVisible ? 'close' : 'filter-alt'}
                 onPress={() => setIsFilterVisible(prev => !prev)}
               />
             </>
@@ -196,10 +202,10 @@ const HomeScreen = () => {
         dispatch(getERPDashboardThunk());
       }
 
-      return () => {};
+      return () => { };
     }, [isAuthenticated, dispatch]),
   );
- const dummyUpcomingEvents = [];
+  const dummyUpcomingEvents = [];
 
   const dummyUpcomingBirthdays = [
     { id: 'b1', name: 'Amit Sharma', date: '28 sep 2025', type: 'Up-coming-Birthday' },
@@ -270,9 +276,9 @@ const HomeScreen = () => {
     }
   }, [visible]);
 
-  
+
   const renderDashboardItem = ({ item, index, isFromHtml, isFromMenu }: any) => {
-     return (
+    return (
       <TouchableOpacity
         key={item?.id || index}
         style={[
@@ -286,8 +292,8 @@ const HomeScreen = () => {
             borderLeftColor: accentColors[index % accentColors.length],
             borderWidth: 1,
             borderLeftWidth: 3,
-            backgroundColor:  theme === 'dark' ?  'black' : 'white'
-            
+            backgroundColor: theme === 'dark' ? 'black' : 'white'
+
           },
         ]}
         activeOpacity={0.7}
@@ -316,7 +322,7 @@ const HomeScreen = () => {
                 >
                   <MaterialIcons name={item?.image || 'widgets'} color={
                     'white'
-                    } size={22} />
+                  } size={22} />
                   {/* <Text style={styles.iconText}>{getInitials(item?.name)}</Text> */}
                 </View>
                 <View style={styles.headerTextWrap}>
@@ -337,8 +343,8 @@ const HomeScreen = () => {
                     {isFromMenu
                       ? item?.title
                       : !isHorizontal
-                      ? item?.title.replace(' ', '\n')
-                      : item?.title}
+                        ? item?.title.replace(' ', '\n')
+                        : item?.title}
                   </Text>
                 </View>
               </View>
@@ -362,7 +368,7 @@ const HomeScreen = () => {
                     footer={item?.data}
                     index={index}
                     accentColors={accentColors}
-                     isFromListPage={undefined}                  />
+                    isFromListPage={undefined} />
                 </View>
               ) : (
                 <View style={styles.dataContainer}>
@@ -381,7 +387,7 @@ const HomeScreen = () => {
                   footer={item?.footer}
                   index={index}
                   accentColors={accentColors}
-                   isFromListPage={undefined}                />
+                  isFromListPage={undefined} />
               </View>
             ) : (
               <Text
@@ -402,33 +408,33 @@ const HomeScreen = () => {
       </TouchableOpacity>
     );
   };
- 
+
   const scrollY = useRef(new Animated.Value(0)).current;
-   const getCurrentMonthRange = useCallback(() => {
-     const now = new Date();
-     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-     const lastDay = new Date();
-     const fromDateStr = formatDateForAPI(firstDay);
-     const toDateStr = formatDateForAPI(lastDay);
-     setFromDate(fromDateStr);
-     setToDate(toDateStr);
-     return { fromDate: fromDateStr, toDate: toDateStr };
-   }, []);
+  const getCurrentMonthRange = useCallback(() => {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDay = new Date();
+    const fromDateStr = formatDateForAPI(firstDay);
+    const toDateStr = formatDateForAPI(lastDay);
+    setFromDate(fromDateStr);
+    setToDate(toDateStr);
+    return { fromDate: fromDateStr, toDate: toDateStr };
+  }, []);
 
-   useEffect(() => {
-      const { fromDate: initialFromDate, toDate: initialToDate } = getCurrentMonthRange();
-      
-    }, [getCurrentMonthRange]);
+  useEffect(() => {
+    const { fromDate: initialFromDate, toDate: initialToDate } = getCurrentMonthRange();
 
- useFocusEffect(
+  }, [getCurrentMonthRange]);
+
+  useFocusEffect(
     useCallback(() => {
       const { fromDate: initialFromDate, toDate: initialToDate } = getCurrentMonthRange();
       // fetchListData(initialFromDate, initialToDate);
-      return () => {};
+      return () => { };
     }, [getCurrentMonthRange,]),
   );
 
- const handleDateChange = (event: any, selectedDate?: Date) => {
+  const handleDateChange = (event: any, selectedDate?: Date) => {
     if (event?.type === 'dismissed' || !selectedDate) {
       setShowDatePicker(null);
       return;
@@ -469,47 +475,49 @@ const HomeScreen = () => {
   };
 
 
-   const fetchPageData = useCallback(async () => {
-      try {
-   
-        const parsed = await dispatch(
-          getERPPageThunk({ page: 'Dashboard', id: "" }),
-        ).unwrap();
-        console.log('🚀 ~ parsed:', parsed);
-  
-        
-  
-        const pageControls = Array.isArray(parsed?.pagectl) ? parsed?.pagectl : [];
-        console.log('🚀 ~ pageControls:', pageControls);
-  
-        const normalizedControls = pageControls?.map(c => ({
-          ...c,
-          disabled: String(c?.disabled ?? '0'),
-          visible: String(c?.visible ?? '1'),
-          mandatory: String(c?.mandatory ?? '0'),
-        }));
-  
-        setControls(normalizedControls);
-  
-        
-      } catch (e: any) {
-        console.log('🚀 ~ e:', e);
-       } finally {
-        setLoadingPageId(null);
-        setTimeout(() => {
-          setActionLoader(false);
-        }, 10);
-      }
-    }, [dispatch]);
-  
-    useEffect(() => {
-      fetchPageData();
-    }, [fetchPageData]);
+  const fetchPageData = useCallback(async () => {
+    try {
+      setControlsLoader(true);
+
+      const parsed = await dispatch(
+        getERPPageThunk({ page: 'Dashboard', id: "" }),
+      ).unwrap();
+      console.log('🚀 ~ parsed:', parsed);
 
 
- function SmallItem({ left, primary, secondary, type }) {
+
+      const pageControls = Array.isArray(parsed?.pagectl) ? parsed?.pagectl : [];
+      console.log('🚀 ~ pageControls:', pageControls);
+
+      const normalizedControls = pageControls?.map(c => ({
+        ...c,
+        disabled: String(c?.disabled ?? '0'),
+        visible: String(c?.visible ?? '1'),
+        mandatory: String(c?.mandatory ?? '0'),
+      }));
+
+      setControls(normalizedControls);
+      setControlsLoader(false);
+
+
+    } catch (e: any) {
+      console.log('🚀 ~ e:', e);
+    } finally {
+      setLoadingPageId(null);
+      setTimeout(() => {
+        setActionLoader(false);
+      }, 10);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    fetchPageData();
+  }, [fetchPageData]);
+
+
+  function SmallItem({ left, primary, secondary, type }) {
     return (
-      <TouchableOpacity style={[styles.itemRow,  theme === 'dark' && {
+      <TouchableOpacity style={[styles.itemRow, theme === 'dark' && {
         backgroundColor: 'black'
       }]} activeOpacity={0.8}>
         <View style={[styles.avatar, {
@@ -518,38 +526,40 @@ const HomeScreen = () => {
         }]}>{left}</View>
         <View style={styles.itemText}>
           <Text numberOfLines={1} style={[styles.itemPrimary, theme === 'dark' && {
-        color: 'white'
-      }]}>
+            color: 'white'
+          }]}>
             {primary}
           </Text>
-          <Text style={[styles.itemType,  theme === 'dark' && {
-        color: 'white'
-      }]}>{type}</Text>
+          <Text style={[styles.itemType, theme === 'dark' && {
+            color: 'white'
+          }]}>{type}</Text>
         </View>
         <View>
-          <Text style={[styles.itemSecondary,  theme === 'dark' && {
-        color: 'white'
-      }]}>{secondary}</Text>
+          <Text style={[styles.itemSecondary, theme === 'dark' && {
+            color: 'white'
+          }]}>{secondary}</Text>
         </View>
       </TouchableOpacity>
     );
   }
   return (
-    <View 
-    style={{
-      backgroundColor: isDashboardLoading ? 'black' : theme === 'dark' ?  'black' : 'white'
-    }}
+    <View
+      style={{
+        height: Dimensions.get('screen').height,
+        flex: 1,
+        backgroundColor: isDashboardLoading ? 'black' : theme === 'dark' ? 'black' : 'white'
+      }}
     >
       <View
         style={{
           marginTop: 1,
-          backgroundColor:  theme === 'dark' ? 'black': ERP_COLOR_CODE.ERP_APP_COLOR,
+          backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
           padding: 12,
           // width: width,
           borderBottomRightRadius: 24,
           borderBottomLeftRadius: 24,
           borderWidth: 1,
-          borderColor:'white'
+          borderColor: 'white'
         }}
       >
         <Animated.View
@@ -577,125 +587,126 @@ const HomeScreen = () => {
 
         </Animated.View>
 
-      
-      {/* Branch + Type Buttons */}
-      {
-        isFilterVisible && <>
-             <View style={[styles.dateContainer, {
-              marginTop: 8
-             }]}>
-        {/* Dynamic Render Date Fields */}
-         {isFilterVisible && controls
-          .filter((x) => x.ctltype === "DATE")
-          .map((item, index) => (
-            <View key={index} style={[styles.dateRow, {
-              width: '48%'
-            }]}>
-              <TouchableOpacity
-                onPress={() =>
-                  setShowDatePicker({ type: item.field === "fromdate" ? "from" : "to", show: true })
-                }
-                style={[styles.dateButton,{
-                   width: '98%'
-                }]}
-              >
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <MaterialIcons
-                    name="calendar-today"
-                    size={18}
-                    color="#fff"
-                    style={{ marginRight: 8 }}
-                  />
-                  <Text style={[styles.dateButtonText, { color: "#FFF" }]}>
-                    {item.field === "fromdate"
-                      ? fromDate || "Select From Date"
-                      : toDate || "Select To Date"}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-              {index === 0 && <View style={{ height: 1, width: 8 }} />}
-            </View>
-          ))}
-      </View>
 
-      {
-        isFilterVisible &&  
-        
-        
-        <View style={{ 
-          
-          flexDirection: "row", justifyContent: "space-between", marginTop: 4 }}>
+        {/* Branch + Type Buttons */}
+        {
+          isFilterVisible && <>
+            <View style={[styles.dateContainer, {
+              marginTop: 8
+            }]}>
+              {/* Dynamic Render Date Fields */}
+              {isFilterVisible && controls
+                .filter((x) => x.ctltype === "DATE")
+                .map((item, index) => (
+                  <View key={index} style={[styles.dateRow, {
+                    width: '48%'
+                  }]}>
+                    <TouchableOpacity
+                      onPress={() =>
+                        setShowDatePicker({ type: item.field === "fromdate" ? "from" : "to", show: true })
+                      }
+                      style={[styles.dateButton, {
+                        width: '98%'
+                      }]}
+                    >
+                      <View style={{ flexDirection: "row", alignItems: "center" }}>
+                        <MaterialIcons
+                          name="calendar-today"
+                          size={18}
+                          color="#fff"
+                          style={{ marginRight: 8 }}
+                        />
+                        <Text style={[styles.dateButtonText, { color: "#FFF" }]}>
+                          {item.field === "fromdate"
+                            ? fromDate || "Select From Date"
+                            : toDate || "Select To Date"}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                    {index === 0 && <View style={{ height: 1, width: 8 }} />}
+                  </View>
+                ))}
+            </View>
 
             {
-              controls
-          .filter((x) => x.ctltype !== "DATE" && x.field !== 'userid') 
-          .map((item, index) => ( <>
-             <View style={{width: '49.5%'}}>
-                   <CustomPicker
-            isForceOpen={false}
-            isValidate={false}
-            label={item.title}
-            selectedValue={() =>{}}
-            dtext={ item?.title === 'Branch' ?auth?.dashboardBranch || item.dtext : auth.dashboardType || item?.dtext}
-            onValueChange={(i)=>{
-               if(item?.title === 'Branch'){
-                dispatch(setActiveDashboardBranchId(i?.value?.toString()))
-                dispatch(setActiveDashboardBranch(i?.name))
-              }else{
-                dispatch(setActiveDashboardType(i?.name))
-                dispatch(setActiveDashboardTypeId(i?.value?.toString()))
-              }
-            }}
-            options={[]}
-            item={item}
-            errors={null}
-            formValues={null}
-          />
-                </View>
-          </>))
+              isFilterVisible &&
 
+
+              <View style={{
+
+                flexDirection: "row", justifyContent: "space-between", marginTop: 4
+              }}>
+
+                {
+                  controls
+                    .filter((x) => x.ctltype !== "DATE" && x.field !== 'userid')
+                    .map((item, index) => (<>
+                      <View style={{ width: '49.5%' }}>
+                        <CustomPicker
+                          isForceOpen={false}
+                          isValidate={false}
+                          label={item.title}
+                          selectedValue={() => { }}
+                          dtext={item?.title === 'Branch' ? auth?.dashboardBranch || item.dtext : auth.dashboardType || item?.dtext}
+                          onValueChange={(i) => {
+                            if (item?.title === 'Branch') {
+                              dispatch(setActiveDashboardBranchId(i?.value?.toString()))
+                              dispatch(setActiveDashboardBranch(i?.name))
+                            } else {
+                              dispatch(setActiveDashboardType(i?.name))
+                              dispatch(setActiveDashboardTypeId(i?.value?.toString()))
+                            }
+                          }}
+                          options={[]}
+                          item={item}
+                          errors={null}
+                          formValues={null}
+                        />
+                      </View>
+                    </>))
+
+                }
+              </View>
             }
-            </View>
-      }
-        </>
-      }
-        
-      {/* Date Picker */}
-      {showDatePicker?.show && (
-        <DateTimePicker
-          value={
-            showDatePicker.type === "from" && fromDate
-              ? parseCustomDate(fromDate)
-              : showDatePicker.type === "to" && toDate
-              ? parseCustomDate(toDate)
-              : new Date()
-          }
-          mode="date"
-          onChange={handleDateChange}
-          minimumDate={
-            showDatePicker.type === "to" && fromDate
-              ? parseCustomDate(fromDate)
-              : new Date(new Date().getFullYear(), 0, 1)
-          }
-          maximumDate={
-            showDatePicker.type === "from" && toDate ? parseCustomDate(toDate) : new Date()
-          }
-        />
-      )}
+          </>
+        }
+
+        {/* Date Picker */}
+        {showDatePicker?.show && (
+          <DateTimePicker
+            value={
+              showDatePicker.type === "from" && fromDate
+                ? parseCustomDate(fromDate)
+                : showDatePicker.type === "to" && toDate
+                  ? parseCustomDate(toDate)
+                  : new Date()
+            }
+            mode="date"
+            onChange={handleDateChange}
+            minimumDate={
+              showDatePicker.type === "to" && fromDate
+                ? parseCustomDate(fromDate)
+                : new Date(new Date().getFullYear(), 0, 1)
+            }
+            maximumDate={
+              showDatePicker.type === "from" && toDate ? parseCustomDate(toDate) : new Date()
+            }
+          />
+        )}
       </View>
 
-   
 
-      {isDashboardLoading ? (
-         <View
+
+      {controlsLoader ? (
+        <View
           style={{
             height: Dimensions.get('screen').height * 0.75,
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: theme === 'dark' ? 'black' : 'white' ,
+            backgroundColor: theme === 'dark' ? 'black' : 'white',
           }}
         >
-        <FullViewLoader />
+          <FullViewLoader />
         </View>
       ) : error ? (
         <View
@@ -703,295 +714,304 @@ const HomeScreen = () => {
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: theme === 'dark' ? 'black' : 'white' ,
+            backgroundColor: theme === 'dark' ? 'black' : 'white',
           }}
         >
           <ErrorMessage message={error} />{' '}
         </View>
-      ) : filteredDashboard?.length === 0 && !isDashboardLoading ? (
-         <View
+      ) : controls?.length === 0 && !isDashboardLoading ? (
+        <View
           style={{
-            height: Dimensions.get('screen').height * 0.75,
+            height: Dimensions.get('screen').height,
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: theme === 'dark' ? 'black' : 'white' ,
+            backgroundColor: theme === 'dark' ? 'black' : 'white',
           }}
         >
-        <NoData />
+          <NoData />
 
-          </View>
+        </View>
       ) : (
-        <>
-          <Animated.FlatList
-            showsVerticalScrollIndicator={false}
-            data={['']}
-            keyExtractor={(_, i) => i.toString()}
-            onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
-              useNativeDriver: true,
-            })}
-            scrollEventThrottle={16}
-            renderItem={() => (
-              <>
-                {/* Pie chart section */}
-                {pieChartData.length > 0 && (
-                  <PieChartSection pieChartData={pieChartData} navigation={navigation} t={t} />
-                )}
-                {pieChartData.length === 0 && <View style={{ marginTop: 12 }} />}
-                {/* Dashboard items */}
-                <View style={styles.dashboardSection}>
-                  <FlatList
-                    key={`${isHorizontal}`}
-                    keyboardShouldPersistTaps="handled"
-                    data={[...textItems, ...emptyItems]}
-                    keyExtractor={(item, index) => index.toString()}
-                    numColumns={isHorizontal ? 1 : 2}
-                    columnWrapperStyle={!isHorizontal ? styles.columnWrapper : undefined}
-                    renderItem={
-                      ({ item, index }) =>
-                        renderDashboardItem({ item, index, isFromHtml: false, isFromMenu: false }) // 👈 custom prop passed here
-                    }
-                    showsVerticalScrollIndicator={false}
-                  />
-                </View>
-
-                <View style={styles.dashboardSection}>
-                  <FlatList
-                    key={`${isHorizontal}`}
-                    keyboardShouldPersistTaps="handled"
-                    data={htmlItems}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={
-                      ({ item, index }) =>
-                        renderDashboardItem({ item, index, isFromHtml: true, isFromMenu: true }) // 👈 custom prop passed here
-                    }
-                    showsVerticalScrollIndicator={false}
-                  />
-                </View>
-               
-                <>
-          <Animated.FlatList
-            showsVerticalScrollIndicator={false}
-            data={['']}
-            keyExtractor={(_, i) => i.toString()}
-            onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
-              useNativeDriver: true,
-            })}
-            scrollEventThrottle={16}
-            renderItem={() => (
-              <>
-                 
-                <View style={[styles.grid,
-                   
-                ]}>
-                  <View style={[styles.card, {
-
-            backgroundColor:  theme === 'dark' ?  'black' : 'white'
-
-                  }]}>
-                    <View style={{ flexDirection: 'row', marginVertical: 8, gap: 6 }}>
-                      <MaterialIcons
-                        size={18}
-                          color={theme === 'dark' ? 'white' : 'black'}
-                        name="emoji-events"
-                      />
-                      <Text style={[styles.cardTitle,{
-                          color: theme === 'dark' ? 'white' : 'black'
-                      }]}>Events</Text>
-                    </View>
-                    <FlatList
-                      data={todayEvents}
-                      keyExtractor={i => i.id}
-                      scrollEnabled={false}
-                      renderItem={({ item }) => (
-                        <SmallItem
-                          left={<Text style={[styles.avatarText, {
-                            color: 'white'
-                          }]}>T</Text>}
-                          primary={item.title}
-                          secondary={item.date}
-                          type={item?.type}
-                        />
-                      )}
-                    />
-
+        <View style={{
+          backgroundColor: theme === 'dark' ? 'black' : 'white',
+          flex: 1
+        }}>
+          <>
+            <Animated.FlatList
+              showsVerticalScrollIndicator={false}
+              data={['']}
+              keyExtractor={(_, i) => i.toString()}
+              onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+                useNativeDriver: true,
+              })}
+              scrollEventThrottle={16}
+              renderItem={() => (
+                <View
+                  style={{
+                    backgroundColor: theme === 'dark' ? 'black' : 'white',
+                    flex: 1
+                  }}
+                >
+                  <View>
+                    {pieChartData.length > 0 && (
+                      <PieChartSection pieChartData={pieChartData} navigation={navigation} t={t} />
+                    )}
+                    {pieChartData.length === 0 && <View style={{ marginTop: 12 }} />}
+                  </View>
+                  <View style={styles.dashboardSection}>
                     <FlatList
                       key={`${isHorizontal}`}
-                      data={dummyUpcomingEvents}
-                      keyExtractor={i => i.id}
-                      scrollEnabled={false}
-                      renderItem={({ item }) => (
-                        <SmallItem
-                          left={<Text style={[styles.avatarText, {
-                            color: 'white'
-                          }]}>E</Text>}
-                          primary={item.title}
-                          secondary={item.date}
-                          type={item?.type}
-                        />
-                      )}
+                      keyboardShouldPersistTaps="handled"
+                      data={[...textItems, ...emptyItems]}
+                      keyExtractor={(item, index) => index.toString()}
+                      numColumns={isHorizontal ? 1 : 2}
+                      columnWrapperStyle={!isHorizontal ? styles.columnWrapper : undefined}
+                      renderItem={
+                        ({ item, index }) =>
+                          renderDashboardItem({ item, index, isFromHtml: false, isFromMenu: false }) // 👈 custom prop passed here
+                      }
+                      showsVerticalScrollIndicator={false}
                     />
                   </View>
 
-                  <View style={[styles.card,{
-            backgroundColor:  theme === 'dark' ?  'black' : 'white'
-
-                  }]}>
-                    <View style={{ flexDirection: 'row', marginVertical: 8, gap: 6 }}>
-                      <MaterialIcons
-                        size={18}
-                          color={theme === 'dark' ? 'white' : 'black'}
-                        name="celebration"
-                      />
-                      <Text style={[styles.cardTitle,
-
-                        {
-                          color : theme === 'dark' ? 'white' : 'black'
-                        }
-                      ]}>Birthday & Work-anniversary</Text>
-                    </View>
+                  <View style={styles.dashboardSection}>
                     <FlatList
-                      data={todayBirthdays}
-                      keyExtractor={i => i.id}
-                      scrollEnabled={false}
-                      renderItem={({ item }) => (
-                        <SmallItem
-                          left={
-                            <Text style={[styles.avatarText, {
-                            color: 'white'
-                          }]}>
-                              {item.name
-                                .split(' ')
-                                .map(n => n[0])
-                                .slice(0, 2)
-                                .join('')}
-                            </Text>
-                          }
-                          primary={item.name}
-                          secondary={item.date}
-                          type={item?.type}
-                        />
-                      )}
+                      key={`${isHorizontal}`}
+                      keyboardShouldPersistTaps="handled"
+                      data={htmlItems}
+                      keyExtractor={(item, index) => index.toString()}
+                      renderItem={
+                        ({ item, index }) =>
+                          renderDashboardItem({ item, index, isFromHtml: true, isFromMenu: true }) // 👈 custom prop passed here
+                      }
+                      showsVerticalScrollIndicator={false}
                     />
+                  </View>
 
-                    <FlatList
-                      data={dummyUpcomingBirthdays}
-                      keyExtractor={i => i.id}
-                      scrollEnabled={false}
-                      renderItem={({ item }) => (
-                        <SmallItem
-                          left={
-                            <Text style={[styles.avatarText, {
-                            color: 'white'
-                          }]}>
-                              {item.name
-                                .split(' ')
-                                .map(n => n[0])
-                                .slice(0, 2)
-                                .join('')}
-                            </Text>
-                          }
-                          primary={item.name}
-                          secondary={item.date}
-                          type={item?.type}
-                        />
-                      )}
-                    />
-                    <FlatList
-                      data={todayAnniversaries}
-                      keyExtractor={i => i.id}
-                      scrollEnabled={false}
-                      renderItem={({ item }) => (
-                        <SmallItem
-                          left={<Text style={[styles.avatarText, {
-                            color: 'white'
-                          }]}>A</Text>}
-                          primary={item.name}
-                          secondary={item.date}
-                          type={item?.type}
-                        />
-                      )}
-                    />
+                  <View>
+                    <Animated.FlatList
+                      showsVerticalScrollIndicator={false}
+                      data={['']}
+                      keyExtractor={(_, i) => i.toString()}
+                      onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+                        useNativeDriver: true,
+                      })}
+                      scrollEventThrottle={16}
+                      renderItem={() => (
+                        <View>
 
-                    <FlatList
-                      data={dummyUpcomingAnniversaries}
-                      keyExtractor={i => i.id}
-                      scrollEnabled={false}
-                      renderItem={({ item }) => (
-                        <SmallItem
-                          left={<Text style={[styles.avatarText, {
-                            color: 'white',
-                          }]}>W</Text>}
-                          primary={item.name}
-                          secondary={item.date}
-                          type={item?.type}
-                        />
+                          <View style={[styles.grid,
+
+                          ]}>
+                            <View style={[styles.card, {
+
+                              backgroundColor: theme === 'dark' ? 'black' : 'white'
+
+                            }]}>
+                              <View style={{ flexDirection: 'row', marginVertical: 8, gap: 6 }}>
+                                <MaterialIcons
+                                  size={18}
+                                  color={theme === 'dark' ? 'white' : 'black'}
+                                  name="emoji-events"
+                                />
+                                <Text style={[styles.cardTitle, {
+                                  color: theme === 'dark' ? 'white' : 'black'
+                                }]}>Events</Text>
+                              </View>
+                              <FlatList
+                                data={todayEvents}
+                                keyExtractor={i => i.id}
+                                scrollEnabled={false}
+                                renderItem={({ item }) => (
+                                  <SmallItem
+                                    left={<Text style={[styles.avatarText, {
+                                      color: 'white'
+                                    }]}>T</Text>}
+                                    primary={item.title}
+                                    secondary={item.date}
+                                    type={item?.type}
+                                  />
+                                )}
+                              />
+
+                              <FlatList
+                                key={`${isHorizontal}`}
+                                data={dummyUpcomingEvents}
+                                keyExtractor={i => i.id}
+                                scrollEnabled={false}
+                                renderItem={({ item }) => (
+                                  <SmallItem
+                                    left={<Text style={[styles.avatarText, {
+                                      color: 'white'
+                                    }]}>E</Text>}
+                                    primary={item.title}
+                                    secondary={item.date}
+                                    type={item?.type}
+                                  />
+                                )}
+                              />
+                            </View>
+
+                            <View style={[styles.card, {
+                              backgroundColor: theme === 'dark' ? 'black' : 'white'
+
+                            }]}>
+                              <View style={{ flexDirection: 'row', marginVertical: 8, gap: 6 }}>
+                                <MaterialIcons
+                                  size={18}
+                                  color={theme === 'dark' ? 'white' : 'black'}
+                                  name="celebration"
+                                />
+                                <Text style={[styles.cardTitle,
+
+                                {
+                                  color: theme === 'dark' ? 'white' : 'black'
+                                }
+                                ]}>Birthday & Work-anniversary</Text>
+                              </View>
+                              <FlatList
+                                data={todayBirthdays}
+                                keyExtractor={i => i.id}
+                                scrollEnabled={false}
+                                renderItem={({ item }) => (
+                                  <SmallItem
+                                    left={
+                                      <Text style={[styles.avatarText, {
+                                        color: 'white'
+                                      }]}>
+                                        {item.name
+                                          .split(' ')
+                                          .map(n => n[0])
+                                          .slice(0, 2)
+                                          .join('')}
+                                      </Text>
+                                    }
+                                    primary={item.name}
+                                    secondary={item.date}
+                                    type={item?.type}
+                                  />
+                                )}
+                              />
+
+                              <FlatList
+                                data={dummyUpcomingBirthdays}
+                                keyExtractor={i => i.id}
+                                scrollEnabled={false}
+                                renderItem={({ item }) => (
+                                  <SmallItem
+                                    left={
+                                      <Text style={[styles.avatarText, {
+                                        color: 'white'
+                                      }]}>
+                                        {item.name
+                                          .split(' ')
+                                          .map(n => n[0])
+                                          .slice(0, 2)
+                                          .join('')}
+                                      </Text>
+                                    }
+                                    primary={item.name}
+                                    secondary={item.date}
+                                    type={item?.type}
+                                  />
+                                )}
+                              />
+                              <FlatList
+                                data={todayAnniversaries}
+                                keyExtractor={i => i.id}
+                                scrollEnabled={false}
+                                renderItem={({ item }) => (
+                                  <SmallItem
+                                    left={<Text style={[styles.avatarText, {
+                                      color: 'white'
+                                    }]}>A</Text>}
+                                    primary={item.name}
+                                    secondary={item.date}
+                                    type={item?.type}
+                                  />
+                                )}
+                              />
+
+                              <FlatList
+                                data={dummyUpcomingAnniversaries}
+                                keyExtractor={i => i.id}
+                                scrollEnabled={false}
+                                renderItem={({ item }) => (
+                                  <SmallItem
+                                    left={<Text style={[styles.avatarText, {
+                                      color: 'white',
+                                    }]}>W</Text>}
+                                    primary={item.name}
+                                    secondary={item.date}
+                                    type={item?.type}
+                                  />
+                                )}
+                              />
+                            </View>
+                          </View>
+                          <View>
+                            <View
+                              style={{
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                marginHorizontal: 12,
+                                marginVertical: 8,
+                              }}
+                            >
+                              <View style={{ flexDirection: 'row', gap: 6 }}>
+                                <MaterialIcons
+                                  size={18}
+                                  color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                                  name="pending-actions"
+                                />
+                                <Text style={{ fontSize: 16, fontWeight: '700' }}>My Pending Tasks</Text>
+                              </View>
+
+                              <TouchableOpacity
+                                onPress={() => {
+                                  navigation.navigate('Tasks', { isFromViewAll: true });
+                                }}
+                              >
+                                <Text style={{ color: ERP_COLOR_CODE.ERP_BORDER_LINE, fontSize: 12 }}>
+                                  View all
+                                </Text>
+                              </TouchableOpacity>
+                            </View>
+                            <TaskListScreen
+                              tasks={dummyTasks}
+                              onSelectTask={task => {
+                                setSelectedTask(task);
+                                setModalVisible(true);
+                              }}
+                              showPicker={undefined}
+                              showFilter={undefined}
+                            />
+                          </View>
+
+                          {selectedTask && (
+                            <TaskDetailsBottomSheet
+                              visible={modalVisible}
+                              task={selectedTask}
+                              role="junior"
+                              onClose={() => setModalVisible(false)}
+                              onUpdate={updatedTask => {
+                                setModalVisible(false);
+                              }}
+                            />
+                          )}
+                          <View style={{ height: 100, width: 100 }} />
+                        </View>
                       )}
                     />
                   </View>
                 </View>
-                <View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      marginHorizontal: 12,
-                      marginVertical: 8,
-                    }}
-                  >
-                    <View style={{ flexDirection: 'row', gap: 6 }}>
-                      <MaterialIcons
-                        size={18}
-                        color={ERP_COLOR_CODE.ERP_APP_COLOR}
-                        name="pending-actions"
-                      />
-                      <Text style={{ fontSize: 16, fontWeight: '700' }}>My Pending Tasks</Text>
-                    </View>
-
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.navigate('Tasks', { isFromViewAll: true });
-                      }}
-                    >
-                      <Text style={{ color: ERP_COLOR_CODE.ERP_BORDER_LINE, fontSize: 12 }}>
-                        View all
-                      </Text>
-                    </TouchableOpacity>
-                  </View> 
-                  <TaskListScreen
-                    tasks={dummyTasks}
-                    onSelectTask={task => {
-                      setSelectedTask(task);
-                      setModalVisible(true);
-                    }}
-                    showPicker={undefined}
-                    showFilter={undefined}
-                  /> 
-                              </View>
-
-                {selectedTask && (
-                  <TaskDetailsBottomSheet
-                    visible={modalVisible}
-                    task={selectedTask}
-                    role="junior"
-                    onClose={() => setModalVisible(false)}
-                    onUpdate={updatedTask => {
-                      setModalVisible(false);
-                    }}
-                  />
-                )}
-                <View style={{ height: 100, width: 100 }} />
-              </>
-            )}
-          />
-        </>
-              </>
-            )}
-          />
-        </>
+              )}
+            />
+          </>
+        </View>
       )}
     </View>
   );
 };
 
 export default HomeScreen;
- 

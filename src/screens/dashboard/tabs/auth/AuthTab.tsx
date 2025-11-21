@@ -33,6 +33,7 @@ const AuthTab = () => {
   const [isHorizontal, setIsHorizontal] = useState(false);
   const [bookmarks, setBookmarks] = useState<{ [key: string]: boolean }>({});
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
+  const [entryLoader, setEntryLoader] = useState(false);
 
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -159,9 +160,18 @@ const AuthTab = () => {
     });
   }, [navigation, showBookmarksOnly, isHorizontal, isRefresh, showSearch, searchText, allList]);
 
-  useEffect(() => {
+    useEffect(() => {
     if (isAuthenticated) {
-      dispatch(getERPMenuThunk());
+      setEntryLoader(true);
+  
+      dispatch(getERPMenuThunk())
+        .unwrap()
+        .then(() => {
+          setEntryLoader(false);
+        })
+        .catch(() => {
+          setEntryLoader(false); 
+        });
     }
   }, [isAuthenticated, dispatch, activeToken, isRefresh]);
 
@@ -268,7 +278,21 @@ const AuthTab = () => {
     );
   }
 
-  if (!isMenuLoading && list.length === 0) {
+   if(showBookmarksOnly && list?.length === 0 || allList?.length === 0){
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: theme === 'dark' ?'black' : ERP_COLOR_CODE.ERP_WHITE,
+        }}
+      >
+        <NoData />
+      </View>
+    );
+  }
+  if (!error && !entryLoader && menu?.length === 0 && filteredList?.length === 0 && list?.length === 0 && allList?.length === 0) {
     return (
       <View
         style={{

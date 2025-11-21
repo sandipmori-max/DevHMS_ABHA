@@ -26,6 +26,7 @@ const EntryTab = () => {
   const { user } = useAppSelector(state => state?.auth);
   const { isAuthenticated, activeToken, error } = useAppSelector(state => state.auth);
   const { menu, isMenuLoading } = useAppSelector(state => state.auth);
+  const [entryLoader, setEntryLoader] = useState(false);
 
   const allList = menu?.filter(item => item?.isReport === 'E') ?? [];
   const [isRefresh, setIsRefresh] = useState<boolean>(false);
@@ -160,13 +161,22 @@ const EntryTab = () => {
     })();
   }, []);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      console.log('🚀 ~ isAuthenticated:', 'isAuthenticated');
 
-      dispatch(getERPMenuThunk());
-    }
-  }, [isAuthenticated, dispatch, activeToken, isRefresh]);
+  useEffect(() => {
+  if (isAuthenticated) {
+    setEntryLoader(true);
+
+    dispatch(getERPMenuThunk())
+      .unwrap()
+      .then(() => {
+        setEntryLoader(false);
+      })
+      .catch(() => {
+        setEntryLoader(false); 
+      });
+  }
+}, [isAuthenticated, dispatch, activeToken, isRefresh]);
+
 
   const renderItem = ({ item, index }: any) => {
      const backgroundColor = accentColors[index % accentColors.length];
@@ -251,7 +261,7 @@ const EntryTab = () => {
   };
 
   const renderView = () => {
-    if (!isMenuLoading && list.length === 0) {
+    if (!error && !entryLoader && menu?.length === 0 && filteredList?.length === 0 && list?.length === 0 && allList?.length === 0) {
       return (
         <View
           style={{
@@ -264,7 +274,22 @@ const EntryTab = () => {
           <NoData />
         </View>
       );
-    } else if (error) {
+    } 
+    else if (showBookmarksOnly && list?.length === 0 || allList?.length === 0){
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: theme === 'dark' ?'black' : ERP_COLOR_CODE.ERP_WHITE,
+        }}
+      >
+        <NoData />
+      </View>
+    );
+  }
+    else if (error) {
       return (
         <View
           style={{
@@ -277,7 +302,7 @@ const EntryTab = () => {
           <ErrorMessage message={error} />
         </View>
       );
-    } else if (isMenuLoading) {
+    } else if (entryLoader === true) {
       return (
         <View style={styles.centered}>
           <FullViewLoader />

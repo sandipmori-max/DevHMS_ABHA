@@ -27,6 +27,7 @@ const ReportTab = () => {
   const { menu, isMenuLoading } = useAppSelector(state => state.auth);
   const { user } = useAppSelector(state => state?.auth);
   const theme = useAppSelector(state => state?.theme.mode);
+  const [entryLoader, setEntryLoader] = useState(false);
 
   const allList = menu?.filter(item => item?.isReport === 'R') ?? [];
   const [isRefresh, setIsRefresh] = useState<boolean>(false);
@@ -162,11 +163,20 @@ const [toast, setToast] = useState<{ visible: boolean; message: string }>({
     });
   }, [navigation, showBookmarksOnly, isHorizontal, isRefresh, showSearch, searchText, allList]);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(getERPMenuThunk());
-    }
-  }, [isAuthenticated, dispatch, activeToken, isRefresh]);
+   useEffect(() => {
+     if (isAuthenticated) {
+       setEntryLoader(true);
+   
+       dispatch(getERPMenuThunk())
+         .unwrap()
+         .then(() => {
+           setEntryLoader(false);
+         })
+         .catch(() => {
+           setEntryLoader(false); 
+         });
+     }
+   }, [isAuthenticated, dispatch, activeToken, isRefresh]);
 
   const renderItem = ({ item, index }: any) => {
     const backgroundColor = accentColors[index % accentColors.length];
@@ -270,8 +280,21 @@ const [toast, setToast] = useState<{ visible: boolean; message: string }>({
       </View>
     );
   }
-
-  if (!isMenuLoading && list.length === 0) {
+  if(showBookmarksOnly && list?.length === 0 || allList?.length === 0){
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: theme === 'dark' ?'black' : ERP_COLOR_CODE.ERP_WHITE,
+        }}
+      >
+        <NoData />
+      </View>
+    );
+  }
+  if (!error && !entryLoader && menu?.length === 0 && filteredList?.length === 0 && list?.length === 0 && allList?.length === 0) {
     return (
       <View
         style={{
