@@ -148,8 +148,7 @@ class DevERPService {
     );
     return {...response.data, app_id: app_id};
     } catch (error) {
-      console.log("🚀 ~ DevERPService ~ loginToERP ~ error:", error?.data?.message)
-       return { success: 0, message :  error?.data?.message.toString() };
+        return { success: 0, message :  error?.data?.message || "Something went wong" };
       
     }
   }

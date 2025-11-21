@@ -20,11 +20,11 @@ const ERPTextInput: React.FC<ERPTextInputProps> = ({
   helperStyle,
   field,
   isInputEdit,
+  value,
   ...rest
 }) => {
   const [showPassword, setShowPassword] = useState(!secureTextEntry);
-const [focusedField, setFocusedField] = useState<string | null>(null);
-
+ 
   return (
     <View style={[styles.inputContainer, containerStyle,                        ,]}>
       {label ? <Text style={[styles.inputLabel, labelStyle]}>{label}</Text> : null}
@@ -49,6 +49,10 @@ const [focusedField, setFocusedField] = useState<string | null>(null);
             isInputEdit && {
               borderColor: '#81b5e4',
               borderWidth: 0.8,
+            },
+            value && {
+              borderColor: 'green',
+
             }
           ]}
         >

@@ -152,6 +152,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
       onClose();
       setLoader(false);
     } catch (e: any) {
+      console.log("e -------------------- ", e)
       setAlertConfig({
         title: 'Error',
         message: e?.message || 'Something went wrong',
@@ -192,7 +193,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                 <View style={styles.formContainer}>
                   <Image source={ERP_ICON.APP_LOGO} style={styles.logo} resizeMode="contain" />
                   <Text style={[styles.subtitle, theme === 'dark' && {
-                    color:'white'
+                    color: 'white'
                   }]}>{t('account.msg')}</Text>
                   <Formik
                     initialValues={{ company_code: '', user: '', password: '' }}
@@ -203,8 +204,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                       <>
                         <View style={styles.inputContainer}>
                           <Text style={[styles.inputLabel, theme === 'dark' && {
-                    color:'white'
-                  }]}>{t('account.companyCode')}</Text>
+                            color: 'white'
+                          }]}>{t('account.companyCode')}</Text>
                           <View
                             style={[
                               styles.inputContainer,
@@ -218,7 +219,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                                 borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
                                 paddingLeft: 12,
                               },
-                              touched?.company_code && errors?.company_code  && 
+                              touched?.company_code && errors?.company_code &&
                               {
                                 borderColor: ERP_COLOR_CODE.ERP_ERROR,
                                 borderWidth: 0.8,
@@ -232,30 +233,30 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                                 borderWidth: 0.8,
                               },
                               theme === 'dark' && {
-                                backgroundColor:'black'
+                                backgroundColor: 'black'
                               }
                             ]}
                           >
                             <MaterialIcons name="closed-caption-off" size={20} color={ERP_COLOR_CODE.ERP_999} />
 
                             <TextInput
-                              style={[styles.input, 
-                                theme === 'dark' && {
-                                backgroundColor:'black'
+                              style={[styles.input,
+                              theme === 'dark' && {
+                                backgroundColor: 'black'
                               }
                               ]}
                               placeholder={t('auth.enterCompanyCode')}
                               placeholderTextColor={ERP_COLOR_CODE.ERP_999}
                               autoCapitalize="none"
                               onChangeText={handleChange('company_code')}
-                               value={values?.company_code}
-                               onFocus={e => {
-                               setIsInputEditCC(true);
+                              value={values?.company_code}
+                              onFocus={e => {
+                                setIsInputEditCC(true);
                               }}
                               onBlur={() => {
                                 if (!values?.company_code) {
                                   handleBlur('company_code')
-                                setIsInputEditCC(false);
+                                  setIsInputEditCC(false);
 
                                 }
                               }}
@@ -269,8 +270,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
 
                         <View style={styles.inputContainer}>
                           <Text style={[styles.inputLabel, theme === 'dark' && {
-                    color:'white'
-                  }]}>{t('auth.user')}</Text>
+                            color: 'white'
+                          }]}>{t('auth.user')}</Text>
                           <View
                             style={[
                               styles.inputContainer,
@@ -284,38 +285,38 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                                 borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
                                 paddingLeft: 12,
                               },
-                               touched?.user && errors?.user  && {
-                                            borderColor: ERP_COLOR_CODE.ERP_ERROR,
-                                            borderWidth: 0.8,
-                                          },
-                               isInputEditUSer && {
-            borderColor: '#81b5e4',
-            borderWidth: 0.8,
-          },
-            values?.user && {
-              borderColor: 'green',
-              borderWidth: 0.8,
-            },
-                            
+                              touched?.user && errors?.user && {
+                                borderColor: ERP_COLOR_CODE.ERP_ERROR,
+                                borderWidth: 0.8,
+                              },
+                              isInputEditUSer && {
+                                borderColor: '#81b5e4',
+                                borderWidth: 0.8,
+                              },
+                              values?.user && {
+                                borderColor: 'green',
+                                borderWidth: 0.8,
+                              },
+
                             ]}
                           >
                             <MaterialIcons name="person" size={20} color={ERP_COLOR_CODE.ERP_999} />
                             <TextInput
                               style={[styles.input, theme === 'dark' && {
-                                backgroundColor:'black'
+                                backgroundColor: 'black'
                               }]}
                               placeholder={t('auth.enterUser')}
                               placeholderTextColor={ERP_COLOR_CODE.ERP_999}
                               autoCapitalize="none"
                               onChangeText={handleChange('user')}
-                               value={values?.user}
-                               onFocus={e => {
-                               setIsInputEditUser(true);
+                              value={values?.user}
+                              onFocus={e => {
+                                setIsInputEditUser(true);
                               }}
                               onBlur={() => {
                                 if (!values?.company_code) {
                                   handleBlur('user')
-                                setIsInputEditUser(false);
+                                  setIsInputEditUser(false);
 
                                 }
                               }}
@@ -328,8 +329,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
 
                         <View style={styles.inputContainer}>
                           <Text style={[styles.inputLabel, theme === 'dark' && {
-                    color:'white'
-                  }]}>{t('auth.password')}</Text>
+                            color: 'white'
+                          }]}>{t('auth.password')}</Text>
 
                           <View
                             style={[
@@ -344,42 +345,42 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                                 borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
                                 paddingLeft: 12,
                               },
-                                 touched?.password && errors?.password  && {
-                                            borderColor: ERP_COLOR_CODE.ERP_ERROR,
-                                            borderWidth: 0.8,
-                                          },
-                                isInputEditPass && {
-                                    borderColor: '#81b5e4',
-                                    borderWidth: 0.8,
-                                  },
-                                    values?.password && {
-                                      borderColor: 'green',
-                                      borderWidth: 0.8,
-                                    },
+                              touched?.password && errors?.password && {
+                                borderColor: ERP_COLOR_CODE.ERP_ERROR,
+                                borderWidth: 0.8,
+                              },
+                              isInputEditPass && {
+                                borderColor: '#81b5e4',
+                                borderWidth: 0.8,
+                              },
+                              values?.password && {
+                                borderColor: 'green',
+                                borderWidth: 0.8,
+                              },
                             ]}
                           >
                             <MaterialIcons name="password" size={20} color={ERP_COLOR_CODE.ERP_999} />
 
                             <TextInput
                               style={[styles.input1, theme === 'dark' && {
-                                backgroundColor:'black'
+                                backgroundColor: 'black'
                               }]}
                               placeholder={t('auth.enterPassword')}
                               secureTextEntry={!showPassword}
                               placeholderTextColor={ERP_COLOR_CODE.ERP_999}
                               value={values?.password}
                               onChangeText={handleChange('password')}
-                                onFocus={e => {
-                               setIsInputEditPass(true);
+                              onFocus={e => {
+                                setIsInputEditPass(true);
                               }}
                               onBlur={() => {
                                 if (!values?.company_code) {
                                   handleBlur('password')
-                                setIsInputEditPass(false);
+                                  setIsInputEditPass(false);
 
                                 }
                               }}
-                              
+
                             />
                             <TouchableOpacity
                               onPress={() => setShowPassword(s => !s)}
@@ -400,7 +401,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
 
                         <TouchableOpacity
                           style={[styles.addButton, loader && styles.disabledButton, theme === 'dark' && {
-                            backgroundColor:'black',
+                            backgroundColor: 'black',
                             borderColor: 'white',
                             borderWidth: 1
                           }]}
