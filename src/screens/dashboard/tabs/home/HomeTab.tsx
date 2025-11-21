@@ -20,7 +20,7 @@ import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import FullViewLoader from '../../../../components/loader/FullViewLoader';
 import NoData from '../../../../components/no_data/NoData';
 import ERPIcon from '../../../../components/icon/ERPIcon';
-import { getERPDashboardThunk, getERPPageThunk } from '../../../../store/slices/auth/thunk';
+import { getERPDashboardThunk, getERPMenuThunk, getERPPageThunk } from '../../../../store/slices/auth/thunk';
 import ErrorMessage from '../../../../components/error/Error';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
@@ -200,8 +200,8 @@ const HomeScreen = () => {
 
       if (isAuthenticated) {
         dispatch(getERPDashboardThunk());
+        dispatch(getERPMenuThunk())
       }
-
       return () => { };
     }, [isAuthenticated, dispatch]),
   );
@@ -483,8 +483,6 @@ const HomeScreen = () => {
         getERPPageThunk({ page: 'Dashboard', id: "" }),
       ).unwrap();
       console.log('🚀 ~ parsed:', parsed);
-
-
 
       const pageControls = Array.isArray(parsed?.pagectl) ? parsed?.pagectl : [];
       console.log('🚀 ~ pageControls:', pageControls);

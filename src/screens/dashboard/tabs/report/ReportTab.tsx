@@ -37,7 +37,7 @@ const ReportTab = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [filteredList, setFilteredList] = useState(allList);
-const [toast, setToast] = useState<{ visible: boolean; message: string }>({
+  const [toast, setToast] = useState<{ visible: boolean; message: string }>({
     visible: false,
     message: '',
   });
@@ -90,10 +90,10 @@ const [toast, setToast] = useState<{ visible: boolean; message: string }>({
 
   useLayoutEffect(() => {
     navigation.setOptions({
-       headerStyle: {
-                 backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
-               },
-               headerTintColor: '#fff', 
+      headerStyle: {
+        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+      },
+      headerTintColor: '#fff',
       headerTitle: () =>
         showSearch ? (
           <View
@@ -163,33 +163,33 @@ const [toast, setToast] = useState<{ visible: boolean; message: string }>({
     });
   }, [navigation, showBookmarksOnly, isHorizontal, isRefresh, showSearch, searchText, allList]);
 
-   useEffect(() => {
-     if (isAuthenticated) {
-       setEntryLoader(true);
-   
-       dispatch(getERPMenuThunk())
-         .unwrap()
-         .then(() => {
-           setEntryLoader(false);
-         })
-         .catch(() => {
-           setEntryLoader(false); 
-         });
-     }
-   }, [isAuthenticated, dispatch, activeToken, isRefresh]);
+  useEffect(() => {
+    if (isAuthenticated) {
+      setEntryLoader(true);
+
+      dispatch(getERPMenuThunk())
+        .unwrap()
+        .then(() => {
+          setEntryLoader(false);
+        })
+        .catch(() => {
+          setEntryLoader(false);
+        });
+    }
+  }, [isAuthenticated, dispatch, activeToken, isRefresh]);
 
   const renderItem = ({ item, index }: any) => {
     const backgroundColor = accentColors[index % accentColors.length];
 
     return (
       <TouchableOpacity
-        style={[styles.card, 
-          theme === 'dark' && {
-            borderColor: 'white',
-                      borderWidth:  1,
+        style={[styles.card,
+        theme === 'dark' && {
+          borderColor: 'white',
+          borderWidth: 1,
 
-          },
-          {  backgroundColor: theme === 'dark' ? 'black' : backgroundColor, flexDirection: isHorizontal ? 'row' : 'column' }]}
+        },
+        { backgroundColor: theme === 'dark' ? 'black' : backgroundColor, flexDirection: isHorizontal ? 'row' : 'column' }]}
         activeOpacity={0.7}
         onPress={() => {
           if (item?.url.includes('.') || item?.url.includes('?') || item?.url.includes('/')) {
@@ -211,17 +211,17 @@ const [toast, setToast] = useState<{ visible: boolean; message: string }>({
         </TouchableOpacity>
 
         <View style={[styles.iconContainer,
-            theme === 'dark' && {
-            borderColor: 'white'
-          },
-          { backgroundColor: theme === 'dark' ? DARK_COLOR : ERP_COLOR_CODE.ERP_WHITE }]}>
+        theme === 'dark' && {
+          borderColor: 'white'
+        },
+        { backgroundColor: theme === 'dark' ? DARK_COLOR : ERP_COLOR_CODE.ERP_WHITE }]}>
           <Text style={[styles.iconText, theme === 'dark' && {
-            color:'white'
+            color: 'white'
           }]}>
             {item?.icon && item?.icon !== ''
               ? item.icon
               : item?.name
-              ? (() => {
+                ? (() => {
                   const words = item.name.trim().split(' ').filter(Boolean);
                   if (words.length === 1) {
                     return words[0].substring(0, 2).toUpperCase();
@@ -232,7 +232,7 @@ const [toast, setToast] = useState<{ visible: boolean; message: string }>({
                       .join('');
                   }
                 })()
-              : '?'}
+                : '?'}
           </Text>
         </View>
 
@@ -280,14 +280,14 @@ const [toast, setToast] = useState<{ visible: boolean; message: string }>({
       </View>
     );
   }
-  if(showBookmarksOnly && list?.length === 0 || allList?.length === 0){
+  if (showBookmarksOnly && list?.length === 0 || allList?.length === 0) {
     return (
       <View
         style={{
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: theme === 'dark' ?'black' : ERP_COLOR_CODE.ERP_WHITE,
+          backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
         }}
       >
         <NoData />
@@ -301,7 +301,7 @@ const [toast, setToast] = useState<{ visible: boolean; message: string }>({
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: theme === 'dark' ?'black' : ERP_COLOR_CODE.ERP_WHITE,
+          backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
         }}
       >
         <NoData />

@@ -204,6 +204,27 @@ export const isPinEnabled = async (db) => {
   }
 };
 
+export const resetPin = async (db) => {
+  try {
+    // Remove pin_code entry
+    await db.executeSql(
+      `DELETE FROM ${ERP_TABLE.ERP_META} WHERE key = ?`,
+      [META_KEYS.PIN_CODE]
+    );
+
+    // Disable pin_enabled flag
+    await db.executeSql(
+      `INSERT OR REPLACE INTO ${ERP_TABLE.ERP_META} (key, value) VALUES (?, ?)`,
+      [META_KEYS.PIN_ENABLED, '0']
+    );
+
+    console.log('🔓 resetPin: PIN removed & PIN disabled');
+  } catch (error) {
+    console.error("Error resetPin:", error);
+  }
+};
+
+
 export const setPinCode = async (db, pin) => {
   try {
     await db.executeSql(
@@ -411,5 +432,17 @@ export const logoutUser = async (db, accountId) => {
   } catch (error) {
     console.error("Error logoutUser:", error);
     return null;
+  }
+};
+
+export const removePinCode = async (db) => {
+  try {
+    await db.executeSql(
+      `DELETE FROM ${ERP_TABLE.ERP_META} WHERE key = ?`,
+      [META_KEYS.PIN_CODE]
+    );
+    console.log('🔓 removePinCode: PIN deleted');
+  } catch (error) {
+    console.error('Error removePinCode:', error);
   }
 };

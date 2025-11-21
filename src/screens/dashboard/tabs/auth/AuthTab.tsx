@@ -42,9 +42,9 @@ const AuthTab = () => {
 
   const list = showBookmarksOnly ? filteredList.filter(item => bookmarks[item?.id]) : filteredList;
   const [toast, setToast] = useState<{ visible: boolean; message: string }>({
-      visible: false,
-      message: '',
-    });
+    visible: false,
+    message: '',
+  });
 
   const showToast = useCallback((msg: string) => {
     setToast({ visible: true, message: msg });
@@ -90,9 +90,9 @@ const AuthTab = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: {
-            backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
-          },
-          headerTintColor: '#fff',  
+        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+      },
+      headerTintColor: '#fff',
       headerTitle: () =>
         showSearch ? (
           <View
@@ -142,7 +142,7 @@ const AuthTab = () => {
               {allList.length > 5 && <ERPIcon name="search" onPress={() => setShowSearch(true)} />}
 
 
-             <ERPIcon
+              <ERPIcon
                 name={isHorizontal ? 'dashboard' : 'list'}
                 onPress={() => setIsHorizontal(prev => !prev)}
               />
@@ -160,17 +160,17 @@ const AuthTab = () => {
     });
   }, [navigation, showBookmarksOnly, isHorizontal, isRefresh, showSearch, searchText, allList]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (isAuthenticated) {
       setEntryLoader(true);
-  
+
       dispatch(getERPMenuThunk())
         .unwrap()
         .then(() => {
           setEntryLoader(false);
         })
         .catch(() => {
-          setEntryLoader(false); 
+          setEntryLoader(false);
         });
     }
   }, [isAuthenticated, dispatch, activeToken, isRefresh]);
@@ -180,13 +180,13 @@ const AuthTab = () => {
 
     return (
       <TouchableOpacity
-        style={[styles.card, 
-           theme === 'dark' && {
-            borderColor: 'white',
-                      borderWidth:  1,
+        style={[styles.card,
+        theme === 'dark' && {
+          borderColor: 'white',
+          borderWidth: 1,
 
-          },
-          { backgroundColor: theme === 'dark' ? 'black' : backgroundColor, flexDirection: isHorizontal ? 'row' : 'column' }]}
+        },
+        { backgroundColor: theme === 'dark' ? 'black' : backgroundColor, flexDirection: isHorizontal ? 'row' : 'column' }]}
         activeOpacity={0.7}
         onPress={() => {
           if (item?.url.includes('.') || item?.url.includes('?') || item?.url.includes('/')) {
@@ -207,18 +207,18 @@ const AuthTab = () => {
           />
         </TouchableOpacity>
 
-        <View style={[styles.iconContainer, 
-           theme === 'dark' && {
-            borderColor: 'white'
-          },
-          { backgroundColor: theme === 'dark' ? DARK_COLOR : ERP_COLOR_CODE.ERP_WHITE }]}>
+        <View style={[styles.iconContainer,
+        theme === 'dark' && {
+          borderColor: 'white'
+        },
+        { backgroundColor: theme === 'dark' ? DARK_COLOR : ERP_COLOR_CODE.ERP_WHITE }]}>
           <Text style={[styles.iconText, theme === 'dark' && {
-            color:'white'
+            color: 'white'
           }]}>
             {item?.icon && item?.icon !== ''
               ? item.icon
               : item?.name
-              ? (() => {
+                ? (() => {
                   const words = item.name.trim().split(' ').filter(Boolean);
                   if (words.length === 1) {
                     return words[0].substring(0, 2).toUpperCase();
@@ -229,7 +229,7 @@ const AuthTab = () => {
                       .join('');
                   }
                 })()
-              : '?'}
+                : '?'}
           </Text>
         </View>
 
@@ -278,14 +278,14 @@ const AuthTab = () => {
     );
   }
 
-   if(showBookmarksOnly && list?.length === 0 || allList?.length === 0){
+  if (showBookmarksOnly && list?.length === 0 || allList?.length === 0) {
     return (
       <View
         style={{
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: theme === 'dark' ?'black' : ERP_COLOR_CODE.ERP_WHITE,
+          backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
         }}
       >
         <NoData />

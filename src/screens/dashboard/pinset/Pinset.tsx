@@ -8,6 +8,8 @@ import {
   setPinEnabled,
   isPinEnabled,
   getPinCode,
+  removePinCode,
+  resetPin,
 } from '../../../utils/sqlite';
 import { useNavigation } from '@react-navigation/native';
 import CustomAlert from '../../../components/alert/CustomAlert';
@@ -18,9 +20,9 @@ const { width } = Dimensions.get('screen');
 
 const PinSetupScreen = () => {
   const navigation = useNavigation();
-    const dispatch = useAppDispatch();
-    const theme = useAppSelector(state => state.theme.mode);
-  
+  const dispatch = useAppDispatch();
+  const theme = useAppSelector(state => state.theme.mode);
+
   const [pin, setPin] = useState<string>('');
   const [storedPin, setStoredPin] = useState<string>('');
   const [mode, setMode] = useState<'verify' | 'setup'>('setup');
@@ -48,12 +50,12 @@ const PinSetupScreen = () => {
     };
     checkPin();
   }, []);
-useLayoutEffect(() => {
+  useLayoutEffect(() => {
     navigation.setOptions({
-       headerStyle: {
-                             backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
-                           },
-                           headerTintColor: '#fff', 
+      headerStyle: {
+        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+      },
+      headerTintColor: '#fff',
       headerTitle: () => (
         <Text
           numberOfLines={1}
@@ -61,15 +63,15 @@ useLayoutEffect(() => {
             maxWidth: 180,
             fontSize: 18,
             fontWeight: '700',
-            color:  theme === 'dark' ? "white" : ERP_COLOR_CODE.ERP_WHITE,
+            color: theme === 'dark' ? "white" : ERP_COLOR_CODE.ERP_WHITE,
           }}
         >
           {'Pinset'}
         </Text>
       ),
-    
+
     });
-}, [navigation]);
+  }, [navigation]);
   const handleKeyPress = (digit: string) => {
     if (pin.length < 4) setPin(pin + digit);
   };
@@ -77,6 +79,26 @@ useLayoutEffect(() => {
   const handleDelete = () => {
     setPin(pin.slice(0, -1));
   };
+
+  const onRemovePin = async () => {
+    const db = await getDBConnection();
+    await resetPin(db);
+    await removePinCode(db);
+
+    setAlertVisible(true);
+
+    setAlertConfig({
+      title: 'Success',
+      message: 'PIN removed',
+      type: 'success',
+    });
+
+    setTimeout(() => {
+      setAlertVisible(false)
+        navigation.goBack();
+    }, 300)
+  };
+
 
   const handleOk = async () => {
     if (pin.length !== 4) return;
@@ -114,7 +136,7 @@ useLayoutEffect(() => {
         });
         setPin('');
         dispatch(setIsPinLoaded())
-        
+
         navigation.goBack();
       } catch (error) {
         console.error('Error saving PIN:', error);
@@ -124,7 +146,7 @@ useLayoutEffect(() => {
 
   return (
     <View style={[styles.container, theme === 'dark' && {
-      backgroundColor : 'black'
+      backgroundColor: 'black'
     }]}>
       {/* Header */}
       <Text style={[styles.title, theme === 'dark' && {
@@ -132,7 +154,7 @@ useLayoutEffect(() => {
       }]}>
         {mode === 'verify' ? 'Verify your old PIN' : 'Set up new PIN'}
       </Text>
-      <Text style={[styles.subtitle,  theme === 'dark' && {
+      <Text style={[styles.subtitle, theme === 'dark' && {
         color: 'white'
       }]}>
         {mode === 'verify'
@@ -147,7 +169,7 @@ useLayoutEffect(() => {
             key={i}
             style={[
               styles.pinCircle,
-              { backgroundColor: i < pin.length ? theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_APP_COLOR : theme === 'dark' ? DARK_COLOR :'#e5e7eb' },
+              { backgroundColor: i < pin.length ? theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_APP_COLOR : theme === 'dark' ? DARK_COLOR : '#e5e7eb' },
             ]}
           />
         ))}
@@ -188,6 +210,12 @@ useLayoutEffect(() => {
           </View>
         ))}
       </View>
+      {
+        storedPin && <TouchableOpacity onPress={onRemovePin}>
+          <Text>Remove PIN</Text>
+        </TouchableOpacity>
+      }
+
 
       <CustomAlert
         visible={alertVisible}

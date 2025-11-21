@@ -4,9 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import NoData from '../../../../components/no_data/NoData';
 import FullViewLoader from '../../../../components/loader/FullViewLoader';
-import { styles } from './entry_style';
 import ERPIcon from '../../../../components/icon/ERPIcon';
 import { getERPMenuThunk } from '../../../../store/slices/auth/thunk';
+import { styles } from '../entry/entry_style';
 import {
   createBookmarksTable,
   getBookmarks,
@@ -23,9 +23,10 @@ const accentColors = ['#dbe0f5ff', '#c8f3edff', '#faf1e0ff', '#f0e1e1ff', '#f2e3
 const EntryTab = () => {
   const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector(state => state?.auth);
-  const { isAuthenticated, activeToken, error } = useAppSelector(state => state.auth);
+  const { error, isAuthenticated, activeToken } = useAppSelector(state => state.auth);
   const { menu, isMenuLoading } = useAppSelector(state => state.auth);
+  const { user } = useAppSelector(state => state?.auth);
+  const theme = useAppSelector(state => state?.theme.mode);
   const [entryLoader, setEntryLoader] = useState(false);
 
   const allList = menu?.filter(item => item?.isReport === 'E') ?? [];
@@ -51,15 +52,23 @@ const EntryTab = () => {
   const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const list = showBookmarksOnly ? filteredList.filter(item => bookmarks[item.id]) : filteredList;
-  const theme = useAppSelector(state => state?.theme.mode);
+
+  useEffect(() => {
+    (async () => {
+      const db = await getDBConnection();
+      await createBookmarksTable(db);
+      const saved = await getBookmarks(db, user?.id);
+      setBookmarks(saved);
+    })();
+  }, []);
 
   const toggleBookmark = async (id: string) => {
     const updated = !bookmarks[id];
     setBookmarks(prev => ({ ...prev, [id]: updated }));
-
     const db = await getDBConnection();
     await insertOrUpdateBookmark(db, id, user?.id, updated);
     showToast('Bookmark item updated!')
+
   };
 
   useEffect(() => {
@@ -81,11 +90,10 @@ const EntryTab = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-     
-     headerStyle: {
-           backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
-         },
-         headerTintColor: '#fff',  
+      headerStyle: {
+        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+      },
+      headerTintColor: '#fff',
       headerTitle: () =>
         showSearch ? (
           <View
@@ -98,7 +106,7 @@ const EntryTab = () => {
             <TextInput
               value={searchText}
               onChangeText={setSearchText}
-              placeholder="Search entry here..."
+              placeholder="Search report here..."
               style={{
                 flex: 1,
                 backgroundColor: '#f0f0f0',
@@ -116,24 +124,26 @@ const EntryTab = () => {
               <MaterialIcons
                 name="clear"
                 size={24}
-                color={ theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_WHITE}
+                color={ERP_COLOR_CODE.ERP_WHITE}
                 style={{ marginLeft: 8 }}
               />
             </TouchableOpacity>
           </View>
         ) : (
-          <Text style={{ color: 
-          
-         theme === 'dark' ?  'white' : ERP_COLOR_CODE.ERP_WHITE, fontSize: 18, fontWeight: '600' }}>
-            Entry
+          <Text style={{ color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_WHITE, fontSize: 18, fontWeight: '600' }}>
+            Reports
           </Text>
         ),
       headerRight: () => (
         <>
+
+          {allList.length > 5 && !showSearch && (
+            <ERPIcon name="search" onPress={() => setShowSearch(true)} />
+          )}
           {!showSearch && (
             <>
-              {allList.length > 5 && <ERPIcon name="search" onPress={() => setShowSearch(true)} />}
               <ERPIcon name="refresh" onPress={() => setIsRefresh(!isRefresh)} />
+
               <ERPIcon
                 name={isHorizontal ? 'dashboard' : 'list'}
                 onPress={() => setIsHorizontal(prev => !prev)}
@@ -142,6 +152,7 @@ const EntryTab = () => {
                 name={!showBookmarksOnly ? 'bookmark-outline' : 'bookmark'}
                 onPress={() => setShowBookmarksOnly(prev => !prev)}
               />
+
             </>
           )}
         </>
@@ -153,44 +164,32 @@ const EntryTab = () => {
   }, [navigation, showBookmarksOnly, isHorizontal, isRefresh, showSearch, searchText, allList]);
 
   useEffect(() => {
-    (async () => {
-      const db = await getDBConnection();
-      await createBookmarksTable(db);
-      const saved = await getBookmarks(db, user?.id);
-      setBookmarks(saved);
-    })();
-  }, []);
+    if (isAuthenticated) {
+      setEntryLoader(true);
 
-
-  useEffect(() => {
-  if (isAuthenticated) {
-    setEntryLoader(true);
-
-    dispatch(getERPMenuThunk())
-      .unwrap()
-      .then(() => {
-        setEntryLoader(false);
-      })
-      .catch(() => {
-        setEntryLoader(false); 
-      });
-  }
-}, [isAuthenticated, dispatch, activeToken, isRefresh]);
-
+      dispatch(getERPMenuThunk())
+        .unwrap()
+        .then(() => {
+          setEntryLoader(false);
+        })
+        .catch(() => {
+          setEntryLoader(false);
+        });
+    }
+  }, [isAuthenticated, dispatch, activeToken, isRefresh]);
 
   const renderItem = ({ item, index }: any) => {
-     const backgroundColor = accentColors[index % accentColors.length];
+    const backgroundColor = accentColors[index % accentColors.length];
 
     return (
       <TouchableOpacity
-        style={[styles.card, 
-          theme === 'dark' && {
-            borderColor: 'white',
-                      borderWidth:  1,
+        style={[styles.card,
+        theme === 'dark' && {
+          borderColor: 'white',
+          borderWidth: 1,
 
-          },
-          { 
-          backgroundColor: theme === 'dark' ? 'black' : backgroundColor, flexDirection: isHorizontal ? 'row' : 'column' }]}
+        },
+        { backgroundColor: theme === 'dark' ? 'black' : backgroundColor, flexDirection: isHorizontal ? 'row' : 'column' }]}
         activeOpacity={0.7}
         onPress={() => {
           if (item?.url.includes('.') || item?.url.includes('?') || item?.url.includes('/')) {
@@ -211,18 +210,18 @@ const EntryTab = () => {
           />
         </TouchableOpacity>
 
-        <View style={[styles.iconContainer, 
-           theme === 'dark' && {
-            borderColor: 'white'
-          },
-          { backgroundColor:  theme === 'dark' ? DARK_COLOR : ERP_COLOR_CODE.ERP_WHITE }]}>
+        <View style={[styles.iconContainer,
+        theme === 'dark' && {
+          borderColor: 'white'
+        },
+        { backgroundColor: theme === 'dark' ? DARK_COLOR : ERP_COLOR_CODE.ERP_WHITE }]}>
           <Text style={[styles.iconText, theme === 'dark' && {
-            color:'white',
+            color: 'white'
           }]}>
             {item?.icon && item?.icon !== ''
               ? item.icon
               : item?.name
-              ? (() => {
+                ? (() => {
                   const words = item.name.trim().split(' ').filter(Boolean);
                   if (words.length === 1) {
                     return words[0].substring(0, 2).toUpperCase();
@@ -233,9 +232,8 @@ const EntryTab = () => {
                       .join('');
                   }
                 })()
-              : '?'}
+                : '?'}
           </Text>
-          {/* <MaterialIcons name={item.icon} color={"#000"} size={30}/> */}
         </View>
 
         <View
@@ -245,12 +243,12 @@ const EntryTab = () => {
             alignItems: isHorizontal ? 'flex-start' : 'center',
           }}
         >
-          <Text numberOfLines={2} style={[styles.title,  theme === 'dark' && {
+          <Text numberOfLines={2} style={[styles.title, theme === 'dark' && {
             color: 'white'
           },]}>
             {item?.name}
           </Text>
-          <Text numberOfLines={2} style={[styles.subtitle,  theme === 'dark' && {
+          <Text numberOfLines={2} style={[styles.subtitle, theme === 'dark' && {
             color: 'white'
           },]}>
             {item?.title}
@@ -260,73 +258,70 @@ const EntryTab = () => {
     );
   };
 
-  const renderView = () => {
-    if (!error && !entryLoader && menu?.length === 0 && filteredList?.length === 0 && list?.length === 0 && allList?.length === 0) {
-      return (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
-          }}
-        >
-          <NoData />
-        </View>
-      );
-    } 
-    else if (showBookmarksOnly && list?.length === 0 || allList?.length === 0){
+  if (isMenuLoading) {
+    return (
+      <View style={styles.centered}>
+        <FullViewLoader />
+      </View>
+    );
+  }
+
+  if (error) {
     return (
       <View
         style={{
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: theme === 'dark' ?'black' : ERP_COLOR_CODE.ERP_WHITE,
+          backgroundColor: 'white',
+        }}
+      >
+        <ErrorMessage message={error} />
+      </View>
+    );
+  }
+  if (showBookmarksOnly && list?.length === 0 || allList?.length === 0) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
         }}
       >
         <NoData />
       </View>
     );
   }
-    else if (error) {
-      return (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: theme ==='dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
-          }}
-        >
-          <ErrorMessage message={error} />
-        </View>
-      );
-    } else if (entryLoader === true) {
-      return (
-        <View style={styles.centered}>
-          <FullViewLoader />
-        </View>
-      );
-    } else if (list.length > 0) {
-      return (
-        <FlatList
-          key={`${isHorizontal}-${showBookmarksOnly}-${searchText}`}
-          data={list}
-          keyboardShouldPersistTaps="handled"
-          keyExtractor={(item, index) => index.toString()}
-          numColumns={isHorizontal ? 1 : 2}
-          contentContainerStyle={styles.listContent}
-          columnWrapperStyle={!isHorizontal ? styles.columnWrapper : undefined}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-        />
-      );
-    }
-  };
+  if (!error && !entryLoader && menu?.length === 0 && filteredList?.length === 0 && list?.length === 0 && allList?.length === 0) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
+        }}
+      >
+        <NoData />
+      </View>
+    );
+  }
+
   return (
-    <View style={{ flex: 1, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE }}>
-      {renderView()}
+    <View style={{ flex: 1, backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE }}>
+      <FlatList
+        key={`${isHorizontal}-${showBookmarksOnly}-${searchText}`}
+        keyboardShouldPersistTaps="handled"
+        data={list}
+        keyExtractor={(item, index) => index.toString()}
+        numColumns={isHorizontal ? 1 : 2}
+        contentContainerStyle={styles.listContent}
+        columnWrapperStyle={!isHorizontal ? styles.columnWrapper : undefined}
+        renderItem={renderItem}
+        showsVerticalScrollIndicator={false}
+      />
       <Toast visible={toast.visible} message={toast.message} onHide={hideToast} />
     </View>
   );
