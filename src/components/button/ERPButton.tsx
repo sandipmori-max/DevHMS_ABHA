@@ -16,18 +16,19 @@ const ERPButton: React.FC<ERPButtonProps> = ({
   isLoading
 }) => (
   <TouchableOpacity
-    style={[styles.button, { 
-      flexDirection:'row',
-      justifyContent:'center',
+    style={[styles.button, {
+      flexDirection: 'row',
+      justifyContent: 'center',
       gap: 8,
-      backgroundColor: color, opacity: disabled ? 0.6 : 1 }, style]}
+      backgroundColor: color, opacity: disabled ? 0.6 : 1
+    }, style]}
     onPress={onPress}
     disabled={disabled}
     activeOpacity={activeOpacity}
   >
     {
       isLoading && <ActivityIndicator size={'large'} color={'#fff'} />
-    } 
+    }
     <MaterialIcons name={'lock-outline'} color={'white'} size={20} />
     <Text style={[styles.buttonText, textStyle]}>{text}</Text>
   </TouchableOpacity>

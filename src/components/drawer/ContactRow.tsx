@@ -1,5 +1,5 @@
 import MaterialIcons from '@react-native-vector-icons/material-icons';
-import { View, Text, Linking, TouchableOpacity } from 'react-native'; 
+import { View, Text, Linking, TouchableOpacity } from 'react-native';
 import { ERP_COLOR_CODE } from '../../utils/constants';
 import { useAppSelector } from '../../store/hooks';
 const ContactRow = () => {
@@ -54,7 +54,7 @@ const ContactRow = () => {
           color={theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK}
           name="email"
         />
-        <Text  style={{
+        <Text style={{
           color: theme === 'dark' ? 'white' : 'black'
         }}>{emailAddress}</Text>
       </TouchableOpacity>

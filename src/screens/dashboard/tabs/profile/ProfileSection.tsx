@@ -4,16 +4,16 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native
 import FastImage from 'react-native-fast-image';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import { useAppSelector } from '../../../../store/hooks';
- 
-const ProfileSection = ({baseLink, user, onEditPress }) => {
-    const theme = useAppSelector(state => state?.theme.mode);
-  
-  if (!user) return null; 
+
+const ProfileSection = ({ baseLink, user, onEditPress }) => {
+  const theme = useAppSelector(state => state?.theme.mode);
+
+  if (!user) return null;
   return (
-    <TouchableOpacity 
-     onPress={onEditPress}
+    <TouchableOpacity
+      onPress={onEditPress}
       style={[styles.profileContainer, theme === 'dark' && {
-         borderColor: 'white',
+        borderColor: 'white',
         borderRadius: 8,
         backgroundColor: 'black'
       }]}>
@@ -22,21 +22,20 @@ const ProfileSection = ({baseLink, user, onEditPress }) => {
       }]}>
         <View style={styles.profileHeader}>
           <View style={styles.avatarContainer}>
-           <FastImage
-                  source={{
-                    uri: `${baseLink}/FileUpload/1/UserMaster/${
-                      user?.id
-                    }/d_profileimage.jpeg?ts=${new Date().getTime()}`,
-                    priority: FastImage.priority.normal,
-                    cache: FastImage.cacheControl.web,
-                  }}
-                  style={{ height: 56, width: 56, borderRadius: 46 }}
-                />
+            <FastImage
+              source={{
+                uri: `${baseLink}/FileUpload/1/UserMaster/${user?.id
+                  }/d_profileimage.jpeg?ts=${new Date().getTime()}`,
+                priority: FastImage.priority.normal,
+                cache: FastImage.cacheControl.web,
+              }}
+              style={{ height: 56, width: 56, borderRadius: 46 }}
+            />
           </View>
 
           <View style={styles.profileInfo}>
             <Text style={[styles.profileName, theme === 'dark' && {
-              color :'white'
+              color: 'white'
             }]}>{user?.name || 'User Name'}</Text>
             <Text style={styles.profileEmail}>{user?.companyName || 'Company'}</Text>
             <View style={[styles.roleBadge, theme === 'dark' && {
@@ -59,7 +58,7 @@ const ProfileSection = ({baseLink, user, onEditPress }) => {
           </TouchableOpacity>
         </View>
 
-       
+
       </View>
     </TouchableOpacity>
   );
@@ -78,7 +77,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 0.6,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-    
+
   },
   profileHeader: {
     flexDirection: 'row',
@@ -94,7 +93,7 @@ const styles = StyleSheet.create({
     marginRight: 14,
     overflow: 'hidden',
     borderWidth: 1.5,
-   },
+  },
   profileAvatar: {
     height: '100%',
     width: '100%',

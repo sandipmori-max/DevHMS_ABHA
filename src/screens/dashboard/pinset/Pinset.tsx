@@ -95,7 +95,7 @@ const PinSetupScreen = () => {
 
     setTimeout(() => {
       setAlertVisible(false)
-        navigation.goBack();
+      navigation.goBack();
     }, 300)
   };
 

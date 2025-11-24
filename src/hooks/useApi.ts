@@ -39,7 +39,7 @@ export const useApi = <T = any>(options: UseApiOptions = {}) => {
         onSuccess?.(data);
         return data;
       } catch (error: any) {
-        console.log("error,,,,,,,,,,,,,,,,,,,,,,,",error)
+        console.log("error,,,,,,,,,,,,,,,,,,,,,,,", error)
         if (error.name === 'AbortError') {
           return;
         }

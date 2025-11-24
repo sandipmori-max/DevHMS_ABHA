@@ -42,7 +42,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
               radius={78}
               innerRadius={68}
               textSize={14}
-              textColor={theme === 'dark' ? '#fff': "#000"}
+              textColor={theme === 'dark' ? '#fff' : "#000"}
               showValuesAsLabels
               innerCircleColor={theme === 'dark' ? 'black' : "#fff"}
               centerLabelComponent={() => (
@@ -51,7 +51,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                     textAlign: 'center',
                     fontSize: 16,
                     fontWeight: 'bold',
-                    color: theme === 'dark' ? '#fff': "#000",
+                    color: theme === 'dark' ? '#fff' : "#000",
                   }}
                 >
                   {t('home.dashboard')}
@@ -98,7 +98,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                         style={{
                           fontWeight: '500',
                           maxWidth: 110,
-                          color: theme === 'dark' ? '#fff': "#000",
+                          color: theme === 'dark' ? '#fff' : "#000",
                         }}
                       >
                         {item.text}
@@ -115,7 +115,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                       </Text>
                     </View>
                   )}
-                 />
+                />
               </View>
             </View>
           )}
@@ -159,7 +159,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                     </Text>
                   </View>
                 )}
-               />
+              />
             </View>
           </View>
         )}

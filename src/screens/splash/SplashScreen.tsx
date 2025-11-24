@@ -58,8 +58,8 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
 
   return (
     <View style={[styles.container, theme === 'dark' && {
-            backgroundColor: DARK_COLOR
-          }]}>
+      backgroundColor: DARK_COLOR
+    }]}>
       <StatusBar hidden />
 
       {/* Logo Animation */}
@@ -100,7 +100,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
           {
             opacity: subtitleOpacity,
           },
-           theme === 'dark' && {
+          theme === 'dark' && {
             color: 'white'
           }
         ]}
@@ -112,4 +112,3 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
 };
 
 export default CustomSplashScreen;
-//https://www.deverp.com/index.aspx?q=contact_us

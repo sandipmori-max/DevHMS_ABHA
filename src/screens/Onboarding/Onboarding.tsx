@@ -77,7 +77,7 @@ const Onboarding = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if(!loading){
+    if (!loading) {
       startWaveAnimation();
     }
     checkOnboardStatus();
@@ -92,21 +92,21 @@ const Onboarding = ({ navigation }) => {
   }, [currentIndex]);
 
   const checkOnboardStatus = async () => {
-  try {
-    const seen = await AsyncStorage.getItem('onboardSeen');
-    if (seen) {
-      navigation.replace('Login');
-    } else {
+    try {
+      const seen = await AsyncStorage.getItem('onboardSeen');
+      if (seen) {
+        navigation.replace('Login');
+      } else {
+        setLoading(false);
+      }
+    } catch (e) {
       setLoading(false);
     }
-  } catch (e) {
-    setLoading(false);
-  }
-};
+  };
 
-if (loading) return <>
-  <FullViewLoader />
-</>;
+  if (loading) return <>
+    <FullViewLoader />
+  </>;
 
   const startWaveAnimation = () => {
     Animated.loop(
@@ -165,20 +165,20 @@ if (loading) return <>
       item.layout.align === 'left'
         ? { alignSelf: 'flex-start', textAlign: 'left' }
         : item.layout.align === 'right'
-        ? { alignSelf: 'flex-end', textAlign: 'right' }
-        : { alignSelf: 'center', textAlign: 'center' };
+          ? { alignSelf: 'flex-end', textAlign: 'right' }
+          : { alignSelf: 'center', textAlign: 'center' };
 
     return (
       <View style={[styles.slide, { width }]}>
-         <FastImage
-              source={item?.image}
-              style={{
-                height: 190,
-                width: 180,
-                marginBottom: 20
-              }}
-              resizeMode={FastImage.resizeMode.contain}
-            />
+        <FastImage
+          source={item?.image}
+          style={{
+            height: 190,
+            width: 180,
+            marginBottom: 20
+          }}
+          resizeMode={FastImage.resizeMode.contain}
+        />
 
         <Animated.Text
           style={[
@@ -287,7 +287,7 @@ if (loading) return <>
         ) : (
           <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
             <Pressable style={[styles.circleBtn, {
-                backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+              backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
             }]} onPress={handleSkip}>
               <MaterialIcons name="check" size={26} color="#fff" />
             </Pressable>
@@ -321,13 +321,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 34,
     fontWeight: '600',
-     color: '#1e1e1e',
-   },
+    color: '#1e1e1e',
+  },
 
   desc: {
     fontSize: 17,
     color: '#333',
-   },
+  },
 
   dotsContainer: {
     flexDirection: 'row',
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
   inactiveDot: { backgroundColor: '#bbb' },
 
   skipBtn: {
-    marginTop:  Platform.OS === 'ios' ? 0 : 45,
+    marginTop: Platform.OS === 'ios' ? 0 : 45,
     alignSelf: 'flex-end',
     padding: 15,
     zIndex: 10,
@@ -362,5 +362,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1
-   },
+  },
 });

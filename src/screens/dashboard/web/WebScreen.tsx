@@ -21,7 +21,7 @@ const WebScreen = () => {
   const [isReloading, setIsReloading] = useState(false);
   const webviewRef = useRef<WebView>(null);
   const baseLink = useBaseLink();
-    const theme = useAppSelector(state => state?.theme.mode);
+  const theme = useAppSelector(state => state?.theme.mode);
 
   const url = isFromChart ? `${baseLink}app/index.html?dashboard/0/&token=${token}` : '';
 
@@ -35,16 +35,16 @@ const WebScreen = () => {
   }, []);
 
   useEffect(() => {
-  return () => {
-     try {
-      console.log('🧹 Cleaning WebView cache on unmount...');
-      webviewRef.current?.clearCache(true);
-      webviewRef.current?.clearHistory();
-    } catch (e) {
-      console.warn('Cache clear failed:', e);
-    }
-  };
-}, []);
+    return () => {
+      try {
+        console.log('🧹 Cleaning WebView cache on unmount...');
+        webviewRef.current?.clearCache(true);
+        webviewRef.current?.clearHistory();
+      } catch (e) {
+        console.warn('Cache clear failed:', e);
+      }
+    };
+  }, []);
 
 
   const toggleDiv = () => {
@@ -60,7 +60,7 @@ const WebScreen = () => {
     webviewRef?.current?.injectJavaScript(jsCode);
     setIsHidden(prev => !prev);
   };
-const [webKey, setWebKey] = useState(Date.now());
+  const [webKey, setWebKey] = useState(Date.now());
 
   useEffect(() => {
     return () => {
@@ -68,19 +68,19 @@ const [webKey, setWebKey] = useState(Date.now());
       setWebKey(Date.now());
     };
   }, []);
-  
+
 
   const reloadWebView = () => {
-      setWebKey(Date.now());
+    setWebKey(Date.now());
 
     setIsReloading(true);
-     try {
-    webviewRef.current?.clearCache(true);
-    webviewRef.current?.clearHistory();
-  } catch (e) {
-    console.warn('Cache clear failed:', e);
-  }
-  webviewRef.current?.reload();
+    try {
+      webviewRef.current?.clearCache(true);
+      webviewRef.current?.clearHistory();
+    } catch (e) {
+      console.warn('Cache clear failed:', e);
+    }
+    webviewRef.current?.reload();
   };
 
   useLayoutEffect(() => {
@@ -88,7 +88,7 @@ const [webKey, setWebKey] = useState(Date.now());
       headerTitle: () => (
         <Text
           numberOfLines={1}
-          style={{ maxWidth: 180, fontSize: 18, fontWeight: '700', color: 'white'}}
+          style={{ maxWidth: 180, fontSize: 18, fontWeight: '700', color: 'white' }}
         >
           {isFromChart ? 'Dashboard' : item?.title || t('webScreen.details')}
         </Text>
@@ -145,8 +145,8 @@ const [webKey, setWebKey] = useState(Date.now());
             scrollEnabled={true}
             decelerationRate={0.998}
             cacheEnabled={true}
-              incognito={true}       
-             cacheMode="LOAD_DEFAULT"
+            incognito={true}
+            cacheMode="LOAD_DEFAULT"
             renderLoading={() => (
               <View style={[styles.webviewLoadingContainer, theme === 'dark' && {
                 backgroundColor: "black"

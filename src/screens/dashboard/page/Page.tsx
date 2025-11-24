@@ -156,9 +156,9 @@ const PageScreen = () => {
     item => item?.defaultvalue && item?.defaultvalue === '#location' && item?.visible === "0",
   );
 
-   const hasMediaField = controls.some(
-    item =>  item?.ctltype === 'IMAGE' ||
-        item?.ctltype === 'PHOTO',
+  const hasMediaField = controls.some(
+    item => item?.ctltype === 'IMAGE' ||
+      item?.ctltype === 'PHOTO',
   );
 
   console.log('locationEnabled ---------------- ', locationEnabled);
@@ -167,7 +167,7 @@ const PageScreen = () => {
     let interval: NodeJS.Timeout | null = null;
 
     const checkLocation = async () => {
-      const enabled =  await DeviceInfo.isLocationEnabled();
+      const enabled = await DeviceInfo.isLocationEnabled();
       console.log('locationEnabled -----enabled----------- ', enabled);
 
       setLocationEnabled(enabled);
@@ -183,7 +183,7 @@ const PageScreen = () => {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, []); 
+  }, []);
   // console.log(' ------------------------ ', hasLocationField);
   // useEffect(() => {
   //   const subscription = AppState.addEventListener('change', nextAppState => {
@@ -369,10 +369,10 @@ const PageScreen = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-       headerStyle: {
-                       backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
-                     },
-                     headerTintColor: '#fff', 
+      headerStyle: {
+        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+      },
+      headerTintColor: '#fff',
       headerTitle: () => (
         <View style={{ flexDirection: 'row', alignItems: 'center', maxWidth: 210 }}>
           <Text
@@ -421,7 +421,7 @@ const PageScreen = () => {
                   const enabled = await DeviceInfo.isLocationEnabled();
                   const permissionStatus = hasLocationField && await requestLocationPermissions();
                   const hasPermission = hasMediaField && await requestCameraPermission();
-                  
+
                   console.log("---------")
                   console.log("enabled---------", enabled)
                   console.log("permissionStatus---------", permissionStatus)
@@ -514,7 +514,7 @@ const PageScreen = () => {
                   console.error('Error checking location status:', error);
                 }
               }}
-             />
+            />
           )}
         </>
       ),
@@ -842,7 +842,7 @@ const PageScreen = () => {
             flex: 1,
             justifyContent: 'center',
             alignContent: 'center',
-            backgroundColor: theme === 'dark' ? 'black'  : ERP_COLOR_CODE.ERP_WHITE,
+            backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
           }}
         >
           <ErrorMessage message={error} />
@@ -853,7 +853,7 @@ const PageScreen = () => {
             style={{
               flex: 1,
               height: Dimensions.get('screen').height,
-            backgroundColor: theme === 'dark' ? 'black'  : ERP_COLOR_CODE.ERP_WHITE,
+              backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
 
             }}
           >
@@ -866,7 +866,7 @@ const PageScreen = () => {
               contentContainerStyle={{ paddingBottom: keyboardHeight }}
               keyboardShouldPersistTaps="handled"
             />
-            
+
           </View>
           <CustomAlert
             visible={alertVisible}
@@ -919,8 +919,8 @@ const PageScreen = () => {
           )}
         </>
       ) : (
-        <View style={[{ flex: 1 ,}, theme === 'dark' && {
-          backgroundColor :'black',
+        <View style={[{ flex: 1, }, theme === 'dark' && {
+          backgroundColor: 'black',
           width: '100%'
         }]}>
           <NoData />

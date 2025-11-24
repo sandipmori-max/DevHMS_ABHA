@@ -47,7 +47,7 @@ const Toast = ({ visible, message, onHide }: { visible: boolean; message: string
   );
 };
 
- 
+
 export default Toast
 
 
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderRadius: 12, 
+    borderRadius: 12,
     maxWidth: width * 0.9,
   },
   toastText: {

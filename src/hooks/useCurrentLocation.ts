@@ -15,16 +15,16 @@ export const useCurrentAddress = () => {
     Geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
-  console.log("longitude ***********************-******---------------- ", latitude, longitude)
+        console.log("longitude ***********************-******---------------- ", latitude, longitude)
 
         setCoords({ latitude, longitude });
         setAddress(`${latitude.toString()},${longitude.toString()}`);
         setError(null)
         setLoading(false);
-      
+
       },
       (err) => {
-  console.log("longitude errrrrrrr***********************-******---------------- ", err)
+        console.log("longitude errrrrrrr***********************-******---------------- ", err)
 
         setError(err.message || 'Location error');
         setLoading(false);
