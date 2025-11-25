@@ -562,44 +562,6 @@ const PinSetupScreen = () => {
           </View>
         ))}
       </View>
-
-       {
-        screen !== 'blocked' &&  <View style={{ marginTop: 18, alignItems: 'center' }}>
-        {storedPin ? (
-          <>
-           
-          </>
-        ) : (
-          <TouchableOpacity
-            onPress={() => {
-              setScreen('setup');
-              setPin('');
-            }}
-            style={{ marginVertical: 6 }}
-          >
-            <Text style={{ color: ERP_COLOR_CODE.ERP_APP_COLOR }}>Add PIN</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-      }
-     
-
-      {/* Cancel/back action for non-menu screens */}
-      {screen !== 'menu' && screen !== 'blocked' && (
-        <TouchableOpacity
-          onPress={() => {
-            // back to main behavior: if storedPin exists, go verify, else setup
-            if (storedPin) setScreen('verify');
-            else setScreen('setup');
-            setPin('');
-            tempPinRef.current = '';
-          }}
-          style={{ marginTop: 12 }}
-        >
-          <Text style={{ color: '#6b7280' }}>Cancel</Text>
-        </TouchableOpacity>
-      )}
-
       <CustomAlert
         visible={alertVisible}
         title={alertConfig.title}
