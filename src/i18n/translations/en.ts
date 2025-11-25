@@ -63,7 +63,6 @@ export default {
     switchDarkTheme: 'Switch to dark theme',
     biometricAuth: 'Set Up Your PIN',
     useBiometric: 'Secure your account with a 4-digit PIN',
-
     twoFactorAuth: 'Two-Factor Authentication',
     extraSecurityLayer: 'Add extra security layer',
     changePassword: 'Change Password',
@@ -194,7 +193,6 @@ export default {
     msg13: "Failed to update file.",
     msg14: "Please provide a signature",
     msg15: "We need camera access only to serve you better. Please enable it to continue."
-
   },
   text:{
     text1: "Hide password",
@@ -251,6 +249,5 @@ export default {
     text52: "Dashboard",
     text53: "Welcome to DevERP",
     text54: "Your business, simplified."
-
   }
 };
