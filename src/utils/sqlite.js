@@ -174,6 +174,31 @@ export const createAccountsTable = async db => {
 const META_KEYS = {
   PIN_ENABLED: 'pin_enabled',
   PIN_CODE: 'pin_code',
+  PIN_WRONG_ATTEMPTS: 'pin_wrong_attempts',
+  PIN_BLOCK_UNTIL: 'pin_block_until',
+};
+
+export const setWrongAttempts = async (db, count) => {
+  await setMeta(db, META_KEYS.PIN_WRONG_ATTEMPTS, String(count));
+};
+
+export const getWrongAttempts = async (db) => {
+  const v = await getMeta(db, META_KEYS.PIN_WRONG_ATTEMPTS);
+  return v ? Number(v) : 0;
+};
+
+export const setBlockUntil = async (db, timestamp) => {
+  await setMeta(db, META_KEYS.PIN_BLOCK_UNTIL, String(timestamp));
+};
+
+export const getBlockUntil = async (db) => {
+  const v = await getMeta(db, META_KEYS.PIN_BLOCK_UNTIL);
+  return v ? Number(v) : 0;
+};
+
+export const resetAttempts = async (db) => {
+  await setWrongAttempts(db, 0);
+  await setBlockUntil(db, 0);
 };
 
 export const setPinEnabled = async (db, enabled) => {
