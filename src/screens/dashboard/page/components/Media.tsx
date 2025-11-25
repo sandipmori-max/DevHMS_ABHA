@@ -283,7 +283,7 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
             },
             { width: 100, height: 100 , }]}>
             {loadingSmall && (
-              <ActivityIndicator style={StyleSheet.absoluteFill} size="small" color="#000" />
+              <ActivityIndicator style={StyleSheet.absoluteFill} size="small" color={theme === 'dark' ? 'white' : 'black'} />
             )}
             <Image
               key={item.field}
@@ -300,7 +300,7 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
               borderWidth: 1,
               borderColor: 'white'
             },]}>
-          <MaterialIcons name={'edit'} color={ERP_COLOR_CODE.ERP_BLACK} size={20} />
+          <MaterialIcons name={'edit'} color={theme === 'dark' ?  'white' : ERP_COLOR_CODE.ERP_BLACK} size={20} />
         </TouchableOpacity>
       </View>
 

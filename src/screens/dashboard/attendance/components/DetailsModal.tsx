@@ -13,12 +13,14 @@ import MaterialIcons from '@react-native-vector-icons/material-icons';
 import FastImage from 'react-native-fast-image';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import { useAppSelector } from '../../../../store/hooks';
+import useTranslations from '../../../../hooks/useTranslations';
 
 const { height } = Dimensions.get('screen');
 
 const DetailsBottomSheet = ({ visible, onClose, item, baseLink }: any) => {
   const translateY = new Animated.Value(height);
   const theme = useAppSelector(state => state?.theme.mode);
+  const { t } = useTranslations();
 
   if (visible) {
     Animated.timing(translateY, {
@@ -118,23 +120,23 @@ const DetailsBottomSheet = ({ visible, onClose, item, baseLink }: any) => {
                 <View
                   style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}
                 >
-                  <Text style={{ color: ERP_COLOR_CODE.ERP_444 }}>Date</Text>
+                  <Text style={{ color: ERP_COLOR_CODE.ERP_444 }}>{t("text.text4")}</Text>
                   <Text style={{ fontWeight: '600', color: theme === 'dark' ? 'white' : 'black' }}>{item?.date}</Text>
                 </View>
                 <View
                   style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}
                 >
-                  <Text style={{ color: ERP_COLOR_CODE.ERP_444 }}>In-Time</Text>
+                  <Text style={{ color: ERP_COLOR_CODE.ERP_444 }}>{t("text.text5")}</Text>
                   <Text style={{ fontWeight: '600', color: theme === 'dark' ? 'white' : 'black' }}>{formatTo12Hour(item?.intime) || '--'}</Text>
                 </View>
                 <View
                   style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}
                 >
-                  <Text style={{ color: ERP_COLOR_CODE.ERP_444 }}>Out-Time</Text>
+                  <Text style={{ color: ERP_COLOR_CODE.ERP_444 }}>{t("text.text6")}</Text>
                   <Text style={{ fontWeight: '600', color: theme === 'dark' ? 'white' : 'black' }}>{formatTo12Hour(item?.outtime) || '--'}</Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={{ color: ERP_COLOR_CODE.ERP_444 }}>Worked Hours</Text>
+                  <Text style={{ color: ERP_COLOR_CODE.ERP_444 }}>{t("text.text7")}</Text>
                   <Text style={{ fontWeight: '600', color: theme === 'dark' ? 'white' : 'black' }}>
                     {getWorkedHours2(item?.intime, item?.outtime)}
                   </Text>
@@ -142,7 +144,7 @@ const DetailsBottomSheet = ({ visible, onClose, item, baseLink }: any) => {
               </View>
             </ScrollView>
           ) : (
-            <Text style={{ textAlign: 'center', marginTop: 20 }}>No details</Text>
+            <Text style={{ textAlign: 'center', marginTop: 20 }}>{t("text.text8")}</Text>
           )}
         </Animated.View>
       </View>

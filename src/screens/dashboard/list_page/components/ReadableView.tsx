@@ -11,7 +11,6 @@ import {
   Image,
   Animated,
   PanResponder,
-  StyleSheet,
   LayoutAnimation,
   UIManager,
   Platform,
@@ -26,6 +25,7 @@ import MaterialIcons from '@react-native-vector-icons/material-icons';
 import MemoizedFooterView from './MemoizedFooterView';
 import RemarksView from './RemarksView';
 import { useAppSelector } from '../../../../store/hooks';
+import useTranslations from '../../../../hooks/useTranslations';
 
 // enable LayoutAnimation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -100,6 +100,8 @@ const ReadableView = ({
   loadMore,
   isLoadingMore
 }: any) => {
+  const { t } = useTranslations();
+
   console.log("filteredData", filteredData.length);
   const navigation = useNavigation();
   const screenWidth = Dimensions.get('window').width;
@@ -131,8 +133,8 @@ const ReadableView = ({
 
   const RenderCard = ({ item, index }: any) => {
     if (!item) return null;
-    const name = item?.name?.toString() || `Item #${index + 1}`;
-    const subName = item?.number || `Item #${index + 1}`;
+    const name = item?.name?.toString() || `-`;
+    const subName = item?.number || `-`;
     const [isRemarksExpanded, setRemarksExpanded] = useState(false);
 
     const status = item?.status;
@@ -369,7 +371,7 @@ const ReadableView = ({
 
                   }}
                 >
-                  Qty:
+                  {t("text.text28")}:
                 </Text>
                 <Text
                   numberOfLines={1}
@@ -399,7 +401,7 @@ const ReadableView = ({
 
                   }}
                 >
-                  Amt:
+                    {t("text.text29")}:
                 </Text>
                 <Text
                   numberOfLines={1}
@@ -425,8 +427,7 @@ const ReadableView = ({
             {btnKeys?.map((key, idx) => {
               const actionValue = item[key];
               const { label, color } = getButtonMeta(key);
-              console.log("label----------", label)
-              return (
+               return (
                 <TouchableOpacity
                   key={`${key}-${idx}`}
                   style={{
@@ -507,14 +508,12 @@ const ReadableView = ({
         renderItem={({ item, index }) => <RenderCard item={item} index={index} />}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-         
          onEndReached={loadMore}
           onEndReachedThreshold={0.2} // trigger when 80% scrolled
-
           ListFooterComponent={
             isLoadingMore ? (
               <View style={{ padding: 20 }}>
-                <Text style={{ textAlign: 'center', color: 'gray' }}>Loading more…</Text>
+                <Text style={{ textAlign: 'center', color: 'gray' }}>{t("text.text30")}</Text>
               </View>
             ) : null
           }
@@ -549,7 +548,7 @@ const ReadableView = ({
                     color: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_333,
                   }}
                 >
-                  Qty :-
+                  {t("text.text28")} :-
                 </Text>
                 <Text
                   style={{
@@ -577,7 +576,7 @@ const ReadableView = ({
                     color: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_333,
                   }}
                 >
-                  Amt :-
+                  {t("text.text29")} :-
                 </Text>
                 <Text
                   style={{
@@ -602,7 +601,7 @@ const ReadableView = ({
                 color: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_333,
               }}
             >
-              {listData?.length} Row(s)
+              {listData?.length} {t("text.text31")}
             </Text>
           </View>
         </View>

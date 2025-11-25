@@ -786,7 +786,7 @@ const HomeScreen = () => {
                     />
                   </View>
 
-                  <View>
+                  {/* <View>
                     <Animated.FlatList
                       showsVerticalScrollIndicator={false}
                       data={['']}
@@ -1001,7 +1001,8 @@ const HomeScreen = () => {
                         </View>
                       )}
                     />
-                  </View>
+                  </View> */}
+                  <View style={{height: 120, width: 20}}> </View>
                 </View>
               )}
             />

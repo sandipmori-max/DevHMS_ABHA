@@ -99,9 +99,6 @@ const LoginForm: React.FC<LoginFormProps> = ({
           firebaseid: currentFcmToken || '',
         }),
       );
-
-      console.log("loginResult", loginResult)
-
       if (loginResult?.success === 1) {
         await DevERPService.getAuth();
         await onLoginSuccess(

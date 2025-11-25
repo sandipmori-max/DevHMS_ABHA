@@ -193,6 +193,8 @@ const CustomPicker = ({
             borderTopLeftRadius: 16,
             borderTopRightRadius: 16,
             padding: 16,
+            borderWidth: 1,
+            borderColor: theme === 'dark' ? 'white' : 'black',
           }}
         >
           <View style={{flexDirection:'row', justifyContent:'space-between', padding : 12}}>

@@ -23,6 +23,7 @@ import { getLastPunchInThunk } from '../../../store/slices/attendance/thunk';
 import ErrorMessage from '../../../components/error/Error';
 import { formatDateForAPI, parseCustomDate } from '../../../utils/helpers';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
+import useTranslations from '../../../hooks/useTranslations';
 
 const AttendanceScreen = () => {
   const navigation = useNavigation<any>();
@@ -30,6 +31,7 @@ const AttendanceScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useAppDispatch();
   const theme = useAppSelector(state => state?.theme.mode);
+  const { t } = useTranslations();
 
   const [resData, setResData] = useState<any>();
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -73,14 +75,14 @@ const AttendanceScreen = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitleAlign: 'left', 
+      headerTitleAlign: 'left',
       headerTitleStyle: {
-      color: '#FFFFFF',
-    },
-     headerStyle: {
-                                 backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
-                               },
-                               headerTintColor: '#fff', 
+        color: '#FFFFFF',
+      },
+      headerStyle: {
+        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+      },
+      headerTintColor: '#fff',
       headerRight: () => (
         <>
           <ERPIcon
@@ -172,8 +174,8 @@ const AttendanceScreen = () => {
       if (fromDate) {
         const fromDateObj = new Date(fromDate.split('-').reverse().join('-'));
         if (selectedDate < fromDateObj) {
-          Alert.alert('Invalid Date Range', 'To date cannot be before From date.', [
-            { text: 'OK' },
+          Alert.alert(t("text.text24"), t("text.text25"), [
+            { text: t("text.text26") },
           ]);
           setShowDatePicker(null);
           return;
@@ -198,7 +200,7 @@ const AttendanceScreen = () => {
         Keyboard.dismiss();
       }}
     >
-      <ScrollView showsVerticalScrollIndicator={false} style={[styles.container,  theme === 'dark' && {backgroundColor :'black'} ]}>
+      <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, theme === 'dark' && { backgroundColor: 'black' }]}>
         {isLoading ? (
           <View
             style={{
@@ -216,29 +218,29 @@ const AttendanceScreen = () => {
             {isListVisible && showDateFilter && (
               <View style={styles.dateContainer}>
                 <View style={styles.dateRow}>
-                   
+
                   <TouchableOpacity
                     onPress={() => setShowDatePicker({ type: 'from', show: true })}
                     style={styles.dateButton}
                   >
-                    <Text style={[styles.dateButtonText, 
-                      {
-                       color: theme === 'dark' ? '#fff': "#000"
+                    <Text style={[styles.dateButtonText,
+                    {
+                      color: theme === 'dark' ? '#fff' : "#000"
 
-                      }
-                    ]}>{fromDate || 'Select From Date'}</Text>
+                    }
+                    ]}>{fromDate || t("text.text27")}</Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.dateRow}>
-                   
+
                   <TouchableOpacity
                     onPress={() => setShowDatePicker({ type: 'to', show: true })}
                     style={styles.dateButton}
                   >
-                    <Text style={[styles.dateButtonText,{
-                       color: theme === 'dark' ? '#fff': "#000"
+                    <Text style={[styles.dateButtonText, {
+                      color: theme === 'dark' ? '#fff' : "#000"
 
-                    }]}>{toDate || 'Select To Date'}</Text>
+                    }]}>{toDate || ''}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -250,8 +252,8 @@ const AttendanceScreen = () => {
                   showDatePicker?.type === 'from' && fromDate
                     ? parseCustomDate(fromDate)
                     : showDatePicker?.type === 'to' && toDate
-                    ? parseCustomDate(toDate)
-                    : new Date()
+                      ? parseCustomDate(toDate)
+                      : new Date()
                 }
                 mode="date"
                 onChange={handleDateChange}
@@ -284,8 +286,8 @@ const AttendanceScreen = () => {
                 )}
               </View>
             ) : (
-              <View 
-              style={[theme === 'dark' && {backgroundColor :'black'}]}
+              <View
+                style={[theme === 'dark' && { backgroundColor: 'black' }]}
               >
                 <AttendanceForm setBlockAction={setBlockAction} resData={resData} />
               </View>

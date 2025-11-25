@@ -243,8 +243,10 @@ const EntryTab = () => {
             alignItems: isHorizontal ? 'flex-start' : 'center',
           }}
         >
-          <Text numberOfLines={2} style={[styles.title, theme === 'dark' && {
+          <Text numberOfLines={2} style={[styles.title, theme === 'dark' ? {
             color: 'white'
+          } : {
+            color: 'black'
           },]}>
             {item?.name}
           </Text>

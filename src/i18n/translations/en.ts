@@ -155,5 +155,57 @@ export default {
     adding: 'Account adding...',
     add: 'Add Account',
     msg1: 'This account will be added to your list. You can switch between accounts anytime.'
+  },
+  title:{
+    title1: "Error",
+    title2: "Login failed",
+    title3: "Success",
+    title4: "Location Status"
+  },
+  msg:{
+    msg1: "You already have this user in your accounts.",
+    msg2: "Unable to login",
+    msg3: "Account added successfully",
+    msg4: "Something went wrong",
+    msg5: "Unable to fetch location",
+    msg6: "Image required",
+    msg7: "Attendance marked successfully!",
+    msg8: "We need location access only to serve you better. Please enable it to continue."
+  },
+  text:{
+    text1: "Hide password",
+    text2: "Show password",
+    text3: "Slide to",
+    text4: "Date",
+    text5: "In-Time",
+    text6: "Out-Time",
+    text7: "Worked Hours",
+    text8: "No details",
+    text9: "All",
+    text10: "Leave",
+    text11: "First Half",
+    text12: "Second Half",
+    text13: "Late Entry",
+    text14: "Present",
+    text15: "Leave",
+    text16: "Late",
+    text17: "Less Hrs",
+    text18: "Days",
+    text19: "Attendance on",
+    text20: "No data",
+    text21: "Less Hours",
+    text22: "Please wait...",
+    text23: "✔ Done",
+    text24: "Invalid Date Range",
+    text25: "To date cannot be before From date.",
+    text26: "Ok",
+    text27: "Select From Date",
+    text28: "Qty",
+    text29: "Amt",
+    text30: "Loading more…",
+    text31: "Row(s)",
+    text32: "See Less ▲",
+    text33 : "See More ▼"
+
   }
 };

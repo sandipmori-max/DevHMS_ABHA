@@ -35,7 +35,6 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
   const [isInputEditUSer, setIsInputEditUser] = useState(false);
   const [isInputEditPass, setIsInputEditPass] = useState(false);
 
-
   const [deviceId, setDeviceId] = useState<string>('');
   const [showPassword, setShowPassword] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
@@ -80,8 +79,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
 
       if (userExists && codeExists) {
         setAlertConfig({
-          title: 'Error',
-          message: 'You already have this user in your accounts.',
+          title: t("title.title1"),
+          message: t("msg.msg"),
           type: 'error',
         });
         setAlertVisible(true);
@@ -112,8 +111,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
           return;
         }
         setAlertConfig({
-          title: 'Login failed',
-          message: loginResult?.message || 'Unable to login',
+          title: t("title.title2"),
+          message: loginResult?.message || t("msg.msg2"),
           type: 'error',
         });
         setAlertVisible(true);
@@ -122,8 +121,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
 
       if (loginResult?.success !== 1) {
         setAlertConfig({
-          title: 'Login failed',
-          message: loginResult?.message || 'Unable to login',
+          title: t("title.title1"),
+          message: loginResult?.message || t("msg.msg2"),
           type: 'error',
         });
         setAlertVisible(true);
@@ -147,15 +146,15 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
           companyData: validation,
         }),
       );
-      setAlertConfig({ title: 'Success', message: 'Account added successfully', type: 'success' });
+      setAlertConfig({ title: t("title.title3"), message: t("msg.msg3"), type: 'success' });
       setAlertVisible(true);
       onClose();
       setLoader(false);
     } catch (e: any) {
       console.log("e -------------------- ", e)
       setAlertConfig({
-        title: 'Error',
-        message: e?.message || 'Something went wrong',
+        title: t("title.title1"),
+        message: e?.message || t("msg.msg4"),
         type: 'error',
       });
       setAlertVisible(true);
@@ -385,7 +384,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                             <TouchableOpacity
                               onPress={() => setShowPassword(s => !s)}
                               style={styles.toggleButton}
-                              accessibilityLabel={!showPassword ? 'Hide password' : 'Show password'}
+                              accessibilityLabel={!showPassword ? t("text.text1") : t("text.text2")}
                             >
                               <MaterialIcons
                                 name={!showPassword ? 'visibility-off' : 'visibility'}

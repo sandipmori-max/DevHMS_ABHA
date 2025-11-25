@@ -32,16 +32,9 @@ import {
   normalizeDate,
 } from '../../../../utils/helpers';
 import DetailsBottomSheet from './DetailsModal';
+import useTranslations from '../../../../hooks/useTranslations';
 
-const FILTERS = [
-  { key: 'all', label: 'All' },
-  { key: 'leave', label: 'Leave' },
-  { key: 'leave_first_half', label: 'First Half' },
-  { key: 'leave_second_half', label: 'Second Half' },
-  { key: 'late', label: 'Late Entry' },
-  { key: 'after_830', label: '8:30 >' },
-  { key: 'before_830', label: '8:30 <' },
-];
+
 
 const styles = StyleSheet.create({
   recordCard: {
@@ -92,6 +85,17 @@ const styles = StyleSheet.create({
 const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
   const dispatch = useAppDispatch();
   const theme = useAppSelector(state => state?.theme.mode);
+  const { t } = useTranslations();
+
+  const FILTERS = [
+  { key: 'all', label: t("text.text9") },
+  { key: 'leave', label: t("text.text10") },
+  { key: 'leave_first_half', label: t("text.text11") },
+  { key: 'leave_second_half', label: t("text.text12") },
+  { key: 'late', label: t("text.text13") },
+  { key: 'after_830', label: '8:30 >' },
+  { key: 'before_830', label: '8:30 <' },
+];
 
   const [activeFilter, setActiveFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
@@ -179,8 +183,6 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
     records: groupedData[date],
   }));
 
-  console.log('timelineData-------------', timelineData);
-
   const total = listData?.length;
   const leave = listData?.filter(i => i?.status?.toLowerCase() === 'leave').length;
   const late = listData?.filter(i => i?.intime && isLatePunchIn(i?.intime)).length;
@@ -190,10 +192,10 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
   const present = total - leave;
 
   const chartData = [
-    { value: present, color: '#4caf50', text: 'Present' },
-    { value: leave, color: ERP_COLOR_CODE.ERP_ERROR, text: 'Leave' },
-    { value: late, color: '#a6bfc9ff', text: 'Late' },
-    { value: lessHours, color: '#ff9800', text: 'Less Hrs' },
+    { value: present, color: '#4caf50', text: t("text.text14") },
+    { value: leave, color: ERP_COLOR_CODE.ERP_ERROR, text:  t("text.text15") },
+    { value: late, color: '#a6bfc9ff', text:  t("text.text16") },
+    { value: lessHours, color: '#ff9800', text:  t("text.text17") },
   ];
 
   if (parsedError) {
@@ -334,7 +336,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                         <Text style={{ 
                           color :theme === 'dark' ? '#fff': "#000",
                           textAlign: 'center', fontSize: 18, fontWeight: '600' }}>
-                          {total + `\n`}Days
+                          {total + `\n`}{t("text.text18")}
                         </Text>
                       )}
                     />
@@ -381,8 +383,8 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                           d => normalizeDate(d?.date) === day?.dateString,
                         );
                         Alert.alert(
-                          `Attendance on ${day?.dateString}`,
-                          selectedData ? JSON.stringify(selectedData, null, 2) : 'No data',
+                          `${t("text.text19")} ${day?.dateString}`,
+                          selectedData ? JSON.stringify(selectedData, null, 2) : t("text.text20"),
                         );
                       }}
                       markingType={'custom'}
@@ -680,9 +682,9 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                       }
 
                                       {isLeaveFull && (
-                                        <Text style={styles.statusBadgeRed}>Leave</Text>
+                                        <Text style={styles.statusBadgeRed}>{t("text.text10")}</Text>
                                       )}
-                                      {isLate && <Text style={styles.statusBadgeBlue}>Late</Text>}
+                                      {isLate && <Text style={styles.statusBadgeBlue}>{t("text.text16")}</Text>}
                                       {rec?.outTime &&
                                         rec?.status?.toLowerCase() !== 'working' &&
                                         isLessThanRequired && (
@@ -692,7 +694,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                               justifyContent: 'space-between',
                                             }}
                                           >
-                                            <Text style={styles.statusBadgeGrey}>Less Hours</Text>
+                                            <Text style={styles.statusBadgeGrey}>{t("text.text21")}</Text>
                                             <Text style={styles.statusBadgeGrey}>
                                               ({workedHours.toFixed(2)} hrs)
                                             </Text>

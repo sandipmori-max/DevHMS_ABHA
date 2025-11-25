@@ -7,7 +7,7 @@ import { getAjaxThunk } from '../../../../store/slices/ajax/thunk';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import FullViewLoader from '../../../../components/loader/FullViewLoader';
 
-const AjaxPicker = ({isValidate, label, onValueChange, item, errors, dtext, formValues }: any) => {
+const AjaxPicker = ({ isValidate, label, onValueChange, item, errors, dtext, formValues }: any) => {
   const dispatch = useAppDispatch();
 
   const [selectedOption, setSelectedOption] = useState(dtext || item?.text || item?.value);
@@ -33,13 +33,12 @@ const AjaxPicker = ({isValidate, label, onValueChange, item, errors, dtext, form
 
   const fetchOptions = useCallback(async () => {
 
-     const resolvedWhere = item?.ddlwhere.replace(/\{(\w+)\}/g, (_, key) => {
+    const resolvedWhere = item?.ddlwhere.replace(/\{(\w+)\}/g, (_, key) => {
       const lowerKey = key.toLowerCase();
       console.log("🚀 ~ AjaxPicker ~ lowerKey:", lowerKey)
       return formValues.hasOwnProperty(lowerKey) ? formValues[lowerKey] : `{${key}}`;
     });
-     console.log("🚀 ~ AjaxPicker ~ resolvedWhere:", resolvedWhere)
-
+    console.log("🚀 ~ AjaxPicker ~ resolvedWhere:", resolvedWhere)
 
     try {
       setLoader(true);
@@ -93,7 +92,7 @@ const AjaxPicker = ({isValidate, label, onValueChange, item, errors, dtext, form
         <Text style={[styles.label, theme === 'dark' && {
           color: 'white'
         }]}>{label}</Text>
-        {item?.tooltip !== label && <Text style={[styles.label,  theme === 'dark' && {
+        {item?.tooltip !== label && <Text style={[styles.label, theme === 'dark' && {
           color: 'white'
         }]}> - ( {item?.tooltip} ) </Text>}
         {item?.mandatory === '1' && <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>}
@@ -106,7 +105,7 @@ const AjaxPicker = ({isValidate, label, onValueChange, item, errors, dtext, form
           errors[item?.field] && {
             borderColor: ERP_COLOR_CODE.ERP_ERROR,
           },
-         isValidate && item?.mandatory === '1' && selectedOption && {
+          isValidate && item?.mandatory === '1' && selectedOption && {
             borderColor: 'green',
             borderWidth: 0.8
           },
@@ -143,35 +142,35 @@ const AjaxPicker = ({isValidate, label, onValueChange, item, errors, dtext, form
           <View
             style={[
               {
-              height: '75%',
-              backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
-              borderTopLeftRadius: 16,
-              borderTopRightRadius: 16,
-              padding: 16,
-            },
-            theme === 'dark' &&{
-              borderWidth: 1,
-              borderColor: 'white'
-            }
+                height: '75%',
+                backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
+                borderTopLeftRadius: 16,
+                borderTopRightRadius: 16,
+                padding: 16,
+              },
+              theme === 'dark' && {
+                borderWidth: 1,
+                borderColor: 'white'
+              }
             ]}
           >
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={{ fontSize: 16, fontWeight: '600', color: theme === 'dark' ? 'white' : "#000"  }}>{label}</Text>
+              <Text style={{ fontSize: 16, fontWeight: '600', color: theme === 'dark' ? 'white' : "#000" }}>{label}</Text>
               <TouchableOpacity onPress={() => setOpen(false)}>
-                <MaterialIcons name="close" size={24} color={theme === 'dark' ? 'white' : "#000" }/>
+                <MaterialIcons name="close" size={24} color={theme === 'dark' ? 'white' : "#000"} />
               </TouchableOpacity>
             </View>
 
             <View style={{ position: 'relative', marginVertical: 12 }}>
               <TextInput
-                style={[styles.textInput, 
-                   theme === 'dark' && {
-color: 'white',
-backgroundColor: 'black',
-borderWidth: 1,
-borderColor: 'white'
-                  },
-                  { paddingRight: 40  }]}
+                style={[styles.textInput,
+                theme === 'dark' && {
+                  color: 'white',
+                  backgroundColor: 'black',
+                  borderWidth: 1,
+                  borderColor: 'white'
+                },
+                { paddingRight: 40 }]}
                 placeholder="Search here..."
                 placeholderTextColor={ERP_COLOR_CODE.ERP_888}
                 value={search}
@@ -188,14 +187,14 @@ borderColor: 'white'
                     transform: [{ translateY: -12 }],
                   }}
                 >
-                  <MaterialIcons name="close" size={20} color={ERP_COLOR_CODE.ERP_888}/>
+                  <MaterialIcons name="close" size={20} color={ERP_COLOR_CODE.ERP_888} />
                 </TouchableOpacity>
               )}
             </View>
 
             {loader ? (
-             <View style={{flex: 1, justifyContent:'center', alignContent:'center', alignItems:'center'}}>
-               <FullViewLoader />
+              <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                <FullViewLoader />
               </View>
             ) : (
               <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
@@ -253,10 +252,10 @@ borderColor: 'white'
                 ) : (
                   <View
                     style={{
-                        marginVertical: 12,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        height: 100,
+                      marginVertical: 12,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: 100,
                     }}
                   >
                     <Text style={[styles.label, theme === 'dark' && {
