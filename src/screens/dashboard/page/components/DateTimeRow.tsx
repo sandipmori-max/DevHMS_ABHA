@@ -7,15 +7,15 @@ import { formatDateHr } from '../../../../utils/helpers';
 import { useAppSelector } from '../../../../store/hooks';
 
 const DateTimeRow = ({ isValidate, item, errors, value, showDateTimePicker }: any) => {
-      const theme = useAppSelector(state => state?.theme.mode);
-  
+  const theme = useAppSelector(state => state?.theme.mode);
+
   return (
     <View style={{ marginBottom: 16 }}>
       <View style={{ flexDirection: 'row' }}>
-        <Text style={[styles.label,  theme === 'dark' && {
+        <Text style={[styles.label, theme === 'dark' && {
           color: 'white'
         }]}>{item?.fieldtitle}</Text>
-        {item?.fieldtitle !== item?.tooltip && <Text  style={[styles.label,  theme === 'dark' && {
+        {item?.fieldtitle !== item?.tooltip && <Text style={[styles.label, theme === 'dark' && {
           color: 'white'
         }]}> - ( {item?.tooltip} )</Text>}
         {item?.mandatory === '1' && <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>}
@@ -25,15 +25,15 @@ const DateTimeRow = ({ isValidate, item, errors, value, showDateTimePicker }: an
           styles.dateBox,
           errors[item.field] && { borderColor: ERP_COLOR_CODE.ERP_ERROR },
           isValidate &&
-            item?.mandatory === '1' &&
-            value && {
-              borderColor: 'green',
-              borderWidth: 0.8,
-            },
+          item?.mandatory === '1' &&
+          value && {
+            borderColor: 'green',
+            borderWidth: 0.8,
+          },
         ]}
         onPress={() => showDateTimePicker(item?.field, value)}
       >
-        <Text style={{ color:  theme === 'dark' ? 'white' : value ? ERP_COLOR_CODE.ERP_BLACK : ERP_COLOR_CODE.ERP_888 }}>
+        <Text style={{ color: theme === 'dark' ? 'white' : value ? ERP_COLOR_CODE.ERP_BLACK : ERP_COLOR_CODE.ERP_888 }}>
           {value ? formatDateHr(value, true) : 'dd/mmm/yyyy hh:mm'}
         </Text>
         <MaterialIcons name="event" size={20} color={ERP_COLOR_CODE.ERP_555} />

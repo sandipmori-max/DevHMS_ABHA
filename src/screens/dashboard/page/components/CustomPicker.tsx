@@ -15,6 +15,7 @@ import { DARK_COLOR, ERP_COLOR_CODE } from '../../../../utils/constants';
 import { getDDLThunk } from '../../../../store/slices/dropdown/thunk';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import FullViewLoader from '../../../../components/loader/FullViewLoader';
+import useTranslations from '../../../../hooks/useTranslations';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -28,6 +29,7 @@ const CustomPicker = ({
   dtext,
   isForceOpen,
 }: any) => {
+  const { t } = useTranslations();
 
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<any[]>([]);
@@ -206,7 +208,7 @@ const CustomPicker = ({
               marginBottom: 12,
             }}
           >
-            Select {label}
+            {t("text.text34")} {label}
           </Text>
 
            <TouchableOpacity
@@ -283,8 +285,10 @@ const CustomPicker = ({
                   }}
                 >
                   <Text style={{ color: theme === 'dark' ? 'white' : 'black' }}>
-                    No data
+                    {t("text.text20")}
                   </Text>
+ 
+                  
                 </View>
               )}
             </ScrollView>

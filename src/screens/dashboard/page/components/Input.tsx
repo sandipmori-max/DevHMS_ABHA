@@ -6,8 +6,8 @@ import { useAppSelector } from '../../../../store/hooks';
 
 const Input = ({ isValidate, item, errors, value, setValue, onFocus }: any) => {
 
-    const theme = useAppSelector(state => state?.theme.mode);
-  
+  const theme = useAppSelector(state => state?.theme.mode);
+
   React.useEffect(() => {
     setValue(value);
   }, [value]);
@@ -16,10 +16,10 @@ const Input = ({ isValidate, item, errors, value, setValue, onFocus }: any) => {
   return (
     <View style={{ marginBottom: 16 }}>
       <View style={{ flexDirection: 'row' }}>
-        <Text style={[styles.label,  theme === 'dark' && {
+        <Text style={[styles.label, theme === 'dark' && {
           color: 'white'
         }]}>{item?.fieldtitle}</Text>
-        {item?.fieldtitle !== item?.tooltip && <Text style={[styles.label,  theme === 'dark' && {
+        {item?.fieldtitle !== item?.tooltip && <Text style={[styles.label, theme === 'dark' && {
           color: 'white'
         }]}> - ( {item?.tooltip} )</Text>}
         {item?.mandatory === '1' && <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>}
@@ -41,20 +41,20 @@ const Input = ({ isValidate, item, errors, value, setValue, onFocus }: any) => {
             borderWidth: 0.8,
           },
           isValidate &&
-            item?.mandatory === '1' &&
-            value && {
-              borderColor: 'green',
-              borderWidth: 0.8,
-            },
-            theme === 'dark' &&{
-              backgroundColor : 'black'
-            },
-            theme === 'dark' && value && {
-              color: 'white'
-            }
+          item?.mandatory === '1' &&
+          value && {
+            borderColor: 'green',
+            borderWidth: 0.8,
+          },
+          theme === 'dark' && {
+            backgroundColor: 'black'
+          },
+          theme === 'dark' && value && {
+            color: 'white'
+          }
         ]}
         keyboardType={item?.ctltype === 'NUMERIC' ? 'number-pad' : 'default'}
-        value={ value.toString()}
+        value={value.toString()}
         onChangeText={text => setValue(text)}
         placeholder={`Enter ${item?.fieldtitle}`}
         onFocus={e => {

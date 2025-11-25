@@ -49,6 +49,7 @@ import CustomMultiPicker from './components/CustomMultiPicker';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
 import BusinessCardView from './components/BusinessCardImage';
 import DeviceInfo from 'react-native-device-info';
+import useTranslations from '../../../hooks/useTranslations';
 
 type PageRouteParams = { PageScreen: { item: any } };
 
@@ -106,6 +107,7 @@ const PageScreen = () => {
   const flatListRef = useRef<FlatList>(null);
   const baseLink = useBaseLink();
   const theme = useAppSelector(state => state?.theme.mode);
+  const { t } = useTranslations();
 
   const [loadingPageId, setLoadingPageId] = useState<string | null>(null);
   const [controls, setControls] = useState<any[]>([]);
@@ -115,7 +117,6 @@ const PageScreen = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [formValues, setFormValues] = useState<any>({});
-  console.log('🚀 ~ PageScreen------------- ~ formValues:', formValues);
 
   const [datePickerVisible, setDatePickerVisible] = useState(false);
 
@@ -161,7 +162,6 @@ const PageScreen = () => {
       item?.ctltype === 'PHOTO',
   );
 
-  console.log('locationEnabled ---------------- ', locationEnabled);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -268,10 +268,10 @@ const PageScreen = () => {
 
       if (enabled !== locationEnabled) {
         setAlertConfig({
-          title: 'Location Status',
+          title: t("title.title13"),
           message: enabled
-            ? 'Location is now enabled'
-            : 'We need location access only to serve you better. Please enable it to continue.',
+            ? t('title.title14')
+            : t('title.title15'),
           type: enabled ? 'success' : 'error',
         });
         setAlertVisible(!enabled);
@@ -293,8 +293,6 @@ const PageScreen = () => {
       }
     } catch (err) {
       setLocationVisible(false);
-
-      console.log('Location fetch error:', err);
     }
   };
 
@@ -316,9 +314,9 @@ const PageScreen = () => {
           setBackgroundDeniedModal(true);
         } else {
           setAlertConfig({
-            title: 'Location Status',
+            title: t("title.title13"),
             message:
-              'We need location access only to serve you better. Please enable it to continue.',
+              t('title.title15'),
             type: 'error',
           });
           setModalClose(false);
@@ -355,8 +353,8 @@ const PageScreen = () => {
 
     controls.forEach(ctrl => {
       if (ctrl?.mandatory === '1' && !formValues[ctrl?.field]) {
-        validationErrors[ctrl.field] = `${ctrl?.fieldtitle || ctrl?.field} is required`;
-        errorMessages.push(`${ctrl?.fieldtitle || ctrl?.field} is required`);
+        validationErrors[ctrl.field] = `${ctrl?.fieldtitle || ctrl?.field} ${t("text.text43")}`;
+        errorMessages.push(`${ctrl?.fieldtitle || ctrl?.field} ${t("text.text43")}`);
       }
     });
 
@@ -394,7 +392,7 @@ const PageScreen = () => {
               marginLeft: 4,
             }}
           >
-            {isFromNew ? '( New )' : '( Edit )'}
+            {isFromNew ? `( ${"text.text44"} )` : `( ${'text.text45'} )`}
           </Text>
         </View>
       ),
@@ -422,22 +420,14 @@ const PageScreen = () => {
                   const permissionStatus = hasLocationField && await requestLocationPermissions();
                   const hasPermission = hasMediaField && await requestCameraPermission();
 
-                  console.log("---------")
-                  console.log("enabled---------", enabled)
-                  console.log("permissionStatus---------", permissionStatus)
-                  console.log("hasLocationField ---------", hasLocationField)
-                  console.log("hasPermission---------", hasPermission)
-                  console.log("hasMediaField---------", hasMediaField)
-                  console.log("---------")
-
                   // if(hasLocationField && hasMediaField){
 
                   // }
                   if (!hasPermission && hasMediaField) {
                     setAlertConfig({
-                      title: 'Camera Status',
+                      title: t('title.title16'),
                       message:
-                        'We need camera access only to serve you better. Please enable it to continue.',
+                        t("msg.msg15"),
                       type: 'error',
                     });
                     setAlertVisible(true);
@@ -447,9 +437,9 @@ const PageScreen = () => {
                   console.log('permissionStatus', permissionStatus);
                   if (hasLocationField && !enabled) {
                     setAlertConfig({
-                      title: 'Location Status',
+                      title: t("title.title13"),
                       message:
-                        'We need location access only to serve you better. Please enable it to continue.',
+                        t('title.title15'),
                       type: 'error',
                     });
                     setAlertVisible(true);
@@ -458,9 +448,9 @@ const PageScreen = () => {
                   }
                   if (hasLocationField && permissionStatus === 'denied' || permissionStatus === 'blocked') {
                     setAlertConfig({
-                      title: 'Location Status',
+                      title: t("title.title13"),
                       message:
-                        'We need location access only to serve you better. Please enable it to continue.',
+                        t('title.title15'),
                       type: 'error',
                     });
                     setAlertVisible(true);
@@ -486,8 +476,8 @@ const PageScreen = () => {
 
                         fetchPageData();
                         setAlertConfig({
-                          title: 'Record saved',
-                          message: `Record saved successfully!`,
+                          title: t('title.title17'),
+                          message: t("title.title18"),
                           type: 'success',
                         });
                         setAlertVisible(true);
@@ -500,7 +490,8 @@ const PageScreen = () => {
                         setLoader(false);
 
                         setAlertConfig({
-                          title: 'Record saved',
+                          title: t('title.title17'),
+
                           message: err,
                           type: 'error',
                         });

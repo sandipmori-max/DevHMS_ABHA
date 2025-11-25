@@ -160,7 +160,23 @@ export default {
     title1: "Error",
     title2: "Login failed",
     title3: "Success",
-    title4: "Location Status"
+    title4: "Location Status",
+    title5: "Search here...",
+    title6: "No data",
+    title7: 'True',
+    title8: "False",
+    title9: "Business Card Reader",
+    title10: "Select Image Source",
+    title11: "Camera",
+    title12: "Gallery",
+    title13: "Location Status",
+    title14: "Location is now enabled",
+    title15: "We need location access only to serve you better. Please enable it to continue.",
+    title16: "Camera Status",
+    title17: "Record saved",
+    title18: "Record saved successfully!",
+    title19: "Privacy policy",
+    title20: "Settings"
   },
   msg:{
     msg1: "You already have this user in your accounts.",
@@ -170,7 +186,15 @@ export default {
     msg5: "Unable to fetch location",
     msg6: "Image required",
     msg7: "Attendance marked successfully!",
-    msg8: "We need location access only to serve you better. Please enable it to continue."
+    msg8: "We need location access only to serve you better. Please enable it to continue.",
+    msg9: "Are you sure you want to",
+    msg10: "Select From Date",
+    msg11 : "Select To Date",
+    msg12: "Failed to pick file.",
+    msg13: "Failed to update file.",
+    msg14: "Please provide a signature",
+    msg15: "We need camera access only to serve you better. Please enable it to continue."
+
   },
   text:{
     text1: "Hide password",
@@ -205,7 +229,28 @@ export default {
     text30: "Loading more…",
     text31: "Row(s)",
     text32: "See Less ▲",
-    text33 : "See More ▼"
+    text33 : "See More ▼",
+    text34: "Select",
+    text35: "Please enter a value for this field ",
+    text36: "Select File",
+    text37: "Fetching current location...",
+    text38: "Address not found",
+    text39: "Sign below",
+    text40: "Sign here",
+    text41: "Clear",
+    text42: "Save",
+    text43: "is required",
+    text44: "New",
+    text45: "Edit",
+    text46: "Search auth here...",
+    text47: "Bookmark item updated!",
+    text48: "Auth",
+    text49: "Search report here...",
+    text50: "Reports",
+    text51: "Search report here...",
+    text52: "Dashboard",
+    text53: "Welcome to DevERP",
+    text54: "Your business, simplified."
 
   }
 };

@@ -3,6 +3,7 @@ import { styles } from '../page_style';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import { useAppSelector } from '../../../../store/hooks';
+import useTranslations from '../../../../hooks/useTranslations';
 
 const ErrorModal = ({
   visible,
@@ -14,6 +15,7 @@ const ErrorModal = ({
   onClose: () => void;
 }) => {
     const theme = useAppSelector(state => state?.theme.mode);
+  const { t } = useTranslations();
   
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
@@ -33,7 +35,7 @@ const ErrorModal = ({
           >
             <Text style={[styles.title, theme === 'dark' && {
               color: 'white'
-            }]}>Please enter a value for this field -</Text>
+            }]}>{t("text.text35")}-</Text>
             <TouchableOpacity
               onPress={() => {
                 onClose();

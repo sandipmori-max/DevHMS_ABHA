@@ -20,7 +20,7 @@ import CustomAlert from '../../../../components/alert/CustomAlert';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import { useAppSelector } from '../../../../store/hooks';
 
-const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNew }: any) => {
+const Media = ({ isValidate, item, handleAttachment, infoData, baseLink, isFromNew }: any) => {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [pickerModalVisible, setPickerModalVisible] = useState(false);
@@ -42,7 +42,7 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
   const translateY = useRef(new Animated.Value(0)).current;
   const lastScale = useRef(1);
   const lastTranslate = useRef({ x: 0, y: 0 });
-    const theme = useAppSelector(state => state?.theme.mode);
+  const theme = useAppSelector(state => state?.theme.mode);
 
   const pendingCameraAction = useRef(false);
   const appState = useRef(AppState.currentState);
@@ -50,11 +50,9 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
   const getImageUri = (type: 'small' | 'large') => {
     const base =
       imageUri ||
-      `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${
-        type === 'small' ? `d_${item?.text}` : item?.text
+      `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${type === 'small' ? `d_${item?.text}` : item?.text
       }`;
-      console.log("++++++++++++", `${base}?cb=${cacheBuster}`)
-    return `${base}?cb=${cacheBuster}`;
+     return `${base}?cb=${cacheBuster}`;
   };
 
   // -------------------- Permissions --------------------
@@ -218,7 +216,7 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
   const handleChooseImage = () => {
     setPickerModalVisible(true);
   };
-   // -------------------- PanResponder & Zoom --------------------
+  // -------------------- PanResponder & Zoom --------------------
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -259,16 +257,15 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
   // -------------------- JSX --------------------
   return (
     <>
-      {/* <Text style={{ fontWeight: '600', marginBottom: 4 }}>{item?.fieldtitle}</Text> */}
       <View style={{ flexDirection: 'row' }}>
-              <Text style={[styles.label,  theme === 'dark' && {
+        <Text style={[styles.label, theme === 'dark' && {
           color: 'white'
         }]}>{item?.fieldtitle}</Text>
-              {item?.tooltip !== item?.fieldtitle && <Text style={[styles.label,  theme === 'dark' && {
+        {item?.tooltip !== item?.fieldtitle && <Text style={[styles.label, theme === 'dark' && {
           color: 'white'
         }]}> - ( {item?.tooltip} ) </Text>}
-              {item?.mandatory === '1' && <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>}
-            </View>
+        {item?.mandatory === '1' && <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>}
+      </View>
       <View style={styles.imageWrapper}>
         <TouchableOpacity
           onPress={() => {
@@ -281,7 +278,7 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
               borderWidth: 1,
               borderColor: 'white'
             },
-            { width: 100, height: 100 , }]}>
+            { width: 100, height: 100, }]}>
             {loadingSmall && (
               <ActivityIndicator style={StyleSheet.absoluteFill} size="small" color={theme === 'dark' ? 'white' : 'black'} />
             )}
@@ -297,10 +294,10 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleChooseImage} style={[styles.editBtn, theme === 'dark' && {
-              borderWidth: 1,
-              borderColor: 'white'
-            },]}>
-          <MaterialIcons name={'edit'} color={theme === 'dark' ?  'white' : ERP_COLOR_CODE.ERP_BLACK} size={20} />
+          borderWidth: 1,
+          borderColor: 'white'
+        },]}>
+          <MaterialIcons name={'edit'} color={theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK} size={20} />
         </TouchableOpacity>
       </View>
 
@@ -393,7 +390,7 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
                 <TouchableOpacity
                   key={idx}
                   style={[styles.optionCard, theme === 'dark' && {
-                    backgroundColor:'black',
+                    backgroundColor: 'black',
                     borderWidth: 1,
                     borderColor: 'white'
                   }]}
@@ -403,7 +400,7 @@ const Media = ({isValidate, item, handleAttachment, infoData, baseLink, isFromNe
                   }}
                 >
                   <MaterialIcons name={option?.icon} size={36} color={theme === 'dark' ? 'white' : 'black'} />
-                  <Text style={[styles.optionLabel,{
+                  <Text style={[styles.optionLabel, {
                     color: theme === 'dark' ? 'white' : 'black'
                   }]}>{option?.text}</Text>
                 </TouchableOpacity>
@@ -439,7 +436,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 4,
   },
-   label: {
+  label: {
     fontSize: 14,
     color: ERP_COLOR_CODE.ERP_333,
     marginBottom: 6,

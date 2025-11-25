@@ -25,7 +25,6 @@ const WebScreen = () => {
 
   const url = isFromChart ? `${baseLink}app/index.html?dashboard/0/&token=${token}` : '';
 
-  console.log("url----------------", url);
 
   useEffect(() => {
     (async () => {
@@ -90,7 +89,7 @@ const WebScreen = () => {
           numberOfLines={1}
           style={{ maxWidth: 180, fontSize: 18, fontWeight: '700', color: 'white' }}
         >
-          {isFromChart ? 'Dashboard' : item?.title || t('webScreen.details')}
+          {isFromChart ? t("text.text52") : item?.title || t('webScreen.details')}
         </Text>
       ),
       headerRight: () => (
@@ -112,7 +111,6 @@ const WebScreen = () => {
 
   const targetUrl = useMemo(() => {
     const itemUrl = item?.url || '';
-    console.log("it+++++++++++++++++emUrl", itemUrl)
     return `${baseLink}${itemUrl}&token=${token}`;
   }, [baseLink, item?.url, token]);
 
@@ -125,7 +123,6 @@ const WebScreen = () => {
     );
   }
 
-  console.log("targetUrl===========================", targetUrl)
 
   return (
     <SafeAreaView style={styles.container}>

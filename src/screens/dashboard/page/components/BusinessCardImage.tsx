@@ -16,6 +16,7 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import TextRecognition from '@react-native-ml-kit/text-recognition';
 import { check, request, PERMISSIONS, RESULTS, openSettings } from 'react-native-permissions';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
+import useTranslations from '../../../../hooks/useTranslations';
 
 
 const BusinessCardView = ({ setValue, controls, item, baseLink, infoData }: any) => {
@@ -24,6 +25,7 @@ const BusinessCardView = ({ setValue, controls, item, baseLink, infoData }: any)
   const [base64, setBase64] = useState(false);
   const [cacheBuster, setCacheBuster] = useState(Date.now());
   const [showPicker, setShowPicker] = useState(false);
+  const { t } = useTranslations();
 
 
   const getImageUri = (type: 'small' | 'large') => {
@@ -367,7 +369,7 @@ if (addrStart !== -1) {
 
   return (
     <ScrollView>
-      <Text style={styles.title}>Business Card Reader</Text>
+      <Text style={styles.title}>{t("title.title9")}</Text>
 
 
       <View style={{ alignItems: 'center', marginVertical: 12 }}>
@@ -405,7 +407,7 @@ if (addrStart !== -1) {
 
         <View style={styles.bottomSheet}>
           <View style={styles.sheetHeader}>
-            <Text style={styles.sheetTitle}>Select Image Source</Text>
+            <Text style={styles.sheetTitle}>{t("title.title10")}</Text>
             <TouchableOpacity onPress={() => setShowPicker(false)} style={styles.closeIcon}>
               <MaterialIcons name="close" size={22} color="#333" />
             </TouchableOpacity>
@@ -415,13 +417,13 @@ if (addrStart !== -1) {
           <View style={styles.optionRow}>
             <TouchableOpacity style={styles.optionCard} onPress={pickFromCamera}>
               <MaterialIcons name="photo-camera" size={40} color="#000" />
-              <Text style={styles.optionText}>Camera</Text>
+              <Text style={styles.optionText}>{t("title.title11")}</Text>
             </TouchableOpacity>
 
 
             <TouchableOpacity style={styles.optionCard} onPress={pickFromGallery}>
               <MaterialIcons name="photo-library" size={40} color="#000" />
-              <Text style={styles.optionText}>Gallery</Text>
+              <Text style={styles.optionText}>{t("title.title12")}</Text>
             </TouchableOpacity>
           </View>
         </View>

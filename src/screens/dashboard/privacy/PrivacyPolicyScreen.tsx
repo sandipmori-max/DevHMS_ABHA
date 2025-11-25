@@ -11,12 +11,14 @@ import FullViewLoader from '../../../components/loader/FullViewLoader';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAppSelector } from '../../../store/hooks';
+import useTranslations from '../../../hooks/useTranslations';
 
 const PrivacyPolicyScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
   const theme = useAppSelector(state => state.theme.mode);
+  const { t } = useTranslations();
 
   // Get URL from navigation params
   const passedUrl = route?.params?.url;
@@ -45,7 +47,7 @@ const PrivacyPolicyScreen = () => {
             color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_WHITE,
           }}
         >
-          {'Privacy policy'}
+          {t('title.title19')}
         </Text>
       ),
     });

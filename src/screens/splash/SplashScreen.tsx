@@ -6,6 +6,7 @@ import { styles } from './splash_style';
 import { SplashProps } from './types';
 import { useAppSelector } from '../../store/hooks';
 import { DARK_COLOR } from '../../utils/constants';
+import useTranslations from '../../hooks/useTranslations';
 
 const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -13,6 +14,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   const textTranslateY = useRef(new Animated.Value(20)).current;
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
   const theme = useAppSelector(state => state?.theme.mode);
+  const { t } = useTranslations();
 
   useEffect(() => {
     // Animate logo (fade + scale)
@@ -90,7 +92,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
           }
         ]}
       >
-        Welcome to DevERP
+        {t("text.text53")}
       </Animated.Text>
 
       {/* Subtitle Animation */}
@@ -105,7 +107,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
           }
         ]}
       >
-        Your business, simplified.
+        {t('text.text54')}
       </Animated.Text>
     </View>
   );

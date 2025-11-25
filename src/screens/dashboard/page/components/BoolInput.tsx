@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import { useAppSelector } from '../../../../store/hooks';
+import useTranslations from '../../../../hooks/useTranslations';
 
 type BoolInputProps = {
   value: any;
@@ -11,6 +12,7 @@ type BoolInputProps = {
 
 const BoolInput = ({ value, onChange, label }: BoolInputProps) => {
   const theme = useAppSelector(state => state?.theme.mode);
+  const { t } = useTranslations();
 
   return (
     <View style={{ marginBottom: 10 }}>
@@ -22,7 +24,7 @@ const BoolInput = ({ value, onChange, label }: BoolInputProps) => {
         >
           {value && <View style={styles.radioInner} />}
         </TouchableOpacity>
-        <Text style={[{ marginRight: 16, }, theme === 'dark' && { color: 'white' }]}>True</Text>
+        <Text style={[{ marginRight: 16, }, theme === 'dark' && { color: 'white' }]}>{t("title.title7")}</Text>
 
         <TouchableOpacity
           style={[styles.radio, !value && styles.radioSelected]}
@@ -30,7 +32,7 @@ const BoolInput = ({ value, onChange, label }: BoolInputProps) => {
         >
           {!value && <View style={styles.radioInner} />}
         </TouchableOpacity>
-        <Text style={[theme === 'dark' && { color: 'white' }]}>False</Text>
+        <Text style={[theme === 'dark' && { color: 'white' }]}>{t("title.title8")}</Text>
       </View>
     </View>
   );

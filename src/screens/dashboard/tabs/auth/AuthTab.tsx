@@ -17,10 +17,13 @@ import ErrorMessage from '../../../../components/error/Error';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { DARK_COLOR, ERP_COLOR_CODE } from '../../../../utils/constants';
 import Toast from '../../../../components/Toast/Toast';
+import useTranslations from '../../../../hooks/useTranslations';
 
 const accentColors = ['#dbe0f5ff', '#c8f3edff', '#faf1e0ff', '#f0e1e1ff', '#f2e3f8ff', '#e0f3edff'];
 
 const AuthTab = () => {
+  const { t } = useTranslations();
+
   const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
   const { error, isAuthenticated, activeToken, menu, isMenuLoading, user } = useAppSelector(
@@ -67,7 +70,7 @@ const AuthTab = () => {
     setBookmarks(prev => ({ ...prev, [id]: updated }));
     const db = await getDBConnection();
     await insertOrUpdateBookmark(db, id, user?.id, updated);
-    showToast('Bookmark item updated!')
+    showToast(t("text.text47"))
 
   };
 
@@ -105,7 +108,7 @@ const AuthTab = () => {
             <TextInput
               value={searchText}
               onChangeText={setSearchText}
-              placeholder="Search auth here..."
+              placeholder={t("text.text46")}
               style={{
                 flex: 1,
                 backgroundColor: '#f0f0f0',
@@ -130,7 +133,7 @@ const AuthTab = () => {
           </View>
         ) : (
           <Text style={{ color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_WHITE, fontSize: 18, fontWeight: '600' }}>
-            Auth
+            {t("text.text48")}
           </Text>
         ),
       headerRight: () => (

@@ -15,6 +15,7 @@ import SignatureScreen, { SignatureViewRef } from 'react-native-signature-canvas
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import { useBaseLink } from '../../../../hooks/useBaseLink';
 import { useAppSelector } from '../../../../store/hooks';
+import useTranslations from '../../../../hooks/useTranslations';
 
 const SignaturePad: React.FC = ({isValidate, item, handleSignatureAttachment, infoData }: any) => {
   const signatureRef = useRef<SignatureViewRef>(null);
@@ -23,6 +24,7 @@ const SignaturePad: React.FC = ({isValidate, item, handleSignatureAttachment, in
   const baseLink = useBaseLink();
   const [cacheBuster, setCacheBuster] = useState(Date.now());
   const theme = useAppSelector(state => state?.theme.mode);
+   const { t } = useTranslations();
 
   const handleSignature = (signature: string) => {
     setSavedSignature(signature);
@@ -94,7 +96,7 @@ const SignaturePad: React.FC = ({isValidate, item, handleSignatureAttachment, in
           <View style={styles.modalHeader}>
             <Text style={[styles.modalTitle, theme ==='dark' && {
               color:'white'
-            }]}>Sign below</Text>
+            }]}>{t("text.text39")}</Text>
             <View style={styles.buttonOverlay}>
               <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={handleSave}>
                 <MaterialIcons name="save" size={18} color={theme ==='dark' ? 'white' : 'black'} />
@@ -119,10 +121,10 @@ const SignaturePad: React.FC = ({isValidate, item, handleSignatureAttachment, in
             <SignatureScreen
               ref={signatureRef}
               onOK={handleSignature}
-              onEmpty={() => Alert.alert('Please provide a signature')}
-              descriptionText="Sign here"
-              clearText="Clear"
-              confirmText="Save"
+              onEmpty={() => Alert.alert(t("msg.msg14"))}
+              descriptionText={t("text.text40")}
+              clearText={t("text.text41")}
+              confirmText={t("text.text42")}
               autoClear={false}
               dataURL={savedSignature || undefined}
               webStyle={`

@@ -17,6 +17,7 @@ import CustomAlert from '../../../components/alert/CustomAlert';
 import { handleDeleteActionThunk, handlePageActionThunk } from '../../../store/slices/page/thunk';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
+import useTranslations from '../../../hooks/useTranslations';
 
 const ListScreen = () => {
   const navigation = useNavigation();
@@ -26,7 +27,7 @@ const ListScreen = () => {
     error: actionError,
     response: actionResponse,
   } = useAppSelector(state => state.page);
-
+  const { t } = useTranslations();
   const [loadingListId, setLoadingListId] = useState<string | null>(null);
   const [listData, setListData] = useState<any[]>([]);
   const [configData, setConfigData] = useState<any[]>([]);
@@ -61,7 +62,6 @@ const ListScreen = () => {
 
   const route = useRoute<RouteProp<ListRouteParams, 'List'>>();
   const { item } = route?.params;
-  console.log('🚀 ~ ListScreen ~ item:', item);
   const theme = useAppSelector(state => state?.theme.mode);
 
   const pageTitle = item?.title || item?.name || 'List Data';
@@ -69,10 +69,9 @@ const ListScreen = () => {
   const pageName = item?.url;
   const isFromBusinessCard = item?.isFromBusinessCard || false;
   const isFromAlertCard = item?.isFromAlertCard || false;
-  console.log('🚀 ~ ListScreen+++++++++++++++ ~ isFromBusinessCard:', isFromBusinessCard);
-
+ 
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(20);  // how many items per page
+  const [pageSize] = useState(20);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
@@ -104,9 +103,8 @@ const ListScreen = () => {
     }
 
     setIsLoadingMore(false);
-  }, 300); // simulate loading delay
+  }, 300);
 };
-
 
   const totalAmount = filteredData?.reduce((sum, item) => {
     const amount = parseFloat(item?.amount) || 0;
@@ -125,12 +123,11 @@ const ListScreen = () => {
   const hasIdField = configData.some(
     item => item?.datafield && item?.datafield.toLowerCase() === 'id',
   );
-  console.log('🚀 ~ ListScreen----------------------- ~ hasIdField:', hasIdField);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: {
-        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, 
       },
       headerTintColor: '#fff',
       headerTitle: () => (
@@ -366,10 +363,7 @@ const ListScreen = () => {
   );
 
   const handleItemPressed = (item, page, pageTitle = '') => {
-    console.log(
-      '🚀 ~ handleItemPressed ~ isFromBusinessCard+++++++++++++++++++++++:',
-      isFromBusinessCard,
-    );
+    
     setIsFilterVisible(false);
     setSearchQuery('');
     navigation.navigate('Page', {
@@ -384,7 +378,6 @@ const ListScreen = () => {
 
   const handleActionButtonPressed = (actionValue, label, color, id, item) => {
  
-    
     if(item?.btn_edit && item?.btn_edit?.includes("/")){
       const left = item?.btn_edit.substring(0, item?.btn_edit.indexOf('/'));
       const result = item?.btn_edit.split('/')[1];
@@ -400,7 +393,7 @@ const ListScreen = () => {
     }else{
       setAlertConfig({
         title: label,
-        message: `Are you sure you want to ${label.toLowerCase()} ?`,
+        message: `${t("msg.msg8")} ${label.toLowerCase()} ?`,
         type: 'info',
         actionValue: actionValue,
         color: color,
@@ -466,7 +459,7 @@ const ListScreen = () => {
                       color="#000"
                       style={{ marginRight: 8 }}
                     />
-                    <Text style={styles.dateButtonText}>{fromDate || 'Select From Date'}</Text>
+                    <Text style={styles.dateButtonText}>{fromDate || t("msg.msg9")}</Text>
                   </View>
                 </TouchableOpacity>
               </View>
@@ -485,7 +478,7 @@ const ListScreen = () => {
                       color="#000"
                       style={{ marginRight: 8 }}
                     />
-                    <Text style={styles.dateButtonText}>{toDate || 'Select To Date'}</Text>
+                    <Text style={styles.dateButtonText}>{toDate || t("msg.msg11")}</Text>
                   </View>
                 </TouchableOpacity>
               </View>

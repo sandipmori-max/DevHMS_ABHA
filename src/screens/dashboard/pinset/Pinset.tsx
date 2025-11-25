@@ -616,16 +616,6 @@ const PinSetupScreen = () => {
       <Text style={{ color: '#dc2626', fontSize: 15 }}>Remove PIN</Text>
     </TouchableOpacity>
 
-    {/* Forgot PIN */}
-    <TouchableOpacity
-      onPress={() => {
-        setMenuVisible(false);
-        onForgotPinPress();
-      }}
-      style={{ paddingVertical: 10, paddingHorizontal: 14 }}
-    >
-      <Text style={{ color: '#f97316', fontSize: 15 }}>Forgot PIN?</Text>
-    </TouchableOpacity>
 
   </TouchableOpacity>
 )}

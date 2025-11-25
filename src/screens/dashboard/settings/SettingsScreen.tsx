@@ -89,7 +89,7 @@ const SettingsScreen = () => {
             color: theme === 'dark' ? "white" : ERP_COLOR_CODE.ERP_WHITE,
           }}
         >
-          {'Settings'}
+          {t('title.title20')}
         </Text>
       ),
 
