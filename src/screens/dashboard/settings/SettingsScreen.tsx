@@ -32,7 +32,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useApi } from '../../../hooks/useApi';
 import { isTokenValid } from '../../../utils/helpers';
 import DeviceInfo from 'react-native-device-info';
-import { setTheme } from '../../../store/slices/theme/themeSlice';
+import { setLang, setTheme } from '../../../store/slices/theme/themeSlice';
 
 interface SettingItem {
   id: string;
@@ -235,6 +235,7 @@ const SettingsScreen = () => {
 
   const handleLanguageChange = async (languageCode: string) => {
     await changeLanguage(languageCode);
+    dispatch(setLang(languageCode))
     setCurrentLanguage(languageCode);
     setLanguageModalVisible(false);
 

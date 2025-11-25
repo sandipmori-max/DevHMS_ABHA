@@ -20,7 +20,7 @@ const authPersistConfig = {
 const themePersistConfig = {
   key: 'theme',
   storage: AsyncStorage,
-  whitelist: ['mode'], // store only the selected theme value
+  whitelist: ['mode', 'langcode'], // store only the selected theme value
 };
 
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);

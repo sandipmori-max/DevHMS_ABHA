@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import en from './translations/en';
 import hi from './translations/hi';
 import gu from './translations/gu';
+
 i18n.use(initReactI18next).init({
   fallbackLng: 'en',
   resources: {

@@ -28,6 +28,7 @@ import { setERPTheme,
  } from '../utils/constants';
 import { setTheme } from '../store/slices/theme/themeSlice';
 import { useColorScheme } from 'react-native';
+import { changeLanguage } from '../i18n';
  
 // ------------------------- Location Permission Helper -------------------------
 // export async function requestLocationPermissions(): Promise<
@@ -85,6 +86,7 @@ const RootNavigator = () => {
   const colorScheme = useColorScheme();
    const { isLoading, isAuthenticated, accounts, user } = useAppSelector(state => state.auth);
   // const theme = useAppSelector(state => state.theme.mode);
+  const langCode = useAppSelector(state => state?.theme.langcode);
 
   // const [locationEnabled, setLocationEnabled] = useState<boolean | null>(null);
   // const [alertVisible, setAlertVisible] = useState(false);
@@ -165,6 +167,9 @@ const RootNavigator = () => {
   //   return () => clearInterval(interval);
   // }, [backgroundDeniedModal]);
 
+  useEffect(() => {
+    changeLanguage(langCode)
+  }, [langCode])
   // ------------------------- Device & Auth Setup -------------------------
   useEffect(() => {
     const fetchDeviceName = async () => {
