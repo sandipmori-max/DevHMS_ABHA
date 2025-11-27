@@ -278,6 +278,9 @@ const ReadableView = ({
                   fontWeight: '800',
                   fontSize: 12,
                   color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK,
+                  alignSelf:'flex-end',
+                  alignItems:'flex-end',
+                  textAlign:'right'
                 }}
               >
                     {
