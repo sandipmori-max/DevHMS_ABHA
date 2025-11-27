@@ -9,6 +9,7 @@ import CustomDrawerContent from '../components/drawer/CustomDrawerContent';
 import useTranslations from '../hooks/useTranslations';
 import { useAppSelector } from '../store/hooks';
 import { ERP_COLOR_CODE } from '../utils/constants';
+import FileFolderManager from '../screens/dashboard/file_folder_manager/FileFolderManager';
 
 const Drawer = createDrawerNavigator();
 
@@ -48,6 +49,11 @@ const DrawerNavigator = () => {
       <Drawer.Screen
         name="Privacy Policy"
         component={PrivacyPolicyScreen}
+        options={{ title: t('navigation.privacyPolicy') }}
+      />
+       <Drawer.Screen
+        name="File Manager"
+        component={FileFolderManager}
         options={{ title: t('navigation.privacyPolicy') }}
       />
     </Drawer.Navigator>
