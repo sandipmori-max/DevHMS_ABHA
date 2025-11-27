@@ -51,11 +51,11 @@ const DrawerNavigator = () => {
         component={PrivacyPolicyScreen}
         options={{ title: t('navigation.privacyPolicy') }}
       />
-       <Drawer.Screen
+       {/* <Drawer.Screen
         name="File Manager"
         component={FileFolderManager}
         options={{ title: t('navigation.privacyPolicy') }}
-      />
+      /> */}
     </Drawer.Navigator>
   </>
   );

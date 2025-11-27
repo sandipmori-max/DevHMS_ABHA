@@ -10,6 +10,7 @@ import {
   TextInput,
   Alert,
 } from "react-native";
+import FilePickerRow from "../page/components/FilePicker";
 
 // ----------------------------------------------------
 // MAIN COMPONENT
@@ -23,7 +24,9 @@ const FileFolderManager = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
-
+const [showActionMenu, setShowActionMenu] = useState(false);
+const [actionTarget, setActionTarget] = useState(null);
+ 
   const [newName, setNewName] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
   const [sortType, setSortType] = useState("default"); // default, name, date, type
@@ -208,6 +211,23 @@ const FileFolderManager = () => {
     );
   };
 
+  const addFileFromPicker = (file) => {
+    setItems(prev => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        name: file.name,
+        type: "file",
+        parentId: currentFolder,
+        created: Date.now(),
+        order: prev.length,
+      }
+    ]);
+
+    setShowAddModal(false);
+  };
+
+
   // ----------------------------------------------------
   // RENDER ITEM
   // ----------------------------------------------------
@@ -228,34 +248,15 @@ const FileFolderManager = () => {
           <Text style={styles.dateLabel}>{formatDateTime(item.created)}</Text>
         </View>
       </View>
-
-      <TouchableOpacity
-        style={{ marginHorizontal: 7 }}
-        onPress={() => {
-          setSelectedItem(item);
-          setNewName(item.name);
-          setShowEditModal(true);
-        }}
-      >
-        <MaterialIcons name="edit" size={25} color="#555" />
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={{ marginHorizontal: 7 }}
-        onPress={() => deleteItem(item)}
-      >
-        <MaterialIcons name="delete" size={25} color="red" />
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={() => {
-          setSelectedItem(item);
-          setShowMoveModal(true);
-          setMoveFolderStack([]); // reset move folder stack
-        }}
-      >
-        <MaterialIcons name="drive-file-move-outline" size={25} color="#777" />
-      </TouchableOpacity>
+<TouchableOpacity
+  onPress={() => {
+    setActionTarget(item);
+    setShowActionMenu(true);
+  }}
+>
+  <MaterialIcons name="more-vert" size={25} color="#000" />
+</TouchableOpacity>
+ 
     </TouchableOpacity>
   );
 
@@ -314,6 +315,69 @@ const FileFolderManager = () => {
         </TouchableOpacity>
       </View>
 
+{/* ACTION MENU MODAL */}
+<Modal transparent visible={showActionMenu} animationType="fade">
+  <TouchableOpacity
+    style={{
+      flex: 1,
+      backgroundColor: "#00000055",
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+    onPress={() => setShowActionMenu(false)}
+    activeOpacity={1}
+  >
+    <View
+      style={{
+        width: 180,
+        backgroundColor: "#fff",
+        borderRadius: 10,
+        paddingVertical: 10,
+        elevation: 5,
+      }}
+    >
+      {/* EDIT — only show for folders */}
+      {actionTarget?.type === "folder" && (
+        <TouchableOpacity
+          style={{ padding: 12 }}
+          onPress={() => {
+            setShowActionMenu(false);
+            setSelectedItem(actionTarget);
+            setNewName(actionTarget.name);
+            setShowEditModal(true);
+          }}
+        >
+          <Text>Edit</Text>
+        </TouchableOpacity>
+      )}
+
+      {/* DELETE */}
+      <TouchableOpacity
+        style={{ padding: 12 }}
+        onPress={() => {
+          setShowActionMenu(false);
+          deleteItem(actionTarget);
+        }}
+      >
+        <Text>Delete</Text>
+      </TouchableOpacity>
+
+      {/* MOVE */}
+      <TouchableOpacity
+        style={{ padding: 12 }}
+        onPress={() => {
+          setShowActionMenu(false);
+          setSelectedItem(actionTarget);
+          setShowMoveModal(true);
+        }}
+      >
+        <Text>Move</Text>
+      </TouchableOpacity>
+    </View>
+  </TouchableOpacity>
+</Modal>
+
+
       {/* ADD MODAL */}
       <Modal transparent visible={showAddModal} animationType="slide">
         <View style={styles.modalBody}>
@@ -332,9 +396,10 @@ const FileFolderManager = () => {
                 <Text>Folder</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.btn} onPress={() => addItem("file")}>
-                <Text>File</Text>
-              </TouchableOpacity>
+              <FilePickerRow
+                onFilePicked={addFileFromPicker}
+
+                isFromFileManager={true} item={undefined} handleAttachment={undefined} baseLink={undefined} infoData={undefined} />
             </View>
 
             <TouchableOpacity onPress={() => setShowAddModal(false)} style={styles.cancelBtn}>

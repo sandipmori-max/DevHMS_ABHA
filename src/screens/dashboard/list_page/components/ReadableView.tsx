@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import { formatDateToDDMMMYYYY } from '../../../../utils/helpers';
+import { formatDateList, formatDateToDDMMMYYYY } from '../../../../utils/helpers';
 import { styles } from '../list_page_style';
 import NoData from '../../../../components/no_data/NoData';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
@@ -139,6 +139,7 @@ const ReadableView = ({
 
     const status = item?.status;
     const date = item?.date;
+    console.log("date----------", date)
     const remarks = item?.remarks;
     const address = item?.address;
     const amount = item?.amount;
@@ -279,7 +280,9 @@ const ReadableView = ({
                   color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK,
                 }}
               >
-                {formatDateToDDMMMYYYY(date) || date}
+                    {
+                      formatDateList(date)
+                    }    
               </Text>
             )}
           </View>
