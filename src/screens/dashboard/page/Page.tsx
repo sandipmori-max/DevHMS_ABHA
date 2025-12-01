@@ -392,7 +392,7 @@ const PageScreen = () => {
               marginLeft: 4,
             }}
           >
-            {isFromNew ? `( ${"text.text44"} )` : `( ${'text.text45'} )`}
+            {isFromNew ? `( ${t("text.text44")} )` : `( ${t('text.text45')} )`}
           </Text>
         </View>
       ),
