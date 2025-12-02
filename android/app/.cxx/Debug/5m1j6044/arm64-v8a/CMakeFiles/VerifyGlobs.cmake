@@ -137,6 +137,31 @@ if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   file(TOUCH_NOCREATE "/Users/deverp/Desktop/SandipMori/DevERP/android/app/.cxx/Debug/5m1j6044/arm64-v8a/CMakeFiles/cmake.verify_globs")
 endif()
 
+# react_codegen_SRCS at /Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-config/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-config/android/build/generated/source/codegen/jni/*.cpp")
+set(OLD_GLOB
+  "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-config/android/build/generated/source/codegen/jni/RNCConfigSpec-generated.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "/Users/deverp/Desktop/SandipMori/DevERP/android/app/.cxx/Debug/5m1j6044/arm64-v8a/CMakeFiles/cmake.verify_globs")
+endif()
+
+# react_codegen_SRCS at /Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-config/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-config/android/build/generated/source/codegen/jni/react/renderer/components/RNCConfigSpec/*.cpp")
+set(OLD_GLOB
+  "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-config/android/build/generated/source/codegen/jni/react/renderer/components/RNCConfigSpec/ComponentDescriptors.cpp"
+  "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-config/android/build/generated/source/codegen/jni/react/renderer/components/RNCConfigSpec/EventEmitters.cpp"
+  "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-config/android/build/generated/source/codegen/jni/react/renderer/components/RNCConfigSpec/Props.cpp"
+  "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-config/android/build/generated/source/codegen/jni/react/renderer/components/RNCConfigSpec/RNCConfigSpecJSI-generated.cpp"
+  "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-config/android/build/generated/source/codegen/jni/react/renderer/components/RNCConfigSpec/ShadowNodes.cpp"
+  "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-config/android/build/generated/source/codegen/jni/react/renderer/components/RNCConfigSpec/States.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "/Users/deverp/Desktop/SandipMori/DevERP/android/app/.cxx/Debug/5m1j6044/arm64-v8a/CMakeFiles/cmake.verify_globs")
+endif()
+
 # react_codegen_SRCS at /Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-gesture-handler/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
 file(GLOB NEW_GLOB LIST_DIRECTORIES true "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-gesture-handler/android/build/generated/source/codegen/jni/*.cpp")
 set(OLD_GLOB
@@ -299,6 +324,8 @@ set(OLD_GLOB
   "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSBottomTabsState.cpp"
   "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSFullWindowOverlayShadowNode.cpp"
   "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSModalScreenShadowNode.cpp"
+  "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSSafeAreaViewShadowNode.cpp"
+  "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSSafeAreaViewState.cpp"
   "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNode.cpp"
   "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSScreenStackHeaderConfigShadowNode.cpp"
   "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSScreenStackHeaderConfigState.cpp"

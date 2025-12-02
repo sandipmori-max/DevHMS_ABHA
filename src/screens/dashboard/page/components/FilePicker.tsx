@@ -42,7 +42,7 @@ const FilePickerRow = ({ item, handleAttachment, baseLink, infoData, isFromFileM
         await RNFS.copyFile(files[0].uri, destPath);
         filePath = destPath;
       }
-if (isFromFileManager && onFilePicked) {
+    if (isFromFileManager && onFilePicked) {
       onFilePicked(files[0]);
       return;
     }

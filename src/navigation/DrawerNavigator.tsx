@@ -36,26 +36,7 @@ const DrawerNavigator = () => {
         }}
         component={TabNavigator}
       />
-      <Drawer.Screen
-        name="Attendance"
-        component={AttendanceScreen}
-        options={{ title: t('navigation.attendance') }}
-      /> 
-      <Drawer.Screen
-        name="Notification"
-        component={AlertScreen}
-        options={{ title: t('navigation.alert') }}
-      />
-      <Drawer.Screen
-        name="Privacy Policy"
-        component={PrivacyPolicyScreen}
-        options={{ title: t('navigation.privacyPolicy') }}
-      />
-       {/* <Drawer.Screen
-        name="File Manager"
-        component={FileFolderManager}
-        options={{ title: t('navigation.privacyPolicy') }}
-      /> */}
+      
     </Drawer.Navigator>
   </>
   );

@@ -5,6 +5,7 @@
     "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/@react-native-community/geolocation/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/@react-native-documents/picker/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/@react-native-vector-icons/material-icons/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-config/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-gesture-handler/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-image-picker/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-permissions/android/build/generated/source/codegen/jni/CMakeLists.txt",
@@ -45,6 +46,11 @@
         "/Users/deverp/.gradle/caches/8.14.1/transforms/ac4ebaf754dc18b487a31e43e5e3e9d1/transformed/react-android-0.80.2-debug/prefab/modules/jsi/libs/android.x86/libjsi.so",
         "/Users/deverp/.gradle/caches/8.14.1/transforms/ac4ebaf754dc18b487a31e43e5e3e9d1/transformed/react-android-0.80.2-debug/prefab/modules/reactnative/libs/android.x86/libreactnative.so"
       ]
+    },
+    "react_codegen_RNCConfigSpec::@89f1b79ed4954e2f2cff": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_RNCConfigSpec"
     },
     "react_codegen_RNCGeolocationSpec::@1b959fcb56e23f7716ba": {
       "toolchain": "toolchain",

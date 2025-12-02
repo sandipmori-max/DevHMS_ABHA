@@ -19,6 +19,7 @@ import PinSetupScreen from '../screens/dashboard/pinset/Pinset';
 import PinVerifyScreen from '../screens/dashboard/pinset/PinVerify';
 import { useAppSelector } from '../store/hooks';
 import FileFolderManager from '../screens/dashboard/file_folder_manager/FileFolderManager';
+import ScanScreen from '../screens/dashboard/scan/ScanScreen';
 
 const Stack = createStackNavigator<any>();
 
@@ -97,7 +98,7 @@ const StackNavigator = () => {
       <Stack.Screen options={screenOptions} name="Attendance" component={AttendanceScreen} />
       <Stack.Screen options={screenOptions} name="Business" component={DisplayScreen} />
       <Stack.Screen options={screenOptions} name="Alert" component={AlertScreen} />
-      <Stack.Screen options={screenOptions} name="File Manager" component={FileFolderManager} />
+      <Stack.Screen options={screenOptions} name="File Manager" component={ScanScreen} />
       <Stack.Screen options={screenOptions} name="Privacy Policy" component={PrivacyPolicyScreen} />
       <Stack.Screen options={screenOptions} name="Web" component={WebScreen} />
       <Stack.Screen options={screenOptions} name="Page" component={PageScreen} />
