@@ -1,73 +1,111 @@
-// import React from 'react';
-// import {
-//   StyleSheet,
-//   Text,
-//   TouchableOpacity,
-//   Linking
-// } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, TouchableOpacity, Alert, BackHandler} from 'react-native';
+ 
+import {RESULTS} from 'react-native-permissions'; 
+import { usePermissions } from '../../../permissions/usePermissions';
+import { EPermissionTypes } from '../../../constants';
+import { goToSettings } from '../../../utils/helpers';
+import { styles } from './HomeScreen.styles';
+import { CameraScanner } from '../../../components/CameraScanner/CameraScanner';
 
-// import QRCodeScanner from 'react-native-qrcode-scanner';
-// import { RNCamera } from 'react-native-camera';
+  const ScanScreen = () => {
+  const {askPermissions} = usePermissions(EPermissionTypes.CAMERA);
+  const [cameraShown, setCameraShown] = useState(false);
+  const [qrText, setQrText] = useState('');
 
-// const ScanScreen = () => {
-//   const onSuccess = (e) => {
-//     Linking.openURL(e.data).catch(err =>
-//       console.error('An error occurred', err)
-//     );
-//   };
+  let items = [
+    {
+      id: 1,
+      title: 'QR code Scanner',
+    },
+  ];
 
-//   return (
-//     <QRCodeScanner
-//       onRead={onSuccess}
-//       flashMode={RNCamera.Constants.FlashMode.torch}
-//       topContent={
-//         <Text style={styles.centerText}>
-//           Go to{' '}
-//           <Text style={styles.textBold}>wikipedia.org/wiki/QR_code</Text> on
-//           your computer and scan the QR code.
-//         </Text>
-//       }
-//       bottomContent={
-//         <TouchableOpacity style={styles.buttonTouchable}>
-//           <Text style={styles.buttonText}>OK. Got it!</Text>
-//         </TouchableOpacity>
-//       }
-//     />
-//   );
-// };
+  function handleBackButtonClick() {
+    if (cameraShown) {
+      setCameraShown(false);
+    }
+    return false;
+  }
 
-// const styles = StyleSheet.create({
-//   centerText: {
-//     flex: 1,
-//     fontSize: 18,
-//     padding: 32,
-//     color: '#777'
-//   },
-//   textBold: {
-//     fontWeight: '500',
-//     color: '#000'
-//   },
-//   buttonText: {
-//     fontSize: 21,
-//     color: 'rgb(0,122,255)'
-//   },
-//   buttonTouchable: {
-//     padding: 16
-//   }
-// });
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+    return () => {
+      // BackHandler.removeEventListener(
+      //   'hardwareBackPress',
+      //   handleBackButtonClick,
+      // );
+    };
+  }, []);
 
-// export default ScanScreen;
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+  const takePermissions = async () => {
+    askPermissions()
+      .then(response => {
+        //permission given for camera
+        if (
+          response.type === RESULTS.LIMITED ||
+          response.type === RESULTS.GRANTED
+        ) {
+          setCameraShown(true);
+        }
+      })
+      .catch(error => {
+        if ('isError' in error && error.isError) {
+          Alert.alert(
+            error.errorMessage ||
+              'Something went wrong while taking camera permission',
+          );
+        }
+        if ('type' in error) {
+          if (error.type === RESULTS.UNAVAILABLE) {
+            Alert.alert('This feature is not supported on this device');
+          } else if (
+            error.type === RESULTS.BLOCKED ||
+            error.type === RESULTS.DENIED
+          ) {
+            Alert.alert(
+              'Permission Denied',
+              'Please give permission from settings to continue using camera.',
+              [
+                {
+                  text: 'Cancel',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel',
+                },
+                {text: 'Go To Settings', onPress: () => goToSettings()},
+              ],
+            );
+          }
+        }
+      });
+  };
 
-const ScanScreen = () => {
+  const handleReadCode = (value: string) => {
+    console.log(value);
+    setQrText(value);
+    setCameraShown(false);
+  };
+
   return (
-    <View>
-      <Text>ScanScreen</Text>
+    <View style={styles.container}>
+      {items.map(eachItem => {
+        return (
+          <TouchableOpacity
+            onPress={takePermissions}
+            activeOpacity={0.5}
+            key={eachItem.id}
+            style={styles.itemContainer}>
+            <Text style={styles.itemText}>{eachItem.title}</Text>
+          </TouchableOpacity>
+        );
+      })}
+      {cameraShown && (
+        <CameraScanner
+          setIsCameraShown={setCameraShown}
+          onReadCode={handleReadCode}
+        />
+      )}
     </View>
-  )
-}
+  );
+};
 
-export default ScanScreen
-
-const styles = StyleSheet.create({})
+export default ScanScreen;

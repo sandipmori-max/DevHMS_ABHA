@@ -7,6 +7,7 @@
     "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/@react-native-vector-icons/material-icons/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-config/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-gesture-handler/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-hole-view/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-image-picker/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-permissions/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/SandipMori/DevERP/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt",
@@ -103,6 +104,11 @@
     },
     "react_codegen_rnworklets::@68f58d84d4754f193387": {
       "artifactName": "react_codegen_rnworklets",
+      "abi": "armeabi-v7a",
+      "runtimeFiles": []
+    },
+    "react_codegen_RNHoleView::@573ebd2154dd082a3488": {
+      "artifactName": "react_codegen_RNHoleView",
       "abi": "armeabi-v7a",
       "runtimeFiles": []
     },

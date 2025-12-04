@@ -38,3 +38,7 @@ const NOTIFICATIONS = [
     viewed: false,
   },
 ];
+
+export enum EPermissionTypes {
+  CAMERA = 'camera',
+}

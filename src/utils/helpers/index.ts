@@ -1,7 +1,7 @@
 import { ERP_GIF, ERP_ICON } from '../../assets';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import moment from 'moment';
-import { PermissionsAndroid, Platform } from 'react-native';
+import { Dimensions, Linking, PermissionsAndroid, Platform } from 'react-native';
 import RNFS from 'react-native-fs';
 import FastImage from 'react-native-fast-image';
 import WebView from 'react-native-webview';
@@ -586,5 +586,34 @@ export const clearAllTempFiles = async () => {
     console.log('All temp files cleared!');
   } catch (err) {
     console.log('Error reading temp directory:', err);
+  }
+};
+
+export const getShadowProps = (
+  offset: number = 2,
+  radius: number = 8,
+  opacity: number = 0.2,
+) => ({
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: offset,
+  },
+  shadowOpacity: opacity,
+  shadowRadius: radius,
+  elevation: radius,
+});
+
+export const isIos = Platform.OS === 'ios';
+export const isAndroid = Platform.OS === 'android';
+
+export const getWindowWidth = () => Dimensions.get('window').width;
+export const getWindowHeight = () => Dimensions.get('window').height;
+
+export const goToSettings = () => {
+  if (isIos) {
+    Linking.openURL('app-settings:');
+  } else {
+    Linking.openSettings();
   }
 };
