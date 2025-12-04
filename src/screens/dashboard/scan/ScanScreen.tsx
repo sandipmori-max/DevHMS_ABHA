@@ -7,6 +7,7 @@ import { EPermissionTypes } from '../../../constants';
 import { goToSettings } from '../../../utils/helpers';
 import { styles } from './HomeScreen.styles';
 import { CameraScanner } from '../../../components/CameraScanner/CameraScanner';
+import VideoRecorder from '../page/components/VideoRecorder';
 
   const ScanScreen = () => {
   const {askPermissions} = usePermissions(EPermissionTypes.CAMERA);
@@ -104,6 +105,8 @@ import { CameraScanner } from '../../../components/CameraScanner/CameraScanner';
           onReadCode={handleReadCode}
         />
       )}
+
+      <VideoRecorder />
     </View>
   );
 };
