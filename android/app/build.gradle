@@ -84,8 +84,8 @@ android {
         applicationId "com.deverp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 8
+        versionName "1.0.8"
     }
     signingConfigs {
         debug {
@@ -129,3 +129,4 @@ dependencies {
     // implementation platform('com.google.firebase:firebase-bom:33.13.0')
     implementation 'com.google.firebase:firebase-messaging'
 }
+//https://www.freeprivacypolicy.com/live/3e72f24b-012c-489d-881e-312ab7562a5a

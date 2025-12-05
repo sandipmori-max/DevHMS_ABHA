@@ -100,7 +100,7 @@ export default function VideoRecorder() {
     return (
       <View style={styles.startContainer}>
         <TouchableOpacity style={styles.startBtn} onPress={requestPermissions}>
-          <Text style={styles.btnText}>START</Text>
+          <Text style={styles.btnText}>Video Record</Text>
         </TouchableOpacity>
       </View>
     );
@@ -149,12 +149,14 @@ export default function VideoRecorder() {
 // -------------------------------------------------
 const styles = StyleSheet.create({
   startContainer: {
-    height: 550,
-    backgroundColor: "#000",
+     backgroundColor: "#000",
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 10,
+
   },
   startBtn: {
+    width:'100%',
     backgroundColor: "blue",
     paddingHorizontal: 40,
     paddingVertical: 15,

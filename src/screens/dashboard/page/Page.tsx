@@ -50,6 +50,8 @@ import { ERP_COLOR_CODE } from '../../../utils/constants';
 import BusinessCardView from './components/BusinessCardImage';
 import DeviceInfo from 'react-native-device-info';
 import useTranslations from '../../../hooks/useTranslations';
+import VideoRecorder from './components/VideoRecorder';
+import ScanScreen from './components/ScanScreen';
 
 type PageRouteParams = { PageScreen: { item: any } };
 
@@ -658,7 +660,15 @@ const PageScreen = () => {
             handleAttachment={handleAttachment}
           />
         );
-      } else if (item?.defaultvalue === '#location') {
+      }
+      else if (item?.ctltype === 'VIDEO'){
+        content = <VideoRecorder />
+      }
+
+      else if(item?.ctltype === 'QRSCANNER'){
+        content = <ScanScreen />
+      }
+      else if (item?.defaultvalue === '#location') {
         content = (
           <LocationRow
             locationVisible={locationVisible}
