@@ -662,11 +662,11 @@ const PageScreen = () => {
         );
       }
       else if (item?.ctltype === 'VIDEO'){
-        content = <VideoRecorder />
+        content = <VideoRecorder item={item} />
       }
 
       else if(item?.ctltype === 'QRSCANNER'){
-        content = <ScanScreen />
+        content = <ScanScreen item={item} />
       }
       else if (item?.defaultvalue === '#location') {
         content = (

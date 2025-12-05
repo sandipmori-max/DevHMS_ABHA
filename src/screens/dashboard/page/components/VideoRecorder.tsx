@@ -9,11 +9,15 @@ import {
 } from "react-native";
 import { Camera, useCameraDevice } from "react-native-vision-camera";
 import RNFS from "react-native-fs";
+import { ERP_COLOR_CODE } from "../../../../utils/constants";
+import { useAppSelector } from "../../../../store/hooks";
 
 const MAX_DURATION_MS = 20000; // 20 sec
 const MAX_SIZE_MB = 25;
 
-export default function VideoRecorder() {
+export default function VideoRecorder({item}: any) {
+    console.log("item-------VideoRecorder **************----------", item)
+
   const cameraRef = useRef(null);
   const device = useCameraDevice("back");
 
@@ -21,6 +25,7 @@ export default function VideoRecorder() {
   const [loading, setLoading] = useState(false);
   const [permissionsGranted, setPermissionsGranted] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
+  const theme = useAppSelector(state => state?.theme.mode);
 
   // -------------------------------------------------
   // REQUEST PERMISSIONS WHEN USER PRESSES START
@@ -98,11 +103,21 @@ export default function VideoRecorder() {
   // 1️⃣ Show START button first
   if (!showCamera) {
     return (
+     <>
+      <Text style={[styles.label, theme === 'dark' && {
+               color: 'white'
+             }]}>{item?.fieldtitle}</Text>
+             {item?.tooltip !== item?.fieldtitle && <Text style={[styles.label, theme === 'dark' && {
+               color: 'white'
+             }]}> - ( {item?.tooltip} ) </Text>}
+             {item?.mandatory === '1' && <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>}
+            
       <View style={styles.startContainer}>
         <TouchableOpacity style={styles.startBtn} onPress={requestPermissions}>
           <Text style={styles.btnText}>Video Record</Text>
         </TouchableOpacity>
       </View>
+     </>
     );
   }
 
@@ -155,6 +170,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
 
   },
+   label: {
+      fontSize: 14,
+      color: ERP_COLOR_CODE.ERP_333,
+      marginBottom: 6,
+      fontWeight: '600',
+    },
   startBtn: {
     width:'100%',
     backgroundColor: "blue",

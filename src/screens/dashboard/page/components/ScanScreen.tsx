@@ -6,12 +6,15 @@ import { usePermissions } from '../../../../permissions/usePermissions';
 import { EPermissionTypes } from '../../../../constants';
 import { getShadowProps, goToSettings } from '../../../../utils/helpers';
  import { CameraScanner } from '../../../../components/CameraScanner/CameraScanner';
-import VideoRecorder from './VideoRecorder';
+import { ERP_COLOR_CODE } from '../../../../utils/constants';
+import { useAppSelector } from '../../../../store/hooks';
 
-  const ScanScreen = () => {
+  const ScanScreen = ({item} : any) => {
+  console.log("item-----------------", item)
   const {askPermissions} = usePermissions(EPermissionTypes.CAMERA);
   const [cameraShown, setCameraShown] = useState(false);
   const [qrText, setQrText] = useState('');
+  const theme = useAppSelector(state => state?.theme.mode);
 
   let items = [
     {
@@ -86,20 +89,25 @@ import VideoRecorder from './VideoRecorder';
   };
 
   return (
-    <View style={[ cameraShown ? styles.container : {
-      height: 110
+    <>
+     <Text style={[styles.label, theme === 'dark' && {
+                   color: 'white'
+                 }]}>{item?.fieldtitle}</Text>
+                 {item?.tooltip !== item?.fieldtitle && <Text style={[styles.label, theme === 'dark' && {
+                   color: 'white'
+                 }]}> - ( {item?.tooltip} ) </Text>}
+                 {item?.mandatory === '1' && <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>}
+    
+     <View style={[ cameraShown ? styles.container : {
+      height: 60
     }]}>
-      {items.map(eachItem => {
-        return (
-          <TouchableOpacity
+      <TouchableOpacity
             onPress={takePermissions}
             activeOpacity={0.5}
-            key={eachItem.id}
+           
             style={styles.itemContainer}>
-            <Text style={styles.itemText}>{eachItem.title}</Text>
+            <Text style={styles.itemText}>Test</Text>
           </TouchableOpacity>
-        );
-      })}
       {cameraShown && (
         <CameraScanner
           setIsCameraShown={setCameraShown}
@@ -107,6 +115,8 @@ import VideoRecorder from './VideoRecorder';
         />
       )}
     </View>
+    </>
+   
   );
 };
 
@@ -118,14 +128,19 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 24,
     backgroundColor: 'white',
   },
+  label: {
+      fontSize: 14,
+      color: ERP_COLOR_CODE.ERP_333,
+      marginBottom: 6,
+      fontWeight: '600',
+    },
   itemContainer: {
-    width: '100%',
-    height: 70,
+    width: '100%', 
     backgroundColor: 'white',
-    marginTop: 30,
     justifyContent: 'center',
-    ...getShadowProps(),
-    paddingLeft: 20,
+    marginVertical: 8,
+    paddingVertical: 10,
+    borderStartColor: "red"
   },
   itemText: {
     fontSize: 17,
