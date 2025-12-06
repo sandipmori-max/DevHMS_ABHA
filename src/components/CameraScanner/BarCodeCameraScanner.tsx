@@ -1,0 +1,140 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, Modal, SafeAreaView, View } from 'react-native';
+
+import { styles } from './CameraScanner.styles';
+import { RNHoleView } from 'react-native-hole-view';
+import {
+  Camera,
+  CameraRuntimeError,
+  useCameraDevice,
+  useCodeScanner,
+} from 'react-native-vision-camera';
+import { useIsFocused } from '@react-navigation/native';
+import { useAppStateListener } from '../../hooks/useAppStateListener';
+import { ICameraScannerProps } from '../../utils/helpers/types';
+import { getWindowHeight, getWindowWidth, isIos } from '../../utils/helpers';
+
+export const BarCodeCameraScanner = ({
+  setIsCameraShown,
+  onReadCode,
+}: ICameraScannerProps) => {
+  const device = useCameraDevice('back');
+  const camera = useRef<Camera>(null);
+
+  const isFocused = useIsFocused();
+  const { appState } = useAppStateListener();
+
+  const [isCameraInitialized, setIsCameraInitialized] = useState(isIos);
+  const [isActive, setIsActive] = useState(isIos);
+  const [flash, setFlash] = useState<'on' | 'off'>(isIos ? 'off' : 'on');
+  const [codeScanned, setCodeScanned] = useState('');
+
+  // ---------------------------
+  // SEND SCANNED DATA TO PARENT
+  // ---------------------------
+  useEffect(() => {
+    if (codeScanned) {
+      onReadCode(codeScanned);
+    }
+  }, [codeScanned]);
+
+  // ---------------------------
+  // CAMERA INITIALIZATION
+  // ---------------------------
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+
+    if (isCameraInitialized) {
+      timeout = setTimeout(() => {
+        setIsActive(true);
+        setFlash('off');
+      }, 800);
+    }
+
+    setIsActive(false);
+
+    return () => clearTimeout(timeout);
+  }, [isCameraInitialized]);
+
+  const onInitialized = () => {
+    setIsCameraInitialized(true);
+  };
+
+  // ---------------------------
+  // ADD BARCODE + QR SUPPORT HERE
+  // ---------------------------
+  const codeScanner = useCodeScanner({
+    codeTypes: [ 
+      'ean-13',
+      'ean-8',
+      'code-128',
+      'code-39',
+      'codabar',
+      'itf',
+      'upc-a',
+      'upc-e',
+    ],
+    onCodeScanned: codes => {
+      if (codes.length > 0 && codes[0].value) {
+        setIsActive(false);
+
+        // Delay to prevent double scan
+        setTimeout(() => {
+          setCodeScanned(codes[0].value);
+        }, 300);
+      }
+    },
+  });
+
+  const onError = (error: CameraRuntimeError) => {
+    Alert.alert('Error!', error.message);
+  };
+
+  if (!device) {
+    Alert.alert('Error!', 'Camera device not found!');
+    return null;
+  }
+
+
+  return (
+    isFocused && device && (
+      <SafeAreaView style={styles.safeArea}>
+        <Modal presentationStyle="fullScreen" animationType="slide">
+          
+          {/* Main Camera View */}
+          <Camera
+            torch={flash}
+            onInitialized={onInitialized}
+            ref={camera}
+            onError={onError}
+            photo={false}
+            style={styles.fullScreenCamera}
+            device={device}
+            codeScanner={codeScanner}
+            isActive={
+              isActive &&
+              isFocused &&
+              appState === 'active' &&
+              isCameraInitialized
+            }
+          />
+
+          {/* Scan Frame */}
+          <RNHoleView
+            holes={[
+              {
+                x: getWindowWidth() * 0.05,
+                y: getWindowHeight() * 0.32,
+                width: getWindowWidth() * 0.90,
+                height: getWindowHeight() * 0.25,  // Better for barcodes
+                borderRadius: 8,
+              },
+            ]}
+            style={[styles.rnholeView, styles.fullScreenCamera]}
+          />
+
+        </Modal>
+      </SafeAreaView>
+    )
+  );
+};

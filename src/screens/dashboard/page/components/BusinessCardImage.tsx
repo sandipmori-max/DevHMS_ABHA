@@ -49,12 +49,12 @@ const BusinessCardView = ({ setValue, controls, item, baseLink, infoData }: any)
       if (type === 'camera') {
         permission = PERMISSIONS.ANDROID.CAMERA;
       } 
-      // else {
-      //   permission =
-      //     androidVersion >= 33
-      //       ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
-      //       : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
-      // }
+      else {
+        permission =
+          androidVersion >= 33
+            ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
+            : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+      }
     }
 
 

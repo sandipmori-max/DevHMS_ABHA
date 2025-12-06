@@ -52,6 +52,7 @@ import DeviceInfo from 'react-native-device-info';
 import useTranslations from '../../../hooks/useTranslations';
 import VideoRecorder from './components/VideoRecorder';
 import ScanScreen from './components/ScanScreen';
+import BarCodeScan from './components/BarCodeScan';
 
 type PageRouteParams = { PageScreen: { item: any } };
 
@@ -664,9 +665,11 @@ const PageScreen = () => {
       else if (item?.ctltype === 'VIDEO'){
         content = <VideoRecorder item={item} />
       }
-
-      else if(item?.ctltype === 'QRSCANNER'){
+      else if(item?.ctltype === 'QRSCANNER' && item?.title ===  "QR Scan"){
         content = <ScanScreen item={item} />
+      }
+      else if(item?.ctltype === 'QRSCANNER' && item?.title === "Barcode Scan"){
+        content = <BarCodeScan item={item}/>
       }
       else if (item?.defaultvalue === '#location') {
         content = (

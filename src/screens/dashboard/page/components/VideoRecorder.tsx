@@ -9,15 +9,14 @@ import {
 } from "react-native";
 import { Camera, useCameraDevice } from "react-native-vision-camera";
 import RNFS from "react-native-fs";
-import { ERP_COLOR_CODE } from "../../../../utils/constants";
+ import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import { useAppSelector } from "../../../../store/hooks";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
 
 const MAX_DURATION_MS = 20000; // 20 sec
 const MAX_SIZE_MB = 25;
 
-export default function VideoRecorder({item}: any) {
-    console.log("item-------VideoRecorder **************----------", item)
-
+export default function VideoRecorder({ item }: any) {
   const cameraRef = useRef(null);
   const device = useCameraDevice("back");
 
@@ -25,10 +24,10 @@ export default function VideoRecorder({item}: any) {
   const [loading, setLoading] = useState(false);
   const [permissionsGranted, setPermissionsGranted] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
-  const theme = useAppSelector(state => state?.theme.mode);
+  const theme = useAppSelector((state) => state?.theme.mode);
 
   // -------------------------------------------------
-  // REQUEST PERMISSIONS WHEN USER PRESSES START
+  // PERMISSIONS
   // -------------------------------------------------
   const requestPermissions = async () => {
     const cam = await Camera.requestCameraPermission();
@@ -39,20 +38,21 @@ export default function VideoRecorder({item}: any) {
 
     if (camOK && micOK) {
       setPermissionsGranted(true);
-      setShowCamera(true); // show camera after permission
+      setShowCamera(true);
     } else {
       Alert.alert("Permissions Required", "Camera & Microphone are required.");
     }
   };
 
-  // Check file size
   const checkFileSize = async (filePath) => {
     const stat = await RNFS.stat(filePath);
     const sizeMB = stat.size / (1024 * 1024);
     return sizeMB <= MAX_SIZE_MB;
   };
 
-  // Start Recording
+  // -------------------------------------------------
+  // RECORDING
+  // -------------------------------------------------
   const startRecording = () => {
     setIsRecording(true);
 
@@ -72,7 +72,7 @@ export default function VideoRecorder({item}: any) {
         }
 
         setLoading(false);
-        setShowCamera(false); // hide camera after recording
+        setShowCamera(false);
       },
 
       onRecordingError: (error) => {
@@ -82,13 +82,11 @@ export default function VideoRecorder({item}: any) {
       },
     });
 
-    // Auto-stop at 20 sec
     setTimeout(() => {
       if (isRecording) stopRecording();
     }, MAX_DURATION_MS);
   };
 
-  // Stop recording
   const stopRecording = () => {
     try {
       cameraRef.current.stopRecording();
@@ -97,40 +95,48 @@ export default function VideoRecorder({item}: any) {
   };
 
   // -------------------------------------------------
-  // UI FLOW
+  // ------------------ UI FLOW -----------------------
   // -------------------------------------------------
 
-  // 1️⃣ Show START button first
+  // 1️⃣ FIRST SCREEN – Record Button
   if (!showCamera) {
     return (
-     <>
-      <Text style={[styles.label, theme === 'dark' && {
-               color: 'white'
-             }]}>{item?.fieldtitle}</Text>
-             {item?.tooltip !== item?.fieldtitle && <Text style={[styles.label, theme === 'dark' && {
-               color: 'white'
-             }]}> - ( {item?.tooltip} ) </Text>}
-             {item?.mandatory === '1' && <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>}
-            
-      <View style={styles.startContainer}>
-        <TouchableOpacity style={styles.startBtn} onPress={requestPermissions}>
-          <Text style={styles.btnText}>Video Record</Text>
-        </TouchableOpacity>
-      </View>
-     </>
+      <>
+        <Text style={[styles.label, theme === "dark" && { color: "white" }]}>
+          {item?.fieldtitle}
+        </Text>
+
+        {item?.tooltip !== item?.fieldtitle && (
+          <Text style={[styles.subLabel, theme === "dark" && { color: "white" }]}>
+            {item?.tooltip}
+          </Text>
+        )}
+
+        {item?.mandatory === "1" && (
+          <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
+        )}
+
+        <View style={styles.startContainer}>
+          <TouchableOpacity style={styles.startBtn} onPress={requestPermissions}>
+            <MaterialIcons name="videocam" size={22} color="#fff" />
+            <Text style={styles.startBtnText}>Record Video</Text>
+          </TouchableOpacity>
+        </View>
+      </>
     );
   }
 
-  // 2️⃣ After pressing START → show camera
+  // 2️⃣ CAMERA LOADING
   if (!permissionsGranted || !device) {
     return (
       <View style={styles.loadingContainer}>
-        <Text style={{ color: "#fff" }}>Loading camera...</Text>
+        <ActivityIndicator size="large" color="white" />
+        <Text style={{ color: "#fff", marginTop: 10 }}>Loading camera...</Text>
       </View>
     );
   }
 
-  // 3️⃣ Show recording UI
+  // 3️⃣ CAMERA SCREEN WITH RECORD CONTROLS
   return (
     <View style={styles.cameraContainer}>
       <Camera
@@ -147,11 +153,13 @@ export default function VideoRecorder({item}: any) {
           <ActivityIndicator size="large" color="#fff" />
         ) : isRecording ? (
           <TouchableOpacity style={styles.stopBtn} onPress={stopRecording}>
-            <Text style={styles.btnText}>STOP</Text>
+            <MaterialIcons name="stop" size={28} color="#fff" />
+            <Text style={styles.controlText}>Stop</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity style={styles.recordBtn} onPress={startRecording}>
-            <Text style={styles.btnText}>RECORD</Text>
+            <MaterialIcons name="fiber-manual-record" size={30} color="red" />
+            <Text style={styles.controlText}>Record</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -160,30 +168,44 @@ export default function VideoRecorder({item}: any) {
 }
 
 // -------------------------------------------------
-// STYLES
+// ------------------ STYLES ------------------------
 // -------------------------------------------------
 const styles = StyleSheet.create({
+  label: {
+    fontSize: 15,
+    color: ERP_COLOR_CODE.ERP_333,
+    fontWeight: "700",
+    marginBottom: 6,
+  },
+  subLabel: {
+    fontSize: 13,
+    color: ERP_COLOR_CODE.ERP_333,
+    opacity: 0.7,
+    marginBottom: 6,
+  },
+
+  // First Screen
   startContainer: {
-     backgroundColor: "#000",
+    width: "100%",
+    marginTop: 10,
+  },
+  startBtn: {
+    width: "100%",
+    backgroundColor: "#1976D2",
+    paddingVertical: 14,
+    borderRadius: 10,
+    flexDirection: "row",
+    gap: 10,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 10,
-
   },
-   label: {
-      fontSize: 14,
-      color: ERP_COLOR_CODE.ERP_333,
-      marginBottom: 6,
-      fontWeight: '600',
-    },
-  startBtn: {
-    width:'100%',
-    backgroundColor: "blue",
-    paddingHorizontal: 40,
-    paddingVertical: 15,
-    borderRadius: 10,
+  startBtnText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
   },
 
+  // Camera
   cameraContainer: {
     height: 450,
     backgroundColor: "#000",
@@ -196,26 +218,31 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  // Controls on camera
   controls: {
     position: "absolute",
-    bottom: 20,
+    bottom: 25,
     width: "100%",
     alignItems: "center",
   },
-
   recordBtn: {
-    backgroundColor: "red",
-    paddingHorizontal: 30,
+    backgroundColor: "rgba(255,255,255,0.15)",
     paddingVertical: 12,
-    borderRadius: 10,
+    paddingHorizontal: 20,
+    borderRadius: 50,
+    alignItems: "center",
   },
-
   stopBtn: {
-    backgroundColor: "orange",
-    paddingHorizontal: 30,
+    backgroundColor: "rgba(255,0,0,0.9)",
     paddingVertical: 12,
-    borderRadius: 10,
+    paddingHorizontal: 20,
+    borderRadius: 50,
+    alignItems: "center",
   },
-
-  btnText: { color: "#fff", fontSize: 18, fontWeight: "bold" },
+  controlText: {
+    color: "white",
+    fontSize: 15,
+    fontWeight: "600",
+    marginTop: 5,
+  },
 });
