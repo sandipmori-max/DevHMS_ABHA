@@ -106,13 +106,14 @@ const BarCodeScan = ({ item }: any) => {
         {/* Scan Button */}
         {!cameraShown && (
           <TouchableOpacity
-            onPress={takePermissions}
-            activeOpacity={0.7}
-            style={styles.scanButton}
-          >
-            <MaterialIcons name="barcode-reader" size={24} color="white" />
-            <Text style={styles.scanButtonText}>Scan Barcode</Text>
-          </TouchableOpacity>
+  onPress={takePermissions}
+  activeOpacity={0.8}
+  style={styles.squareScanCard}
+>
+  <MaterialIcons name="barcode-reader" size={42} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
+  <Text style={styles.squareScanText}>Scan Barcode</Text>
+</TouchableOpacity>
+
         )}
 
         {/* Scan Result */}
@@ -186,4 +187,21 @@ const styles = StyleSheet.create({
     color: '#2E7D32',
     fontWeight: '600',
   },
+  squareScanCard: {
+  width: "100%",
+  aspectRatio: 2.8,
+  borderRadius: 12,
+   borderWidth: 1.5,
+  borderColor: ERP_COLOR_CODE.ERP_999,
+  justifyContent: "center",
+  alignItems: "center",
+  marginTop: 10,
+},
+squareScanText: {
+  marginTop: 10,
+  fontSize: 16,
+  fontWeight: "600",
+  color: ERP_COLOR_CODE.ERP_APP_COLOR,
+},
+
 });

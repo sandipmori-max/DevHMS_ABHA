@@ -137,11 +137,7 @@ export default function VideoRecorder({ item }: any) {
       cameraRef.current.stopRecording();
     } catch (_) {}
     setIsRecording(false);
-  };
-
-  // -------------------------------------------------
-  // FIRST SCREEN
-  // -------------------------------------------------
+  }; 
   if (!showCamera) {
     return (
       <View>
@@ -159,17 +155,15 @@ export default function VideoRecorder({ item }: any) {
           <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
         )}
 
-        <TouchableOpacity style={styles.startBtn} onPress={requestPermissions}>
-          <MaterialIcons name="videocam" size={24} color="#fff" />
-          <Text style={styles.startBtnText}>Record Video</Text>
-        </TouchableOpacity>
+      <TouchableOpacity style={styles.squareCard} onPress={requestPermissions}>
+  <MaterialIcons name="videocam" size={40} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
+  <Text style={styles.squareCardText}>Record Video</Text>
+</TouchableOpacity>
+
       </View>
     );
   }
-
-  // -------------------------------------------------
-  // CAMERA VIEW
-  // -------------------------------------------------
+ 
   return (
     <Modal visible={showCamera} animationType="slide" presentationStyle="fullScreen">
       <SafeAreaView style={styles.fullScreen}>
@@ -187,17 +181,13 @@ export default function VideoRecorder({ item }: any) {
               isActive={true}
               video={true}
               audio={true}
-            />
-
-            {/* TIMER TOP CENTER */}
+            /> 
             {isRecording && (
               <View style={styles.timerContainer}>
                 <View style={styles.redDot} />
                 <Text style={styles.timerText}>{formatTime(recordTime)}</Text>
               </View>
-            )}
-
-            {/* HEADER */}
+            )} 
             <View style={styles.header}>
               <Text style={styles.headerTitle}>Record Video</Text>
 
@@ -207,9 +197,7 @@ export default function VideoRecorder({ item }: any) {
               >
                 <MaterialIcons name="close" size={28} color="#fff" />
               </TouchableOpacity>
-            </View>
-
-            {/* BOTTOM PANEL */}
+            </View> 
             <View style={styles.bottomPanel}>
               {loading ? (
                 <ActivityIndicator size="large" color="#fff" />
@@ -235,7 +223,22 @@ export default function VideoRecorder({ item }: any) {
 const styles = StyleSheet.create({
   label: { fontSize: 15, fontWeight: "700", color: ERP_COLOR_CODE.ERP_333 },
   subLabel: { fontSize: 13, opacity: 0.7, color: ERP_COLOR_CODE.ERP_333 },
-
+  squareCard: {
+    width: "100%",
+    aspectRatio: 2.8,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: ERP_COLOR_CODE.ERP_999,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 12,
+  },
+  squareCardText: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: "600",
+    color: ERP_COLOR_CODE.ERP_APP_COLOR,
+  },
   startBtn: {
     width: "100%",
     backgroundColor: "#1976D2",
@@ -248,23 +251,20 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   startBtnText: { color: "#fff", fontSize: 16, fontWeight: "600" },
-
   fullScreen: { flex: 1, backgroundColor: "#000" },
-
   loader: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#000",
   },
-
   header: {
     position: "absolute",
     top: 0,
     width: "100%",
     paddingVertical: 14,
     paddingHorizontal: 18,
-    backgroundColor: "rgba(0,0,0,0.45)",
+    backgroundColor: "black",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -272,7 +272,6 @@ const styles = StyleSheet.create({
   },
   headerTitle: { color: "#fff", fontSize: 18, fontWeight: "700" },
   closeBtn: { padding: 6 },
-
   timerContainer: {
     position: "absolute",
     top: 70,
@@ -290,18 +289,16 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   timerText: { color: "#fff", fontSize: 20, fontWeight: "600" },
-
   bottomPanel: {
     position: "absolute",
     bottom: 0,
     width: "100%",
     paddingVertical: 22,
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.55)",
+    backgroundColor: "black",
     zIndex: 200,
   },
   bottomText: { color: "#fff", marginTop: 6, fontSize: 16 },
-
   recordBtn: { alignItems: "center" },
   stopBtn: { alignItems: "center" },
 });

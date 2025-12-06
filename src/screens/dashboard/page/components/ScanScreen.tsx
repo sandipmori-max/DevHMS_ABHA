@@ -118,21 +118,21 @@ const ScanScreen = ({ item }: any) => {
       <View style={[cameraShown && styles.container]}>
 
         {!cameraShown && (
-          <TouchableOpacity
-            onPress={takePermissions}
-            activeOpacity={0.7}
-            style={styles.scanButton}
-          >
-            <MaterialIcons name="qr-code-scanner" size={24} color="white" />
-            <Text style={styles.scanButtonText}>Scan Code</Text>
-          </TouchableOpacity>
+         <TouchableOpacity
+           onPress={takePermissions}
+           activeOpacity={0.8}
+           style={styles.squareScanCard}
+         >
+           <MaterialIcons name="qr-code-scanner" size={42} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
+           <Text style={styles.squareScanText}>Scan Barcode</Text>
+         </TouchableOpacity>
         )}
 
         {/* Show Scanned Value */}
         {qrText !== '' && !cameraShown && (
           <View style={styles.resultBox}>
             <MaterialIcons name="check-circle" size={20} color="green" />
-            <Text style={styles.resultText}>Scanned:12312--- {qrText}</Text>
+            <Text style={styles.resultText}>Scanned: {qrText}</Text>
           </View>
         )}
 
@@ -206,4 +206,20 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: 'black',
   },
+  squareScanCard: {
+  width: "100%",
+  aspectRatio: 2.8,
+  borderRadius: 12,
+   borderWidth: 1.5,
+  borderColor: ERP_COLOR_CODE.ERP_999,
+  justifyContent: "center",
+  alignItems: "center",
+  marginTop: 10,
+},
+squareScanText: {
+  marginTop: 10,
+  fontSize: 16,
+  fontWeight: "600",
+  color: ERP_COLOR_CODE.ERP_APP_COLOR,
+},
 });
