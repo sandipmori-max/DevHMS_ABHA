@@ -93,10 +93,7 @@ export default function VideoRecorder({ item }: any) {
     const sizeMB = stat.size / (1024 * 1024);
     return sizeMB <= MAX_SIZE_MB;
   };
-
-  // -------------------------------------------------
-  // RECORDING
-  // -------------------------------------------------
+ 
   const startRecording = () => {
     setIsRecording(true);
     setRecordTime(0);
@@ -106,7 +103,7 @@ export default function VideoRecorder({ item }: any) {
 
       onRecordingFinished: async (video) => {
 
-         setIsRecording(false);
+        setIsRecording(false);
         setLoading(true);
 
         const valid = await checkFileSize(video.path);
@@ -135,9 +132,9 @@ export default function VideoRecorder({ item }: any) {
   const stopRecording = () => {
     try {
       cameraRef.current.stopRecording();
-    } catch (_) {}
+    } catch (_) { }
     setIsRecording(false);
-  }; 
+  };
   if (!showCamera) {
     return (
       <View>
@@ -155,15 +152,15 @@ export default function VideoRecorder({ item }: any) {
           <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
         )}
 
-      <TouchableOpacity style={styles.squareCard} onPress={requestPermissions}>
-  <MaterialIcons name="videocam" size={40} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
-  <Text style={styles.squareCardText}>Record Video</Text>
-</TouchableOpacity>
+        <TouchableOpacity style={styles.squareCard} onPress={requestPermissions}>
+          <MaterialIcons name="videocam" size={40} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
+          <Text style={styles.squareCardText}>Record Video</Text>
+        </TouchableOpacity>
 
       </View>
     );
   }
- 
+
   return (
     <Modal visible={showCamera} animationType="slide" presentationStyle="fullScreen">
       <SafeAreaView style={styles.fullScreen}>
@@ -181,13 +178,13 @@ export default function VideoRecorder({ item }: any) {
               isActive={true}
               video={true}
               audio={true}
-            /> 
+            />
             {isRecording && (
               <View style={styles.timerContainer}>
                 <View style={styles.redDot} />
                 <Text style={styles.timerText}>{formatTime(recordTime)}</Text>
               </View>
-            )} 
+            )}
             <View style={styles.header}>
               <Text style={styles.headerTitle}>Record Video</Text>
 
@@ -197,7 +194,7 @@ export default function VideoRecorder({ item }: any) {
               >
                 <MaterialIcons name="close" size={28} color="#fff" />
               </TouchableOpacity>
-            </View> 
+            </View>
             <View style={styles.bottomPanel}>
               {loading ? (
                 <ActivityIndicator size="large" color="#fff" />

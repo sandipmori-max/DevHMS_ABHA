@@ -332,7 +332,7 @@ const PageScreen = () => {
       };
 
       const subscription = AppState.addEventListener('change', nextAppState => {
-        if (nextAppState === 'active') {
+        if (nextAppState === 'active' && hasLocationField) {
           checkPermissionsOnFocus();
         }
       });
