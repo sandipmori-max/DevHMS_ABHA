@@ -165,7 +165,6 @@ const PageScreen = () => {
       item?.ctltype === 'PHOTO',
   );
 
-
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 

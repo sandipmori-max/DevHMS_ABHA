@@ -4,7 +4,6 @@ import moment from 'moment';
 import { Dimensions, Linking, PermissionsAndroid, Platform } from 'react-native';
 import RNFS from 'react-native-fs';
 import FastImage from 'react-native-fast-image';
-import WebView from 'react-native-webview';
 
 export const getBottomTabIcon = (iconName: string, focused: boolean) => {
   switch (iconName) {
@@ -144,13 +143,11 @@ const formattedToday =
   (today.getMonth() + 1).toString().padStart(2, "0") + "/" +
   today.getDate().toString().padStart(2, "0") + "/" +
   today.getFullYear();
-
-// output
-if (inputDate === formattedToday) {
-    return "Today"
-} else {
-     return input.replace(" ", "\n");
-}
+  if (inputDate === formattedToday) {
+      return "Today"
+  } else {
+      return input.replace(" ", input.length > 11 ? "\n" : " ");
+  }
 }
 
 export function formatDateToDDMMMYYYY(dateStr: string): string {

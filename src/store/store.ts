@@ -29,7 +29,7 @@ const persistedThemeReducer = persistReducer(themePersistConfig, themeReducer);
 export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
-    theme: persistedThemeReducer, // ✅ use persisted version
+    theme: persistedThemeReducer,
     attendance: attendanceReducer,
     dropdown: dropdownReducer,
     ajax: ajaxReducer,

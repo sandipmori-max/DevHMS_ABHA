@@ -180,10 +180,10 @@ const HomeScreen = () => {
                 name={!isHorizontal ? 'list' : 'apps'}
                 onPress={() => setIsHorizontal(prev => !prev)}
               />
-              <ERPIcon
+              {/* <ERPIcon
                 name={isFilterVisible ? 'close' : 'filter-alt'}
                 onPress={() => setIsFilterVisible(prev => !prev)}
-              />
+              /> */}
             </>
           )}
         </>
