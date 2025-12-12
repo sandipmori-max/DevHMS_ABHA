@@ -98,8 +98,7 @@ curl --location 'https://payroll.deverp.net/devws/msp_api.aspx/savePage' \
   "token": "51b35f3b6af242898bfc397607aad328",
   "page": "punhin",
   "data": "{\"ID\":\"51b35f3b6af242898bfc397607aad328\", \"EmployeeId\":\"51b35f3b6af242898bfc397607aad328\",\"InDate\":\"\",\"InImage\":\"\",\"InRemarks\":\"\",\"InLocation\":{\"lat\":\"\",\"long\":\"\"},\"CUID\":\"51b35f3b6af242898bfc397607aad328\"}"
-}
-'
+}'
 
 [ Attandanced - punch out]
 
