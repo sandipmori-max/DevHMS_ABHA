@@ -156,10 +156,7 @@ const TermsAndConsent = ({ onAccept }) => {
         <Text style={{ color: 'blue' }}>http://deverp.com/index.aspx?q=aboutus</Text>.
       </Text>
 
-     
-     
-    </ScrollView>
-    <View style={{paddingHorizontal: 12}}>
+       <View style={{paddingHorizontal: 12}}>
        {/* Custom Checkbox */}
       <TouchableOpacity style={styles.checkboxContainer} onPress={toggleCheckbox}>
         <View style={[styles.checkbox, accepted && styles.checkedBox]}>
@@ -184,6 +181,9 @@ const TermsAndConsent = ({ onAccept }) => {
       </View>
       }
     </View>
+     
+    </ScrollView>
+  
   </>
   );
 };
