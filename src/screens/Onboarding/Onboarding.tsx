@@ -11,7 +11,6 @@ import {
   Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-//  import { ERP_GIF } from '../../assets';
 import { ERP_COLOR_CODE } from '../../utils/constants';
 import FullViewLoader from '../../components/loader/FullViewLoader';
 import MaterialIcons from '@react-native-vector-icons/material-icons';

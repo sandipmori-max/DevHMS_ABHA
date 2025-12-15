@@ -59,8 +59,6 @@ const BusinessCardView = ({ setValue, controls, item, baseLink, infoData }: any)
 
 
     const result = await check(permission);
-    console.log('🚀 Permission Check:', result);
-
 
     switch (result) {
       case RESULTS.GRANTED:
@@ -161,17 +159,14 @@ const BusinessCardView = ({ setValue, controls, item, baseLink, infoData }: any)
         const parsed = parseCard(joined);
         setValue(parsed);
       } catch (err) {
-        console.error('❌ OCR error:', err);
       } finally {
         setLoading(false);
       }
     })();
   }, [imageUri]);
 
-  // 🧠 Ultra Pro-Max OCR Algorithm
-  const parseCard = (text: string): any => {
+   const parseCard = (text: string): any => {
 
-    console.log("text -----------------------  ", text)
     // Normalize text
     let cleanText = text
       .replace(/[\u2018\u2019]/g, "'")

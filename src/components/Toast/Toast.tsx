@@ -1,10 +1,8 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, } from 'react';
 import {
-  View,
   Text,
   Animated,
   StyleSheet,
-  TouchableOpacity,
   Dimensions,
 } from 'react-native';
 import { ERP_COLOR_CODE } from '../../utils/constants';
@@ -15,13 +13,11 @@ const Toast = ({ visible, message, onHide }: { visible: boolean; message: string
 
   useEffect(() => {
     if (visible) {
-      // Fade in
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 300,
         useNativeDriver: true,
       }).start(() => {
-        // Auto hide after 2.5s
         setTimeout(() => {
           Animated.timing(fadeAnim, {
             toValue: 0,

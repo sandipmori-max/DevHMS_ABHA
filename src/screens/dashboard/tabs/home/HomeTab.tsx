@@ -58,7 +58,6 @@ const HomeScreen = () => {
   const [toDate, setToDate] = useState<string>('');
 
   const auth = useAppSelector(state => state?.auth);
-  console.log("auth---------------", auth)
   const [showDatePicker, setShowDatePicker] = useState<null | {
     type: 'from' | 'to';
     show: boolean;
@@ -92,8 +91,7 @@ const HomeScreen = () => {
       const filtered = dashboard.filter(item =>
         (item.name || '').toLowerCase().includes(searchText.toLowerCase()),
       );
-      console.log('🚀 ~ HomeScreen ~ filtered-------:', filtered);
-      setFilteredDashboard(filtered);
+       setFilteredDashboard(filtered);
     }, 300);
 
     return () => {
@@ -457,10 +455,8 @@ const HomeScreen = () => {
         }
       }
       setToDate(formattedDate);
-      console.log("formattedDate", formattedDate)
       dispatch(setActiveDashboardToDate(formattedDate))
     } else {
-      console.log("formattedDate-----", formattedDate)
 
       setFromDate(formattedDate);
       dispatch(setActiveDashboardFromDate(formattedDate))
@@ -482,11 +478,7 @@ const HomeScreen = () => {
       const parsed = await dispatch(
         getERPPageThunk({ page: 'Dashboard', id: "" }),
       ).unwrap();
-      console.log('🚀 ~ parsed:', parsed);
-
       const pageControls = Array.isArray(parsed?.pagectl) ? parsed?.pagectl : [];
-      console.log('🚀 ~ pageControls:', pageControls);
-
       const normalizedControls = pageControls?.map(c => ({
         ...c,
         disabled: String(c?.disabled ?? '0'),
@@ -499,7 +491,6 @@ const HomeScreen = () => {
 
 
     } catch (e: any) {
-      console.log('🚀 ~ e:', e);
     } finally {
       setLoadingPageId(null);
       setTimeout(() => {

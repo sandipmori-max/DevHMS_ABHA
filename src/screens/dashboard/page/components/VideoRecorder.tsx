@@ -118,7 +118,6 @@ export default function VideoRecorder({ item }: any) {
       },
 
       onRecordingError: (err) => {
-        console.log(err);
         Alert.alert("Error", "Recording failed");
         setIsRecording(false);
       },

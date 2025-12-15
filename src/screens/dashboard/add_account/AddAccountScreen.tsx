@@ -151,7 +151,6 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
       onClose();
       setLoader(false);
     } catch (e: any) {
-      console.log("e -------------------- ", e)
       setAlertConfig({
         title: t("title.title1"),
         message: e?.message || t("msg.msg4"),

@@ -81,7 +81,6 @@ const ScanScreen = ({ item }: any) => {
 
   // Handle scanned code
   const handleReadCode = (value: string) => {
-    console.log(value);
     setQrText(value);
     setCameraShown(false);
   };

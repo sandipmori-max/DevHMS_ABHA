@@ -57,8 +57,7 @@ const PinVerifyScreen = () => {
         setPin('');
       }
     } catch (error) {
-      console.error('Error verifying PIN:', error);
-      setAlertVisible(true);
+       setAlertVisible(true);
 
       setAlertConfig({
         title: 'Error verifying PIN',

@@ -227,7 +227,6 @@ const ListScreen = () => {
               return allValues?.includes(trimmedQuery?.toLowerCase());
             });
           }
-          console.log("filtered-----------", filtered)
           setFilteredData(filtered);
         }, 300);
       };
@@ -239,7 +238,6 @@ const ListScreen = () => {
     try {
       await fetchListData(fromDate, toDate);
     } catch (e) {
-      console.error('Refresh failed', e);
     }
   };
 
@@ -327,10 +325,8 @@ const ListScreen = () => {
         }
         setConfigData(configArray);
         setListData(dataArray);
-        console.log("dataArraydataArraydataArraydataArraydataArray", dataArray)
         setFilteredData(dataArray);
       } catch (e: any) {
-        console.log('Failed to load list data:', e);
         setError(e || 'Failed to load list data');
         setParsedError(e);
       } finally {
@@ -376,9 +372,7 @@ const ListScreen = () => {
     });
   };
 
-  const handleActionButtonPressed = (actionValue, label, color, id, item) => {
-      console.log("result--------------------", item)
- 
+  const handleActionButtonPressed = (actionValue, label, color, id, item) => { 
     if(item?.btn_edit && item?.btn_edit?.includes("/")){
       const left = item?.btn_edit.substring(0, item?.btn_edit.indexOf('/'));
       const result = item?.btn_edit.split('/')[1];
@@ -617,8 +611,6 @@ const ListScreen = () => {
               id: 0,
             });
             setApiError(true);
-
-            console.error('❌ Failed:', err);
           }
         }}
         isFromButtonList={true}

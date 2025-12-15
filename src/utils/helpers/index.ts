@@ -66,13 +66,12 @@ export const requestCameraPermission = async (): Promise<boolean> => {
       cameraGranted = res === RESULTS.GRANTED;
       if (!cameraGranted) {
         return false;
-       }
+      }
     } else if (cameraStatus === RESULTS.BLOCKED) {
-      return false; 
+      return false;
     }
     return cameraGranted;
   } catch (error) {
-    console.warn('⚠️ Permission error:', error);
     return false;
   }
 };
@@ -86,11 +85,9 @@ export const requestCameraAndLocationPermission = async (): Promise<boolean> => 
         ? PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
         : PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
 
-    // 📌 Check current statuses
     const cameraStatus = await check(cameraPerm);
     const locationStatus = await check(locationPerm);
 
-    // ✅ Handle camera permission
     let cameraGranted = false;
     if (cameraStatus === RESULTS.GRANTED) {
       cameraGranted = true;
@@ -99,12 +96,11 @@ export const requestCameraAndLocationPermission = async (): Promise<boolean> => 
       cameraGranted = res === RESULTS.GRANTED;
       if (!cameraGranted) {
         return false;
-       }
+      }
     } else if (cameraStatus === RESULTS.BLOCKED) {
-      return false; 
+      return false;
     }
 
-    // ✅ Handle location permission
     let locationGranted = false;
     if (locationStatus === RESULTS.GRANTED) {
       locationGranted = true;
@@ -129,24 +125,22 @@ export const requestCameraAndLocationPermission = async (): Promise<boolean> => 
 
     return cameraGranted && locationGranted;
   } catch (error) {
-    console.warn('⚠️ Permission error:', error);
     return false;
   }
 };
 
 export const formatDateList = (input: string) => {
- const inputDate = input.split(" ")[0];
+  const inputDate = input.split(" ")[0];
 
-// get today's date in MM/DD/YYYY format
-const today = new Date();
-const formattedToday =
-  (today.getMonth() + 1).toString().padStart(2, "0") + "/" +
-  today.getDate().toString().padStart(2, "0") + "/" +
-  today.getFullYear();
+  const today = new Date();
+  const formattedToday =
+    (today.getMonth() + 1).toString().padStart(2, "0") + "/" +
+    today.getDate().toString().padStart(2, "0") + "/" +
+    today.getFullYear();
   if (inputDate === formattedToday) {
-      return "Today"
+    return "Today"
   } else {
-      return input.replace(" ", input.length > 11 ? "\n" : " ");
+    return input.replace(" ", input.length > 11 ? "\n" : " ");
   }
 }
 
@@ -449,36 +443,30 @@ export async function requestLocationPermissions(): Promise<
 
       if (allGranted) return 'granted';
 
-      // ✅ Case 1: Foreground allowed, background denied
       const foregroundGranted =
         fine === PermissionsAndroid.RESULTS.GRANTED &&
         coarse === PermissionsAndroid.RESULTS.GRANTED &&
         background !== PermissionsAndroid.RESULTS.GRANTED;
 
       if (foregroundGranted) {
-        console.log('📍 Foreground location granted, background denied.');
         return 'foreground-only';
       }
 
-      // 🚫 Case 2: Permanently denied (NEVER ASK AGAIN)
       const blocked =
         fine === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN ||
         coarse === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN ||
         background === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN;
 
       if (blocked) {
-        console.log('🚫 Location permission permanently denied');
         return 'blocked';
       }
 
-      // ❌ Otherwise → denied
       return 'denied';
     } catch (err) {
-      console.warn('⚠️ requestLocationPermissions error:', err);
       return 'denied';
     }
   }
-  return 'granted'; // iOS handled via Info.plist
+  return 'granted'; 
 }
 
 
@@ -572,7 +560,6 @@ export const clearAllTempFiles = async () => {
       try {
         await RNFS.unlink(file.path);
       } catch (err) {
-        console.log('Error deleting file:', file.path, err);
       }
     }
     FastImage.clearMemoryCache();
@@ -580,9 +567,7 @@ export const clearAllTempFiles = async () => {
     if (Platform.OS === 'android') {
       // WebView.clearCache(true);
     }
-    console.log('All temp files cleared!');
   } catch (err) {
-    console.log('Error reading temp directory:', err);
   }
 };
 

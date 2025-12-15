@@ -8,8 +8,6 @@ export const useAppStateListener = (
   const appStateRef = useRef(AppState.currentState);
   const onForegroundRef = useRef(onForeground);
   const onBackgroundRef = useRef(onBackground);
-
-  // setting refs to avoid passing the functions as dependencies to useEffect
   onForegroundRef.current = onForeground;
   onBackgroundRef.current = onBackground;
 

@@ -30,7 +30,7 @@ const DataManagement = require(`${ERP_BASE_URL_GIF}/DataManagement.gif`);
 const money = require(`${ERP_BASE_URL_GIF}/money.gif`);
 const RemoteMonitoring = require(`${ERP_BASE_URL_GIF}/RemoteMonitoring.gif`);
 
- 
+
 
 export const ERP_ICON = {
   APP_LOGO,
@@ -62,4 +62,4 @@ export const ERP_GIF = {
   DataManagement,
   RemoteMonitoring
 };
- 
+

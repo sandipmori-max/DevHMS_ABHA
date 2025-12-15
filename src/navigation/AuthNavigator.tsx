@@ -22,11 +22,11 @@ const AuthNavigator = () => {
         headerShown: false,
       }}
     >
-            <Stack.Screen 
-            screenOptions={{
-              headerShown: false,
-            }}
-            name="Onboarding" component={Onboarding} />
+      <Stack.Screen
+        screenOptions={{
+          headerShown: false,
+        }}
+        name="Onboarding" component={Onboarding} />
 
       <Stack.Screen name="Login" component={LoginScreen} />
     </Stack.Navigator>

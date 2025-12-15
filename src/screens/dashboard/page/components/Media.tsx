@@ -102,8 +102,7 @@ const Media = ({ isValidate, item, handleAttachment, infoData, baseLink, isFromN
 
       return result === RESULTS.GRANTED;
     } catch (error) {
-      console.log('⚠️ Permission error:', error);
-      return false;
+       return false;
     }
   };
 

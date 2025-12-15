@@ -94,10 +94,8 @@ export async function requestLocationPermissions(): Promise<
       ) {
         return 'blocked';
       }
-
       return 'denied';
     } catch (err) {
-      console.warn('requestLocationPermissions error:', err);
       return 'denied';
     }
   }
@@ -170,8 +168,6 @@ const PageScreen = () => {
 
     const checkLocation = async () => {
       const enabled = await DeviceInfo.isLocationEnabled();
-      console.log('locationEnabled -----enabled----------- ', enabled);
-
       setLocationEnabled(enabled);
     };
 
@@ -436,7 +432,6 @@ const PageScreen = () => {
                     setModalClose(false);
                     return;
                   }
-                  console.log('permissionStatus', permissionStatus);
                   if (hasLocationField && !enabled) {
                     setAlertConfig({
                       title: t("title.title13"),
@@ -504,7 +499,6 @@ const PageScreen = () => {
                     setActionSaveLoader(false);
                   }
                 } catch (error) {
-                  console.error('Error checking location status:', error);
                 }
               }}
             />
@@ -534,8 +528,6 @@ const PageScreen = () => {
       const parsed = await dispatch(
         getERPPageThunk({ page: url, id: isFromNew ? 0 : id }),
       ).unwrap();
-      console.log('🚀 ~ parsed:', parsed);
-
       if (!isFromNew) {
         setInfoData({
           id: id?.toString(),
@@ -545,8 +537,6 @@ const PageScreen = () => {
       }
 
       const pageControls = Array.isArray(parsed?.pagectl) ? parsed?.pagectl : [];
-      console.log('🚀 ~ pageControls:', pageControls);
-
       const normalizedControls = pageControls?.map(c => ({
         ...c,
         disabled: String(c?.disabled ?? '0'),
@@ -566,7 +556,6 @@ const PageScreen = () => {
         return merged;
       });
     } catch (e: any) {
-      console.log('🚀 ~ e:', e);
       setError(JSON.stringify(e?.data) || 'Failed to load page');
     } finally {
       setLoadingPageId(null);
@@ -612,7 +601,6 @@ const PageScreen = () => {
 
   const renderItem = useCallback(
     ({ item, index }: { item: any; index: number }) => {
-      console.log('🚀 ~ item:----------------', item);
       const setValue = (val: any) => {
         if (typeof val === 'object' && val !== null) {
           setFormValues(prev => ({ ...prev, ...val }));

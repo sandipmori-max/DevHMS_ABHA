@@ -9,18 +9,16 @@ import ajaxReducer from './slices/ajax/ajaxSlice';
 import pageReducer from './slices/page/pageSlice';
 import syncLocationReducer from './slices/location/syncLocationSlice';
 
-// ✅ Persist config for auth
 const authPersistConfig = {
   key: 'auth',
   storage: AsyncStorage,
   whitelist: ['token', 'isPinLoaded', 'isAuthenticated', 'user'],
 };
 
-// ✅ Persist config for theme
 const themePersistConfig = {
   key: 'theme',
   storage: AsyncStorage,
-  whitelist: ['mode', 'langcode'], // store only the selected theme value
+  whitelist: ['mode', 'langcode'],
 };
 
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);

@@ -78,12 +78,9 @@ const authSlice = createSlice({
       state.dashboardTypeId = action?.payload;
     },
     setActiveDashboardFromDate: (state, action: PayloadAction<string | null>) => {
-      console.log("date---------", action.payload)
       state.dashboardFromDate = action?.payload;
     },
     setActiveDashboardToDate: (state, action: PayloadAction<string | null>) => {
-      console.log("date---------", action.payload)
-
       state.dashboardToDate = action?.payload;
     },
     setActiveDashboardBranch: (state, action: PayloadAction<string | null>) => {
@@ -241,7 +238,6 @@ const authSlice = createSlice({
                   menus = innerData.menus;
                 }
               } catch (innerParseError) {
-                console.error('Error parsing inner d property:', innerParseError);
               }
             }
           }
@@ -255,7 +251,6 @@ const authSlice = createSlice({
             title: menu?.Title || '',
             isReport: menu?.IsReport,
           }));
-          console.log("🚀 ~ menus:", menus)
           state.error = null;
           state.isMenuLoading = false;
         } catch (error) {
@@ -279,8 +274,6 @@ const authSlice = createSlice({
           } else {
             dashboardData = action.payload;
           }
-            console.log("🚀 ~ dashboardData:", dashboardData)
-
           let dashboardItems = [];
 
           if (dashboardData.data && dashboardData.data.d) {
@@ -290,7 +283,6 @@ const authSlice = createSlice({
                 dashboardItems = innerData.dbs;
               }
             } catch (innerParseError) {
-              console.error('Error parsing data.d property:', innerParseError);
             }
           } else if (dashboardData.success === 1 && dashboardData.dbs) {
             dashboardItems = dashboardData.dbs;
@@ -301,11 +293,8 @@ const authSlice = createSlice({
                 dashboardItems = innerData.dbs;
               }
             } catch (innerParseError) {
-              console.error('Error parsing inner d property:', innerParseError);
             }
           }
-            console.log("🚀 ~-------------- dashboardItems:", dashboardItems)
-
           state.dashboard = dashboardItems.map((item: any, index: number) => ({
             id: item?.Link || `dashboard_${index}`,
             name: item?.Name || '',
@@ -317,7 +306,6 @@ const authSlice = createSlice({
           }));
           state.error = null;
         } catch (error) {
-          console.error('Error parsing dashboard data:', error);
           state.dashboard = [];
         }
         state.isDashboardLoading = false;

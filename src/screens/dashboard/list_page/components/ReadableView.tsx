@@ -102,7 +102,6 @@ const ReadableView = ({
 }: any) => {
   const { t } = useTranslations();
 
-  console.log("filteredData", filteredData.length);
   const navigation = useNavigation();
   const screenWidth = Dimensions.get('window').width;
   const [listData, setListData] = useState(filteredData || []);
@@ -112,14 +111,12 @@ const ReadableView = ({
     setListData(filteredData)
   },[filteredData])
   const handleDelete = (item) => {
-    console.log("id", item);
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     handleDeleteNotification(item)
     // setListData((prev) => prev.filter((_, idx) => idx !== id));
   };
 
   const getButtonMeta = (key: string) => {
-    console.log("keykeykeykeykeykey", key, configData)
     if (!key || !configData?.length)
       return { label: 'Action', color: ERP_COLOR_CODE.ERP_COLOR };
     const configItem = configData.find(
@@ -139,7 +136,6 @@ const ReadableView = ({
 
     const status = item?.status;
     const date = item?.date;
-    console.log("date----------", date)
     const remarks = item?.remarks;
     const address = item?.address;
     const amount = item?.amount;

@@ -75,7 +75,6 @@ const BarCodeScan = ({ item }: any) => {
 
   // Scanner Callback
   const handleReadCode = (value: string) => {
-    console.log("SCANNED:", value);
     setScannedValue(value);
     setCameraShown(false);
   };
