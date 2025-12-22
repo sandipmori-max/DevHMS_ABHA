@@ -459,3 +459,4 @@ Play Console — Add preview assets / screenshots requirements.
 Google Support
 
 =
+jarsigner -verify -verbose -certs app/build/outputs/bundle/release/app-release.aab

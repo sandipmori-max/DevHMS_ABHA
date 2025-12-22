@@ -39,22 +39,25 @@ const BusinessCardView = ({ setValue, controls, item, baseLink, infoData }: any)
 
 
   const checkPermission = async (type: 'camera' | 'gallery') => {
+    if (type === 'gallery') {
+        return true
+      } 
     let permission;
 
 
     if (Platform.OS === 'ios') {
       permission = type === 'camera' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.IOS.PHOTO_LIBRARY;
     } else {
-      const androidVersion = parseInt(Platform.Version as string, 10);
+      // const androidVersion = parseInt(Platform.Version as string, 10);
       if (type === 'camera') {
         permission = PERMISSIONS.ANDROID.CAMERA;
       } 
-      else {
-        permission =
-          androidVersion >= 33
-            ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
-            : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
-      }
+      // else {
+      //   permission =
+      //     androidVersion >= 33
+      //       ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
+      //       : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+      // }
     }
 
 
