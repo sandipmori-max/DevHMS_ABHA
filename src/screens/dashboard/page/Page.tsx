@@ -625,7 +625,9 @@ const PageScreen = () => {
             onChange={val => setValue({ [item?.field]: val })}
           />
         );
-      } else if (item?.field === 'chemistname') {
+      } 
+      //----PENDING----
+      else if (item?.field === '---') {
         content = (
           <CustomMultiPicker
             isValidate={isValidate}
@@ -671,7 +673,6 @@ const PageScreen = () => {
       } else if (item?.defaultvalue === '#html') {
         content = (
           <View>
-            {' '}
             <HtmlRow item={item} isFromPage={true} />
           </View>
         );
