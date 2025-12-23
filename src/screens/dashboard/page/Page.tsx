@@ -171,13 +171,10 @@ const PageScreen = () => {
       setLocationEnabled(enabled);
     };
 
-    // Run immediately once
     checkLocation();
 
-    // Then run every 1 second
     interval = setInterval(checkLocation, 1000);
 
-    // Cleanup interval on unmount
     return () => {
       if (interval) clearInterval(interval);
     };
@@ -414,91 +411,97 @@ const PageScreen = () => {
               isLoading={actionSaveLoader}
               onPress={async () => {
                 try {
-                  const enabled = await DeviceInfo.isLocationEnabled();
-                  const permissionStatus = hasLocationField && await requestLocationPermissions();
-                  const hasPermission = hasMediaField && await requestCameraPermission();
+                  // 1️⃣ Check if location services are enabled
+                  const locationEnabled = hasLocationField ? await DeviceInfo.isLocationEnabled() : true;
 
-                  // if(hasLocationField && hasMediaField){
+                  // 2️⃣ Request location permissions if needed
+                  const permissionStatus = hasLocationField
+                    ? await requestLocationPermissions()
+                    : 'granted';
 
-                  // }
-                  if (!hasPermission && hasMediaField) {
+                  // 3️⃣ Request camera/media permission if needed
+                  const hasCameraPermission = hasMediaField ? await requestCameraPermission() : true;
+
+                  // 4️⃣ Handle permission errors
+                  if (!hasCameraPermission && hasMediaField) {
                     setAlertConfig({
                       title: t('title.title16'),
-                      message:
-                        t("msg.msg15"),
+                      message: t("msg.msg15"),
                       type: 'error',
                     });
                     setAlertVisible(true);
                     setModalClose(false);
                     return;
                   }
-                  if (hasLocationField && !enabled) {
+
+                  if (hasLocationField && !locationEnabled) {
                     setAlertConfig({
                       title: t("title.title13"),
-                      message:
-                        t('title.title15'),
+                      message: t('title.title15'),
                       type: 'error',
                     });
                     setAlertVisible(true);
                     setModalClose(false);
                     return;
                   }
-                  if (hasLocationField && permissionStatus === 'denied' || permissionStatus === 'blocked') {
+
+                  if (hasLocationField && (permissionStatus === 'denied' || permissionStatus === 'blocked')) {
                     setAlertConfig({
                       title: t("title.title13"),
-                      message:
-                        t('title.title15'),
+                      message: t('title.title15'),
                       type: 'error',
                     });
                     setAlertVisible(true);
                     setModalClose(false);
                     return;
                   }
-                  if (permissionStatus.toString() !== 'blocked') {
-                    setLocationVisible(true);
-                    setActionSaveLoader(true);
-                    setIsValidate(true);
-                    if (validateForm()) {
-                      const submitValues: Record<string, any> = {};
-                      controls?.forEach(f => {
-                        if (f.refcol !== '1') submitValues[f?.field] = formValues[f?.field];
+
+                  // ✅ Permissions are granted, proceed
+                  setLocationVisible(true);
+                  setActionSaveLoader(true);
+                  setIsValidate(true);
+
+                  if (validateForm()) {
+                    const submitValues: Record<string, any> = {};
+                    controls?.forEach(f => {
+                      if (f.refcol !== '1') submitValues[f?.field] = formValues[f?.field];
+                    });
+
+                    try {
+                      setLoader(true);
+                      await dispatch(savePageThunk({ page: url, id, data: { ...submitValues } })).unwrap();
+                      setLoader(false);
+                      setIsValidate(false);
+
+                      fetchPageData();
+                      setAlertConfig({
+                        title: t('title.title17'),
+                        message: t("title.title18"),
+                        type: 'success',
                       });
-                      try {
-                        setLoader(true);
-                        await dispatch(
-                          savePageThunk({ page: url, id, data: { ...submitValues } }),
-                        ).unwrap();
-                        setLoader(false);
-                        setIsValidate(false);
+                      setAlertVisible(true);
+                      setGoBack(true);
 
-                        fetchPageData();
-                        setAlertConfig({
-                          title: t('title.title17'),
-                          message: t("title.title18"),
-                          type: 'success',
-                        });
-                        setAlertVisible(true);
-                        setGoBack(true);
-                        setTimeout(() => {
-                          setAlertVisible(false);
-                          navigation.goBack();
-                        }, 1500);
-                      } catch (err: any) {
-                        setLoader(false);
-
-                        setAlertConfig({
-                          title: t('title.title17'),
-
-                          message: err,
-                          type: 'error',
-                        });
-                        setAlertVisible(true);
-                        setGoBack(false);
-                      }
+                      setTimeout(() => {
+                        setAlertVisible(false);
+                        navigation.goBack();
+                      }, 1500);
+                    } catch (err: any) {
+                      setLoader(false);
+                      setAlertConfig({
+                        title: t('title.title17'),
+                        message: err,
+                        type: 'error',
+                      });
+                      setAlertVisible(true);
+                      setGoBack(false);
                     }
-                    setActionSaveLoader(false);
                   }
+
+                  setActionSaveLoader(false);
                 } catch (error) {
+                  console.error("Save error:", error);
+                  setActionSaveLoader(false);
                 }
               }}
             />

@@ -26,9 +26,7 @@ import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import Footer from './Footer';
 import PieChartSection from './chartData';
-import TaskListScreen from '../../../task_module/task_list/TaskListScreen';
 
-import TaskDetailsBottomSheet from '../../../task_module/task_details/TaskDetailsScreen';
 import { formatDateForAPI, parseCustomDate } from '../../../../utils/helpers';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CustomPicker from '../../page/components/CustomPicker';
@@ -47,7 +45,6 @@ const HomeScreen = () => {
   const dispatch = useAppDispatch();
   const [controls, setControls] = useState<any[]>([]);
   const [controlsLoader, setControlsLoader] = useState<any>(false);
-
 
   const { dashboard, isDashboardLoading, isAuthenticated, error, user } = useAppSelector(
     state => state.auth,
@@ -203,6 +200,7 @@ const HomeScreen = () => {
       return () => { };
     }, [isAuthenticated, dispatch]),
   );
+
   const dummyUpcomingEvents = [];
 
   const dummyUpcomingBirthdays = [
@@ -470,7 +468,6 @@ const HomeScreen = () => {
     setShowDatePicker(null);
   };
 
-
   const fetchPageData = useCallback(async () => {
     try {
       setControlsLoader(true);
@@ -532,6 +529,7 @@ const HomeScreen = () => {
     );
   }
 
+  if (isDashboardLoading || filteredDashboard?.length === 0) return <FullViewLoader />
   if(!actionLoader && filteredDashboard?.length === 0 ){
     return <View
           style={{
@@ -694,6 +692,7 @@ const HomeScreen = () => {
 
         </View>
   };
+  
   return (
     <View
       style={{
@@ -739,14 +738,11 @@ const HomeScreen = () => {
 
         </Animated.View>
 
-
-        {/* Branch + Type Buttons */}
         {
           isFilterVisible && <>
             <View style={[styles.dateContainer, {
               marginTop: 8
             }]}>
-              {/* Dynamic Render Date Fields */}
               {isFilterVisible && controls
                 .filter((x) => x.ctltype === "DATE")
                 .map((item, index) => (
@@ -823,7 +819,6 @@ const HomeScreen = () => {
           </>
         }
 
-        {/* Date Picker */}
         {showDatePicker?.show && (
           <DateTimePicker
             value={
@@ -846,8 +841,6 @@ const HomeScreen = () => {
           />
         )}
       </View>
-
-
 
       {controlsLoader ? (
         <View
@@ -881,7 +874,6 @@ const HomeScreen = () => {
           }}
         >
           <NoData />
-
         </View>
       ) : (
         <View style={{

@@ -16,14 +16,13 @@ android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
-
     namespace "com.deverp"
     defaultConfig {
         applicationId "com.deverp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 12
-        versionName "1.1.2"
+        versionCode 14
+        versionName "1.1.4"
     }
     signingConfigs {
         debug {
@@ -39,7 +38,6 @@ android {
             keyPassword MYAPP_RELEASE_KEY_PASSWORD
         }
     }
-
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
@@ -55,7 +53,6 @@ android {
 
 dependencies {
     implementation("com.facebook.react:react-android")
-
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {

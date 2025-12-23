@@ -6,7 +6,7 @@ import NoData from '../../../../components/no_data/NoData';
 import FullViewLoader from '../../../../components/loader/FullViewLoader';
 import ERPIcon from '../../../../components/icon/ERPIcon';
 import { getERPMenuThunk } from '../../../../store/slices/auth/thunk';
- import {
+import {
   createBookmarksTable,
   getBookmarks,
   getDBConnection,
@@ -17,7 +17,7 @@ import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { DARK_COLOR, ERP_COLOR_CODE } from '../../../../utils/constants';
 import Toast from '../../../../components/Toast/Toast';
 
-import { StyleSheet } from 'react-native'; 
+import { StyleSheet } from 'react-native';
 const accentColors = ['#dbe0f5ff', '#c8f3edff', '#faf1e0ff', '#f0e1e1ff', '#f2e3f8ff', '#e0f3edff'];
 
 const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
@@ -44,6 +44,20 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
 
   const showToast = msg => setToast({ visible: true, message: msg });
   const hideToast = () => setToast(t => ({ ...t, visible: false }));
+
+  function getInitials(name) {
+  if (!name) return '';
+
+  const words = name.trim().split(/\s+/);
+
+  const result =
+    words.length === 1
+      ? words[0].slice(0, 2)
+      : words.slice(0, 2).map(w => w[0]).join('');
+
+  return result.toUpperCase();
+}
+
 
   // Load bookmarks
   useEffect(() => {
@@ -163,7 +177,9 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
           ]}
         >
           <Text style={[styles.iconText, theme === 'dark' && { color: 'white' }]}>
-            {item.icon || item.name.slice(0, 2).toUpperCase()}
+            {item.icon ||
+              getInitials(item?.name)
+            }
           </Text>
         </View>
 
@@ -179,7 +195,6 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
     );
   };
 
-  // Loading, error, empty states
   if (isMenuLoading) return <FullViewLoader />;
   if (error) return <ErrorMessage message={error} />;
   if (list.length === 0) return <NoData />;
