@@ -18,14 +18,8 @@ const TermsAndConsent = ({ onAccept }: any) => {
 
   const handleTermsContinue = () => {
     if (!termsAccepted) {
-      Alert.alert(
-        "Consent Required",
-        "You must agree to the Terms & Conditions before continuing."
-      );
-      return;
+            return;
     }
-
-    // ✅ After Terms → show Location Disclosure Modal
     setShowLocationModal(true);
   };
 
@@ -42,13 +36,15 @@ const TermsAndConsent = ({ onAccept }: any) => {
 
   return (
     <>
-    <View style={{height: 12}}/>
+    <View style={{height: 12, marginTop: 40}}/>
       <Text style={[styles.title, {
         borderBottomWidth: 0.4,
         paddingBottom: 4
       }]}>Terms & Conditions & Permissions Consent</Text>
       {/* ========== OLD TERMS & CONDITIONS (UNCHANGED FLOW) ========== */}
-      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 30 }}>
+      <ScrollView 
+      showsVerticalScrollIndicator={false}
+      style={styles.container} contentContainerStyle={{ paddingBottom: 60 }}>
          <Text style={styles.updated}>Last updated: December 10, 2025</Text>
 
       <Text style={styles.sectionTitle}>1. Introduction</Text>

@@ -292,17 +292,35 @@ export const getERPMenuThunk = createAsyncThunk(
   },
 );
 
+type ERPDashboardParams = {
+  branch: string;
+  type: string;
+  fd: string;
+  td: string;
+};
+
 export const getERPDashboardThunk = createAsyncThunk(
   'auth/getERPDashboard',
-  async (_, { rejectWithValue }) => {
+  async (
+    { branch, type, fd, td }: ERPDashboardParams,
+    { rejectWithValue }
+  ) => {
     try {
-      const dashboard = await DevERPService.getDashboard();
+      const dashboard = await DevERPService.getDashboard(
+        branch,
+        type,
+        fd,
+        td
+      );
       return dashboard;
     } catch (error: any) {
-      return rejectWithValue(error?.message || 'Failed to get ERP dashboard');
+      return rejectWithValue(
+        error?.message || 'Failed to get ERP dashboard'
+      );
     }
-  },
+  }
 );
+
 
 export const getERPPageThunk = createAsyncThunk<
   any,
@@ -310,7 +328,7 @@ export const getERPPageThunk = createAsyncThunk<
   { rejectValue: string }
 >('auth/getERPPage', async ({ page, id }, { rejectWithValue }) => {
   try {
-    const pageData = await DevERPService.getPage(page, id);
+    const pageData = await DevERPService.getPage(page, id );
     return pageData;
   } catch (error: any) {
     return rejectWithValue(error || 'Failed to get ERP page data');

@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // for React Native
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import authReducer from './slices/auth/authSlice';
 import themeReducer from './slices/theme/themeSlice';
 import attendanceReducer from './slices/attendance/attendanceSlice';
@@ -12,7 +12,16 @@ import syncLocationReducer from './slices/location/syncLocationSlice';
 const authPersistConfig = {
   key: 'auth',
   storage: AsyncStorage,
-  whitelist: ['token', 'isPinLoaded', 'isAuthenticated', 'user'],
+  whitelist: [
+  'token',
+  'isPinLoaded',
+  'isAuthenticated',
+  'user',
+  'dashboardFromDate',
+  'dashboardToDate',
+  'dashboardBranch',
+  'dashboardType',
+  ],
 };
 
 const themePersistConfig = {

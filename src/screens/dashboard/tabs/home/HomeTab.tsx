@@ -31,6 +31,8 @@ import { formatDateForAPI, parseCustomDate } from '../../../../utils/helpers';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CustomPicker from '../../page/components/CustomPicker';
 import { setActiveDashboardBranch, setActiveDashboardBranchId, setActiveDashboardFromDate, setActiveDashboardToDate, setActiveDashboardType, setActiveDashboardTypeId } from '../../../../store/slices/auth/authSlice';
+import { Image } from 'react-native';
+import { ERP_ICON } from '../../../../assets';
 
 const { width } = Dimensions.get('screen');
 
@@ -156,14 +158,12 @@ const HomeScreen = () => {
                 name="refresh"
                 onPress={() => {
                   setControlsLoader(true);
-
                   setActionLoader(true);
                   setIsRefresh(!isRefresh);
-                  dispatch(getERPDashboardThunk());
+                  dispatch(getERPDashboardThunk({branch: auth.dashboardBranch, type: auth.dashboardType, fd: auth.dashboardFromDate, td: auth.dashboardToDate}));
                   setTimeout(() => {
                     setActionLoader(false);
                     setControlsLoader(false);
-
                   }, 100);
                 }}
                 isLoading={actionLoader}
@@ -175,10 +175,10 @@ const HomeScreen = () => {
                 name={!isHorizontal ? 'list' : 'apps'}
                 onPress={() => setIsHorizontal(prev => !prev)}
               />
-              {/* <ERPIcon
+              <ERPIcon
                 name={isFilterVisible ? 'close' : 'filter-alt'}
                 onPress={() => setIsFilterVisible(prev => !prev)}
-              /> */}
+              />
             </>
           )}
         </>
@@ -194,7 +194,7 @@ const HomeScreen = () => {
       setLoadingPageId(true);
 
       if (isAuthenticated) {
-        dispatch(getERPDashboardThunk());
+      dispatch(getERPDashboardThunk({branch: auth.dashboardBranch, type: auth.dashboardType, fd: auth.dashboardFromDate, td: auth.dashboardToDate}));
         dispatch(getERPMenuThunk())
       }
       return () => { };
@@ -500,6 +500,9 @@ const HomeScreen = () => {
     fetchPageData();
   }, [fetchPageData]);
 
+  useEffect(()=>{
+      dispatch(getERPDashboardThunk({branch: auth.dashboardBranch, type: auth.dashboardType, fd: auth.dashboardFromDate, td: auth.dashboardToDate}));
+  },[auth.dashboardBranch, auth.dashboardType, auth.dashboardFromDate, auth.dashboardToDate])
 
   function SmallItem({ left, primary, secondary, type }) {
     return (
@@ -626,7 +629,6 @@ const HomeScreen = () => {
 
 
               <View style={{
-
                 flexDirection: "row", justifyContent: "space-between", marginTop: 4
               }}>
 
@@ -700,16 +702,19 @@ const HomeScreen = () => {
         flex: 1,
         backgroundColor: isDashboardLoading ? 'black' : theme === 'dark' ? 'black' : 'white'
       }}
-    >
-      <View
+    > 
+      <FlatList 
+      data={['']}
+      showsVerticalScrollIndicator={false}
+      renderItem={() => {
+        return(<>
+        <View
         style={{
-          marginTop: 1,
           backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
           padding: 12,
-          // width: width,
           borderBottomRightRadius: 24,
           borderBottomLeftRadius: 24,
-          borderWidth: 1,
+          borderWidth: 0.5,
           borderColor: 'white'
         }}
       >
@@ -926,11 +931,14 @@ const HomeScreen = () => {
                       keyExtractor={(item, index) => index.toString()}
                       renderItem={
                         ({ item, index }) =>
-                          renderDashboardItem({ item, index, isFromHtml: true, isFromMenu: true }) // 👈 custom prop passed here
+                          renderDashboardItem({ item, index, isFromHtml: true, isFromMenu: true }) 
                       }
                       showsVerticalScrollIndicator={false}
                     />
                   </View>
+
+                     
+                  
 
                   {/* <View>
                     <Animated.FlatList
@@ -1148,13 +1156,15 @@ const HomeScreen = () => {
                       )}
                     />
                   </View> */}
-                  <View style={{height: 120, width: 20}}> </View>
                 </View>
               )}
             />
           </>
         </View>
       )}
+        </>)
+      }}
+      />
     </View>
   );
 };

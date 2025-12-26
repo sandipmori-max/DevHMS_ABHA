@@ -192,10 +192,21 @@ class DevERPService {
     );
   }
 
-  getDashboard() {
-    return this.apiCall<DashboardResponse>('msp_api.aspx/getDB', { token: this.token }).then(res => {
-      return JSON.stringify(res);
-    },
+  getDashboard(
+    branch: string,
+    type: string,
+    fd: string,
+    td: string
+  ): Promise<DashboardResponse> {
+    return this.apiCall<DashboardResponse>(
+      'msp_api.aspx/getDB',
+      {
+        token: this.token,
+        branch,
+        type,
+        fd,
+        td
+      }
     );
   }
 

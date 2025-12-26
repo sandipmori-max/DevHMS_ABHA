@@ -208,6 +208,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
         numColumns={isHorizontal ? 1 : 2}
         columnWrapperStyle={!isHorizontal ? styles.columnWrapper : undefined}
         contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
       />
       <Toast visible={toast.visible} message={toast.message} onHide={hideToast} />
     </View>
