@@ -140,6 +140,16 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
                       props?.navigation.closeDrawer();
                       return;
                     }
+                    if(item?.route === "Attendance"){
+                      props?.navigation.closeDrawer();
+                      navigation.navigate(item?.route, { isFor: 'Attendance' });
+                      return;
+                    }
+                    if(item?.route === "MyAttendance"){
+                      props?.navigation.closeDrawer();
+                      navigation.navigate(item?.route, { isFor: 'MyAttendance' });
+                      return;
+                    }
                     if (item?.route === 'Home') {
                       props?.navigation.navigate('Home', { screen: 'Home' });
                       props?.navigation.closeDrawer();

@@ -11,7 +11,7 @@ import {
   Dimensions,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useNavigation } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 
 import { styles } from './attendance_style';
 import FullViewLoader from '../../../components/loader/FullViewLoader';
@@ -26,6 +26,9 @@ import { ERP_COLOR_CODE } from '../../../utils/constants';
 import useTranslations from '../../../hooks/useTranslations';
 
 const AttendanceScreen = () => {
+  const route = useRoute();
+  const { isFor } = route?.params || '';
+  console.log("isFor-----------", isFor)
   const navigation = useNavigation<any>();
   const [isListVisible, setIsListVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -73,8 +76,17 @@ const AttendanceScreen = () => {
     }
   };
 
+  useEffect(() =>{
+    if(isFor === 'MyAttendance'){
+      setIsListVisible(true);
+    }else{
+      setIsListVisible(false);
+    }
+  },[navigation])
+
   useLayoutEffect(() => {
     navigation.setOptions({
+       title: isFor === 'MyAttendance' ? "My attendance" : "Attendance",
       headerTitleAlign: 'left',
       headerTitleStyle: {
         color: '#FFFFFF',
@@ -85,15 +97,7 @@ const AttendanceScreen = () => {
       headerTintColor: '#fff',
       headerRight: () => (
         <>
-          <ERPIcon
-            name={!isListVisible ? 'list' : 'post-add'}
-            onPress={() => {
-              if (!blockAction) {
-                setIsListVisible(!isListVisible);
-              }
-            }}
-          />
-          {isListVisible && (
+          {/* {isListVisible && (
             <ERPIcon
               name="filter-alt"
               onPress={() => {
@@ -102,7 +106,7 @@ const AttendanceScreen = () => {
                 }
               }}
             />
-          )}
+          )} */}
           {isListVisible && (
             <ERPIcon
               name="date-range"
@@ -150,6 +154,7 @@ const AttendanceScreen = () => {
         setError(err);
       });
   };
+
   useEffect(() => {
     getCurrentMonthRange();
     checkAttendance();

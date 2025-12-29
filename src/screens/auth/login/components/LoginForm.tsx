@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Animated } from 'react-native';
+import { View, Text, Animated, Platform } from 'react-native';
 import { Formik } from 'formik';
 import { getMessaging } from '@react-native-firebase/messaging';
 
@@ -13,6 +13,7 @@ import ERPTextInput from '../../../../components/input/ERPTextInput';
 import ERPButton from '../../../../components/button/ERPButton';
 import useFcmToken from '../../../../hooks/useFcmToken';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
+import messaging from '@react-native-firebase/messaging';
 
 const LoginForm: React.FC<LoginFormProps> = ({
   deviceId,
@@ -89,7 +90,11 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
       if (!companyValidation?.isValid) return;
 
-      const currentFcmToken = fcmToken || (await getMessaging().getToken());
+      let currentFcmToken = '';
+     
+      if(Platform.OS !== 'ios'){
+        currentFcmToken= fcmToken || (await getMessaging().getToken());
+      }
       DevERPService.setDevice(deviceId);
 
       const loginResult = await loginWithERP(() =>
@@ -115,7 +120,10 @@ const LoginForm: React.FC<LoginFormProps> = ({
           type: 'error',
         });
       }
-    } catch {}
+    } catch(e) {
+
+      console.log("error --------------------- ", e)
+    }
   };
 
   return (

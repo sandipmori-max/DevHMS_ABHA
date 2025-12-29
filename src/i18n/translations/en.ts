@@ -137,7 +137,7 @@ export default {
     employeeName: 'Employee name',
     dateTime: 'Date & time',
     email: 'Email',
-    remark: 'Remark (optional)',
+    remark: 'Remark - optional',
     enterRemark: 'Enter remark',
     capturedPhoto: 'Captured Photo',
     checkIn: 'check in',

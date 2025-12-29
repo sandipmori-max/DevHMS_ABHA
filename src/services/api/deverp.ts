@@ -78,6 +78,7 @@ class DevERPService {
     const response = await apiClient.post<DevERPResponse>(`${this.baseUrl}/appcode.aspx/getLink`, {
       code,
     });
+    console.log("response--------------------", response)
     if (response.data.success === 1 && response.data.link) {
 
       if (Platform.OS !== 'ios' && response.data.link.startsWith('https://')) {

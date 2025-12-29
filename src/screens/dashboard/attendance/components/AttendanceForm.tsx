@@ -165,6 +165,14 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
     getLocationWithRetry();
   };
 
+  const formatName = (name = '') =>
+  name
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
+
   return (
     <View style={{
       width: '100%',
@@ -267,7 +275,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
                     color: 'white',
                     backgroundColor: 'black'
                   }]}
-                  value={values?.name}
+                  value={formatName(values?.name)}
                   editable={false}
                 />
                 {touched?.name && errors?.name ? (

@@ -3,6 +3,7 @@ import { DrawerItemConfig } from '../components/types';
 export const ERP_DRAWER_LIST: DrawerItemConfig[] = [
   { label: 'Home', route: 'Home', icon: 'home' },
   { label: 'Attendance', route: 'Attendance', icon: 'calendar-month' },
+  { label: 'My Attendance', route: 'MyAttendance', icon: 'calendar-month' },
   { label: 'Business Card', route: 'List', icon: 'assignment' },
   // { label: 'Tasks', route: 'Tasks', icon: 'calendar-month' },
   // { label: 'File Manager', route: 'File Manager', icon: 'folder' },
