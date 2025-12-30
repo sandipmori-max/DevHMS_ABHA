@@ -53,6 +53,7 @@ import useTranslations from '../../../hooks/useTranslations';
 import VideoRecorder from './components/VideoRecorder';
 import ScanScreen from './components/ScanScreen';
 import BarCodeScan from './components/BarCodeScan';
+import { styles } from './page_style';
 
 type PageRouteParams = { PageScreen: { item: any } };
 
@@ -927,20 +928,74 @@ const PageScreen = () => {
         errors={errorsList}
         onClose={() => setShowErrorModal(false)}
       />
+      
+             {dateTimePickerVisible && Platform.OS === 'ios' && (
+  <Modal transparent animationType="slide" statusBarTranslucent>
+  <View style={styles.overlay}>
+    <View style={styles.sheet}>
+      {/* Divider */}
+      <View style={styles.divider} />
+
+      {/* Date Picker */}
       <DateTimePicker
+        isVisible={dateTimePickerVisible}
+        mode="datetime"
+        display='spinner'
+        date={activeDateTime ? parseCustomDatePage(activeDateTime) : new Date()}
+        onConfirm={handleDateTimeConfirm}
+        onCancel={hideDateTimePicker}
+      />
+    </View>
+  </View>
+</Modal>
+
+)}
+
+
+ {datePickerVisible && Platform.OS === 'ios' && (
+  <Modal transparent animationType="slide" statusBarTranslucent>
+  <View style={styles.overlay}>
+    <View style={styles.sheet}>
+      {/* Divider */}
+      <View style={styles.divider} />
+
+      {/* Date Picker */}
+       Platform.OS !== 'ios' &&  <DateTimePicker
+        isVisible={datePickerVisible}
+        mode="date"
+        display='spinner'
+        date={activeDate ? parseCustomDatePage(activeDate) : new Date()}
+        onConfirm={handleConfirm}
+        onCancel={hideDatePicker}
+      />
+    </View>
+  </View>
+</Modal>
+
+)}
+
+
+{
+  Platform.OS !== 'ios' &&  <DateTimePicker
         isVisible={dateTimePickerVisible}
         mode="datetime"
         date={activeDateTime ? parseCustomDatePage(activeDateTime) : new Date()}
         onConfirm={handleDateTimeConfirm}
         onCancel={hideDateTimePicker}
       />
-      <DateTimePicker
+}
+
+{
+  Platform.OS !== 'ios' &&  <DateTimePicker
         isVisible={datePickerVisible}
         mode="date"
         date={activeDate ? parseCustomDatePage(activeDate) : new Date()}
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
       />
+}
+     
+     
 
       <CustomAlert
         visible={alertVisible}

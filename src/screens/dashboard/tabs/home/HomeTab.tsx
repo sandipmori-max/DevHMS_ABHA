@@ -1,17 +1,4 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-  FlatList,
-  Dimensions,
-  Animated,
-  TextInput,
-  Alert,
-  Modal,
-  Pressable,
-} from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
@@ -31,7 +18,7 @@ import { formatDateForAPI, parseCustomDate } from '../../../../utils/helpers';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CustomPicker from '../../page/components/CustomPicker';
 import { setActiveDashboardBranch, setActiveDashboardBranchId, setActiveDashboardFromDate, setActiveDashboardToDate, setActiveDashboardType, setActiveDashboardTypeId } from '../../../../store/slices/auth/authSlice';
-import { Image } from 'react-native';
+import { Image , Dimensions} from 'react-native';
 import { ERP_ICON } from '../../../../assets';
 
 const { width } = Dimensions.get('screen');
@@ -631,7 +618,6 @@ const HomeScreen = () => {
               <View style={{
                 flexDirection: "row", justifyContent: "space-between", marginTop: 4
               }}>
-
                 {
                   controls
                     .filter((x) => x.ctltype !== "DATE" && x.field !== 'userid')
@@ -659,15 +645,47 @@ const HomeScreen = () => {
                         />
                       </View>
                     </>))
-
                 }
               </View>
             }
           </>
         }
+ {showDatePicker?.show && Platform.OS === 'ios' && (
+  <Modal transparent animationType="slide" statusBarTranslucent>
+  <View style={styles.overlay}>
+    <View style={styles.sheet}>
+      {/* Divider */}
+      <View style={styles.divider} />
+
+      {/* Date Picker */}
+      <DateTimePicker
+            value={
+              showDatePicker.type === "from" && fromDate
+                ? parseCustomDate(fromDate)
+                : showDatePicker.type === "to" && toDate
+                  ? parseCustomDate(toDate)
+                  : new Date()
+            }
+            mode="date"
+            display='spinner'
+            onChange={handleDateChange}
+            minimumDate={
+              showDatePicker.type === "to" && fromDate
+                ? parseCustomDate(fromDate)
+                : new Date(new Date().getFullYear(), 0, 1)
+            }
+            maximumDate={
+              showDatePicker.type === "from" && toDate ? parseCustomDate(toDate) : new Date()
+            }
+          />
+    </View>
+  </View>
+</Modal>
+
+)}
 
         {/* Date Picker */}
-        {showDatePicker?.show && (
+        { Platform.OS !== 'ios' &&  showDatePicker?.show && (
           <DateTimePicker
             value={
               showDatePicker.type === "from" && fromDate
@@ -824,7 +842,35 @@ const HomeScreen = () => {
           </>
         }
 
-        {showDatePicker?.show && (
+        {showDatePicker?.show && Platform.OS === 'ios' && (
+  <Modal transparent animationType="slide" statusBarTranslucent>
+  <View style={styles.overlay}>
+    <View style={styles.sheet}>
+      {/* Divider */}
+      <View style={styles.divider} />
+
+      {/* Date Picker */}
+      <DateTimePicker
+        value={
+          showDatePicker.type === 'from' && fromDate
+            ? parseCustomDate(fromDate)
+            : showDatePicker.type === 'to' && toDate
+            ? parseCustomDate(toDate)
+            : new Date()
+        }
+        mode="date"
+        display="spinner"
+        onChange={handleDateChange}
+        style={styles.picker}
+      />
+    </View>
+  </View>
+</Modal>
+
+)}
+
+
+        { Platform.OS !== 'ios' &&  showDatePicker?.show && (
           <DateTimePicker
             value={
               showDatePicker.type === "from" && fromDate

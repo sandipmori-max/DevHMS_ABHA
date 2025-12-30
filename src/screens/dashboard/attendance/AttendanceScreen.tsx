@@ -9,6 +9,7 @@ import {
   Keyboard,
   ScrollView,
   Dimensions,
+  Modal,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
@@ -251,7 +252,36 @@ const AttendanceScreen = () => {
               </View>
             )}
 
-            {showDatePicker?.show && (
+             {showDatePicker?.show && Platform.OS === 'ios' && (
+  <Modal transparent animationType="slide" statusBarTranslucent>
+  <View style={styles.overlay}>
+    <View style={styles.sheet}>
+      {/* Divider */}
+      <View style={styles.divider} />
+
+      {/* Date Picker */}
+      <DateTimePicker
+        value={
+          showDatePicker.type === 'from' && fromDate
+            ? parseCustomDate(fromDate)
+            : showDatePicker.type === 'to' && toDate
+            ? parseCustomDate(toDate)
+            : new Date()
+        }
+        mode="date"
+        display="spinner"
+        onChange={handleDateChange}
+        style={styles.picker}
+      />
+    </View>
+  </View>
+</Modal>
+
+)}
+
+
+
+            { Platform.OS !== 'ios' &&  showDatePicker?.show && (
               <DateTimePicker
                 value={
                   showDatePicker?.type === 'from' && fromDate
