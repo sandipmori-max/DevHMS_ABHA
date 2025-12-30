@@ -18,7 +18,19 @@ import { formatDateForAPI, parseCustomDate } from '../../../../utils/helpers';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CustomPicker from '../../page/components/CustomPicker';
 import { setActiveDashboardBranch, setActiveDashboardBranchId, setActiveDashboardFromDate, setActiveDashboardToDate, setActiveDashboardType, setActiveDashboardTypeId } from '../../../../store/slices/auth/authSlice';
-import { Image , Dimensions} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  FlatList,
+  Dimensions,
+  Animated,
+  TextInput,
+  Alert,
+  Modal,
+  Pressable,
+} from 'react-native';
 import { ERP_ICON } from '../../../../assets';
 
 const { width } = Dimensions.get('screen');

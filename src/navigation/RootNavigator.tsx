@@ -38,25 +38,25 @@ export async function requestLocationPermissions(): Promise<
 
     if (
       granted['android.permission.ACCESS_FINE_LOCATION'] ===
-        PermissionsAndroid.RESULTS.GRANTED &&
+      PermissionsAndroid.RESULTS.GRANTED &&
       granted['android.permission.ACCESS_COARSE_LOCATION'] ===
-        PermissionsAndroid.RESULTS.GRANTED &&
+      PermissionsAndroid.RESULTS.GRANTED &&
       granted['android.permission.ACCESS_BACKGROUND_LOCATION'] ===
-        PermissionsAndroid.RESULTS.GRANTED
+      PermissionsAndroid.RESULTS.GRANTED
     ) return 'granted';
 
     if (
       granted['android.permission.ACCESS_FINE_LOCATION'] ===
-        PermissionsAndroid.RESULTS.GRANTED &&
+      PermissionsAndroid.RESULTS.GRANTED &&
       granted['android.permission.ACCESS_COARSE_LOCATION'] ===
-        PermissionsAndroid.RESULTS.GRANTED
+      PermissionsAndroid.RESULTS.GRANTED
     ) return 'foreground-only';
 
     if (
       granted['android.permission.ACCESS_FINE_LOCATION'] ===
-        PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN ||
+      PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN ||
       granted['android.permission.ACCESS_COARSE_LOCATION'] ===
-        PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN
+      PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN
     ) return 'blocked';
 
     return 'denied';
@@ -72,24 +72,24 @@ export async function requestLocationPermissions(): Promise<
     // Request foreground permission first
     let foregroundStatus = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
     console.log("foregroundStatus---------------------4----------------------", foregroundStatus)
-    
+
     if (foregroundStatus === RESULTS.DENIED) {
-    
+
       foregroundStatus = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
-    console.log("foregroundStatus---------------------5----------------------", foregroundStatus)
-    
+      console.log("foregroundStatus---------------------5----------------------", foregroundStatus)
+
     }
 
     if (foregroundStatus === RESULTS.GRANTED || foregroundStatus === RESULTS.LIMITED) {
-    console.log("foregroundStatus---------------------6----------------------", foregroundStatus)
-    
+      console.log("foregroundStatus---------------------6----------------------", foregroundStatus)
+
       // Now ask for "Always" if needed
       status = await request(PERMISSIONS.IOS.LOCATION_ALWAYS);
-    console.log("status---------------------7----------------------", status)
-    
+      console.log("status---------------------7----------------------", status)
+
       if (status === RESULTS.GRANTED) return 'granted';
-    console.log("status----------------------8---------------------", status)
-    
+      console.log("status----------------------8---------------------", status)
+
       return 'foreground-only';
     }
     console.log("status-----------------------9--------------------", status)
@@ -211,30 +211,41 @@ const RootNavigator = () => {
     <>
       {isAuthenticated ? <StackNavigator /> : <AuthNavigator />}
 
-      <CustomAlert
-        visible={alertVisible}
-        title={alertConfig.title}
-        message={alertConfig.message}
-        type={alertConfig.type}
-        onClose={() => {}}
-        isSettingVisible
-      />
+      {
+        isAuthenticated && (
+          <CustomAlert
+            visible={alertVisible}
+            title={alertConfig.title}
+            message={alertConfig.message}
+            type={alertConfig.type}
+            onClose={() => { }}
+            isSettingVisible
+            actionLoader={undefined}
+          />
+        )
+      }
 
-      <Modal visible={backgroundDeniedModal} transparent>
-        <View style={styles.overlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.title}>Allow Background Location</Text>
-            <Text style={styles.message}>
-              Set location access to "Always Allow" in settings for continuous tracking.
-            </Text>
-            <TouchableOpacity
-              style={styles.btnPrimary}
-              onPress={() => Linking.openSettings()}>
-              <Text style={styles.btnText}>Open Settings</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+
+      {
+        isAuthenticated && (
+          <Modal visible={backgroundDeniedModal} transparent>
+            <View style={styles.overlay}>
+              <View style={styles.modalContainer}>
+                <Text style={styles.title}>Allow Background Location</Text>
+                <Text style={styles.message}>
+                  Set location access to "Always Allow" in settings for continuous tracking.
+                </Text>
+                <TouchableOpacity
+                  style={styles.btnPrimary}
+                  onPress={() => Linking.openSettings()}>
+                  <Text style={styles.btnText}>Open Settings</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        )
+      }
+
     </>
   );
 };
