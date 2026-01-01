@@ -69,7 +69,7 @@ const ListScreen = () => {
   const pageName = item?.url;
   const isFromBusinessCard = item?.isFromBusinessCard || false;
   const isFromAlertCard = item?.isFromAlertCard || false;
- 
+
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -85,26 +85,26 @@ const ListScreen = () => {
   }, [filteredData]);
 
   const loadMore = () => {
-  if (isLoadingMore || !hasMore) return;
+    if (isLoadingMore || !hasMore) return;
 
-  setIsLoadingMore(true);
+    setIsLoadingMore(true);
 
-  setTimeout(() => {
-    const start = page * pageSize;
-    const end = start + pageSize;
+    setTimeout(() => {
+      const start = page * pageSize;
+      const end = start + pageSize;
 
-    const newItems = filteredData.slice(start, end);
+      const newItems = filteredData.slice(start, end);
 
-    if (newItems.length === 0) {
-      setHasMore(false);
-    } else {
-      setListData(prev => [...prev, ...newItems]);
-      setPage(prev => prev + 1);
-    }
+      if (newItems.length === 0) {
+        setHasMore(false);
+      } else {
+        setListData(prev => [...prev, ...newItems]);
+        setPage(prev => prev + 1);
+      }
 
-    setIsLoadingMore(false);
-  }, 300);
-};
+      setIsLoadingMore(false);
+    }, 300);
+  };
 
   const totalAmount = filteredData?.reduce((sum, item) => {
     const amount = parseFloat(item?.amount) || 0;
@@ -127,7 +127,7 @@ const ListScreen = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: {
-        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, 
+        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
       },
       headerTintColor: '#fff',
       headerTitle: () => (
@@ -359,7 +359,7 @@ const ListScreen = () => {
   );
 
   const handleItemPressed = (item, page, pageTitle = '') => {
-    
+
     setIsFilterVisible(false);
     setSearchQuery('');
     navigation.navigate('Page', {
@@ -372,20 +372,20 @@ const ListScreen = () => {
     });
   };
 
-  const handleActionButtonPressed = (actionValue, label, color, id, item) => { 
-    if(item?.btn_edit && item?.btn_edit?.includes("/")){
+  const handleActionButtonPressed = (actionValue, label, color, id, item) => {
+    if (item?.btn_edit && item?.btn_edit?.includes("/")) {
       const left = item?.btn_edit.substring(0, item?.btn_edit.indexOf('/'));
       const result = item?.btn_edit.split('/')[1];
       navigation.navigate('Page', {
         item,
-        id:  result,
+        id: result,
         title: pageName,
         isFromNew: false,
         url: left,
         pageTitle: pageTitle,
         isFromBusinessCard: false,
       });
-    }else{
+    } else {
       setAlertConfig({
         title: label,
         message: `${t("msg.msg8")} ${label.toLowerCase()} ?`,
@@ -481,34 +481,34 @@ const ListScreen = () => {
           )}
 
           {showDatePicker?.show && Platform.OS === 'ios' && (
-  <Modal transparent animationType="slide" statusBarTranslucent>
-  <View style={styles.overlay}>
-    <View style={styles.sheet}>
-      {/* Divider */}
-      <View style={styles.divider} />
+            <Modal transparent animationType="slide" statusBarTranslucent>
+              <View style={styles.overlay}>
+                <View style={styles.sheet}>
+                  {/* Divider */}
+                  <View style={styles.divider} />
 
-      {/* Date Picker */}
-      <DateTimePicker
-        value={
-          showDatePicker.type === 'from' && fromDate
-            ? parseCustomDate(fromDate)
-            : showDatePicker.type === 'to' && toDate
-            ? parseCustomDate(toDate)
-            : new Date()
-        }
-        mode="date"
-        display="spinner"
-        onChange={handleDateChange}
-        style={styles.picker}
-      />
-    </View>
-  </View>
-</Modal>
+                  {/* Date Picker */}
+                  <DateTimePicker
+                    value={
+                      showDatePicker.type === 'from' && fromDate
+                        ? parseCustomDate(fromDate)
+                        : showDatePicker.type === 'to' && toDate
+                          ? parseCustomDate(toDate)
+                          : new Date()
+                    }
+                    mode="date"
+                    display="spinner"
+                    onChange={handleDateChange}
+                    style={styles.picker}
+                  />
+                </View>
+              </View>
+            </Modal>
 
-)}
+          )}
 
 
-          { Platform.OS !== 'ios' &&  showDatePicker?.show && (
+          {Platform.OS !== 'ios' && showDatePicker?.show && (
             <DateTimePicker
               value={
                 showDatePicker?.type === 'from' && fromDate
@@ -519,15 +519,8 @@ const ListScreen = () => {
               }
               mode="date"
               onChange={handleDateChange}
-              minimumDate={
-                showDatePicker?.type === 'to' && fromDate
-                  ? parseCustomDate(fromDate)
-                  : new Date(new Date().getFullYear(), 0, 1)
-              }
-              maximumDate={
-                showDatePicker?.type === 'from' && toDate ? parseCustomDate(toDate) : new Date()
-              }
             />
+
           )}
         </View>
       )}
@@ -614,7 +607,7 @@ const ListScreen = () => {
         isBottomButtonVisible={true}
         doneText={alertConfig.title}
         color={alertConfig.color}
-        onDone={async remark => { 
+        onDone={async remark => {
           try {
             const type = `page${alertConfig.title}`;
             await dispatch(

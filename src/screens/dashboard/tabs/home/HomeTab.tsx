@@ -30,6 +30,7 @@ import {
   Alert,
   Modal,
   Pressable,
+  Platform,
 } from 'react-native';
 import { ERP_ICON } from '../../../../assets';
 
@@ -681,14 +682,7 @@ const HomeScreen = () => {
             mode="date"
             display='spinner'
             onChange={handleDateChange}
-            minimumDate={
-              showDatePicker.type === "to" && fromDate
-                ? parseCustomDate(fromDate)
-                : new Date(new Date().getFullYear(), 0, 1)
-            }
-            maximumDate={
-              showDatePicker.type === "from" && toDate ? parseCustomDate(toDate) : new Date()
-            }
+             
           />
     </View>
   </View>
@@ -708,14 +702,7 @@ const HomeScreen = () => {
             }
             mode="date"
             onChange={handleDateChange}
-            minimumDate={
-              showDatePicker.type === "to" && fromDate
-                ? parseCustomDate(fromDate)
-                : new Date(new Date().getFullYear(), 0, 1)
-            }
-            maximumDate={
-              showDatePicker.type === "from" && toDate ? parseCustomDate(toDate) : new Date()
-            }
+            
           />
         )}
       </View>
@@ -733,12 +720,8 @@ const HomeScreen = () => {
         backgroundColor: isDashboardLoading ? 'black' : theme === 'dark' ? 'black' : 'white'
       }}
     > 
-      <FlatList 
-      data={['']}
-      showsVerticalScrollIndicator={false}
-      renderItem={() => {
-        return(<>
-        <View
+
+    <View
         style={{
           backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
           padding: 12,
@@ -748,7 +731,7 @@ const HomeScreen = () => {
           borderColor: 'white'
         }}
       >
-        <Animated.View
+          <Animated.View
           style={{
             justifyContent: 'center',
             alignContent: 'center',
@@ -893,17 +876,21 @@ const HomeScreen = () => {
             }
             mode="date"
             onChange={handleDateChange}
-            minimumDate={
-              showDatePicker.type === "to" && fromDate
-                ? parseCustomDate(fromDate)
-                : new Date(new Date().getFullYear(), 0, 1)
-            }
-            maximumDate={
-              showDatePicker.type === "from" && toDate ? parseCustomDate(toDate) : new Date()
-            }
+            
           />
         )}
       </View>
+
+
+
+  
+
+      <FlatList 
+      data={['']}
+      showsVerticalScrollIndicator={false}
+      renderItem={() => {
+        return(<>
+        
 
       {controlsLoader ? (
         <View
@@ -1220,7 +1207,8 @@ const HomeScreen = () => {
           </>
         </View>
       )}
-        </>)
+        </>
+        )
       }}
       />
     </View>

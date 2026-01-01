@@ -292,14 +292,7 @@ const AttendanceScreen = () => {
                 }
                 mode="date"
                 onChange={handleDateChange}
-                minimumDate={
-                  showDatePicker?.type === 'to' && fromDate
-                    ? parseCustomDate(fromDate)
-                    : new Date(new Date().getFullYear(), 0, 1)
-                }
-                maximumDate={
-                  showDatePicker?.type === 'from' && toDate ? parseCustomDate(toDate) : new Date()
-                }
+                 
               />
             )}
             {isListVisible ? (
