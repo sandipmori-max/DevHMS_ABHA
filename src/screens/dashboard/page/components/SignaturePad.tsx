@@ -45,7 +45,7 @@ const SignaturePad: React.FC = ({isValidate, item, handleSignatureAttachment, in
 
   const getImageUri = () => {
     if (savedSignature) return savedSignature;
-    const base = `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/signature.jpeg`;
+    const base = `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${item?.text}`;
     return `${base}?cb=${cacheBuster}`;
   };
 

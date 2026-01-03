@@ -14,7 +14,12 @@ const ProfileImage = memo(({ userId, baseLink, userName }: any) => {
     initials += parts[1][0];
   }
   return (
-    <View style={{ width: 130, height: 120, marginBottom: 18, borderWidth: 1, borderColor: 'black', borderRadius: 12 }}>
+    <View style={{ width: 130, height: 120,
+    backgroundColor: 'lightgray',
+    alignContent:'center',
+    alignItems:'center',
+    alignSelf:'center',
+    marginBottom: 18, borderWidth: 1, borderColor: 'black', borderRadius: 12 }}>
       <Text style={styles.smLabel}>{initials.toUpperCase()}</Text>
 
       <FastImage
@@ -46,13 +51,14 @@ const styles = StyleSheet.create({
   },
   smLabel: {
     position: "absolute",
-    bottom: 30,
-    right: 24,
+    bottom: 26,
     color: "black",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
-    fontSize: 44,
+    fontSize: 58,
+    textAlign: 'center',
+    fontWeight: '400'
   },
 });
 

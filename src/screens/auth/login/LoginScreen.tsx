@@ -12,7 +12,7 @@ import {
 import DeviceInfo from 'react-native-device-info';
 
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { loginUserThunk } from '../../../store/slices/auth/thunk';
+import { getERPAppConfigMenuThunk, loginUserThunk } from '../../../store/slices/auth/thunk';
 import CustomAlert from '../../../components/alert/CustomAlert';
 import useTranslations from '../../../hooks/useTranslations';
 import { styles } from './login_style';
@@ -75,6 +75,7 @@ const LoginScreen = ({ navigation, route }: any) => {
         companyData,
       }),
     );
+    dispatch(getERPAppConfigMenuThunk())
   };
 
   const showAlert = (config: {

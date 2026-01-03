@@ -8,6 +8,7 @@ import {
   logoutUserThunk,
   getERPMenuThunk,
   getERPDashboardThunk,
+  getERPAppConfigMenuThunk,
 } from './thunk';
 
 const initialState: AuthState = {
@@ -28,7 +29,10 @@ const initialState: AuthState = {
   dashboardBranch: '',
   dashboardType: '',
   dashboardBranchId: '',
-  dashboardTypeId: ''
+  dashboardTypeId: '',
+  appDrawerMenuList: [],
+  appBottomMenuList: [],
+  appColorCode: ''
 };
 
 const authSlice = createSlice({
@@ -98,6 +102,7 @@ const authSlice = createSlice({
     setActiveDashboardType: (state, action: PayloadAction<string | null>) => {
       state.dashboardType = action?.payload;
     },
+    
   },
   extraReducers: builder => {
     builder
@@ -272,39 +277,73 @@ const authSlice = createSlice({
         state.error = action.payload as string;
       })
 
+      .addCase(getERPAppConfigMenuThunk.pending, state => {
+        state.isMenuLoading = true;
+        state.menu = [];
+      })
+      .addCase(getERPAppConfigMenuThunk.fulfilled, (state, action) => {
+         try {
+          let menuData;
+          if (typeof action.payload === 'string') {
+            menuData = JSON.parse(action.payload);
+          } else {
+            menuData = action.payload;
+          }
+
+          let menus = [];
+          console.log("menuData================================", menuData)
+
+          state.appBottomMenuList = menuData?.bottom
+          state.appDrawerMenuList = menuData?.drawer
+          state.appColorCode = menuData?.hexacolor
+  
+          state.error = null;
+          state.isMenuLoading = false;
+        } catch (error) {
+          state.menu = [];
+          state.isMenuLoading = false;
+        }
+      })
+      .addCase(getERPAppConfigMenuThunk.rejected, (state, action) => {
+        state.isMenuLoading = false;
+        state.error = action.payload as string;
+      })
+
+
       .addCase(getERPDashboardThunk.pending, state => {
         state.isDashboardLoading = true;
       })
       .addCase(getERPDashboardThunk.fulfilled, (state, action) => {
         try {
           let dashboardData;
-          if (typeof action.payload === 'string') {
-            dashboardData = JSON.parse(action.payload);
+          if (typeof action?.payload === 'string') {
+            dashboardData = JSON.parse(action?.payload);
           } else {
-            dashboardData = action.payload;
+            dashboardData = action?.payload;
           }
           let dashboardItems = [];
 
-          if (dashboardData.data && dashboardData.data.d) {
+          if (dashboardData?.data && dashboardData?.data?.d) {
             try {
-              const innerData = JSON.parse(dashboardData.data.d);
+              const innerData = JSON.parse(dashboardData?.data?.d);
               if (innerData?.success === 1 && innerData?.dbs) {
                 dashboardItems = innerData.dbs;
               }
             } catch (innerParseError) {
             }
-          } else if (dashboardData.success === 1 && dashboardData.dbs) {
-            dashboardItems = dashboardData.dbs;
+          } else if (dashboardData?.success === 1 && dashboardData?.dbs) {
+            dashboardItems = dashboardData?.dbs;
           } else if (dashboardData.d) {
             try {
-              const innerData = JSON.parse(dashboardData.d);
+              const innerData = JSON.parse(dashboardData?.d);
               if (innerData?.success === 1 && innerData?.dbs) {
                 dashboardItems = innerData.dbs;
               }
             } catch (innerParseError) {
             }
           }
-          state.dashboard = dashboardItems.map((item: any, index: number) => ({
+          console.log("dashboardItems========", dashboardItems)
+          state.dashboard = dashboardItems.length > 0 ? dashboardItems?.map((item: any, index: number) => ({
             id: item?.Link || `dashboard_${index}`,
             name: item?.Name || '',
             data: item?.Data || '',
@@ -312,15 +351,16 @@ const authSlice = createSlice({
             title: item?.Title || '',
             isReport: item.IsReport || '',
             footer: item?.footer || '',
-          }));
+          })): [];
           state.error = null;
+          
         } catch (error) {
           state.dashboard = [];
         }
-        state.isDashboardLoading = false;
+        
       })
       .addCase(getERPDashboardThunk.rejected, (state, action) => {
-        state.isDashboardLoading = false;
+         
         state.error = action.payload as string;
       });
   },

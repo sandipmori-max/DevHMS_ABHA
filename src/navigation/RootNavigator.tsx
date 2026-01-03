@@ -12,7 +12,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { checkAuthStateThunk } from '../store/slices/auth/thunk';
+import { checkAuthStateThunk, getERPAppConfigMenuThunk } from '../store/slices/auth/thunk';
 import DevERPService from '../services/api/deverp';
 import AuthNavigator from './AuthNavigator';
 import StackNavigator from './StackNavigator';
@@ -63,40 +63,23 @@ export async function requestLocationPermissions(): Promise<
   } else {
     // iOS logic
     let status = await check(PERMISSIONS.IOS.LOCATION_ALWAYS);
-    console.log("status----------------------1---------------------", status)
     if (status === RESULTS.GRANTED) return 'granted';
-    console.log("status----------------------2---------------------", status)
     if (status === RESULTS.BLOCKED) return 'blocked';
-    console.log("status-----------------------3--------------------", status)
 
     // Request foreground permission first
     let foregroundStatus = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
-    console.log("foregroundStatus---------------------4----------------------", foregroundStatus)
 
     if (foregroundStatus === RESULTS.DENIED) {
-
       foregroundStatus = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
-      console.log("foregroundStatus---------------------5----------------------", foregroundStatus)
-
     }
 
     if (foregroundStatus === RESULTS.GRANTED || foregroundStatus === RESULTS.LIMITED) {
-      console.log("foregroundStatus---------------------6----------------------", foregroundStatus)
-
       // Now ask for "Always" if needed
       status = await request(PERMISSIONS.IOS.LOCATION_ALWAYS);
-      console.log("status---------------------7----------------------", status)
-
       if (status === RESULTS.GRANTED) return 'granted';
-      console.log("status----------------------8---------------------", status)
-
       return 'foreground-only';
     }
-    console.log("status-----------------------9--------------------", status)
-
     if (foregroundStatus === RESULTS.BLOCKED) return 'blocked';
-    console.log("status------------------------10-------------------", status)
-
     return 'denied';
   }
 }
@@ -104,11 +87,17 @@ export async function requestLocationPermissions(): Promise<
 // ------------------------- RootNavigator -------------------------
 const RootNavigator = () => {
   const dispatch = useAppDispatch();
-  const { isLoading, isAuthenticated, accounts, user } =
-    useAppSelector(state => state.auth);
+  const LOCATION_MESSAGES = {
+    PERMISSION_DENIED: 'Location permission has been denied. Please allow it to continue using the app.',
+    SERVICE_DISABLED: 'Location services are disabled. Please enable location services to continue.',
+  };
+
+  const { isLoading, isAuthenticated, accounts, user, appColorCode } = useAppSelector(state => state.auth);
+     
   const langCode = useAppSelector(state => state.theme.langcode);
 
   const [alertVisible, setAlertVisible] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
   const [backgroundDeniedModal, setBackgroundDeniedModal] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
     title: '',
@@ -159,7 +148,6 @@ const RootNavigator = () => {
     const permission = await requestLocationPermissions();
 
     if (enabled && permission === 'granted') {
-      // ✅ Permission granted, hide modals
       locationModalShownRef.current = false;
       setAlertVisible(false);
       setBackgroundDeniedModal(false);
@@ -182,23 +170,58 @@ const RootNavigator = () => {
     }
 
     // Denied or blocked
-    if ((!enabled || permission === 'denied' || permission === 'blocked') && !locationModalShownRef.current) {
-      setAlertConfig({
-        title: 'Location Required',
-        message:
-          'Please enable location permission to continue using the app.',
-        type: 'error',
-      });
-      setAlertVisible(true);
-      setBackgroundDeniedModal(false);
-      locationModalShownRef.current = true;
-    }
+    // if ((!enabled || permission === 'denied' || permission === 'blocked') && !locationModalShownRef.current) {
+    //   setAlertConfig({
+    //     title: 'Location Required',
+    //     message:
+    //       'Please enable location permission to continue using the app.',
+    //     type: 'error',
+    //   });
+    //   setAlertVisible(true);
+    //   setBackgroundDeniedModal(false);
+    //   locationModalShownRef.current = true;
+    // }
+    // ------------------------- Denied / Disabled Handling -------------------------
+if (!locationModalShownRef.current) {
+
+  // CASE 1: Location service disabled (GPS OFF)
+  if (!enabled) {
+    setAlertConfig({
+      title: 'Location service disabled (GPS OFF)',
+      message: LOCATION_MESSAGES.SERVICE_DISABLED,
+      type: 'error',
+    });
+
+    setAlertVisible(true);
+    setOpenSettings(false)
+    setBackgroundDeniedModal(false); // ❌ no Open Settings modal
+    locationModalShownRef.current = true;
+    return;
+  }
+
+  // CASE 2: Permission denied or blocked
+  if (permission === 'denied' || permission === 'blocked') {
+    setAlertConfig({
+      title: 'Permission Denied',
+      message: LOCATION_MESSAGES.PERMISSION_DENIED,
+      type: 'error',
+    });
+
+    setAlertVisible(true);
+    setOpenSettings(true);
+    setBackgroundDeniedModal(false); // ❌ background modal not needed here
+    locationModalShownRef.current = true;
+    return;
+  }
+}
+
   };
 
   // ------------------------- Focus -------------------------
   useFocusEffect(
     useCallback(() => {
       if (isAuthenticated) {
+        dispatch(getERPAppConfigMenuThunk())
         checkLocation();
       }
     }, [isAuthenticated]),
@@ -210,7 +233,6 @@ const RootNavigator = () => {
   return (
     <>
       {isAuthenticated ? <StackNavigator /> : <AuthNavigator />}
-
       {
         isAuthenticated && (
           <CustomAlert
@@ -219,13 +241,11 @@ const RootNavigator = () => {
             message={alertConfig.message}
             type={alertConfig.type}
             onClose={() => { }}
-            isSettingVisible
+            isSettingVisible={openSettings}
             actionLoader={undefined}
           />
         )
       }
-
-
       {
         isAuthenticated && (
           <Modal visible={backgroundDeniedModal} transparent>
@@ -245,7 +265,6 @@ const RootNavigator = () => {
           </Modal>
         )
       }
-
     </>
   );
 };

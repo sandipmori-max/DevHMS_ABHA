@@ -193,6 +193,12 @@ class DevERPService {
     );
   }
 
+  getAppMenu() {
+    return this.apiCall<MenuResponse>('msp_api.aspx/getAppConfig', { token: this.token }).then(res =>
+      JSON.stringify(res),
+    );
+  }
+
   getDashboard(
     branch: string,
     type: string,

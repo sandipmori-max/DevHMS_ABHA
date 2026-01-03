@@ -110,7 +110,6 @@ const WebScreen = () => {
     return `${baseLink}${itemUrl}&token=${token}`;
   }, [baseLink, item?.url, token]);
 
-
   if ((!isFromChart && !targetUrl) || (isFromChart && !url)) {
     return (
       <SafeAreaView style={styles.container}>
@@ -118,7 +117,6 @@ const WebScreen = () => {
       </SafeAreaView>
     );
   }
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -187,7 +185,8 @@ const WebScreen = () => {
             `}
             onMessage={event => {
               const data = JSON.parse(event.nativeEvent.data);
-            }}
+              console.log('All IDs in WebView:-----------------------', data.ids);
+             }}
           />
         </>
       ) : (

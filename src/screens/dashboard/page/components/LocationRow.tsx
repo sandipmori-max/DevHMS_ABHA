@@ -5,6 +5,7 @@ import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import { useCurrentAddress } from '../../../../hooks/useCurrentLocation';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import useTranslations from '../../../../hooks/useTranslations';
+import ShortAction from './ShortAction';
 
 const LocationRow = ({ locationEnabled, locationVisible, isValidate, item, value, setValue }: any) => {
   const { coords, address: hookAddress, loading, error, refetch } = useCurrentAddress();
@@ -38,6 +39,7 @@ const LocationRow = ({ locationEnabled, locationVisible, isValidate, item, value
         <Text style={[styles.label, ]}>{item?.fieldtitle}</Text>
         {item?.fieldtitle !== item?.tooltip && <Text> - ( {item?.tooltip} )</Text>}
         {item?.mandatory === '1' && <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>}
+        <ShortAction item={item} value={address}/>
       </View>
 
       {/* Address / Loading / Error */}

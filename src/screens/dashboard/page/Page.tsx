@@ -155,6 +155,7 @@ const PageScreen = () => {
   const lastLocationEnabled = useRef<boolean | null>(null);
   const appState = useRef(AppState.currentState);
 
+  console.log("controls-==-=================================", controls)
   const hasLocationField = controls.some(
     item => item?.defaultvalue && item?.defaultvalue === '#location' && item?.visible === "0",
   );
@@ -532,6 +533,8 @@ const PageScreen = () => {
       const parsed = await dispatch(
         getERPPageThunk({ page: url, id: isFromNew ? 0 : id }),
       ).unwrap();
+
+      console.log("-----parsed------parsed--------parsed------", parsed)
       if (!isFromNew) {
         setInfoData({
           id: id?.toString(),
@@ -770,6 +773,7 @@ const PageScreen = () => {
       } else {
         content = (
           <Input
+            id={item?.fieldtitle}
             isValidate={isValidate}
             onFocus={() => flatListRef.current?.scrollToIndex({ index, animated: true })}
             item={item}

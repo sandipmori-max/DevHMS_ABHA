@@ -20,6 +20,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
   const theme = useAppSelector(state => state.theme.mode);
   const baseLink = useBaseLink();
   const currentRoute = props.state.routeNames[props.state.index];
+  const {appDrawerMenuList, appColorCode} = useAppSelector(state => state?.auth);
 
   return (
     <DrawerContentScrollView

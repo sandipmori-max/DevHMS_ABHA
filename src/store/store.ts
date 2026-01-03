@@ -16,11 +16,10 @@ const authPersistConfig = {
   'token',
   'isPinLoaded',
   'isAuthenticated',
-  'user',
-  'dashboardFromDate',
-  'dashboardToDate',
-  'dashboardBranch',
-  'dashboardType',
+  'user', 
+  'appDrawerMenuList',
+  'appBottomMenuList',
+  'appColorCode'
   ],
 };
 

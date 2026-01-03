@@ -599,3 +599,33 @@ export const goToSettings = () => {
     Linking.openSettings();
   }
 };
+
+export const handlePhonePress = (phoneNumber: string) => {
+      Linking.openURL(`tel:${phoneNumber}`);
+};
+  
+export  const handleEmailPress = (emailAddress: any) => {
+      Linking.openURL(`mailto:${emailAddress}`);
+};
+export const handleLocationPress = (location: string) => {
+  if (!location) return;
+
+  // Split the string into latitude and longitude
+  const [lat, lng] = location.split(',').map(coord => coord.trim());
+
+  // Construct URL for maps
+  const url = Platform.select({
+    ios: `http://maps.apple.com/?ll=${lat},${lng}`,  // Apple Maps on iOS
+    android: `geo:${lat},${lng}?q=${lat},${lng}`,    // Google Maps on Android
+  });
+
+  Linking.canOpenURL(url!)
+    .then(supported => {
+      if (supported) {
+        Linking.openURL(url!);
+      } else {
+        Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`);
+      }
+    })
+    .catch(err => console.error('Error opening map:', err));
+};

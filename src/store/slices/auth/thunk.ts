@@ -142,7 +142,7 @@ export const loginUserThunk = createAsyncThunk(
       await insertAccount(db, newAccount);
       await updateAccountActive(db, newAccount?.id);
       const updatedAccounts = await getAccounts(db);
-
+      
       return {
         user: erpUser,
         accountId: erpUser?.id,
@@ -292,6 +292,25 @@ export const getERPMenuThunk = createAsyncThunk(
   },
 );
 
+export const getERPAppConfigMenuThunk = createAsyncThunk(
+  'auth/getERPAppConfigMenu',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await DevERPService.getAppMenu();
+
+      if (response && typeof response === 'string') {
+        return response;
+      } else if (response && typeof response === 'object') {
+        return response;
+      }
+
+      return rejectWithValue('Invalid menu response format');
+    } catch (error: any) {
+      return rejectWithValue(error?.message || 'Failed to get ERP menu');
+    }
+  },
+);
+
 type ERPDashboardParams = {
   branch: string;
   type: string;
@@ -305,6 +324,11 @@ export const getERPDashboardThunk = createAsyncThunk(
     { branch, type, fd, td }: ERPDashboardParams,
     { rejectWithValue }
   ) => {
+    console.log("branch--------", branch)
+    console.log("type--------", type)
+    console.log("fd--------", fd)
+    console.log("td--------", td)
+
     try {
       const dashboard = await DevERPService.getDashboard(
         branch,
@@ -312,8 +336,10 @@ export const getERPDashboardThunk = createAsyncThunk(
         fd,
         td
       );
+      console.log("dashboard", dashboard)
       return dashboard;
     } catch (error: any) {
+      console.log("error", error)
       return rejectWithValue(
         error?.message || 'Failed to get ERP dashboard'
       );
