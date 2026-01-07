@@ -113,6 +113,59 @@ const RootNavigator = () => {
   const locationModalShownRef = useRef(false);
   const appState = useRef(AppState.currentState);
 
+  const locationServiceIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const gpsModalShownRef = useRef(false);
+
+
+  const checkLocationServiceOnly = async () => {
+  if (!isAuthenticated) return;
+
+  const enabled = await DeviceInfo.isLocationEnabled();
+
+  // GPS OFF → show modal once & stop features
+  if (!enabled && !gpsModalShownRef.current) {
+    setAlertConfig({
+      title: 'Location service disabled (GPS OFF)',
+      message: LOCATION_MESSAGES.SERVICE_DISABLED,
+      type: 'error',
+    });
+
+    setAlertVisible(true);
+    setOpenSettings(false);
+    setBackgroundDeniedModal(false);
+
+    gpsModalShownRef.current = true;
+    locationModalShownRef.current = true; // reuse existing stop-flow logic
+    return;
+  }
+
+  // GPS ON again → reset flags & resume
+  if (enabled && gpsModalShownRef.current) {
+    gpsModalShownRef.current = false;
+    locationModalShownRef.current = false;
+    setAlertVisible(false);
+  }
+};
+
+
+useEffect(() => {
+  if (!isAuthenticated) return;
+
+  // Start checking every 1 second
+  locationServiceIntervalRef.current = setInterval(() => {
+    checkLocationServiceOnly();
+  }, 1000);
+
+  return () => {
+    // Cleanup on logout / unmount
+    if (locationServiceIntervalRef.current) {
+      clearInterval(locationServiceIntervalRef.current);
+      locationServiceIntervalRef.current = null;
+    }
+  };
+}, [isAuthenticated]);
+
+
   // ------------------------- AppState Listener -------------------------
   useEffect(() => {
     const handleAppStateChange = async nextAppState => {
@@ -218,7 +271,6 @@ const RootNavigator = () => {
         return;
       }
     }
-
   };
 
 
@@ -226,10 +278,8 @@ const RootNavigator = () => {
     return(()=>{
       console.log("F----A----L----S-----E--------0=======================================",);
       dispatch(setReloadApp())
-      
     })
-
-  },[ ])
+  },[])
   // ------------------------- Focus -------------------------
   useFocusEffect(
     useCallback(() => {

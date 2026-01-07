@@ -6,10 +6,12 @@ import {
   Dimensions,
 } from 'react-native';
 import { ERP_COLOR_CODE } from '../../utils/constants';
+import { useAppSelector } from '../../store/hooks';
 
 const { width } = Dimensions.get('window');
 const Toast = ({ visible, message, onHide }: { visible: boolean; message: string; onHide: () => void }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const theme = useAppSelector(state => state.theme.mode);
 
   useEffect(() => {
     if (visible) {
@@ -35,10 +37,18 @@ const Toast = ({ visible, message, onHide }: { visible: boolean; message: string
     <Animated.View
       style={[
         styles.toastContainer,
+        theme === 'dark' && {
+        backgroundColor: "white",
+      },
         { opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [50, 0] }) }] },
       ]}
     >
-      <Text style={styles.toastText}>{message}</Text>
+      <Text style={[styles.toastText,
+      theme === 'dark' && {
+         color: 'black'
+      }
+
+      ]}>{message}</Text>
     </Animated.View>
   );
 };

@@ -39,6 +39,7 @@ const ListScreen = () => {
   const [isTableView, setIsTableView] = useState<boolean>(false);
 
   const [filteredData, setFilteredData] = useState<any[]>([]);
+
   const [alertVisible, setAlertVisible] = useState(false);
   const [actionLoaders, setActionLoader] = useState(false);
   const [parsedError, setParsedError] = useState<any>();
@@ -71,18 +72,18 @@ const ListScreen = () => {
   const isFromAlertCard = item?.isFromAlertCard || false;
 
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(20);
+  const [pageSize] = useState(100);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
-  useEffect(() => {
-    if (!filteredData) return;
-    setPage(1);
-    setHasMore(true);
+  // useEffect(() => {
+  //   if (!filteredData) return;
+  //   setPage(1);
+  //   setHasMore(true);
 
-    const firstPage = filteredData.slice(0, pageSize);
-    setListData(firstPage);
-  }, [filteredData]);
+  //   const firstPage = filteredData.slice(0, pageSize);
+  //   setListData(firstPage);
+  // }, [filteredData]);
 
   const loadMore = () => {
     if (isLoadingMore || !hasMore) return;
@@ -128,6 +129,8 @@ const ListScreen = () => {
     navigation.setOptions({
       headerStyle: {
         backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
+         borderBottomWidth: 1,
+        borderBottomColor: '#fff',
       },
       headerTintColor: '#fff',
       headerTitle: () => (
@@ -194,6 +197,7 @@ const ListScreen = () => {
           const trimmedQuery = query.trim();
 
           if (trimmedQuery === '') {
+            console.log("Data", data);
             setFilteredData(data);
             return;
           }
@@ -248,6 +252,7 @@ const ListScreen = () => {
 
   const clearSearch = () => {
     setSearchQuery('');
+    console.log("------------------listData*******************", listData)
     setFilteredData(listData);
   };
 
@@ -422,10 +427,18 @@ const ListScreen = () => {
       {isFilterVisible && (
         <View>
           <View style={styles.searchContainer}>
-            <View style={styles.searchInputContainer}>
-              <MaterialIcons size={24} name="search" />
+            <View style={[styles.searchInputContainer,
+            theme === 'dark' && {
+              backgroundColor: 'black'
+            }
+            ]}>
+              <MaterialIcons size={24} name="search" color={theme === 'dark' ? 'white': 'black'} />
               <TextInput
-                style={styles.searchInput}
+                style={[styles.searchInput,
+                theme === 'dark' && {
+                  color: 'white'
+                }
+                ]}
                 placeholder={`Search ${pageTitle.toLowerCase()} in list...`}
                 value={searchQuery}
                 onChangeText={handleSearchChange}
@@ -498,6 +511,7 @@ const ListScreen = () => {
                     }
                     mode="date"
                     display="spinner"
+                    is24Hour={false}
                     onChange={handleDateChange}
                     style={styles.picker}
                   />
@@ -518,6 +532,8 @@ const ListScreen = () => {
                     : new Date()
               }
               mode="date"
+              display="spinner"
+              is24Hour={false}
               onChange={handleDateChange}
             />
 

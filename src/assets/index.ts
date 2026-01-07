@@ -23,6 +23,7 @@ const SEARCH_LOADER = require(`${ERP_BASE_URL_GIF}/search.gif`);
 const NO_INTERNET = require(`${ERP_BASE_URL_GIF}/not_internet.png`);
 const NO_DATA = require(`${ERP_BASE_URL_GIF}/no_data.png`);
 const SUCCESS = require(`${ERP_BASE_URL_GIF}/success.gif`);
+const NO_IMG = require(`${ERP_BASE_URL_ICONS}/no_img.jpg`);
 
 const Analytics = require(`${ERP_BASE_URL_GIF}/Analytics.gif`);
 const Dashboards = require(`${ERP_BASE_URL_GIF}/Dashboards.gif`);
@@ -47,6 +48,7 @@ export const ERP_ICON = {
   BACK,
   ERROR_ICON,
   MENU,
+  NO_IMG
 };
 
 export const ERP_GIF = {

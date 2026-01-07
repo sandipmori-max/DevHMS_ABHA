@@ -115,7 +115,9 @@ const HomeScreen = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: {
-        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
+         borderBottomWidth: 1,
+        borderBottomColor: '#fff',
       },
       headerTintColor: '#fff',
       headerTitle: () =>
@@ -124,6 +126,7 @@ const HomeScreen = () => {
             <TextInput
               value={searchText}
               onChangeText={setSearchText}
+              autoFocus={true}
               placeholder="Search dashboard here..."
               style={{
                 flex: 1,
@@ -674,6 +677,7 @@ const HomeScreen = () => {
                               dispatch(setActiveDashboardType(i?.name))
                               dispatch(setActiveDashboardTypeId(i?.value?.toString()))
                             }
+                            setIsFilterVisible(false)
                           }}
                           options={[]}
                           item={item}
@@ -873,6 +877,7 @@ const HomeScreen = () => {
                   }
                   mode="date"
                   display="spinner"
+                  is24Hour={false}
                   onChange={handleDateChange}
                   style={styles.picker}
                 />
@@ -890,7 +895,9 @@ const HomeScreen = () => {
                   ? parseCustomDate(toDate)
                   : new Date()
             }
-            mode="date"
+            mode='date'
+            display={'spinner'}
+            is24Hour={false}
             onChange={handleDateChange}
 
           />

@@ -390,7 +390,7 @@ const ReadableView = ({
                 </Text>
               </View>
             )}
-            {!!amount && (
+            {!!amount && !!qty && (
               <View style={{
                 flexDirection: 'row', 
               }}>
@@ -527,7 +527,7 @@ const ReadableView = ({
             marginTop: 6,
             padding: 8,
             borderRadius: 8,
-            backgroundColor: '#f1f1f1',
+            backgroundColor: theme === 'dark' ? '#000' : '#f1f1f1',
             borderWidth: 1,
             borderColor: ERP_COLOR_CODE.ERP_ddd,
             marginBottom: 12,
@@ -547,7 +547,7 @@ const ReadableView = ({
                     fontSize: 14,
                     fontWeight: '700',
 
-                    color: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_333,
+                    color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_333,
                   }}
                 >
                   {t("text.text28")} :-
@@ -556,7 +556,7 @@ const ReadableView = ({
                   style={{
                     fontSize: 16,
                     fontWeight: 'bold',
-                    color: '#28a745',
+                    color: theme === 'dark' ? 'white'  : '#28a745',
                     marginLeft: 8,
                   }}
                 >
@@ -575,7 +575,7 @@ const ReadableView = ({
                     fontSize: 14,
                     fontWeight: '700',
                     flexShrink: 1,
-                    color: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_333,
+                    color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_333,
                   }}
                 >
                   {t("text.text29")} :-
@@ -584,7 +584,7 @@ const ReadableView = ({
                   style={{
                     fontSize: 16,
                     fontWeight: 'bold',
-                    color: '#28a745',
+                    color: theme === 'dark' ? 'white'  : '#28a745',
                     marginLeft: 8,
 
                   }}
@@ -600,7 +600,7 @@ const ReadableView = ({
               style={{
                 fontSize: 14,
                 fontWeight: '700',
-                color: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_333,
+                color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_333,
               }}
             >
               {listData?.length} {t("text.text31")}

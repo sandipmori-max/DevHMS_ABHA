@@ -312,7 +312,9 @@ const PageScreen = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: {
-        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
+        borderBottomWidth: 1,
+        borderBottomColor: '#fff',
       },
       headerTintColor: '#fff',
       headerTitle: () => (
@@ -953,6 +955,7 @@ const PageScreen = () => {
                 isVisible={dateTimePickerVisible}
                 mode="datetime"
                 display='spinner'
+                   is24Hour={false}
                 date={activeDateTime ? parseCustomDatePage(activeDateTime) : new Date()}
                 onConfirm={handleDateTimeConfirm}
                 onCancel={hideDateTimePicker}
@@ -975,10 +978,11 @@ const PageScreen = () => {
               <DateTimePicker
                 isVisible={datePickerVisible}
                 mode="date"
-                display='spinner'
-                date={activeDate ? parseCustomDatePage(activeDate) : new Date()}
+                 date={activeDate ? parseCustomDatePage(activeDate) : new Date()}
                 onConfirm={handleConfirm}
                 onCancel={hideDatePicker}
+                display="spinner"
+                is24Hour={false}
               />
             </View>
           </View>
@@ -989,6 +993,8 @@ const PageScreen = () => {
         Platform.OS !== 'ios' && <DateTimePicker
           isVisible={dateTimePickerVisible}
           mode="datetime"
+          display="spinner"
+          is24Hour={false}
           date={activeDateTime ? parseCustomDatePage(activeDateTime) : new Date()}
           onConfirm={handleDateTimeConfirm}
           onCancel={hideDateTimePicker}
@@ -999,6 +1005,8 @@ const PageScreen = () => {
         Platform.OS !== 'ios' && <DateTimePicker
           isVisible={datePickerVisible}
           mode="date"
+          display="spinner"
+          is24Hour={false}
           date={activeDate ? parseCustomDatePage(activeDate) : new Date()}
           onConfirm={handleConfirm}
           onCancel={hideDatePicker}

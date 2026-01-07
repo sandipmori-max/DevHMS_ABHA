@@ -19,6 +19,7 @@ import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import CustomAlert from '../../../../components/alert/CustomAlert';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import { useAppSelector } from '../../../../store/hooks';
+import Shimmer from '../../../../components/ShimmerEffect/ShimmerEffect';
 
 const Media = ({ isValidate, item, handleAttachment, infoData, baseLink, isFromNew }: any) => {
   const [imageUri, setImageUri] = useState<string | null>(null);
@@ -280,8 +281,8 @@ const Media = ({ isValidate, item, handleAttachment, infoData, baseLink, isFromN
             },
             { width: 100, height: 100, }]}>
             {loadingSmall && (
-              <ActivityIndicator style={StyleSheet.absoluteFill} size="small" color={theme === 'dark' ? 'white' : 'black'} />
-            )}
+              <Shimmer width={100} height={100} borderRadius={6} />
+             )}
             <Image
               key={item.field}
               source={imageUri ? { uri: imageUri } : { uri: getImageUri('small') }}
@@ -295,7 +296,8 @@ const Media = ({ isValidate, item, handleAttachment, infoData, baseLink, isFromN
 
         <TouchableOpacity onPress={handleChooseImage} style={[styles.editBtn, theme === 'dark' && {
           borderWidth: 1,
-          borderColor: 'white'
+          borderColor: 'white',
+          backgroundColor:'black'
         },]}>
           <MaterialIcons name={'edit'} color={theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK} size={20} />
         </TouchableOpacity>
@@ -374,7 +376,8 @@ const Media = ({ isValidate, item, handleAttachment, infoData, baseLink, isFromN
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, theme === 'dark' && {
             borderWidth: 1,
-            borderColor: 'white'
+            borderColor: 'white',
+            backgroundColor:'black'
           }]}>
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, theme === 'dark' && {
