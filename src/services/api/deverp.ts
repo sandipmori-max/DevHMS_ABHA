@@ -274,6 +274,7 @@ class DevERPService {
   }
 
   getLastPunchIn() {
+    console.log("TOKEN___________________", this.token)
     return this.apiCall<any>('msp_api.aspx/getLastPunchIn', { token: this.token });
   }
 

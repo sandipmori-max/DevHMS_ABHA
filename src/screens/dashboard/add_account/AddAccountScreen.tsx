@@ -24,6 +24,7 @@ import { resetAjaxState } from '../../../store/slices/ajax/ajaxSlice';
 import { resetAttendanceState } from '../../../store/slices/attendance/attendanceSlice';
 import { resetDropdownState } from '../../../store/slices/dropdown/dropdownSlice';
 import { resetSyncLocationState } from '../../../store/slices/location/syncLocationSlice';
+import { setReloadApp } from '../../../store/slices/reloadApp/reloadAppSlice';
 
 const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose }) => {
   const { t } = useTranslation();
@@ -55,7 +56,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
   }, [visible]);
 
   useEffect(() => {
-    return( ) =>{
+    return () => {
       setIsInputEditCC(false);
       setIsInputEditUser(false);
       setIsInputEditPass(false)
@@ -161,12 +162,13 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
       setAlertConfig({ title: t("title.title3"), message: t("msg.msg3"), type: 'success' });
       setAlertVisible(true);
       dispatch(setDashboard([]));
-                dispatch(setEmptyMenu([]));
-                dispatch(resetAjaxState());
-                dispatch(resetAttendanceState())
-                dispatch(clearAuthState())
-                dispatch(resetDropdownState())
-                dispatch(resetSyncLocationState())
+      dispatch(setEmptyMenu([]));
+      dispatch(resetAjaxState());
+      dispatch(resetAttendanceState())
+      dispatch(clearAuthState())
+      dispatch(resetDropdownState())
+      dispatch(resetSyncLocationState())
+        dispatch(setReloadApp())
       onClose();
       setLoader(false);
     } catch (e: any) {
@@ -325,10 +327,10 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                               style={[styles.input, theme === 'dark' && {
                                 backgroundColor: 'black'
                               },
-                             theme === 'dark' && {
+                              theme === 'dark' && {
                                 color: 'white'
                               }
-                            ]}
+                              ]}
                               placeholder={t('auth.enterUser')}
                               placeholderTextColor={ERP_COLOR_CODE.ERP_999}
                               autoCapitalize="none"
@@ -389,11 +391,11 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                               style={[styles.input1, theme === 'dark' && {
                                 backgroundColor: 'black'
                               },
-                            
-                             theme === 'dark' && {
+
+                              theme === 'dark' && {
                                 color: 'white'
                               }
-                            ]}
+                              ]}
                               placeholder={t('auth.enterPassword')}
                               secureTextEntry={!showPassword}
                               placeholderTextColor={ERP_COLOR_CODE.ERP_999}
@@ -446,13 +448,13 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                           />
 
                           {loader ? (
-                            <Text style={[styles.addButtonText,   theme === 'dark' && {
-                                color: 'black'
-                              }]}>{t('account.adding')}</Text>
+                            <Text style={[styles.addButtonText, theme === 'dark' && {
+                              color: 'black'
+                            }]}>{t('account.adding')}</Text>
                           ) : (
-                            <Text style={[styles.addButtonText,   theme === 'dark' && {
-                                color: 'black'
-                              }]}>{t('account.add')}</Text>
+                            <Text style={[styles.addButtonText, theme === 'dark' && {
+                              color: 'black'
+                            }]}>{t('account.add')}</Text>
                           )}
                         </TouchableOpacity>
                       </>

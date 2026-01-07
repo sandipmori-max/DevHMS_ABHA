@@ -165,13 +165,12 @@ const HomeScreen = () => {
                   setActionLoader(true);
                   setIsRefresh(!isRefresh);
                   dispatch(getERPDashboardThunk({ branch: auth.dashboardBranch, type: auth.dashboardType, fd: auth.dashboardFromDate, td: auth.dashboardToDate }));
-                  setTimeout(() => {
-                    setActionLoader(false);
-                    setControlsLoader(false);
-                  }, 100);
+                   
                   const timer = setTimeout(() => {
+                     setActionLoader(false);
+                      setControlsLoader(false);
                       dispatch(setDashboardLoading(false));
-                    }, 1200);
+                    }, 3000);
                     return () => clearTimeout(timer); 
                   
                 }}
@@ -196,7 +195,7 @@ const HomeScreen = () => {
         <ERPIcon extSize={24} isMenu={true} name="menu" onPress={() => navigation?.openDrawer()} />
       ),
     });
-  }, [navigation, isHorizontal, isRefresh, showSearch, dashboard, searchText, filteredDashboard, isFilterVisible]);
+  }, [actionLoader ,navigation, isHorizontal, isRefresh, showSearch, dashboard, searchText, filteredDashboard, isFilterVisible]);
 
  useFocusEffect(
   useCallback(() => {
@@ -211,7 +210,7 @@ const HomeScreen = () => {
 
       timer = setTimeout(() => {
         dispatch(setDashboardLoading(false));
-      }, 2000);
+      }, 3000);
     }
 
     // ✅ single cleanup function
@@ -524,7 +523,7 @@ const HomeScreen = () => {
     dispatch(getERPDashboardThunk({ branch: auth.dashboardBranch, type: auth.dashboardType, fd: auth.dashboardFromDate, td: auth.dashboardToDate }));
     const timer = setTimeout(() => {
     dispatch(setDashboardLoading(false));
-  }, 1200);
+  }, 3000);
   return () => clearTimeout(timer);
   
   }, [auth.dashboardBranch, auth.dashboardType, auth.dashboardFromDate, auth.dashboardToDate])

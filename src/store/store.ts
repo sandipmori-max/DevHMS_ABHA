@@ -7,6 +7,8 @@ import attendanceReducer from './slices/attendance/attendanceSlice';
 import dropdownReducer from './slices/dropdown/dropdownSlice';
 import ajaxReducer from './slices/ajax/ajaxSlice';
 import pageReducer from './slices/page/pageSlice';
+import reloadAppReducer from './slices/reloadApp/reloadAppSlice';
+
 import syncLocationReducer from './slices/location/syncLocationSlice';
 
 const authPersistConfig = {
@@ -41,6 +43,8 @@ export const store = configureStore({
     ajax: ajaxReducer,
     page: pageReducer,
     syncLocation: syncLocationReducer,
+    reloadApp: reloadAppReducer,
+
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

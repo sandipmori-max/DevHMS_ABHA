@@ -18,6 +18,8 @@ import { resetAjaxState } from '../../../../../store/slices/ajax/ajaxSlice';
 import { resetAttendanceState } from '../../../../../store/slices/attendance/attendanceSlice';
 import { resetDropdownState } from '../../../../../store/slices/dropdown/dropdownSlice';
 import { resetSyncLocationState } from '../../../../../store/slices/location/syncLocationSlice';
+import { getLastPunchInThunk } from '../../../../../store/slices/attendance/thunk';
+import { setReloadApp } from '../../../../../store/slices/reloadApp/reloadAppSlice';
 
 interface AccountSwitcherProps {
   visible: boolean;
@@ -42,6 +44,8 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
   const handleSwitchAccount = (accountId: string) => {
     if (accountId !== activeAccountId) {
       dispatch(switchAccountThunk(accountId));
+      dispatch(getLastPunchInThunk())
+      dispatch(setReloadApp())
     }
     onClose();
   };
@@ -111,6 +115,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
             }
             handleSwitchAccount(item?.id);
           }
+ 
         }}
       >
         <View style={styles.accountContent}>

@@ -24,6 +24,9 @@ import { useFocusEffect } from '@react-navigation/native';
 import { ERP_COLOR_CODE } from '../utils/constants';
 import { changeLanguage } from '../i18n';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { getLastPunchInThunk } from '../store/slices/attendance/thunk';
+import { setResponse } from '../store/slices/attendance/attendanceSlice';
+import { setReloadApp } from '../store/slices/reloadApp/reloadAppSlice';
 
 // ------------------------- Location Permission Helper -------------------------
 export async function requestLocationPermissions(): Promise<
@@ -93,7 +96,9 @@ const RootNavigator = () => {
   };
 
   const { isLoading, isAuthenticated, accounts, user, appColorCode } = useAppSelector(state => state.auth);
-     
+  const { reLoading } = useAppSelector(state => state.reloadApp);
+  console.log("res reLoading =======================================", reLoading);
+
   const langCode = useAppSelector(state => state.theme.langcode);
 
   const [alertVisible, setAlertVisible] = useState(false);
@@ -130,15 +135,14 @@ const RootNavigator = () => {
   }, [langCode]);
 
   // ------------------------- Device Setup -------------------------
-  useEffect(() => {
-    const init = async () => {
-      const name = await DeviceInfo.getDeviceName();
-      await AsyncStorage.setItem('device', name);
-      DevERPService.initialize();
-      dispatch(checkAuthStateThunk());
-    };
-    init();
-  }, [dispatch]);
+
+  const init = async () => {
+    const name = await DeviceInfo.getDeviceName();
+    await AsyncStorage.setItem('device', name);
+    await DevERPService.initialize();
+    await dispatch(checkAuthStateThunk());
+  };
+
 
   // ------------------------- Check Location -------------------------
   const checkLocation = async () => {
@@ -182,49 +186,70 @@ const RootNavigator = () => {
     //   locationModalShownRef.current = true;
     // }
     // ------------------------- Denied / Disabled Handling -------------------------
-if (!locationModalShownRef.current) {
+    if (!locationModalShownRef.current) {
 
-  // CASE 1: Location service disabled (GPS OFF)
-  if (!enabled) {
-    setAlertConfig({
-      title: 'Location service disabled (GPS OFF)',
-      message: LOCATION_MESSAGES.SERVICE_DISABLED,
-      type: 'error',
-    });
+      // CASE 1: Location service disabled (GPS OFF)
+      if (!enabled) {
+        setAlertConfig({
+          title: 'Location service disabled (GPS OFF)',
+          message: LOCATION_MESSAGES.SERVICE_DISABLED,
+          type: 'error',
+        });
 
-    setAlertVisible(true);
-    setOpenSettings(false)
-    setBackgroundDeniedModal(false); // ❌ no Open Settings modal
-    locationModalShownRef.current = true;
-    return;
-  }
+        setAlertVisible(true);
+        setOpenSettings(false)
+        setBackgroundDeniedModal(false); // ❌ no Open Settings modal
+        locationModalShownRef.current = true;
+        return;
+      }
 
-  // CASE 2: Permission denied or blocked
-  if (permission === 'denied' || permission === 'blocked') {
-    setAlertConfig({
-      title: 'Permission Denied',
-      message: LOCATION_MESSAGES.PERMISSION_DENIED,
-      type: 'error',
-    });
+      // CASE 2: Permission denied or blocked
+      if (permission === 'denied' || permission === 'blocked') {
+        setAlertConfig({
+          title: 'Permission Denied',
+          message: LOCATION_MESSAGES.PERMISSION_DENIED,
+          type: 'error',
+        });
 
-    setAlertVisible(true);
-    setOpenSettings(true);
-    setBackgroundDeniedModal(false); // ❌ background modal not needed here
-    locationModalShownRef.current = true;
-    return;
-  }
-}
+        setAlertVisible(true);
+        setOpenSettings(true);
+        setBackgroundDeniedModal(false); // ❌ background modal not needed here
+        locationModalShownRef.current = true;
+        return;
+      }
+    }
 
   };
 
+
+  useEffect(()=>{
+    return(()=>{
+      console.log("F----A----L----S-----E--------0=======================================",);
+      dispatch(setReloadApp())
+      
+    })
+
+  },[ ])
   // ------------------------- Focus -------------------------
   useFocusEffect(
     useCallback(() => {
-      if (isAuthenticated) {
-        // dispatch(getERPAppConfigMenuThunk())
-        checkLocation();
-      }
-    }, [isAuthenticated]),
+      init();
+      setTimeout(() => {
+        if (isAuthenticated) {
+          // dispatch(getERPAppConfigMenuThunk())
+          dispatch(getLastPunchInThunk())
+            .unwrap()
+            .then(res => {
+              if (res?.success === 1 || res?.success === '1') {
+                checkLocation();
+              }
+            })
+            .catch(err => {
+              console.log("err=======================================", err);
+            });
+        }
+      }, 1200)
+    }, [isAuthenticated,reLoading]),
   );
 
   // ------------------------- Render -------------------------
