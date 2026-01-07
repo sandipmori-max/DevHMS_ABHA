@@ -629,3 +629,201 @@ export const handleLocationPress = (location: string) => {
     })
     .catch(err => console.error('Error opening map:', err));
 };
+
+// =======================
+// Operators (camelCase full names)
+// =======================
+const operators = {
+  // Equality
+  equals: (a, b) => a === b,
+  notEquals: (a, b) => a !== b,
+
+  // Numeric
+  greaterThan: (a, b) => Number(a) > Number(b),
+  greaterThanOrEqual: (a, b) => Number(a) >= Number(b),
+  lessThan: (a, b) => Number(a) < Number(b),
+  lessThanOrEqual: (a, b) => Number(a) <= Number(b),
+
+  // String
+  containsString: (a, b) => typeof a === "string" && typeof b === "string" && a.includes(b),
+  startsWithString: (a, b) => typeof a === "string" && typeof b === "string" && a.startsWith(b),
+  endsWithString: (a, b) => typeof a === "string" && typeof b === "string" && a.endsWith(b),
+
+  // Array
+  inArray: (a, b) => Array.isArray(b) && b.includes(a),
+  notInArray: (a, b) => Array.isArray(b) && !b.includes(a),
+
+  // Empty / Non-empty
+  isEmpty: (a) => a === null || a === undefined || a === "",
+  isNotEmpty: (a) => a !== null && a !== undefined && a !== "",
+
+  // Boolean
+  isTruthy: (a) => Boolean(a),
+  isFalsy: (a) => !Boolean(a),
+
+  // Regex
+  matchesRegex: (a, b) => typeof a === "string" && new RegExp(b).test(a),
+
+  // Dates
+  isBeforeDate: (a, b) => new Date(a) < new Date(b),
+  isAfterDate: (a, b) => new Date(a) > new Date(b),
+};
+
+// =======================
+// Evaluate Condition
+// =======================
+const evaluateCondition = (rule, values) => {
+  if (!rule || !rule.operator) return false;
+  const leftValue = values[rule.left];
+  const rightValue =
+    typeof rule.right === "string" && values.hasOwnProperty(rule.right)
+      ? values[rule.right] // field-to-field comparison
+      : rule.right;        // field-to-value comparison
+
+  const operatorFn = operators[rule.operator];
+  if (!operatorFn) {
+    console.warn(`Unsupported operator: ${rule.operator}`);
+    return false;
+  }
+
+  return operatorFn(leftValue, rightValue);
+};
+
+
+
+export const evaluateRules = (condition, values) => {
+  if (!condition) return false;
+
+  if (Array.isArray(condition.rules)) {
+    const results = condition.rules.map((rule) => evaluateRules(rule, values));
+    return condition.logic === "OR" ? results.some(Boolean) : results.every(Boolean);
+  }
+
+  return evaluateCondition(condition, values);
+};
+
+export const computeControlVisibility = (
+  rules: any[] | null,
+  formValues: Record<string, any>,
+  logic: "AND" | "OR" = "AND"
+): boolean => {
+  if (!rules || !Array.isArray(rules) || rules.length === 0) {
+    return true;
+  }
+
+  const results = rules.map(rule => evaluateRules(rule, formValues));
+
+  return logic === "OR"
+    ? results.some(Boolean)
+    : results.every(Boolean);
+};
+
+
+const evaluateCondition2 = (rule, values) => {
+  if (!rule || !rule.operator) return false;
+
+  const leftValue = values[rule.left];
+  const rightValue =
+    typeof rule.right === "string" && values.hasOwnProperty(rule.right)
+      ? values[rule.right]
+      : rule.right;
+
+  const operatorFn = operators[rule.operator];
+  if (!operatorFn) {
+    console.warn(`Unsupported operator: ${rule.operator}`);
+    return false;
+  }
+
+  return operatorFn(leftValue, rightValue);
+};
+
+export const evaluateRules2 = (condition, values) => {
+  if (!condition) return false;
+
+  // Nested rules
+  if (condition.logic && Array.isArray(condition.rules)) {
+    const results = condition.rules.map(rule =>
+      evaluateRules2(rule, values)
+    );
+
+    return condition.logic === "OR"
+      ? results.some(Boolean)
+      : results.every(Boolean);
+  }
+
+  // Leaf rule
+  return evaluateCondition2(condition, values);
+};
+
+export const collectActionsFromRule2 = (rule, values) => {
+  const result = evaluateRules2(rule, values);
+
+  if (result && rule.validActions) {
+    return rule.validActions;
+  }
+
+  if (!result && rule.invalidActions) {
+    return rule.invalidActions;
+  }
+
+  return [];
+};
+
+export const evaluateRulesWithActions = (
+  rules,
+  formValues,
+  logic = "AND"
+) => {
+  if (!rules) return { isValid: true, actions: [] };
+
+  const ruleArray = Array.isArray(rules) ? rules : [rules];
+
+  const results = [];
+  let actions = [];
+
+  ruleArray.forEach(rule => {
+    const isValid = evaluateRules(rule, formValues);
+    results.push(isValid);
+
+    actions = actions.concat(collectActionsFromRule2(rule, formValues));
+  });
+
+  const finalResult =
+    logic === "OR"
+      ? results.some(Boolean)
+      : results.every(Boolean);
+
+  return { isValid: finalResult, actions };
+};
+export const applyActionsToControls = (controls, actions) => {
+  if (!actions || actions.length === 0) return controls;
+
+  return controls.map(ctrl => {
+    const fieldActions = actions.filter(a => a.field === ctrl.field);
+    if (fieldActions.length === 0) return ctrl;
+
+    return fieldActions.reduce((updatedCtrl, action) => {
+      switch (action.action) {
+        case "hide":
+          return { ...updatedCtrl, visible: "1" };
+        case "background":
+          return { ...updatedCtrl, background: action.background };
+        case "borderColor":
+          return { ...updatedCtrl, borderColor: action.borderColor };
+        case "unhide":
+          return { ...updatedCtrl, visible: "0" };
+        case "disable":
+          return { ...updatedCtrl, disabled: "1" };
+        case "enable":
+          return { ...updatedCtrl, disabled: "0" };
+        case "setValue":
+          return { ...updatedCtrl, text: action.value , };
+        case "setBoolValue":
+          return { ...updatedCtrl, text: action.value, field: action.value };
+        default:
+          return updatedCtrl;
+      }
+    }, ctrl);
+  });
+};
+

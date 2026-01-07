@@ -52,7 +52,6 @@ const HomeScreen = () => {
     state => state.auth,
   );
 
-  console.log("dashboard------------------------------------", dashboard)
   
   const [loadingPageId, setLoadingPageId] = useState<any>(null);
   const [isRefresh, setIsRefresh] = useState<boolean>(false);
@@ -60,6 +59,8 @@ const HomeScreen = () => {
   const [toDate, setToDate] = useState<string>('');
 
   const auth = useAppSelector(state => state?.auth);
+  console.log("dashboard------------------------------------", auth)
+
   const [showDatePicker, setShowDatePicker] = useState<null | {
     type: 'from' | 'to';
     show: boolean;
@@ -164,15 +165,15 @@ const HomeScreen = () => {
                   setActionLoader(true);
                   setIsRefresh(!isRefresh);
                   dispatch(getERPDashboardThunk({ branch: auth.dashboardBranch, type: auth.dashboardType, fd: auth.dashboardFromDate, td: auth.dashboardToDate }));
-                  const timer = setTimeout(() => {
-                      dispatch(setDashboardLoading(false));
-                    }, 1200);
-
-                    return () => clearTimeout(timer); 
                   setTimeout(() => {
                     setActionLoader(false);
                     setControlsLoader(false);
                   }, 100);
+                  const timer = setTimeout(() => {
+                      dispatch(setDashboardLoading(false));
+                    }, 1200);
+                    return () => clearTimeout(timer); 
+                  
                 }}
                 isLoading={actionLoader}
               />
@@ -197,23 +198,31 @@ const HomeScreen = () => {
     });
   }, [navigation, isHorizontal, isRefresh, showSearch, dashboard, searchText, filteredDashboard, isFilterVisible]);
 
-  useFocusEffect(
-    useCallback(() => {
+ useFocusEffect(
+  useCallback(() => {
+    let timer;
+
+    if (isAuthenticated) {
       setLoadingPageId(true);
 
-      if (isAuthenticated) {
-        dispatch(getERPAppConfigMenuThunk())
-        dispatch(getERPDashboardThunk({ branch: '', type: '', fd: '', td: '' }));
-        dispatch(getERPMenuThunk())
-         const timer = setTimeout(() => {
-            dispatch(setDashboardLoading(false));
-          }, 1200);
+      // dispatch(getERPAppConfigMenuThunk());
+      dispatch(getERPDashboardThunk({ branch: '', type: '', fd: '', td: '' }));
+      dispatch(getERPMenuThunk());
 
-          return () => clearTimeout(timer); 
+      timer = setTimeout(() => {
+        dispatch(setDashboardLoading(false));
+      }, 2000);
+    }
+
+    // ✅ single cleanup function
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
       }
-      return () => { };
-    }, [isAuthenticated, dispatch]),
-  );
+    };
+  }, [isAuthenticated, dispatch])
+);
+
 
   const dummyUpcomingEvents = [];
 
@@ -509,14 +518,13 @@ const HomeScreen = () => {
 
   useEffect(() => {
     fetchPageData();
-  }, [fetchPageData]);
+  }, []);
 
   useEffect(() => {
     dispatch(getERPDashboardThunk({ branch: auth.dashboardBranch, type: auth.dashboardType, fd: auth.dashboardFromDate, td: auth.dashboardToDate }));
-       const timer = setTimeout(() => {
+    const timer = setTimeout(() => {
     dispatch(setDashboardLoading(false));
   }, 1200);
-
   return () => clearTimeout(timer);
   
   }, [auth.dashboardBranch, auth.dashboardType, auth.dashboardFromDate, auth.dashboardToDate])

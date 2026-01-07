@@ -221,7 +221,7 @@ if (!locationModalShownRef.current) {
   useFocusEffect(
     useCallback(() => {
       if (isAuthenticated) {
-        dispatch(getERPAppConfigMenuThunk())
+        // dispatch(getERPAppConfigMenuThunk())
         checkLocation();
       }
     }, [isAuthenticated]),

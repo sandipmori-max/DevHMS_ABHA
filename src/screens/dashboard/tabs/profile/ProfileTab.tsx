@@ -33,7 +33,7 @@ const ProfileTab = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: {
-        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,   // <-- BLACK HEADER
+        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,  
       },
       headerTintColor: '#fff',
       headerRight: () => (
@@ -58,7 +58,7 @@ const ProfileTab = () => {
         </>
       ),
     });
-  }, [navigation]);
+  }, [navigation, theme]);
   return (
     <View style={[styles.container, theme === 'dark' && {
       backgroundColor: 'black'

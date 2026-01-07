@@ -95,7 +95,7 @@ const SettingsScreen = () => {
       ),
 
     });
-  }, [navigation]);
+  }, [navigation, theme]);
 
 
   useEffect(() => {

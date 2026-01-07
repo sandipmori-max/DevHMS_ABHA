@@ -19,6 +19,11 @@ import DeviceInfo from 'react-native-device-info';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { useTranslation } from 'react-i18next';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
+import { clearAuthState, setDashboard, setEmptyMenu } from '../../../store/slices/auth/authSlice';
+import { resetAjaxState } from '../../../store/slices/ajax/ajaxSlice';
+import { resetAttendanceState } from '../../../store/slices/attendance/attendanceSlice';
+import { resetDropdownState } from '../../../store/slices/dropdown/dropdownSlice';
+import { resetSyncLocationState } from '../../../store/slices/location/syncLocationSlice';
 
 const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose }) => {
   const { t } = useTranslation();
@@ -49,6 +54,13 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
     setLoader(false);
   }, [visible]);
 
+  useEffect(() => {
+    return( ) =>{
+      setIsInputEditCC(false);
+      setIsInputEditUser(false);
+      setIsInputEditPass(false)
+    }
+  }, [])
   useEffect(() => {
     const fetchDeviceName = async () => {
       const name = await DeviceInfo.getDeviceName();
@@ -148,6 +160,13 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
       );
       setAlertConfig({ title: t("title.title3"), message: t("msg.msg3"), type: 'success' });
       setAlertVisible(true);
+      dispatch(setDashboard([]));
+                dispatch(setEmptyMenu([]));
+                dispatch(resetAjaxState());
+                dispatch(resetAttendanceState())
+                dispatch(clearAuthState())
+                dispatch(resetDropdownState())
+                dispatch(resetSyncLocationState())
       onClose();
       setLoader(false);
     } catch (e: any) {
@@ -241,6 +260,9 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                               style={[styles.input,
                               theme === 'dark' && {
                                 backgroundColor: 'black'
+                              },
+                              theme === 'dark' && {
+                                color: 'white'
                               }
                               ]}
                               placeholder={t('auth.enterCompanyCode')}
@@ -302,7 +324,11 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                             <TextInput
                               style={[styles.input, theme === 'dark' && {
                                 backgroundColor: 'black'
-                              }]}
+                              },
+                             theme === 'dark' && {
+                                color: 'white'
+                              }
+                            ]}
                               placeholder={t('auth.enterUser')}
                               placeholderTextColor={ERP_COLOR_CODE.ERP_999}
                               autoCapitalize="none"
@@ -362,7 +388,12 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                             <TextInput
                               style={[styles.input1, theme === 'dark' && {
                                 backgroundColor: 'black'
-                              }]}
+                              },
+                            
+                             theme === 'dark' && {
+                                color: 'white'
+                              }
+                            ]}
                               placeholder={t('auth.enterPassword')}
                               secureTextEntry={!showPassword}
                               placeholderTextColor={ERP_COLOR_CODE.ERP_999}
@@ -399,7 +430,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
 
                         <TouchableOpacity
                           style={[styles.addButton, loader && styles.disabledButton, theme === 'dark' && {
-                            backgroundColor: 'black',
+                            backgroundColor: 'white',
                             borderColor: 'white',
                             borderWidth: 1
                           }]}
@@ -411,13 +442,17 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
                           <MaterialIcons
                             name="person-add-alt"
                             size={24}
-                            color={theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_WHITE}
+                            color={theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE}
                           />
 
                           {loader ? (
-                            <Text style={styles.addButtonText}>{t('account.adding')}</Text>
+                            <Text style={[styles.addButtonText,   theme === 'dark' && {
+                                color: 'black'
+                              }]}>{t('account.adding')}</Text>
                           ) : (
-                            <Text style={styles.addButtonText}>{t('account.add')}</Text>
+                            <Text style={[styles.addButtonText,   theme === 'dark' && {
+                                color: 'black'
+                              }]}>{t('account.add')}</Text>
                           )}
                         </TouchableOpacity>
                       </>

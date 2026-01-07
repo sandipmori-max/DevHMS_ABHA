@@ -359,9 +359,10 @@ const ReadableView = ({
           )}
         </TouchableOpacity>
         {
-          qty && amount && <View style={{
-            justifyContent: 'space-between',
-            width: '100%', flexDirection: 'row'
+            <View style={{
+            justifyContent:  qty && amount ?'space-between' : 'flex-start',
+            width: '100%', flexDirection: 'row',
+            
           }}>
             {!!qty && (
               <View style={{ flexDirection: 'row', width: '50%' }}>
@@ -391,10 +392,9 @@ const ReadableView = ({
             )}
             {!!amount && (
               <View style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-end',
-                width: '50%',
+                flexDirection: 'row', 
               }}>
+                
                 <Text
                   numberOfLines={1}
                   style={{
@@ -415,7 +415,9 @@ const ReadableView = ({
                     fontWeight: '700',
                     color: 'green',
                   }}
-                >  {amount}
+                >  {
+                  amount
+                }
                 </Text>
               </View>
             )}

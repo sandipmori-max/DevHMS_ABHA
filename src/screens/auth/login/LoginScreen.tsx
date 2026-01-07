@@ -75,7 +75,7 @@ const LoginScreen = ({ navigation, route }: any) => {
         companyData,
       }),
     );
-    dispatch(getERPAppConfigMenuThunk())
+    // dispatch(getERPAppConfigMenuThunk())
   };
 
   const showAlert = (config: {

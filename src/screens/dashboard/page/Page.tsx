@@ -36,7 +36,7 @@ import Input from './components/Input';
 import CustomAlert from '../../../components/alert/CustomAlert';
 import AjaxPicker from './components/AjaxPicker';
 import DateTimePicker from 'react-native-modal-datetime-picker';
-import { parseCustomDatePage, requestCameraPermission } from '../../../utils/helpers';
+import { applyActionsToControls, computeControlVisibility, evaluateRules, evaluateRulesWithActions, parseCustomDatePage, requestCameraPermission } from '../../../utils/helpers';
 import DateRow from './components/Date';
 import BoolInput from './components/BoolInput';
 import SignaturePad from './components/SignaturePad';
@@ -110,7 +110,7 @@ const PageScreen = () => {
   const baseLink = useBaseLink();
   const theme = useAppSelector(state => state?.theme.mode);
   const { t } = useTranslations();
-
+  const [buttonSave, setButtonSave] = useState(true)
   const [loadingPageId, setLoadingPageId] = useState<string | null>(null);
   const [controls, setControls] = useState<any[]>([]);
   const [errorsList, setErrorsList] = useState<string[]>([]);
@@ -136,9 +136,7 @@ const PageScreen = () => {
   const [loader, setLoader] = useState(false);
   const [actionLoader, setActionLoader] = useState(false);
   const [actionSaveLoader, setActionSaveLoader] = useState(false);
-
   const [infoData, setInfoData] = useState<any>({});
-
   const [alertConfig, setAlertConfig] = useState({
     title: '',
     message: '',
@@ -181,57 +179,6 @@ const PageScreen = () => {
       if (interval) clearInterval(interval);
     };
   }, []);
-  // console.log(' ------------------------ ', hasLocationField);
-  // useEffect(() => {
-  //   const subscription = AppState.addEventListener('change', nextAppState => {
-  //     if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
-  //       console.log(
-  //         'App**************************************************************** has come to the foreground!',
-  //       );
-  //       // Put your code here to check permissions, refresh data, etc.
-  //       checkLocation();
-  //     }
-  //     appState.current = nextAppState;
-  //   });
-
-  //   return () => subscription.remove();
-  // }, []);
-
-  // useEffect(() => {
-  //   const interval = setInterval(async () => {
-  //     const enabled = await DeviceInfo.isLocationEnabled();
-  //     const permissionStatus = await requestLocationPermissions();
-
-  //     // Show alert only if status changed
-  //     if (enabled !== lastLocationEnabled.current) {
-  //       if (!enabled) {
-  //         setAlertConfig({
-  //           title: 'Location Status',
-  //           message:
-  //             'We need location access only to serve you better. Please enable it to continue.',
-  //           type: 'error',
-  //         });
-  //         setAlertVisible(true);
-  //         setModalClose(false);
-  //       } else {
-  //         setAlertVisible(false);
-  //         setModalClose(true);
-  //       }
-  //       lastLocationEnabled.current = enabled;
-  //     }
-
-  //     // Show background permission modal only once when required
-  //     if (permissionStatus === 'foreground-only' && !backgroundDeniedModal) {
-  //       setBackgroundDeniedModal(true);
-  //     } else if (permissionStatus !== 'foreground-only' && backgroundDeniedModal) {
-  //       setBackgroundDeniedModal(false);
-  //     }
-
-  //     setLocationEnabled(enabled);
-  //   }, 1000);
-
-  //   return () => clearInterval(interval);
-  // }, [backgroundDeniedModal]);
 
   const requestLocationPermission = async (): Promise<boolean> => {
     if (Platform.OS === 'android') {
@@ -407,7 +354,7 @@ const PageScreen = () => {
               }}
             />
           )}
-          {!authUser && controls.length > 0 && (
+          {buttonSave && !authUser && controls.length > 0 && (
             <ERPIcon
               name="save-as"
               isLoading={actionSaveLoader}
@@ -523,6 +470,7 @@ const PageScreen = () => {
     loader,
     actionLoader,
     actionSaveLoader,
+    buttonSave,
   ]);
 
   const fetchPageData = useCallback(async () => {
@@ -606,8 +554,64 @@ const PageScreen = () => {
     hideDateTimePicker();
   };
 
+  const checkScript = () => {
+    const scriptRules = {
+      logic: "AND",
+      rules: [
+        {
+          left: "btid",
+          operator: "lessThan",
+          right: "muid"
+        },
+        {
+          logic: "OR",
+          rules: [
+            { left: "termhead", operator: "equals", right: "POterms12" },
+            { left: "active", operator: "isTruthy" }
+          ]
+        }
+      ],
+      validActions: [
+        { field: "termhead", action: "background", background: 'red' },
+        { field: "termhead", action: "borderColor", borderColor: 'red' },
+        { field: "btid", action: "hide" },
+        { field: "active", action: "setBoolValue", value: false },
+        { field: "businessterm", action: "hide", },
+        { field: "businessterm", action: "setValue", value: 'Test123' },
+        { field: "cdt", action: "enable" },
+        { field: "cdt", action: "borderColor", borderColor: 'red' },
+        { field: "buttonSave", action: "disable" },
+      ],
+      invalidActions: [
+        { field: "termhead", action: "disable" },
+        { field: "buttonSave", action: "enable" },
+      ]
+    }
+
+    const { actions } = evaluateRulesWithActions(scriptRules, formValues);
+    console.log("actions+++++++++", actions)
+    const hasButtonSaveEnable = actions.some(
+      item => item?.field === "buttonSave"
+    );
+    if (hasButtonSaveEnable) {
+      const hasButtonSaveEnable = actions.some(
+        item => item?.field === "buttonSave" && item.action === "enable"
+      );
+      setButtonSave(hasButtonSaveEnable)
+    }
+    const updatedControls = applyActionsToControls(controls, actions);
+    console.log("updated-----------------Controls", updatedControls)
+    setControls(updatedControls)
+  }
+
+  useEffect(() => {
+    // checkScript()
+  }, [formValues]);
+
+
   const renderItem = useCallback(
     ({ item, index }: { item: any; index: number }) => {
+
       const setValue = (val: any) => {
         if (typeof val === 'object' && val !== null) {
           setFormValues(prev => ({ ...prev, ...val }));
@@ -622,18 +626,23 @@ const PageScreen = () => {
       if (item?.visible === '1') return null;
 
       let content = null;
+      //BoolInput
       if (item?.ctltype === 'BOOL') {
         const rawVal = formValues[item?.field] ?? item?.text;
+        console.log("rawVal", rawVal)
         const boolVal = String(rawVal).toLowerCase() === 'true';
         content = (
           <BoolInput
             label={item?.fieldtitle}
             value={boolVal}
-            onChange={val => setValue({ [item?.field]: val })}
+            onChange={val => {
+              checkScript()
+              setValue({ [item?.field]: val })
+            }}
           />
         );
-      } 
-      //----PENDING----
+      }
+      //----PENDING----CustomMultiPicker
       else if (item?.field === '---') {
         content = (
           <CustomMultiPicker
@@ -647,7 +656,9 @@ const PageScreen = () => {
             errors={errors}
           />
         );
-      } else if (item?.ctltype === 'FILE') {
+      }
+      //FilePickerRow
+      else if (item?.ctltype === 'FILE') {
         content = (
           <FilePickerRow
             isValidate={isValidate}
@@ -658,15 +669,19 @@ const PageScreen = () => {
           />
         );
       }
-      else if (item?.ctltype === 'VIDEO'){
+      //VideoRecorder
+      else if (item?.ctltype === 'VIDEO') {
         content = <VideoRecorder item={item} />
       }
-      else if(item?.ctltype === 'QRSCANNER' && item?.title ===  "QR Scan"){
+      //ScanScreen
+      else if (item?.ctltype === 'QRSCANNER' && item?.title === "QR Scan") {
         content = <ScanScreen item={item} />
       }
-      else if(item?.ctltype === 'QRSCANNER' && item?.title === "Barcode Scan"){
-        content = <BarCodeScan item={item}/>
+      //BarCodeScan
+      else if (item?.ctltype === 'QRSCANNER' && item?.title === "Barcode Scan") {
+        content = <BarCodeScan item={item} />
       }
+      //LocationRow
       else if (item?.defaultvalue === '#location') {
         content = (
           <LocationRow
@@ -677,13 +692,17 @@ const PageScreen = () => {
             setValue={setValue}
           />
         );
-      } else if (item?.defaultvalue === '#html') {
+      }
+      //HtmlRow
+      else if (item?.defaultvalue === '#html') {
         content = (
           <View>
             <HtmlRow item={item} isFromPage={true} />
           </View>
         );
-      } else if (item?.ctltype === 'IMAGE' && item?.field === 'signature') {
+      }
+      //SignaturePad
+      else if (item?.ctltype === 'IMAGE' && item?.field === 'signature') {
         content = (
           <SignaturePad
             isValidate={isValidate}
@@ -692,7 +711,9 @@ const PageScreen = () => {
             handleSignatureAttachment={handleSignatureAttachment}
           />
         );
-      } else if (
+      }
+      //Media - BusinessCardView
+      else if (
         item?.ctltype === 'FILE' ||
         item?.ctltype === 'IMAGE' ||
         item?.ctltype === 'PHOTO'
@@ -719,9 +740,13 @@ const PageScreen = () => {
             )}
           </>
         );
-      } else if (item?.disabled === '1' && item?.ajax !== 1) {
+      }
+      //Disabled
+      else if (item?.disabled === '1' && item?.ajax !== 1) {
         content = <Disabled item={item} value={value} type={item?.ctltype} />;
-      } else if (item?.ddl && item?.ddl !== '' && item?.ajax === 0) {
+      }
+      //CustomPicker
+      else if (item?.ddl && item?.ddl !== '' && item?.ajax === 0) {
         content = (
           <CustomPicker
             isForceOpen={true}
@@ -735,7 +760,9 @@ const PageScreen = () => {
             errors={errors}
           />
         );
-      } else if (item?.ddl && item?.ddl !== '' && item?.ajax === 1) {
+      }
+      //AjaxPicker
+      else if (item?.ddl && item?.ddl !== '' && item?.ajax === 1) {
         content = (
           <AjaxPicker
             isForceOpen={true}
@@ -750,7 +777,9 @@ const PageScreen = () => {
             formValues={formValues}
           />
         );
-      } else if (item?.ctltype === 'DATE') {
+      }
+      //DATE
+      else if (item?.ctltype === 'DATE') {
         content = (
           <DateRow
             isValidate={isValidate}
@@ -760,7 +789,9 @@ const PageScreen = () => {
             showDatePicker={showDatePicker}
           />
         );
-      } else if (item?.ctltype === 'DATETIME') {
+      }
+      //DATETIME
+      else if (item?.ctltype === 'DATETIME') {
         content = (
           <DateTimeRow
             isValidate={isValidate}
@@ -770,7 +801,9 @@ const PageScreen = () => {
             showDateTimePicker={showDateTimePicker}
           />
         );
-      } else {
+      }
+      //Input
+      else {
         content = (
           <Input
             id={item?.fieldtitle}
@@ -783,7 +816,7 @@ const PageScreen = () => {
           />
         );
       }
-
+      //content
       return (
         <Animated.View
           entering={FadeInUp.delay(index * 70).springify()}
@@ -879,31 +912,6 @@ const PageScreen = () => {
             actionLoader={undefined}
             isSettingVisible={isSettingVisible}
           />
-
-          {/* <Modal visible={backgroundDeniedModal} transparent animationType="fade">
-        <View style={styles.overlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.title}>Allow Background Location</Text>
-            <Text style={styles.message}>
-              For continuous location tracking, set location access to{' '}
-              <Text style={{ fontWeight: '600' }}>"Allow all the time"</Text> in your phone
-              settings.
-            </Text>
-
-            <View style={styles.btnRow}>
-              <TouchableOpacity
-                style={[styles.btn, styles.btnPrimary]}
-                onPress={() => {
-                  Linking.openSettings();
-                  setBackgroundDeniedModal(false);
-                }}
-              >
-                <Text style={styles.btnText}>Open Settings</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal> */}
           {loader && (
             <View
               style={{
@@ -932,74 +940,70 @@ const PageScreen = () => {
         errors={errorsList}
         onClose={() => setShowErrorModal(false)}
       />
-      
-             {dateTimePickerVisible && Platform.OS === 'ios' && (
-  <Modal transparent animationType="slide" statusBarTranslucent>
-  <View style={styles.overlay}>
-    <View style={styles.sheet}>
-      {/* Divider */}
-      <View style={styles.divider} />
 
-      {/* Date Picker */}
-      <DateTimePicker
-        isVisible={dateTimePickerVisible}
-        mode="datetime"
-        display='spinner'
-        date={activeDateTime ? parseCustomDatePage(activeDateTime) : new Date()}
-        onConfirm={handleDateTimeConfirm}
-        onCancel={hideDateTimePicker}
-      />
-    </View>
-  </View>
-</Modal>
+      {dateTimePickerVisible && Platform.OS === 'ios' && (
+        <Modal transparent animationType="slide" statusBarTranslucent>
+          <View style={styles.overlay}>
+            <View style={styles.sheet}>
+              {/* Divider */}
+              <View style={styles.divider} />
 
-)}
+              {/* Date Picker */}
+              <DateTimePicker
+                isVisible={dateTimePickerVisible}
+                mode="datetime"
+                display='spinner'
+                date={activeDateTime ? parseCustomDatePage(activeDateTime) : new Date()}
+                onConfirm={handleDateTimeConfirm}
+                onCancel={hideDateTimePicker}
+              />
+            </View>
+          </View>
+        </Modal>
 
-
- {datePickerVisible && Platform.OS === 'ios' && (
-  <Modal transparent animationType="slide" statusBarTranslucent>
-  <View style={styles.overlay}>
-    <View style={styles.sheet}>
-      {/* Divider */}
-      <View style={styles.divider} />
-
-      {/* Date Picker */}
-       Platform.OS !== 'ios' &&  <DateTimePicker
-        isVisible={datePickerVisible}
-        mode="date"
-        display='spinner'
-        date={activeDate ? parseCustomDatePage(activeDate) : new Date()}
-        onConfirm={handleConfirm}
-        onCancel={hideDatePicker}
-      />
-    </View>
-  </View>
-</Modal>
-
-)}
+      )}
 
 
-{
-  Platform.OS !== 'ios' &&  <DateTimePicker
-        isVisible={dateTimePickerVisible}
-        mode="datetime"
-        date={activeDateTime ? parseCustomDatePage(activeDateTime) : new Date()}
-        onConfirm={handleDateTimeConfirm}
-        onCancel={hideDateTimePicker}
-      />
-}
+      {datePickerVisible && Platform.OS === 'ios' && (
+        <Modal transparent animationType="slide" statusBarTranslucent>
+          <View style={styles.overlay}>
+            <View style={styles.sheet}>
+              {/* Divider */}
+              <View style={styles.divider} />
 
-{
-  Platform.OS !== 'ios' &&  <DateTimePicker
-        isVisible={datePickerVisible}
-        mode="date"
-        date={activeDate ? parseCustomDatePage(activeDate) : new Date()}
-        onConfirm={handleConfirm}
-        onCancel={hideDatePicker}
-      />
-}
-     
-     
+              {/* Date Picker */}
+              <DateTimePicker
+                isVisible={datePickerVisible}
+                mode="date"
+                display='spinner'
+                date={activeDate ? parseCustomDatePage(activeDate) : new Date()}
+                onConfirm={handleConfirm}
+                onCancel={hideDatePicker}
+              />
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {
+        Platform.OS !== 'ios' && <DateTimePicker
+          isVisible={dateTimePickerVisible}
+          mode="datetime"
+          date={activeDateTime ? parseCustomDatePage(activeDateTime) : new Date()}
+          onConfirm={handleDateTimeConfirm}
+          onCancel={hideDateTimePicker}
+        />
+      }
+
+      {
+        Platform.OS !== 'ios' && <DateTimePicker
+          isVisible={datePickerVisible}
+          mode="date"
+          date={activeDate ? parseCustomDatePage(activeDate) : new Date()}
+          onConfirm={handleConfirm}
+          onCancel={hideDatePicker}
+        />
+      }
 
       <CustomAlert
         visible={alertVisible}

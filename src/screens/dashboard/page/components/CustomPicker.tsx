@@ -149,6 +149,9 @@ const CustomPicker = ({
             theme === 'dark' && {
               backgroundColor: DARK_COLOR,
             },
+            item?.background && {
+              backgroundColor: item?.background
+            }
         ]}
         onPress={() => {
           if (item?.disabled !== '1') handleOpen();

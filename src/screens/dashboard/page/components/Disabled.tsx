@@ -26,7 +26,7 @@ const Disabled = ({ item, value, type }: any) => {
 
   return (
     <View style={{ marginBottom: 16 }}>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row', }}>
         <Text style={[styles.label, theme === 'dark' && {
           color: 'white'
         }]}>{item?.fieldtitle}</Text>

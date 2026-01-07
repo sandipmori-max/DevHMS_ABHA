@@ -31,7 +31,7 @@ const ShortAction = ({item, value}: any) => {
 
 const styles = StyleSheet.create({
   iconButton: {
-    marginHorizontal: 8
+    marginHorizontal: 8,
   }
 });
 
