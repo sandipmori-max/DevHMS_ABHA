@@ -32,58 +32,42 @@ export async function requestLocationPermissions(): Promise<
   'granted' | 'foreground-only' | 'denied' | 'blocked'
 > {
   if (Platform.OS === 'android') {
-    const granted = await PermissionsAndroid.requestMultiple([
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-      PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION,
-    ]);
 
-    if (
-      granted['android.permission.ACCESS_FINE_LOCATION'] ===
-      PermissionsAndroid.RESULTS.GRANTED &&
-      granted['android.permission.ACCESS_COARSE_LOCATION'] ===
-      PermissionsAndroid.RESULTS.GRANTED &&
-      granted['android.permission.ACCESS_BACKGROUND_LOCATION'] ===
-      PermissionsAndroid.RESULTS.GRANTED
-    ) return 'granted';
+    const fine = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+    );
 
-    if (
-      granted['android.permission.ACCESS_FINE_LOCATION'] ===
-      PermissionsAndroid.RESULTS.GRANTED &&
-      granted['android.permission.ACCESS_COARSE_LOCATION'] ===
-      PermissionsAndroid.RESULTS.GRANTED
-    ) return 'foreground-only';
+    if (fine === PermissionsAndroid.RESULTS.GRANTED) {
+      // Ask background AFTER foreground
+      const background = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION
+      );
 
-    if (
-      granted['android.permission.ACCESS_FINE_LOCATION'] ===
-      PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN ||
-      granted['android.permission.ACCESS_COARSE_LOCATION'] ===
-      PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN
-    ) return 'blocked';
-
-    return 'denied';
-  } else {
-    // iOS logic
-    let status = await check(PERMISSIONS.IOS.LOCATION_ALWAYS);
-    if (status === RESULTS.GRANTED) return 'granted';
-    if (status === RESULTS.BLOCKED) return 'blocked';
-
-    // Request foreground permission first
-    let foregroundStatus = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
-
-    if (foregroundStatus === RESULTS.DENIED) {
-      foregroundStatus = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+      return background === PermissionsAndroid.RESULTS.GRANTED
+        ? 'granted'
+        : 'foreground-only';
     }
 
-    if (foregroundStatus === RESULTS.GRANTED || foregroundStatus === RESULTS.LIMITED) {
-      // Now ask for "Always" if needed
-      status = await request(PERMISSIONS.IOS.LOCATION_ALWAYS);
-      if (status === RESULTS.GRANTED) return 'granted';
-      return 'foreground-only';
+    if (fine === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+      return 'blocked';
     }
-    if (foregroundStatus === RESULTS.BLOCKED) return 'blocked';
+
     return 'denied';
   }
+
+  // -------------------- iOS --------------------
+  const whenInUse = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+
+  if (whenInUse === RESULTS.GRANTED || whenInUse === RESULTS.LIMITED) {
+    const always = await request(PERMISSIONS.IOS.LOCATION_ALWAYS);
+    return always === RESULTS.GRANTED ? 'granted' : 'foreground-only';
+  }
+
+  if (whenInUse === RESULTS.BLOCKED) {
+    return 'blocked';
+  }
+
+  return 'denied';
 }
 
 // ------------------------- RootNavigator -------------------------
@@ -192,7 +176,9 @@ useEffect(() => {
     const name = await DeviceInfo.getDeviceName();
     await AsyncStorage.setItem('device', name);
     await DevERPService.initialize();
-    await dispatch(checkAuthStateThunk());
+    setTimeout(async () =>{
+      await dispatch(checkAuthStateThunk());
+    }, 1200)
   };
 
 
@@ -279,6 +265,9 @@ useEffect(() => {
             .then(res => {
               if (res?.success === 1 || res?.success === '1') {
                 checkLocation();
+              }else{
+                NativeModules.LocationModule.setUserTokens([]);
+                NativeModules.LocationModule.stopService();
               }
             })
             .catch(err => {

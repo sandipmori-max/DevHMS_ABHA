@@ -141,7 +141,13 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
         setAlertVisible(true);
         return;
       }
-
+      dispatch(setDashboard([]));
+      dispatch(setEmptyMenu([]));
+      dispatch(resetAjaxState());
+      dispatch(resetAttendanceState())
+      dispatch(clearAuthState())
+      dispatch(resetDropdownState())
+      dispatch(resetSyncLocationState())
       DevERPService.setToken(loginResult?.token);
       await AsyncStorage.setItem('erp_token', loginResult?.token || '');
       await AsyncStorage.setItem('auth_token', loginResult?.token || '');
@@ -161,14 +167,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose })
       );
       setAlertConfig({ title: t("title.title3"), message: t("msg.msg3"), type: 'success' });
       setAlertVisible(true);
-      dispatch(setDashboard([]));
-      dispatch(setEmptyMenu([]));
-      dispatch(resetAjaxState());
-      dispatch(resetAttendanceState())
-      dispatch(clearAuthState())
-      dispatch(resetDropdownState())
-      dispatch(resetSyncLocationState())
-        dispatch(setReloadApp())
+      
+      dispatch(setReloadApp())
       onClose();
       setLoader(false);
     } catch (e: any) {

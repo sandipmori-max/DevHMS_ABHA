@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
+ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
   const dispatch = useAppDispatch();
   const theme = useAppSelector(state => state?.theme.mode);
   const { t } = useTranslations();
@@ -107,6 +107,17 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
 
   const baseLink = useBaseLink();
 
+  useEffect(() => {
+      return(() =>{
+        setActiveFilter('all')
+        setIsLoading(false);
+        setListData([])
+        setParsedError(null)
+        setShowModal(false)
+        setSelectedItem(null);
+        setCurrentView('pie')
+      })
+  },[])
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: (_, gestureState) => {
       return (
@@ -137,12 +148,16 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
         const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
         const final = parsed?.d ? JSON.parse(parsed?.d) : parsed;
         setListData(final?.data || final || []);
-      } catch (e: any) {
-        setParsedError(e);
-      } finally {
         setTimeout(() => {
           setIsLoading(false);
-        }, 1200)
+        }, 1400)
+      } catch (e: any) {
+        setParsedError(e);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1400)
+      } finally {
+        
       }
     },
     [dispatch, theme],
@@ -259,10 +274,10 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
     return (
       <View
         style={{
-          height: Dimensions.get('screen').height * 0.78,
-          flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
+          alignContent:'center',
+          alignSelf:'center'
         }}
       >
         <FullViewLoader />

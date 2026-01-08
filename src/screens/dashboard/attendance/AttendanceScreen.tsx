@@ -151,17 +151,15 @@ const AttendanceScreen = () => {
        
         setActionLoader(false); 
         setError(null);
-        setTimeout(() => {
- setIsLoading(false);
-        }, 1200)
+         setIsLoading(false);
+
       })
       .catch(err => {
         
         setActionLoader(false);
         setError(err);
-        setTimeout(() => {
- setIsLoading(false);
-        }, 1200)
+         setIsLoading(false);
+
       });
   };
 
@@ -336,7 +334,7 @@ const AttendanceScreen = () => {
               />
             )}
             {isListVisible ? (
-              <View style={{ flex: 1 }}>
+              <View style={{ flex: 1,height: '100%' }}>
                 <List
                   selectedMonth={formattedMonth}
                   showFilter={showFilter}

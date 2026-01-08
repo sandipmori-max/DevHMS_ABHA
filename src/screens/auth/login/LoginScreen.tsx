@@ -20,6 +20,7 @@ import LoginHeader from './components/LoginHeader';
 import LoginForm from './components/LoginForm';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
+import { setReloadApp } from '../../../store/slices/reloadApp/reloadAppSlice';
 
 const LoginScreen = ({ navigation, route }: any) => {
   const { t } = useTranslations();
@@ -75,6 +76,7 @@ const LoginScreen = ({ navigation, route }: any) => {
         companyData,
       }),
     );
+    dispatch(setReloadApp())
     // dispatch(getERPAppConfigMenuThunk())
   };
 
