@@ -18,6 +18,7 @@ import SlideButton from './SlideButton';
 import { useBaseLink } from '../../../../hooks/useBaseLink';
 import ProfileImage from '../../../../components/profile/ProfileImage';
 import DeviceInfo from 'react-native-device-info';
+import { setReloadApp } from '../../../../store/slices/reloadApp/reloadAppSlice';
 
 const AttendanceForm = ({ setBlockAction, resData }: any) => {
   const { t } = useTranslations();
@@ -219,6 +220,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
               setTimeout(() => {
                 navigation?.goBack();
                 setAlertVisible(false);
+                dispatch(setReloadApp())
               }, 1000);
             })
             .catch(err => {

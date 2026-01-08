@@ -12,7 +12,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { checkAuthStateThunk, getERPAppConfigMenuThunk } from '../store/slices/auth/thunk';
+import { checkAuthStateThunk } from '../store/slices/auth/thunk';
 import DevERPService from '../services/api/deverp';
 import AuthNavigator from './AuthNavigator';
 import StackNavigator from './StackNavigator';
@@ -25,7 +25,6 @@ import { ERP_COLOR_CODE } from '../utils/constants';
 import { changeLanguage } from '../i18n';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { getLastPunchInThunk } from '../store/slices/attendance/thunk';
-import { setResponse } from '../store/slices/attendance/attendanceSlice';
 import { setReloadApp } from '../store/slices/reloadApp/reloadAppSlice';
 
 // ------------------------- Location Permission Helper -------------------------
@@ -226,18 +225,6 @@ useEffect(() => {
       return;
     }
 
-    // Denied or blocked
-    // if ((!enabled || permission === 'denied' || permission === 'blocked') && !locationModalShownRef.current) {
-    //   setAlertConfig({
-    //     title: 'Location Required',
-    //     message:
-    //       'Please enable location permission to continue using the app.',
-    //     type: 'error',
-    //   });
-    //   setAlertVisible(true);
-    //   setBackgroundDeniedModal(false);
-    //   locationModalShownRef.current = true;
-    // }
     // ------------------------- Denied / Disabled Handling -------------------------
     if (!locationModalShownRef.current) {
 
@@ -296,6 +283,8 @@ useEffect(() => {
             })
             .catch(err => {
               console.log("err=======================================", err);
+              NativeModules.LocationModule.setUserTokens([]);
+              NativeModules.LocationModule.stopService();
             });
         }
       }, 1200)

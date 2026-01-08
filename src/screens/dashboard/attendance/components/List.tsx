@@ -88,14 +88,14 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
   const { t } = useTranslations();
 
   const FILTERS = [
-  { key: 'all', label: t("text.text9") },
-  { key: 'leave', label: t("text.text10") },
-  { key: 'leave_first_half', label: t("text.text11") },
-  { key: 'leave_second_half', label: t("text.text12") },
-  { key: 'late', label: t("text.text13") },
-  { key: 'after_830', label: '8:30 >' },
-  { key: 'before_830', label: '8:30 <' },
-];
+    { key: 'all', label: t("text.text9") },
+    { key: 'leave', label: t("text.text10") },
+    { key: 'leave_first_half', label: t("text.text11") },
+    { key: 'leave_second_half', label: t("text.text12") },
+    { key: 'late', label: t("text.text13") },
+    { key: 'after_830', label: '8:30 >' },
+    { key: 'before_830', label: '8:30 <' },
+  ];
 
   const [activeFilter, setActiveFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
@@ -140,7 +140,9 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
       } catch (e: any) {
         setParsedError(e);
       } finally {
-        setIsLoading(false);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1200)
       }
     },
     [dispatch, theme],
@@ -193,9 +195,9 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
 
   const chartData = [
     { value: present, color: '#4caf50', text: t("text.text14") },
-    { value: leave, color: ERP_COLOR_CODE.ERP_ERROR, text:  t("text.text15") },
-    { value: late, color: '#a6bfc9ff', text:  t("text.text16") },
-    { value: lessHours, color: '#ff9800', text:  t("text.text17") },
+    { value: leave, color: ERP_COLOR_CODE.ERP_ERROR, text: t("text.text15") },
+    { value: late, color: '#a6bfc9ff', text: t("text.text16") },
+    { value: lessHours, color: '#ff9800', text: t("text.text17") },
   ];
 
   if (parsedError) {
@@ -236,7 +238,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
         selectedColor: color,
         customStyles: {
           container: { backgroundColor: color, borderRadius: 6 },
-          text: { color:  theme === 'dark' ? '#fff'  : ERP_COLOR_CODE.ERP_WHITE, fontWeight: '600' },
+          text: { color: theme === 'dark' ? '#fff' : ERP_COLOR_CODE.ERP_WHITE, fontWeight: '600' },
         },
       };
 
@@ -252,6 +254,22 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
     setShowModal(false);
     setSelectedItem(null);
   };
+
+  if (isLoading) {
+    return (
+      <View
+        style={{
+          height: Dimensions.get('screen').height * 0.78,
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <FullViewLoader />
+      </View>
+    )
+
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE }}>
@@ -271,20 +289,20 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                 { paddingVertical: 6, paddingHorizontal: 14, borderRadius: 4, borderWidth: 1 },
                 activeFilter === filter.key
                   ? {
-                      backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-                      borderColor: ERP_COLOR_CODE.ERP_WHITE,
-                    }
+                    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                    borderColor: ERP_COLOR_CODE.ERP_WHITE,
+                  }
                   : {
-                      backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
-                      borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-                    },
+                    backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+                    borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+                  },
               ]}
             >
               <Text
                 style={{
-                  color: 
+                  color:
                     activeFilter === filter.key ? theme === 'dark' ? '#fff' :
-                       ERP_COLOR_CODE.ERP_WHITE
+                      ERP_COLOR_CODE.ERP_WHITE
                       : ERP_COLOR_CODE.ERP_BLACK,
                   fontWeight: '600',
                 }}
@@ -296,7 +314,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
         </ScrollView>
       )}
 
-      {listData.length > 0 && (
+      {listData.length > 0 ?
         <FlatList
           data={['calendar']}
           keyExtractor={(item, index) => index.toString()}
@@ -311,7 +329,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                   justifyContent: 'center',
                   alignContent: 'center',
                   alignItems: 'center',
-                  backgroundColor : theme === 'dark' ? 'black' : 'white'
+                  backgroundColor: theme === 'dark' ? 'black' : 'white'
                 }}
               >
                 {currentView === 'pie' && listData?.length > 0 && (
@@ -329,13 +347,14 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                       donut
                       radius={90}
                       innerRadius={80}
-                      textColor={theme === 'dark' ? '#fff': "#000"}
+                      textColor={theme === 'dark' ? '#fff' : "#000"}
                       showValuesAsLabels
                       innerCircleColor={theme === 'dark' ? '#000' : "#fff"}
                       centerLabelComponent={() => (
-                        <Text style={{ 
-                          color :theme === 'dark' ? '#fff': "#000",
-                          textAlign: 'center', fontSize: 18, fontWeight: '600' }}>
+                        <Text style={{
+                          color: theme === 'dark' ? '#fff' : "#000",
+                          textAlign: 'center', fontSize: 18, fontWeight: '600'
+                        }}>
                           {total + `\n`}{t("text.text18")}
                         </Text>
                       )}
@@ -355,7 +374,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                             }}
                           />
                           <Text style={{
-                            color: theme === 'dark' ? '#fff': "#000"
+                            color: theme === 'dark' ? '#fff' : "#000"
                           }}> {`${c?.text} (${c?.value})`}</Text>
                         </View>
                       ))}
@@ -391,8 +410,8 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                       markedDates={markedDates}
                       theme={{
                         textDayFontWeight: '600',
-                        todayTextColor: theme === 'dark' ? '#fff'  : ERP_COLOR_CODE.ERP_APP_COLOR,
-                        arrowColor:  theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_APP_COLOR,
+                        todayTextColor: theme === 'dark' ? '#fff' : ERP_COLOR_CODE.ERP_APP_COLOR,
+                        arrowColor: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_APP_COLOR,
                       }}
                     />
                   </View>
@@ -464,18 +483,20 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                   <NoData />
                 </View>
               ) : (
-                <View style={{ marginHorizontal: 12,
+                <View style={{
+                  marginHorizontal: 12,
 
-                     backgroundColor : theme === 'dark' ? 'black' : 'white'
-                  }}>
+                  backgroundColor: theme === 'dark' ? 'black' : 'white'
+                }}>
                   <FlatList
                     data={timelineData}
                     keyExtractor={(item, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => (
-                      <View style={{ marginBottom: 8 , 
+                      <View style={{
+                        marginBottom: 8,
 
-                  backgroundColor : theme === 'dark' ? 'black' : 'white'
+                        backgroundColor: theme === 'dark' ? 'black' : 'white'
 
                       }}>
                         {/* <Text style={{ 
@@ -507,7 +528,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                       width: 12,
                                       height: 12,
                                       borderRadius: 6,
-                                      backgroundColor:   ERP_COLOR_CODE.ERP_APP_COLOR,
+                                      backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
                                     }}
                                   />
                                   <View
@@ -528,10 +549,10 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                   marginTop: item.records.length > 1 ? 12 : 0,
                                 }}
                               >
-                                <View style={[styles.recordCard,  theme === 'dark' && {
+                                <View style={[styles.recordCard, theme === 'dark' && {
                                   borderColor: 'white',
                                   borderWidth: 1,
-                                  backgroundColor:'black'
+                                  backgroundColor: 'black'
                                 }]}>
                                   <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                                     {/* Images */}
@@ -575,10 +596,10 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                         }}
                                       >
                                         <Text style={[styles.recordName, theme === 'dark' && {
-                                          color:'white'
+                                          color: 'white'
                                         }]}>{rec?.employee}</Text>
                                         <Text style={[styles.recordDateTime, theme === 'dark' && {
-                                          color:'white'
+                                          color: 'white'
                                         }]}>{rec?.date}</Text>
                                       </View>
 
@@ -602,7 +623,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                               size={14}
                                               name="access-alarm"
                                             />
-                                            <Text style={[styles.recordPunchTime, ]}>
+                                            <Text style={[styles.recordPunchTime,]}>
                                               {formatTo12Hour(rec?.intime) || '--'}
                                             </Text>
                                           </View>
@@ -648,7 +669,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                                             rec?.intime,
                                                             rec?.outtime,
                                                           ) < 9.5
-                                                            ? ERP_COLOR_CODE.ERP_ERROR 
+                                                            ? ERP_COLOR_CODE.ERP_ERROR
                                                             : ERP_COLOR_CODE.ERP_666,
                                                       },
                                                     ]}
@@ -731,8 +752,15 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
               )}
             </>
           )}
-        />
-      )}
+        /> : <>
+          <View style={{
+            height: Dimensions.get('screen').height * 0.75,
+            flex: 1, justifyContent: 'center', alignContent: 'center', alignItems: 'center'
+          }}>
+            <NoData />
+          </View>
+        </>
+      }
 
       <DetailsBottomSheet
         visible={showModal}

@@ -148,14 +148,20 @@ const AttendanceScreen = () => {
       .unwrap()
       .then(res => {
         setResData(res);
-        setIsLoading(false);
-        setActionLoader(false);
+       
+        setActionLoader(false); 
         setError(null);
+        setTimeout(() => {
+ setIsLoading(false);
+        }, 1200)
       })
       .catch(err => {
-        setIsLoading(false);
+        
         setActionLoader(false);
         setError(err);
+        setTimeout(() => {
+ setIsLoading(false);
+        }, 1200)
       });
   };
 
@@ -242,7 +248,7 @@ const AttendanceScreen = () => {
                       <MaterialIcons
                         name="calendar-today"
                         size={18}
-                        color="#fff"
+                        color={ theme === 'dark' ? '#fff' : "#000"}
                         style={{ marginRight: 8 }}
                       />
                       <Text style={[styles.dateButtonText,
@@ -270,7 +276,7 @@ const AttendanceScreen = () => {
                       <MaterialIcons
                         name="calendar-today"
                         size={18}
-                        color="#fff"
+                        color={ theme === 'dark' ? '#fff' : "#000"}
                         style={{ marginRight: 8 }}
                       />
                       <Text style={[styles.dateButtonText, {
