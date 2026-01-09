@@ -112,6 +112,7 @@ const HomeScreen = () => {
     ).start();
   }, []);
 
+  
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: {

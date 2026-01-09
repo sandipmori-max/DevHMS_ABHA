@@ -3,7 +3,8 @@ import { ERP_COLOR_CODE } from '../../../utils/constants';
 
 export const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    marginTop: 40,
+    flex: 0.8,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
   },
   iconWrapper: {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Keyboard,
@@ -8,6 +8,7 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
+  Animated,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
@@ -88,6 +89,24 @@ const LoginScreen = ({ navigation, route }: any) => {
     setAlertConfig(config);
     setAlertVisible(true);
   };
+  const pressAnim = useRef(new Animated.Value(1)).current;
+  const onPressIn = () => {
+    Animated.spring(pressAnim, {
+      toValue: 0.96,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const onPressOut = () => {
+    Animated.spring(pressAnim, {
+      toValue: 1,
+      friction: 4,
+      tension: 150,
+      useNativeDriver: true,
+    }).start();
+  };
+
+
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -115,13 +134,25 @@ const LoginScreen = ({ navigation, route }: any) => {
                   showAlert={showAlert}
                 />
                 {isAddingAccount && (
-                  <TouchableOpacity
-                    style={styles.cancelButton}
-                    onPress={() => navigation.goBack()}
-                    activeOpacity={0.8}
+                  <Animated.View
+                    style={{
+                      transform: [
+
+                        { scale: pressAnim },
+                      ],
+                    }}
                   >
-                    <Text style={styles.cancelButtonText}>{t('auth.cancel')}</Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.cancelButton}
+                      onPress={() => navigation.goBack()}
+                      activeOpacity={0.8}
+                      onPressIn={onPressIn}
+                      onPressOut={onPressOut}
+                    >
+                      <Text style={styles.cancelButtonText}>{t('auth.cancel')}</Text>
+                    </TouchableOpacity>
+                  </Animated.View>
+
                 )}
               </View>
 

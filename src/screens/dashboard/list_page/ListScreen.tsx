@@ -1,5 +1,5 @@
-import { Text, View, TextInput, TouchableOpacity, Alert, Modal, Platform } from 'react-native';
-import React, { useEffect, useLayoutEffect, useState, useCallback, useMemo } from 'react';
+import { Text, View, TextInput, TouchableOpacity, Alert, Modal, Platform, Animated } from 'react-native';
+import React, { useEffect, useLayoutEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -75,7 +75,22 @@ const ListScreen = () => {
   const [pageSize] = useState(100);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const pressAnim = useRef(new Animated.Value(1)).current;
+  const onPressIn = () => {
+    Animated.spring(pressAnim, {
+      toValue: 0.86,
+      useNativeDriver: true,
+    }).start();
+  };
 
+  const onPressOut = () => {
+    Animated.spring(pressAnim, {
+      toValue: 1,
+      friction: 4,
+      tension: 150,
+      useNativeDriver: true,
+    }).start();
+  };
   // useEffect(() => {
   //   if (!filteredData) return;
   //   setPage(1);
@@ -129,7 +144,7 @@ const ListScreen = () => {
     navigation.setOptions({
       headerStyle: {
         backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
-         borderBottomWidth: 1,
+        borderBottomWidth: 1,
         borderBottomColor: '#fff',
       },
       headerTintColor: '#fff',
@@ -432,7 +447,7 @@ const ListScreen = () => {
               backgroundColor: 'black'
             }
             ]}>
-              <MaterialIcons size={24} name="search" color={theme === 'dark' ? 'white': 'black'} />
+              <MaterialIcons size={24} name="search" color={theme === 'dark' ? 'white' : 'black'} />
               <TextInput
                 style={[styles.searchInput,
                 theme === 'dark' && {
@@ -594,22 +609,33 @@ const ListScreen = () => {
       )}
 
       {hasIdField && !isFromAlertCard && !loadingListId && configData && (
-        <TouchableOpacity
-          style={[
-            styles.addButton,
-            {
-              bottom: filteredData.length === 0 ? 40 : totalAmount === 0 ? 64 : 78,
-            },
-            theme === 'dark' && {
-              backgroundColor: 'white'
-            }
-          ]}
-          onPress={() => {
-            handleItemPressed({}, pageParamsName, pageTitle);
+        <Animated.View
+          style={{
+            transform: [
+              { scale: pressAnim },
+            ],
           }}
         >
-          <MaterialIcons size={32} name="add" color={theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE} />
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.addButton,
+              {
+                bottom: filteredData.length === 0 ? 40 : totalAmount === 0 ? 64 : 78,
+              },
+              theme === 'dark' && {
+                backgroundColor: 'white'
+              }
+            ]}
+            onPressIn={onPressIn}
+            onPressOut={onPressOut}
+            onPress={() => {
+              handleItemPressed({}, pageParamsName, pageTitle);
+            }}
+          >
+            <MaterialIcons size={32} name="add" color={theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE} />
+          </TouchableOpacity>
+        </Animated.View>
+
       )}
 
       <CustomAlert
