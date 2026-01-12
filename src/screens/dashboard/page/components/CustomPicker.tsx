@@ -16,6 +16,7 @@ import { getDDLThunk } from '../../../../store/slices/dropdown/thunk';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import FullViewLoader from '../../../../components/loader/FullViewLoader';
 import useTranslations from '../../../../hooks/useTranslations';
+import InputError from '../../../../components/error/InputError';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -309,9 +310,8 @@ const CustomPicker = ({
 
       {/* Error */}
       {isForceOpen && errors[item?.field] && (
-        <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR, marginTop: 4 }}>
-          {errors[item?.field]}
-        </Text>
+                <InputError error = {errors[item?.field]}/>
+
       )}
     </View>
   );

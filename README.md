@@ -9,6 +9,7 @@
 // gradlew app:assembleRelease 
 // cmd - gradlew assemble[BRAND_NAME]Release
 
+
 // How to used - .env.clientA and .env.cientB ??
 
 // How to run - clientA and clientB app ??

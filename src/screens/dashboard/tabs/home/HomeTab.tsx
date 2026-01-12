@@ -117,8 +117,8 @@ const HomeScreen = () => {
     navigation.setOptions({
       headerStyle: {
         backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
-         borderBottomWidth: 1,
-        borderBottomColor: '#fff',
+         borderBottomWidth:  theme === 'dark' ? 1 : 0,
+        borderBottomColor: theme === 'dark' ? '#fff' : ERP_COLOR_CODE.ERP_APP_COLOR,
       },
       headerTintColor: '#fff',
       headerTitle: () =>
@@ -755,8 +755,6 @@ const HomeScreen = () => {
           padding: 12,
           borderBottomRightRadius: 24,
           borderBottomLeftRadius: 24,
-          borderWidth: 0.5,
-          borderColor: 'white'
         }}
       >
         <Animated.View

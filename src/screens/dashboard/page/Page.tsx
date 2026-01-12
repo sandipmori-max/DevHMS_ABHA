@@ -304,7 +304,9 @@ const PageScreen = () => {
 
     setErrors(validationErrors);
     setErrorsList(errorMessages);
-    if (errorMessages?.length > 0) setShowErrorModal(true);
+    setTimeout(() => {
+      if (errorMessages?.length > 0) setShowErrorModal(true);
+    }, 780)
 
     return errorMessages?.length === 0;
   }, [controls, formValues]);
