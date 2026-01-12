@@ -163,7 +163,8 @@ const ListScreen = () => {
       ),
       headerRight: () => (
         <>
-          <ERPIcon
+          {
+            !error && <ERPIcon
             name="refresh"
             onPress={() => {
               setActionLoader(true);
@@ -171,6 +172,7 @@ const ListScreen = () => {
             }}
             isLoading={actionLoaders}
           />
+          }
           {/* {
             !isFromAlertCard && <ERPIcon
               name={isTableView ? 'list' : 'apps'}
@@ -179,16 +181,18 @@ const ListScreen = () => {
               }}
             />
           } */}
-          <ERPIcon
+         {
+          !error &&  <ERPIcon
             name={!hasDateField ? 'search' : isFilterVisible ? 'filter-alt' : 'filter-alt'}
             onPress={() => {
               setIsFilterVisible(!isFilterVisible);
             }}
           />
+         }
         </>
       ),
     });
-  }, [navigation, pageTitle, isFilterVisible, hasDateField, isTableView, actionLoaders]);
+  }, [navigation, pageTitle, isFilterVisible, hasDateField, isTableView, actionLoaders, error]);
 
   const getCurrentMonthRange = useCallback(() => {
     const now = new Date();

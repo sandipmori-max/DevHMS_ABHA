@@ -139,7 +139,7 @@ const AttendanceScreen = () => {
     refresh,
     actionLoader,
     showDateFilter,
-    theme
+    theme,
   ]);
 
   const checkAttendance = () => {

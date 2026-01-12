@@ -346,7 +346,7 @@ const PageScreen = () => {
       ),
       headerRight: () => (
         <>
-          {!isFromNew && (
+          {!error && !isFromNew && (
             <ERPIcon
               name="refresh"
               isLoading={actionLoader}
@@ -358,7 +358,7 @@ const PageScreen = () => {
               }}
             />
           )}
-          {buttonSave && !authUser && controls.length > 0 && (
+          {!error && buttonSave && !authUser && controls.length > 0 && (
             <ERPIcon
               name="save-as"
               isLoading={actionSaveLoader}
@@ -475,6 +475,8 @@ const PageScreen = () => {
     actionLoader,
     actionSaveLoader,
     buttonSave,
+    error
+    
   ]);
 
   const fetchPageData = useCallback(async () => {
