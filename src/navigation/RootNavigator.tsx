@@ -26,6 +26,7 @@ import { changeLanguage } from '../i18n';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { getLastPunchInThunk } from '../store/slices/attendance/thunk';
 import { setReloadApp } from '../store/slices/reloadApp/reloadAppSlice';
+import { updatePinVerifyLoadedState } from '../store/slices/auth/authSlice';
 
 // ------------------------- Location Permission Helper -------------------------
 export async function requestLocationPermissions(): Promise<
@@ -251,6 +252,7 @@ useEffect(() => {
     return(()=>{
       console.log("F----A----L----S-----E--------0=======================================",);
       dispatch(setReloadApp())
+      dispatch(updatePinVerifyLoadedState(false))
     })
   },[])
   // ------------------------- Focus -------------------------

@@ -184,7 +184,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
           name={bookmarks[item.id] ? 'bookmark' : 'bookmark-outline'} size={24} />
         </TouchableOpacity>
 
-        <View
+        <View 
           style={[
             styles.iconContainer,
             theme === 'dark' && { borderColor: 'white' },

@@ -15,10 +15,13 @@ import { ERP_COLOR_CODE } from '../../../utils/constants';
 import { getDBConnection, getPinCode } from '../../../utils/sqlite';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import CustomAlert from '../../../components/alert/CustomAlert';
+import { useAppDispatch } from '../../../store/hooks';
+import { updatePinVerifyLoadedState } from '../../../store/slices/auth/authSlice';
 
 const { width } = Dimensions.get('screen');
 
 const PinVerifyScreen = () => {
+  const dispatch = useAppDispatch()
   const [pin, setPin] = useState<string>('');
   const [attempts, setAttempts] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
@@ -119,6 +122,7 @@ const PinVerifyScreen = () => {
       const savedPin = await getPinCode(db);
 
       if (savedPin === pin) {
+        dispatch(updatePinVerifyLoadedState(true))
         navigation.replace('Drawer');
       } else {
         const newAttempts = attempts + 1;
