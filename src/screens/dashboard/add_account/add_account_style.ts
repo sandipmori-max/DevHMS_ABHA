@@ -17,13 +17,13 @@ export const styles = StyleSheet.create({
   back: {
     width: 24,
     height: 24,
-    tintColor: ERP_COLOR_CODE.ERP_WHITE,
+    tintColor: ERP_COLOR_CODE.ERP_BLACK,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
-    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+    // backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
     borderBottomWidth: 1,
     borderBottomColor: ERP_COLOR_CODE.ERP_e0e0e0,
     elevation: 4,
@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '700',
-    color: ERP_COLOR_CODE.ERP_WHITE,
+    color: ERP_COLOR_CODE.ERP_BLACK,
   },
   closeButton: {
     paddingVertical: 6,
@@ -126,7 +126,7 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     padding: 14,
     borderRadius: 10,
-    backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+    // backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
   },
   input1: {
     marginLeft: 10,
@@ -135,7 +135,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 14,
     flex: 1,
     borderRadius: 10,
-    backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+    // backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
   },
   toggleButton: {
     padding: 14,

@@ -258,8 +258,8 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
   return (
     <View style={{
       width: '100%',
-      height: Dimensions.get('screen').height,
-      padding: 16, backgroundColor: theme === 'dark' ? 'black' : 'white'
+      padding: 16, 
+      // backgroundColor: theme === 'dark' ? 'black' : 'white'
     }}>
       <Formik
         initialValues={{
@@ -318,9 +318,11 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
         }}
       >
         {({ values, errors, touched, setFieldValue, handleSubmit }) => (
-          <View style={[styles.profileCard, {
-            backgroundColor: theme === 'dark' ? 'black' : 'white'
-          }]}>
+          <View style={[styles.profileCard, 
+            {
+            backgroundColor: theme === 'dark' ? 'black' : 'transparent'
+          }
+          ]}>
             <View style={styles.profileRow}>
               <View style={styles.imageCol}>
                 {`${baseLink}/FileUpload/1/UserMaster/${user?.id}/profileimage.jpeg` ? (
@@ -386,7 +388,10 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
                       borderColor: 'white',
                       color: 'white',
                       backgroundColor: 'black'
-                    }]}
+                    },
+                    {backgroundColor: ERP_COLOR_CODE.ERP_BORDER_LINE}
+                  
+                  ]}
                     value={formatName(values?.name)}
                     editable={false}
                   />

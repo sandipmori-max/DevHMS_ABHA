@@ -4,6 +4,8 @@ import moment from 'moment';
 import { Dimensions, Linking, PermissionsAndroid, Platform } from 'react-native';
 import RNFS from 'react-native-fs';
 import FastImage from 'react-native-fast-image';
+import DeviceInfo from 'react-native-device-info';
+import axios from 'axios';
 
 export const getBottomTabIcon = (iconName: string, focused: boolean) => {
   switch (iconName) {
@@ -826,4 +828,3 @@ export const applyActionsToControls = (controls, actions) => {
     }, ctrl);
   });
 };
-

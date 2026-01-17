@@ -118,6 +118,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
         backgroundColor: theme === 'dark' ? DARK_COLOR : 'white',
       }}
     >
+      
       {/* ================= HEADER ================= */}
       <Animated.View
         style={{

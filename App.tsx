@@ -19,7 +19,7 @@ import {
   onNotificationOpenedAppListener,
   checkInitialNotification,
 } from './src/firebase/firebaseService';
-import { clearAllTempFiles } from './src/utils/helpers';
+import { checkAppUpdate, clearAllTempFiles } from './src/utils/helpers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TermsAndConsent from './src/screens/TermsConditions.tsx/TermsCondition';
 import FullViewLoader from './src/components/loader/FullViewLoader';
@@ -30,6 +30,7 @@ const App = () => {
   const [isSplashVisible, setSplashVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [accepted, setAccepted] = useState(false);
+
 
   useEffect(() => {
     const checkAcceptance = async () => {

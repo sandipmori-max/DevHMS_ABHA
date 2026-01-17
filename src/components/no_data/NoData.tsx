@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, Animated } from 'react-native';
+import { Animated } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -18,7 +18,6 @@ const NoData = () => {
 
   const [shouldRender, setShouldRender] = useState(false);
 
-  // 🔁 Reset animation values on focus
   useFocusEffect(
     useCallback(() => {
       opacity.setValue(0);
@@ -34,7 +33,6 @@ const NoData = () => {
     }, [])
   );
 
-  // 🎬 Run enter animation
   useEffect(() => {
     Animated.parallel([
       Animated.timing(opacity, {

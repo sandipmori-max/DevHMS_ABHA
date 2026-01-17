@@ -10,6 +10,7 @@ import {
   Platform,
   NativeModules,
   Easing,
+  ImageBackground,
 } from 'react-native';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
 import { getDBConnection, getPinCode } from '../../../utils/sqlite';
@@ -17,6 +18,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import CustomAlert from '../../../components/alert/CustomAlert';
 import { useAppDispatch } from '../../../store/hooks';
 import { updatePinVerifyLoadedState } from '../../../store/slices/auth/authSlice';
+import { ERP_GIF } from '../../../assets';
 
 const { width } = Dimensions.get('screen');
 
@@ -110,8 +112,8 @@ const PinVerifyScreen = () => {
     if (pin.length < 4) {
       setAlertVisible(true);
       setAlertConfig({
-        title: 'Error',
-        message: 'Enter 4-digit PIN',
+        title: 'PIN Validation Failed',
+        message: 'The PIN must be exactly 4 digits.',
         type: 'error',
       });
       return;
@@ -130,8 +132,8 @@ const PinVerifyScreen = () => {
 
         setAlertVisible(true);
         setAlertConfig({
-          title: 'Error',
-          message: 'Incorrect PIN, try again',
+          title: 'Authentication Failed',
+          message: 'The PIN you entered is incorrect. Please try again.',
           type: 'error',
         });
         setPin('');
@@ -275,7 +277,15 @@ const PinVerifyScreen = () => {
 
 
   return (
-    <View style={styles.container}>
+    
+   <View >
+      
+       <ImageBackground
+              source={ERP_GIF.BACK_IMG}
+              style={styles.container}
+              resizeMode='cover'
+            >
+
       {/* Header */}
       <Animated.Text
         style={[
@@ -317,17 +327,24 @@ const PinVerifyScreen = () => {
 
       {/* Countdown if blocked */}
       {isBlocked && (
-        <Text
+        <View style={{flexDirection:'row'}}>
+          <Text
           style={{
-            color: 'red',
             fontSize: 16,
             marginBottom: 20,
             paddingHorizontal: 30,
             textAlign: 'center',
           }}
         >
-          Too many wrong attempts.{'\n'}Try again in {countdown} seconds
+          Too many wrong attempts.{'\n'}Try again in <Text  style={{
+            fontSize: 18,
+            marginBottom: 20,
+            paddingHorizontal: 30,
+            textAlign: 'center',
+            color: ERP_COLOR_CODE.ERP_ERROR
+          }}>{countdown}</Text> seconds
         </Text>
+        </View>
       )}
 
       {/* PIN Circles */}
@@ -430,13 +447,17 @@ const PinVerifyScreen = () => {
         onClose={() => setAlertVisible(false)}
         actionLoader={undefined}
       />
+            </ImageBackground>
+
     </View>
+ 
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: Dimensions.get('screen').height,
+    width:Dimensions.get('screen').width,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     paddingTop: 80,
     alignItems: 'center',
@@ -461,6 +482,7 @@ const styles = StyleSheet.create({
     height: 18,
     borderRadius: 9,
     marginHorizontal: 8,
+    borderWidth: 1
   },
   keypad: {
     width: width * 0.8,
@@ -474,9 +496,9 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#f3f4f6',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1
   },
   keyText: {
     fontSize: 22,

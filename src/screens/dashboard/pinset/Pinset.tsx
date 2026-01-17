@@ -931,6 +931,7 @@ const styles = StyleSheet.create({
     height: 18,
     borderRadius: 9,
     marginHorizontal: 8,
+    borderWidth: 1,
   },
   keypad: {
     width: width * 0.8,
@@ -944,9 +945,9 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#f3f4f6',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1
   },
   keyText: {
     fontSize: 22,

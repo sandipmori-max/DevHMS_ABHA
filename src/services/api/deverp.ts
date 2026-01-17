@@ -333,11 +333,13 @@ class DevERPService {
     this.token = token;
     AsyncStorage.setItem('erp_token', token);
   }
+
   setDevice(device: string) {
     AsyncStorage.setItem('device', device);
 
     this.device = device;
   }
+  
   setAppId(appId: string) {
     AsyncStorage.setItem('erp_appid', appId);
     this.appid = appId;

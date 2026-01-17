@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Modal, Image, FlatList, Animated, Easing, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Modal, Image, FlatList, Animated, Easing, Platform, ImageBackground, Dimensions } from 'react-native';
 import { Formik } from 'formik';
 
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -8,7 +8,7 @@ import { loginUserThunk } from '../../../store/slices/auth/thunk';
 import { styles } from './add_account_style';
 import { erp_add_account_validation_schema } from '../../../utils/validations/add_accounts';
 import { AddAccountScreenProps } from './type';
-import { ERP_ICON } from '../../../assets';
+import { ERP_GIF, ERP_ICON } from '../../../assets';
 import { DevERPService } from '../../../services/api';
 import { useApi } from '../../../hooks/useApi';
 import CustomAlert from '../../../components/alert/CustomAlert';
@@ -257,6 +257,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
 
   return (
     <Modal visible={visible} transparent onRequestClose={handleClose}>
+      
+     
       <Animated.View
         style={[
           styles.container,
@@ -274,7 +276,15 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
           },
         ]}
       >
-        <View style={[styles.header, theme === 'dark' && { backgroundColor: 'black' }
+        <ImageBackground
+                      source={ERP_GIF.BACK_IMG}
+                         style={{
+                                   height: Dimensions.get('screen').height,
+                                   width: Dimensions.get('screen').width
+                                 }}
+                      resizeMode='cover'
+                    >
+                         <View style={[styles.header, theme === 'dark' && { backgroundColor: 'black' }
 
 
         ]}>
@@ -283,6 +293,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
           </TouchableOpacity>
           <Text style={styles.title}>{t('account.addAccount')}</Text>
         </View>
+
 
         <FlatList
           showsHorizontalScrollIndicator={false}
@@ -575,6 +586,11 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
             </Animated.View>
           )}
         />
+                      
+                      </ImageBackground>  
+                      
+                  
+     
 
         <CustomAlert
           visible={alertVisible}

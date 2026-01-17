@@ -282,12 +282,17 @@ useEffect(() => {
     }, [isAuthenticated,reLoading]),
   );
 
+
+  
+
   // ------------------------- Render -------------------------
   if (isLoading) return <FullViewLoader />;
 
   return (
     <>
       {isAuthenticated ? <StackNavigator /> : <AuthNavigator />}
+      
+
       {
         isAuthenticated && (
           <CustomAlert

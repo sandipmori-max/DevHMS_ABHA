@@ -232,7 +232,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
                       onCancel();
                     }}
                   >
-                    <Text style={styles.buttonText}>{cancelText}</Text>
+                    <Text style={styles.cancelButtonText}>{cancelText}</Text>
                   </TouchableOpacity>
                 )}
 

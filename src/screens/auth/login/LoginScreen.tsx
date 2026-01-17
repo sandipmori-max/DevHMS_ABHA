@@ -9,6 +9,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
+  Image,
+  Dimensions,
+  ImageBackground,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
@@ -22,6 +25,9 @@ import LoginForm from './components/LoginForm';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
 import { setReloadApp } from '../../../store/slices/reloadApp/reloadAppSlice';
+import FastImage from 'react-native-fast-image';
+import { ERP_GIF } from '../../../assets';
+import { Directions } from 'react-native-gesture-handler';
 
 const LoginScreen = ({ navigation, route }: any) => {
   const { t } = useTranslations();
@@ -114,6 +120,14 @@ const LoginScreen = ({ navigation, route }: any) => {
         style={{ flex: 1, backgroundColor: ERP_COLOR_CODE.ERP_WHITE }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
+      <ImageBackground
+          source={ERP_GIF.BACK_IMG}
+          style={{
+            height: Dimensions.get('screen').height,
+            width: Dimensions.get('screen').width
+          }}
+          resizeMode='cover'
+        >
         <FlatList
           data={['']}
           showsVerticalScrollIndicator={false}
@@ -168,6 +182,8 @@ const LoginScreen = ({ navigation, route }: any) => {
           )}
           keyExtractor={(item, index) => index.toString()}
         />
+        </ImageBackground>
+       
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
