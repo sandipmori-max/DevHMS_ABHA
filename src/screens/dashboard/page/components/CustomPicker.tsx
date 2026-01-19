@@ -167,6 +167,7 @@ const CustomPicker = ({
         activeOpacity={0.7}
       >
         <Text
+          numberOfLines={1}
           style={{
             color:
               theme === 'dark'
@@ -174,7 +175,7 @@ const CustomPicker = ({
                 : selectedOption
                 ? ERP_COLOR_CODE.ERP_BLACK
                 : ERP_COLOR_CODE.ERP_888,
-            flex: 1,
+            flex: 1,            
           }}
         >
           {selectedOption || `Select ${label}`}

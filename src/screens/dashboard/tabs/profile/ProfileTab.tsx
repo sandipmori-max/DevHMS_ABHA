@@ -253,7 +253,13 @@ const ProfileTab = () => {
       <AddAccountScreen 
         visible={showAddAccount}
         onClose={() => {
-          setShowAddAccount(false)
+          if(isSwitchAccountOpen){
+            setShowAddAccount(false)
+            setShowAccountSwitcher(true)
+            setIsSwitchAccountOpen(false)
+          }else{
+            setShowAddAccount(false)
+          }
         }}
         isSwitchAccountOpen={isSwitchAccountOpen}
       />

@@ -352,6 +352,7 @@ export const getERPPageThunk = createAsyncThunk<
 >('auth/getERPPage', async ({ page, id }, { rejectWithValue }) => {
   try {
     const pageData = await DevERPService.getPage(page, id );
+    console.log("pageData", pageData)
     return pageData;
   } catch (error: any) {
     return rejectWithValue(error || 'Failed to get ERP page data');

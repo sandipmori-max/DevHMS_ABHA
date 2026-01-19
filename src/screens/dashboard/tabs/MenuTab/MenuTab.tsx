@@ -191,7 +191,9 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
             { backgroundColor: theme === 'dark' ? DARK_COLOR : ERP_COLOR_CODE.ERP_WHITE },
           ]}
         >
-          <Text style={[styles.iconText, theme === 'dark' && { color: 'white' }]}>
+          <Text style={[styles.iconText, 
+            
+            theme === 'dark' && { color: 'white' }]}>
             {item.icon ||
               getInitials(item?.name)
             }
@@ -199,7 +201,12 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
         </View>
 
         <View style={{ marginLeft: isHorizontal ? 16 : 0, marginTop: isHorizontal ? 0 : 12 }}>
-          <Text numberOfLines={2} style={[styles.title, theme === 'dark' && { color: 'white' }]}>
+          <Text numberOfLines={2} style={[styles.title, 
+            {
+              maxWidth: isHorizontal ? '95%' : 'auto',
+              textAlign: isHorizontal ? 'left' : 'center'
+            },
+            theme === 'dark' && { color: 'white' }]}>
             {item.name}
           </Text>
           <Text numberOfLines={2} style={[styles.subtitle, theme === 'dark' && { color: 'white' },
