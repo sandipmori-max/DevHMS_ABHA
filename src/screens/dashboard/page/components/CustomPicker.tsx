@@ -31,7 +31,6 @@ const CustomPicker = ({
   isForceOpen,
 }: any) => {
   const { t } = useTranslations();
-  console.log("----------------item------*******-------+++++++++++++-----------", item)
 
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<any[]>([]);

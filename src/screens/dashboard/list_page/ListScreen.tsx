@@ -165,13 +165,13 @@ const ListScreen = () => {
         <>
           {
             !error && <ERPIcon
-            name="refresh"
-            onPress={() => {
-              setActionLoader(true);
-              onRefresh();
-            }}
-            isLoading={actionLoaders}
-          />
+              name="refresh"
+              onPress={() => {
+                setActionLoader(true);
+                onRefresh();
+              }}
+              isLoading={actionLoaders}
+            />
           }
           {/* {
             !isFromAlertCard && <ERPIcon
@@ -181,14 +181,14 @@ const ListScreen = () => {
               }}
             />
           } */}
-         {
-          !error &&  <ERPIcon
-            name={!hasDateField ? 'search' : isFilterVisible ? 'filter-alt' : 'filter-alt'}
-            onPress={() => {
-              setIsFilterVisible(!isFilterVisible);
-            }}
-          />
-         }
+          {
+            !error && <ERPIcon
+              name={!hasDateField ? 'search' : isFilterVisible ? 'filter-alt' : 'filter-alt'}
+              onPress={() => {
+                setIsFilterVisible(!isFilterVisible);
+              }}
+            />
+          }
         </>
       ),
     });
@@ -216,7 +216,6 @@ const ListScreen = () => {
           const trimmedQuery = query.trim();
 
           if (trimmedQuery === '') {
-            console.log("Data", data);
             setFilteredData(data);
             return;
           }
@@ -271,7 +270,6 @@ const ListScreen = () => {
 
   const clearSearch = () => {
     setSearchQuery('');
-    console.log("------------------listData*******************", listData)
     setFilteredData(listData);
   };
 
@@ -347,6 +345,7 @@ const ListScreen = () => {
             configArray = parsed.config || [];
           }
         }
+
         setConfigData(configArray);
         setListData(dataArray);
         setFilteredData(dataArray);
@@ -383,7 +382,6 @@ const ListScreen = () => {
   );
 
   const handleItemPressed = (item, page, pageTitle = '') => {
-
     setIsFilterVisible(false);
     setSearchQuery('');
     navigation.navigate('Page', {
@@ -441,6 +439,7 @@ const ListScreen = () => {
       </View>
     );
   }
+
   return (
     <View style={[styles.container, theme === 'dark' && { backgroundColor: 'black' }]}>
       {isFilterVisible && (
@@ -476,7 +475,10 @@ const ListScreen = () => {
               {/* Start Date */}
               <View style={styles.dateRow}>
                 <TouchableOpacity
-                  onPress={() => setShowDatePicker({ type: 'from', show: true })}
+                  onPress={() => {
+                    setSearchQuery('');
+                    setShowDatePicker({ type: 'from', show: true })
+                  }}
                   style={styles.dateButton}
                 >
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -495,7 +497,10 @@ const ListScreen = () => {
               {/* End Date */}
               <View style={styles.dateRow}>
                 <TouchableOpacity
-                  onPress={() => setShowDatePicker({ type: 'to', show: true })}
+                  onPress={() => {
+                    setSearchQuery('');
+                    setShowDatePicker({ type: 'to', show: true })
+                  }}
                   style={styles.dateButton}
                 >
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>

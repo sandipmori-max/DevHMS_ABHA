@@ -83,7 +83,9 @@ const LoginScreen = ({ navigation, route }: any) => {
         companyData,
       }),
     );
-    dispatch(setReloadApp())
+       setTimeout(() => {  
+                          dispatch(setReloadApp())
+                        }, 1000);
     // dispatch(getERPAppConfigMenuThunk())
   };
 

@@ -25,6 +25,7 @@ import { resetAttendanceState } from '../../../store/slices/attendance/attendanc
 import { resetDropdownState } from '../../../store/slices/dropdown/dropdownSlice';
 import { resetSyncLocationState } from '../../../store/slices/location/syncLocationSlice';
 import { setReloadApp } from '../../../store/slices/reloadApp/reloadAppSlice';
+import { generateGUID } from '../../../utils/helpers';
 
 const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, isSwitchAccountOpen }) => {
   const { t } = useTranslation();
@@ -157,13 +158,15 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
       if (userExists && codeExists) {
         setAlertConfig({
           title: t("title.title1"),
-          message: t("msg.msg"),
+          message: t("msg.msg1"),
           type: 'error',
         });
         setAlertVisible(true);
         return;
       }
-
+      const app_id = generateGUID();
+      await AsyncStorage.setItem('appid', app_id)
+      DevERPService.setAppId(app_id || ''); 
       const validation = await validateCompanyCode(() =>
         DevERPService.validateCompanyCode(values?.company_code),
       );
@@ -200,6 +203,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
       dispatch(clearAuthState());
       dispatch(resetDropdownState());
       dispatch(resetSyncLocationState());
+      console.log("loginResult", loginResult)
       DevERPService.setToken(loginResult?.token);
       await AsyncStorage.setItem('erp_token', loginResult?.token || '');
       await AsyncStorage.setItem('auth_token', loginResult?.token || '');
@@ -219,10 +223,12 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
       );
       setAlertConfig({ title: t("title.title3"), message: t("msg.msg3"), type: 'success' });
       setAlertVisible(true);
-
-      dispatch(setReloadApp());
       onClose();
       setLoader(false);
+      setTimeout(() => {
+        dispatch(setReloadApp())
+      }, 1000);
+       
     } catch (e: any) {
       setAlertConfig({
         title: t("title.title1"),
@@ -257,8 +263,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
 
   return (
     <Modal visible={visible} transparent onRequestClose={handleClose}>
-      
-     
+
+
       <Animated.View
         style={[
           styles.container,
@@ -277,320 +283,320 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
         ]}
       >
         <ImageBackground
-                      source={ERP_GIF.BACK_IMG}
-                         style={{
-                                   height: Dimensions.get('screen').height,
-                                   width: Dimensions.get('screen').width
-                                 }}
-                      resizeMode='cover'
-                    >
-                         <View style={[styles.header, theme === 'dark' && { backgroundColor: 'black' }
+          source={ERP_GIF.BACK_IMG}
+          style={{
+            height: Dimensions.get('screen').height,
+            width: Dimensions.get('screen').width
+          }}
+          resizeMode='cover'
+        >
+          <View style={[styles.header, theme === 'dark' && { backgroundColor: 'black' }
 
 
-        ]}>
-          <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-            <Image source={ERP_ICON.BACK} style={styles.back} />
-          </TouchableOpacity>
-          <Text style={styles.title}>{t('account.addAccount')}</Text>
-        </View>
+          ]}>
+            <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+              <Image source={ERP_ICON.BACK} style={styles.back} />
+            </TouchableOpacity>
+            <Text style={styles.title}>{t('account.addAccount')}</Text>
+          </View>
 
 
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()}
-          keyboardShouldPersistTaps="handled"
-          data={['']}
-          renderItem={() => (
-            <Animated.View
-              style={{
-                opacity: formAnim,
-                transform: [
-                  {
-                    translateY: formAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [50, 0],
-                    }),
-                  },
-                ],
-              }}
-            >
-              <View style={styles.formContainer}>
-                <Image source={ERP_ICON.APP_LOGO} style={styles.logo} resizeMode="contain" />
-                <Text style={[styles.subtitle, theme === 'dark' && { color: 'white' }]}>{t('account.msg')}</Text>
+          <FlatList
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()}
+            keyboardShouldPersistTaps="handled"
+            data={['']}
+            renderItem={() => (
+              <Animated.View
+                style={{
+                  opacity: formAnim,
+                  transform: [
+                    {
+                      translateY: formAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [50, 0],
+                      }),
+                    },
+                  ],
+                }}
+              >
+                <View style={styles.formContainer}>
+                  <Image source={ERP_ICON.APP_LOGO} style={styles.logo} resizeMode="contain" />
+                  <Text style={[styles.subtitle, theme === 'dark' && { color: 'white' }]}>{t('account.msg')}</Text>
 
-                <Formik
-                  initialValues={{ company_code: '', user: '', password: '' }}
-                  validationSchema={erp_add_account_validation_schema}
-                  onSubmit={handleAddAccount}
-                >
-                  {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => {
-                    useEffect(() => {
-                      if (touched?.company_code && errors?.company_code) {
-                        ccErrorAnim.setValue(0);
-                        Animated.timing(ccErrorAnim, {
-                          toValue: 1,
-                          duration: 280,
-                          easing: Easing.out(Easing.ease),
-                          useNativeDriver: true,
-                        }).start();
-                      }
-                    }, [touched?.company_code, errors?.company_code]);
+                  <Formik
+                    initialValues={{ company_code: '', user: '', password: '' }}
+                    validationSchema={erp_add_account_validation_schema}
+                    onSubmit={handleAddAccount}
+                  >
+                    {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => {
+                      useEffect(() => {
+                        if (touched?.company_code && errors?.company_code) {
+                          ccErrorAnim.setValue(0);
+                          Animated.timing(ccErrorAnim, {
+                            toValue: 1,
+                            duration: 280,
+                            easing: Easing.out(Easing.ease),
+                            useNativeDriver: true,
+                          }).start();
+                        }
+                      }, [touched?.company_code, errors?.company_code]);
 
-                    useEffect(() => {
-                      if (touched?.user && errors?.user) {
-                        userErrorAnim.setValue(0);
-                        Animated.timing(userErrorAnim, {
-                          toValue: 1,
-                          duration: 280,
-                          easing: Easing.out(Easing.ease),
-                          useNativeDriver: true,
-                        }).start();
-                      }
-                    }, [touched?.user, errors?.user]);
+                      useEffect(() => {
+                        if (touched?.user && errors?.user) {
+                          userErrorAnim.setValue(0);
+                          Animated.timing(userErrorAnim, {
+                            toValue: 1,
+                            duration: 280,
+                            easing: Easing.out(Easing.ease),
+                            useNativeDriver: true,
+                          }).start();
+                        }
+                      }, [touched?.user, errors?.user]);
 
-                    useEffect(() => {
-                      if (touched?.password && errors?.password) {
-                        passErrorAnim.setValue(0);
-                        Animated.timing(passErrorAnim, {
-                          toValue: 1,
-                          duration: 280,
-                          easing: Easing.out(Easing.ease),
-                          useNativeDriver: true,
-                        }).start();
-                      }
-                    }, [touched?.password, errors?.password]);
+                      useEffect(() => {
+                        if (touched?.password && errors?.password) {
+                          passErrorAnim.setValue(0);
+                          Animated.timing(passErrorAnim, {
+                            toValue: 1,
+                            duration: 280,
+                            easing: Easing.out(Easing.ease),
+                            useNativeDriver: true,
+                          }).start();
+                        }
+                      }, [touched?.password, errors?.password]);
 
-                    return (
-                      <>
-                        {/* Company Code Input */}
-                        <View style={styles.inputContainer}>
-                          <Text style={[styles.inputLabel, theme === 'dark' && { color: 'white' }]}>{t('account.companyCode')}</Text>
-                          <View style={[
-                            styles.inputContainer,
-                            {
-                              justifyContent: 'center',
-                              alignContent: 'center',
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              borderRadius: 8,
-                              borderWidth: 1,
-                              borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-                              paddingLeft: 12,
-                            },
-                            touched?.company_code && errors?.company_code && { borderColor: ERP_COLOR_CODE.ERP_ERROR, borderWidth: 0.8 },
-                            isInputEditCC && { borderColor: '#81b5e4', borderWidth: 0.8 },
-                            values?.company_code && { borderColor: 'green', borderWidth: 0.8 },
-                            theme === 'dark' && { backgroundColor: 'black' }
-                          ]}>
-                            <MaterialIcons name="closed-caption-off" size={20} color={ERP_COLOR_CODE.ERP_999} />
-                            <TextInput
-                              style={[styles.input, theme === 'dark' && { backgroundColor: 'black', color: 'white' }]}
-                              placeholder={t('auth.enterCompanyCode')}
-                              placeholderTextColor={ERP_COLOR_CODE.ERP_999}
-                              autoCapitalize="none"
-                              onChangeText={handleChange('company_code')}
-                              value={values?.company_code}
-                              onFocus={() => setIsInputEditCC(true)}
-                              onBlur={() => { if (!values?.company_code) { handleBlur('company_code'); setIsInputEditCC(false); } }}
-                            />
-                          </View>
-                          {touched?.company_code && errors?.company_code && (
-                            <Animated.Text
-                              style={[
-                                styles.errorText,
-                                {
-                                  opacity: ccErrorAnim,
-                                  transform: [
-                                    {
-                                      translateX: ccErrorAnim.interpolate({
-                                        inputRange: [0, 1],
-                                        outputRange: [-38, 0], // slide from LEFT
-                                      }),
-                                    },
-                                  ],
-                                },
-                              ]}
-                            >
-                              {errors?.company_code}
-                            </Animated.Text>
-                          )}
-
-                        </View>
-
-                        {/* User Input */}
-                        <View style={styles.inputContainer}>
-                          <Text style={[styles.inputLabel, theme === 'dark' && { color: 'white' }]}>{t('auth.user')}</Text>
-                          <View style={[
-                            styles.inputContainer,
-                            {
-                              justifyContent: 'center',
-                              alignContent: 'center',
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              borderRadius: 8,
-                              borderWidth: 1,
-                              borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-                              paddingLeft: 12,
-                            },
-                            touched?.user && errors?.user && { borderColor: ERP_COLOR_CODE.ERP_ERROR, borderWidth: 0.8 },
-                            isInputEditUSer && { borderColor: '#81b5e4', borderWidth: 0.8 },
-                            values?.user && { borderColor: 'green', borderWidth: 0.8 },
-                          ]}>
-                            <MaterialIcons name="person" size={20} color={ERP_COLOR_CODE.ERP_999} />
-                            <TextInput
-                              style={[styles.input, theme === 'dark' && { backgroundColor: 'black', color: 'white' }]}
-                              placeholder={t('auth.enterUser')}
-                              placeholderTextColor={ERP_COLOR_CODE.ERP_999}
-                              autoCapitalize="none"
-                              onChangeText={handleChange('user')}
-                              value={values?.user}
-                              onFocus={() => setIsInputEditUser(true)}
-                              onBlur={() => { if (!values?.user) { handleBlur('user'); setIsInputEditUser(false); } }}
-                            />
-                          </View>
-                          {touched?.user && errors?.user && (
-                            <Animated.Text
-                              style={[
-                                styles.errorText,
-                                {
-                                  opacity: userErrorAnim,
-                                  transform: [
-                                    {
-                                      translateX: userErrorAnim.interpolate({
-                                        inputRange: [0, 1],
-                                        outputRange: [-38, 0],
-                                      }),
-                                    },
-                                  ],
-                                },
-                              ]}
-                            >
-                              {errors?.user}
-                            </Animated.Text>
-                          )}
-
-                        </View>
-
-                        {/* Password Input */}
-                        <View style={styles.inputContainer}>
-                          <Text style={[styles.inputLabel, theme === 'dark' && { color: 'white' }]}>{t('auth.password')}</Text>
-                          <View style={[
-                            styles.inputContainer,
-                            {
-                              justifyContent: 'center',
-                              alignContent: 'center',
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              borderRadius: 8,
-                              borderWidth: 1,
-                              borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-                              paddingLeft: 12,
-                            },
-                            touched?.password && errors?.password && { borderColor: ERP_COLOR_CODE.ERP_ERROR, borderWidth: 0.8 },
-                            isInputEditPass && { borderColor: '#81b5e4', borderWidth: 0.8 },
-                            values?.password && { borderColor: 'green', borderWidth: 0.8 },
-                          ]}>
-                            <MaterialIcons name="password" size={20} color={ERP_COLOR_CODE.ERP_999} />
-                            <TextInput
-                              style={[styles.input1, theme === 'dark' && { backgroundColor: 'black', color: 'white' }]}
-                              placeholder={t('auth.enterPassword')}
-                              secureTextEntry={!showPassword}
-                              placeholderTextColor={ERP_COLOR_CODE.ERP_999}
-                              value={values?.password}
-                              onChangeText={handleChange('password')}
-                              onFocus={() => setIsInputEditPass(true)}
-                              onBlur={() => { if (!values?.password) { handleBlur('password'); setIsInputEditPass(false); } }}
-                            />
-                            <TouchableOpacity onPress={() => setShowPassword(s => !s)} style={styles.toggleButton}>
-                              <MaterialIcons name={!showPassword ? 'visibility-off' : 'visibility'} color={ERP_COLOR_CODE.ERP_999} size={20} />
-                            </TouchableOpacity>
-                          </View>
-                          {touched?.password && errors?.password && (
-                            <Animated.Text
-                              style={[
-                                styles.errorText,
-                                {
-                                  opacity: passErrorAnim,
-                                  transform: [
-                                    {
-                                      translateX: passErrorAnim.interpolate({
-                                        inputRange: [0, 1],
-                                        outputRange: [-38, 0],
-                                      }),
-                                    },
-                                  ],
-                                },
-                              ]}
-                            >
-                              {errors?.password}
-                            </Animated.Text>
-                          )}
-
-                        </View>
-
-                        {/* Add Button */}
-                        <Animated.View
-                          style={{
-                            opacity: buttonAnim,
-                            transform: [
+                      return (
+                        <>
+                          {/* Company Code Input */}
+                          <View style={styles.inputContainer}>
+                            <Text style={[styles.inputLabel, theme === 'dark' && { color: 'white' }]}>{t('account.companyCode')}</Text>
+                            <View style={[
+                              styles.inputContainer,
                               {
-                                translateY: buttonAnim.interpolate({
-                                  inputRange: [0, 1],
-                                  outputRange: [50, 0],
-                                }),
-                              },
-                              { scale: pressAnim }, // 👈 press animation
-                            ],
-                          }}
-                        >
-                          <TouchableOpacity
-                            style={[
-                              styles.addButton,
-                              loader && styles.disabledButton,
-                              theme === 'dark' && {
-                                backgroundColor: 'white',
-                                borderColor: 'white',
+                                justifyContent: 'center',
+                                alignContent: 'center',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                borderRadius: 8,
                                 borderWidth: 1,
+                                borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+                                paddingLeft: 12,
                               },
-                            ]}
-                            onPress={() => handleSubmit()}
-                            onPressIn={onPressIn}
-                            onPressOut={onPressOut}
-                            disabled={loader}
-                            activeOpacity={1} // avoid opacity conflict
+                              touched?.company_code && errors?.company_code && { borderColor: ERP_COLOR_CODE.ERP_ERROR, borderWidth: 0.8 },
+                              isInputEditCC && { borderColor: '#81b5e4', borderWidth: 0.8 },
+                              values?.company_code && { borderColor: 'green', borderWidth: 0.8 },
+                              theme === 'dark' && { backgroundColor: 'black' }
+                            ]}>
+                              <MaterialIcons name="closed-caption-off" size={20} color={ERP_COLOR_CODE.ERP_999} />
+                              <TextInput
+                                style={[styles.input, theme === 'dark' && { backgroundColor: 'black', color: 'white' }]}
+                                placeholder={t('auth.enterCompanyCode')}
+                                placeholderTextColor={ERP_COLOR_CODE.ERP_999}
+                                autoCapitalize="none"
+                                onChangeText={handleChange('company_code')}
+                                value={values?.company_code}
+                                onFocus={() => setIsInputEditCC(true)}
+                                onBlur={() => { if (!values?.company_code) { handleBlur('company_code'); setIsInputEditCC(false); } }}
+                              />
+                            </View>
+                            {touched?.company_code && errors?.company_code && (
+                              <Animated.Text
+                                style={[
+                                  styles.errorText,
+                                  {
+                                    opacity: ccErrorAnim,
+                                    transform: [
+                                      {
+                                        translateX: ccErrorAnim.interpolate({
+                                          inputRange: [0, 1],
+                                          outputRange: [-38, 0], // slide from LEFT
+                                        }),
+                                      },
+                                    ],
+                                  },
+                                ]}
+                              >
+                                {errors?.company_code}
+                              </Animated.Text>
+                            )}
+
+                          </View>
+
+                          {/* User Input */}
+                          <View style={styles.inputContainer}>
+                            <Text style={[styles.inputLabel, theme === 'dark' && { color: 'white' }]}>{t('auth.user')}</Text>
+                            <View style={[
+                              styles.inputContainer,
+                              {
+                                justifyContent: 'center',
+                                alignContent: 'center',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                borderRadius: 8,
+                                borderWidth: 1,
+                                borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+                                paddingLeft: 12,
+                              },
+                              touched?.user && errors?.user && { borderColor: ERP_COLOR_CODE.ERP_ERROR, borderWidth: 0.8 },
+                              isInputEditUSer && { borderColor: '#81b5e4', borderWidth: 0.8 },
+                              values?.user && { borderColor: 'green', borderWidth: 0.8 },
+                            ]}>
+                              <MaterialIcons name="person" size={20} color={ERP_COLOR_CODE.ERP_999} />
+                              <TextInput
+                                style={[styles.input, theme === 'dark' && { backgroundColor: 'black', color: 'white' }]}
+                                placeholder={t('auth.enterUser')}
+                                placeholderTextColor={ERP_COLOR_CODE.ERP_999}
+                                autoCapitalize="none"
+                                onChangeText={handleChange('user')}
+                                value={values?.user}
+                                onFocus={() => setIsInputEditUser(true)}
+                                onBlur={() => { if (!values?.user) { handleBlur('user'); setIsInputEditUser(false); } }}
+                              />
+                            </View>
+                            {touched?.user && errors?.user && (
+                              <Animated.Text
+                                style={[
+                                  styles.errorText,
+                                  {
+                                    opacity: userErrorAnim,
+                                    transform: [
+                                      {
+                                        translateX: userErrorAnim.interpolate({
+                                          inputRange: [0, 1],
+                                          outputRange: [-38, 0],
+                                        }),
+                                      },
+                                    ],
+                                  },
+                                ]}
+                              >
+                                {errors?.user}
+                              </Animated.Text>
+                            )}
+
+                          </View>
+
+                          {/* Password Input */}
+                          <View style={styles.inputContainer}>
+                            <Text style={[styles.inputLabel, theme === 'dark' && { color: 'white' }]}>{t('auth.password')}</Text>
+                            <View style={[
+                              styles.inputContainer,
+                              {
+                                justifyContent: 'center',
+                                alignContent: 'center',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                borderRadius: 8,
+                                borderWidth: 1,
+                                borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+                                paddingLeft: 12,
+                              },
+                              touched?.password && errors?.password && { borderColor: ERP_COLOR_CODE.ERP_ERROR, borderWidth: 0.8 },
+                              isInputEditPass && { borderColor: '#81b5e4', borderWidth: 0.8 },
+                              values?.password && { borderColor: 'green', borderWidth: 0.8 },
+                            ]}>
+                              <MaterialIcons name="password" size={20} color={ERP_COLOR_CODE.ERP_999} />
+                              <TextInput
+                                style={[styles.input1, theme === 'dark' && { backgroundColor: 'black', color: 'white' }]}
+                                placeholder={t('auth.enterPassword')}
+                                secureTextEntry={!showPassword}
+                                placeholderTextColor={ERP_COLOR_CODE.ERP_999}
+                                value={values?.password}
+                                onChangeText={handleChange('password')}
+                                onFocus={() => setIsInputEditPass(true)}
+                                onBlur={() => { if (!values?.password) { handleBlur('password'); setIsInputEditPass(false); } }}
+                              />
+                              <TouchableOpacity onPress={() => setShowPassword(s => !s)} style={styles.toggleButton}>
+                                <MaterialIcons name={!showPassword ? 'visibility-off' : 'visibility'} color={ERP_COLOR_CODE.ERP_999} size={20} />
+                              </TouchableOpacity>
+                            </View>
+                            {touched?.password && errors?.password && (
+                              <Animated.Text
+                                style={[
+                                  styles.errorText,
+                                  {
+                                    opacity: passErrorAnim,
+                                    transform: [
+                                      {
+                                        translateX: passErrorAnim.interpolate({
+                                          inputRange: [0, 1],
+                                          outputRange: [-38, 0],
+                                        }),
+                                      },
+                                    ],
+                                  },
+                                ]}
+                              >
+                                {errors?.password}
+                              </Animated.Text>
+                            )}
+
+                          </View>
+
+                          {/* Add Button */}
+                          <Animated.View
+                            style={{
+                              opacity: buttonAnim,
+                              transform: [
+                                {
+                                  translateY: buttonAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [50, 0],
+                                  }),
+                                },
+                                { scale: pressAnim }, // 👈 press animation
+                              ],
+                            }}
                           >
-                            <MaterialIcons
-                              name="person-add-alt"
-                              size={24}
-                              color={theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE}
-                            />
-                            <Text
+                            <TouchableOpacity
                               style={[
-                                styles.addButtonText,
-                                theme === 'dark' && { color: 'black' },
+                                styles.addButton,
+                                loader && styles.disabledButton,
+                                theme === 'dark' && {
+                                  backgroundColor: 'white',
+                                  borderColor: 'white',
+                                  borderWidth: 1,
+                                },
                               ]}
+                              onPress={() => handleSubmit()}
+                              onPressIn={onPressIn}
+                              onPressOut={onPressOut}
+                              disabled={loader}
+                              activeOpacity={1} // avoid opacity conflict
                             >
-                              {loader ? t('account.adding') : t('account.add')}
-                            </Text>
-                          </TouchableOpacity>
-                        </Animated.View>
+                              <MaterialIcons
+                                name="person-add-alt"
+                                size={24}
+                                color={theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE}
+                              />
+                              <Text
+                                style={[
+                                  styles.addButtonText,
+                                  theme === 'dark' && { color: 'black' },
+                                ]}
+                              >
+                                {loader ? t('account.adding') : t('account.add')}
+                              </Text>
+                            </TouchableOpacity>
+                          </Animated.View>
 
 
-                        <Text style={styles.note}>{t('account.msg1')}</Text>
-                      </>
-                    )
-                  }}
-                </Formik>
-              </View>
-            </Animated.View>
-          )}
-        />
-                      
-                      </ImageBackground>  
-                      
-                  
-     
+                          <Text style={styles.note}>{t('account.msg1')}</Text>
+                        </>
+                      )
+                    }}
+                  </Formik>
+                </View>
+              </Animated.View>
+            )}
+          />
+
+        </ImageBackground>
+
+
+
 
         <CustomAlert
           visible={alertVisible}

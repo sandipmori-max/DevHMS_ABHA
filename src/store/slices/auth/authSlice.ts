@@ -294,9 +294,6 @@ const authSlice = createSlice({
             menuData = action.payload;
           }
 
-          let menus = [];
-          console.log("menuData================================", menuData)
-
           state.appBottomMenuList = menuData?.bottom
           state.appDrawerMenuList = menuData?.drawer
           state.appColorCode = menuData?.hexacolor
@@ -346,7 +343,6 @@ const authSlice = createSlice({
             } catch (innerParseError) {
             }
           }
-          console.log("dashboardItems========", dashboardItems)
           state.dashboard = dashboardItems.length > 0 ? dashboardItems?.map((item: any, index: number) => ({
             id: item?.Link || `dashboard_${index}`,
             name: item?.Name || '',

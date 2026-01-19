@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Modal, FlatList, Image, Animated, Easing } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, FlatList, Image, Animated, Easing, Platform } from 'react-native';
 import { styles } from './components_style';
 import { useAppDispatch, useAppSelector } from '../../../../../store/hooks';
 import { removeAccountThunk, switchAccountThunk } from '../../../../../store/slices/auth/thunk';
@@ -46,7 +46,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
   const buttonAnim = useRef(new Animated.Value(0)).current; // add account button
   const listAnim = useRef(accounts.map(() => new Animated.Value(0))).current; // flatlist items
 
-   const pressAnim = useRef(new Animated.Value(1)).current;
+  const pressAnim = useRef(new Animated.Value(1)).current;
   const pressItemAnim = useRef(new Animated.Value(1)).current;
   const onPressItemIn = () => {
     Animated.spring(pressItemAnim, {
@@ -111,14 +111,16 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
           useNativeDriver: true,
         }).start();
       });
-    }  
+    }
   }, [visible, slideAnim, buttonAnim, listAnim]);
 
   const handleSwitchAccount = (accountId: string) => {
     if (accountId !== activeAccountId) {
       dispatch(switchAccountThunk(accountId));
       dispatch(getLastPunchInThunk());
-      dispatch(setReloadApp());
+      setTimeout(() => {
+        dispatch(setReloadApp())
+      }, 1000);
     }
     onClose();
   };
@@ -147,8 +149,9 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
 
     let normalizedBase = (item?.user?.companyLink || '').replace(/\/+$/, '');
     normalizedBase = normalizedBase.replace(/\/devws\/?/, '/');
-    normalizedBase = normalizedBase.replace(/^https:\/\//i, 'http://');
+    normalizedBase = normalizedBase.replace(/^https:\/\//i, Platform.OS === 'ios' ? 'https://' : 'http://');
 
+    console.log("normalizedBase", `${normalizedBase}/FileUpload/1/UserMaster/${item?.user?.id}/profileimage.jpeg?ts=${new Date().getTime()}`)
     return (
       <Animated.View
         style={{
@@ -170,7 +173,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
             borderWidth: 1,
             borderColor: 'white'
           }]}
-           onPressIn={onPressItemIn}
+          onPressIn={onPressItemIn}
           onPressOut={onPressItemOut}
           onPress={async () => {
             // setTimeout(async ()=>{
@@ -206,12 +209,12 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
         >
           <View style={styles.accountContent}>
             <FastImage
+              style={styles.avatar}
               source={{
                 uri: `${normalizedBase}/FileUpload/1/UserMaster/${item?.user?.id}/profileimage.jpeg?ts=${new Date().getTime()}`,
                 priority: FastImage.priority.normal,
                 cache: FastImage.cacheControl.web,
               }}
-              style={styles.avatar}
             />
             <View style={styles.accountInfo}>
               <Text style={[styles.accountName, isActive && styles.activeText, theme === 'dark' && { color: 'white' }]}>
@@ -220,10 +223,11 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
               <Text numberOfLines={1} style={[styles.accountEmail, isActive && styles.activeText, theme === 'dark' && { color: 'white' }]}>
                 {item?.user?.companyName}
               </Text>
+               
               <View style={{ width: isActive ? '100%' : '80%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <View style={{ gap: 2, flexDirection: 'row', alignItems: 'center' }}>
                   <MaterialIcons name={'date-range'} color={theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK} size={18} />
-                  <Text style={styles.lastLogin}> {lastLogin}</Text>
+                  <Text style={styles.lastLogin}>{lastLogin}</Text>
                 </View>
                 <View style={{ gap: 2, flexDirection: 'row', alignItems: 'center' }}>
                   <MaterialIcons name={'access-alarm'} color={theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK} size={18} />
@@ -248,39 +252,39 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
   };
 
   const handleClose = () => {
-  // Reverse FlatList items
-  listAnim
-    .slice()
-    .reverse()
-    .forEach((anim, index) => {
-      Animated.timing(anim, {
-        toValue: 0,
-        duration: 550,
-        delay: index * 60,
-        easing: Easing.in(Easing.ease),
-        useNativeDriver: true,
-      }).start();
-    });
+    // Reverse FlatList items
+    listAnim
+      .slice()
+      .reverse()
+      .forEach((anim, index) => {
+        Animated.timing(anim, {
+          toValue: 0,
+          duration: 550,
+          delay: index * 60,
+          easing: Easing.in(Easing.ease),
+          useNativeDriver: true,
+        }).start();
+      });
 
-  // Reverse button animation
-  Animated.timing(buttonAnim, {
-    toValue: 0,
-    duration: 450,
-    delay: 120,
-    easing: Easing.in(Easing.ease),
-    useNativeDriver: true,
-  }).start();
+    // Reverse button animation
+    Animated.timing(buttonAnim, {
+      toValue: 0,
+      duration: 450,
+      delay: 120,
+      easing: Easing.in(Easing.ease),
+      useNativeDriver: true,
+    }).start();
 
-  // Reverse main slide
-  Animated.timing(slideAnim, {
-    toValue: 0,
-    duration: 300,
-    delay: 650,
-    easing: Easing.in(Easing.ease),
-    useNativeDriver: true,
-  }).start(onClose);
-};
- 
+    // Reverse main slide
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 300,
+      delay: 650,
+      easing: Easing.in(Easing.ease),
+      useNativeDriver: true,
+    }).start(onClose);
+  };
+
 
   return (
     <Modal visible={visible} transparent onRequestClose={handleClose}>
@@ -324,15 +328,15 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
                   outputRange: [50, 0],
                 }),
               },
-               { scale: pressAnim },
+              { scale: pressAnim },
             ],
           }}
         >
           <TouchableOpacity
             style={[styles.addAccountButton, theme === 'dark' && { backgroundColor: 'white' }]}
-            onPress={()=>{
+            onPress={() => {
               setTimeout(() => {
-                  onAddAccount()
+                onAddAccount()
               }, 600)
             }}
             onPressIn={onPressIn}

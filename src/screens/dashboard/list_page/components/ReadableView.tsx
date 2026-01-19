@@ -150,7 +150,6 @@ useEffect(() => {
 
   const RenderCard = ({ item, index }: any) => {
 
-    console.log("---------------------------", item);
     if (!item) return null;
     const name = item?.name?.toString() || `-`;
     const subName = item?.number || `-`;

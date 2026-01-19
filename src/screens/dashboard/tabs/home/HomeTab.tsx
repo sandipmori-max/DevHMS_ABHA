@@ -59,7 +59,6 @@ const HomeScreen = () => {
   const [toDate, setToDate] = useState<string>('');
 
   const auth = useAppSelector(state => state?.auth);
-  console.log("dashboard------------------------------------", auth)
 
   const [showDatePicker, setShowDatePicker] = useState<null | {
     type: 'from' | 'to';
@@ -209,7 +208,8 @@ const HomeScreen = () => {
       setLoadingPageId(true);
 
       // dispatch(getERPAppConfigMenuThunk());
-      dispatch(getERPDashboardThunk({ branch: '', type: '', fd: '', td: '' }));
+      const params = {branch: '', type: '', fd: '', td: ''}
+      dispatch(getERPDashboardThunk(params));
       dispatch(getERPMenuThunk());
 
       timer = setTimeout(() => {
@@ -524,7 +524,7 @@ const HomeScreen = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(getERPDashboardThunk({ branch: auth.dashboardBranch, type: auth.dashboardType, fd: auth.dashboardFromDate, td: auth.dashboardToDate }));
+    dispatch(getERPDashboardThunk({ branch: auth?.dashboardBranch || "", type: auth?.dashboardType || "", fd: auth?.dashboardFromDate || "", td: auth?.dashboardToDate || "" }));
     const timer = setTimeout(() => {
     dispatch(setDashboardLoading(false));
   }, 3000);

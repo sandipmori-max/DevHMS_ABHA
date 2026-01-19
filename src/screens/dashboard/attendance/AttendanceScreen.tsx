@@ -32,7 +32,6 @@ import { ERP_GIF } from '../../../assets';
 const AttendanceScreen = () => {
   const route = useRoute();
   const { isFor } = route?.params || '';
-  console.log("isFor-----------", isFor)
   const navigation = useNavigation<any>();
   const [isListVisible, setIsListVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);

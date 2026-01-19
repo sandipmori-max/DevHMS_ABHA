@@ -153,7 +153,6 @@ const PageScreen = () => {
   const lastLocationEnabled = useRef<boolean | null>(null);
   const appState = useRef(AppState.currentState);
 
-  console.log("controls-==-=================================", controls)
   const hasLocationField = controls.some(
     item => item?.defaultvalue && item?.defaultvalue === '#location' && item?.visible === "0",
   );
@@ -488,7 +487,6 @@ const PageScreen = () => {
         getERPPageThunk({ page: url, id: isFromNew ? 0 : id }),
       ).unwrap();
 
-      console.log("-----parsed------parsed--------parsed------", parsed)
       if (!isFromNew) {
         setInfoData({
           id: id?.toString(),
@@ -595,7 +593,6 @@ const PageScreen = () => {
     }
 
     const { actions } = evaluateRulesWithActions(scriptRules, formValues);
-    console.log("actions+++++++++", actions)
     const hasButtonSaveEnable = actions.some(
       item => item?.field === "buttonSave"
     );
@@ -606,7 +603,6 @@ const PageScreen = () => {
       setButtonSave(hasButtonSaveEnable)
     }
     const updatedControls = applyActionsToControls(controls, actions);
-    console.log("updated-----------------Controls", updatedControls)
     setControls(updatedControls)
   }
 
@@ -635,7 +631,6 @@ const PageScreen = () => {
       //BoolInput
       if (item?.ctltype === 'BOOL') {
         const rawVal = formValues[item?.field] ?? item?.text;
-        console.log("rawVal", rawVal)
         const boolVal = String(rawVal).toLowerCase() === 'true';
         content = (
           <BoolInput
