@@ -19,7 +19,7 @@ import {
   onNotificationOpenedAppListener,
   checkInitialNotification,
 } from './src/firebase/firebaseService';
-import { checkAppUpdate, clearAllTempFiles } from './src/utils/helpers';
+import { clearAllTempFiles } from './src/utils/helpers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TermsAndConsent from './src/screens/TermsConditions.tsx/TermsCondition';
 import FullViewLoader from './src/components/loader/FullViewLoader';

@@ -92,7 +92,7 @@ const NoData = () => {
       {/* SUBTITLE */}
       <Animated.Text
         style={[
-          styles.subtitle,
+          styles.subt0itle,
           { transform: [{ translateX: subtitleTranslateX }] },
         ]}
       >
