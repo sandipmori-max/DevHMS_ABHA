@@ -146,6 +146,7 @@ const PageScreen = () => {
   const [locationEnabled, setLocationEnabled] = useState<boolean | null>(null);
   const [modalClose, setModalClose] = useState(false);
   const [isSettingVisible, setIsSettingVisible] = useState(false);
+  const [myScript, setMyScript] = useState("");
   const [backgroundDeniedModal, setBackgroundDeniedModal] = useState(false);
 
   const isCheckingPermission = useRef(false);
@@ -350,6 +351,7 @@ const PageScreen = () => {
               name="refresh"
               isLoading={actionLoader}
               onPress={() => {
+                setButtonSave(true)
                 setActionLoader(true);
                 fetchPageData();
                 setErrors({});
@@ -363,6 +365,46 @@ const PageScreen = () => {
               isLoading={actionSaveLoader}
               onPress={async () => {
                 try {
+                          // let sccc = 
+                          // { "onClick_buttonSave": { "logic": "OR", "rules": [ { "left": "doctorlocation", "operator": "locationWithin", "right": "inlocation", "meters": 50 } ], "validActions": [ { "field": "buttonSave", "action": "disable" } ], "invalidActions": [ { "field": "buttonSave", "action": "enable" } ] }, "onpage_load": { "logic": "OR", "rules": [ { "left": "doctorlocation", "operator": "locationWithin", "right": "inlocation", "meters": 50 } ], "validActions": [ { "field": "buttonSave", "action": "enable" } ], "invalidActions": [ { "field": "buttonSave", "action": "enable" } ] }, }
+                          let rules;  
+
+                          if (typeof myScript === "string") {
+                            try {
+                              rules = JSON.parse(myScript);
+                            } catch (e) {
+                              console.error("Invalid JSON from backend", e);
+                              return;
+                            }
+                          } else {
+                            rules = myScript;
+                          }
+
+                          console.log("rules type:", typeof rules); 
+
+
+                          const { actions } = evaluateRulesWithActions(rules, formValues);
+                          const hasButtonSaveEnable = actions.some(
+                            item => item?.field === "buttonSave"
+                          );
+                          console.log("actions", actions, hasButtonSaveEnable)
+                          if (hasButtonSaveEnable) {
+                            const hasButtonSaveEnable = actions.some(
+                              item => item?.field === "buttonSave" && item.action === "enable"
+                            );
+                            console.log("hasButtonSaveEnablehasButtonSaveEnable", hasButtonSaveEnable)
+                            const updatedControls = applyActionsToControls(controls, actions);
+                            setControls(updatedControls)
+                            setButtonSave(hasButtonSaveEnable)
+                            if(!hasButtonSaveEnable){
+                              Alert.alert("ERRRO", myScript?.message)
+                              return;
+                            }
+                          }
+                          console.log("hasButtonSaveEnable-------------------")
+                          const updatedControls = applyActionsToControls(controls, actions);
+                          setControls(updatedControls)
+   
                   // 1️⃣ Check if location services are enabled
                   const locationEnabled = hasLocationField ? await DeviceInfo.isLocationEnabled() : true;
 
@@ -461,7 +503,7 @@ const PageScreen = () => {
         </>
       ),
     });
-  }, [
+    }, [
     navigation,
     item?.name,
     id,
@@ -486,6 +528,9 @@ const PageScreen = () => {
       const parsed = await dispatch(
         getERPPageThunk({ page: url, id: isFromNew ? 0 : id }),
       ).unwrap();
+
+      console.log("parsed", parsed?.script);
+      setMyScript(parsed?.script);
 
       if (!isFromNew) {
         setInfoData({
@@ -558,57 +603,43 @@ const PageScreen = () => {
     hideDateTimePicker();
   };
 
-  const checkScript = () => {
-    const scriptRules = {
-      logic: "AND",
-      rules: [
-        {
-          left: "btid",
-          operator: "lessThan",
-          right: "muid"
-        },
-        {
-          logic: "OR",
-          rules: [
-            { left: "termhead", operator: "equals", right: "POterms12" },
-            { left: "active", operator: "isTruthy" }
-          ]
-        }
-      ],
-      validActions: [
-        { field: "termhead", action: "background", background: 'red' },
-        { field: "termhead", action: "borderColor", borderColor: 'red' },
-        { field: "btid", action: "hide" },
-        { field: "active", action: "setBoolValue", value: false },
-        { field: "businessterm", action: "hide", },
-        { field: "businessterm", action: "setValue", value: 'Test123' },
-        { field: "cdt", action: "enable" },
-        { field: "cdt", action: "borderColor", borderColor: 'red' },
-        { field: "buttonSave", action: "disable" },
-      ],
-      invalidActions: [
-        { field: "termhead", action: "disable" },
-        { field: "buttonSave", action: "enable" },
-      ]
-    }
+  // useEffect(() => {
+                          
+  //           // let sccc = { "onClick_buttonSave": { "logic": "OR", "rules": [ { "left": "doctorlocation", "operator": "locationWithin", "right": "inlocation", "meters": 50 } ], "validActions": [ { "field": "buttonSave", "action": "disable" } ], "invalidActions": [ { "field": "buttonSave", "action": "enable" } ] }, "onpage_load": { "logic": "OR", "rules": [ { "left": "doctorname", "operator": "equals", "right": "Dr Sps Aneja " } ], "validActions": [ { "field": "doctorname", "action": "disable" } ], "invalidActions": [ { "field": "doctorname", "action": "disable" } ] }, }
+  //           //               let rules;
+  //           //               if (typeof myScript === "string") {
+  //           //                 try {
+  //           //                   rules = sccc.onpage_load;
+  //           //                 } catch (e) {
+  //           //                   console.error("Invalid JSON from backend", e);
+  //           //                   return;
+  //           //                 }
+  //           //               } else {
+  //           //                 rules = myScript;
+  //           //               }
+  //           //               console.log("rules type:", typeof rules); 
+  //           //               const { actions } = evaluateRulesWithActions(rules, formValues);
+  //           //               const hasButtonSaveEnable = actions.some(
+  //           //                 item => item?.field === "buttonSave"
+  //           //               );
+  //           //               console.log("actions", actions, hasButtonSaveEnable)
+  //           //               if (hasButtonSaveEnable) {
+  //           //                 const hasButtonSaveEnable = actions.some(
+  //           //                   item => item?.field === "buttonSave" && item.action === "enable"
+  //           //                 );
+  //           //                 console.log("hasButtonSaveEnablehasButtonSaveEnable", hasButtonSaveEnable)
+  //           //                 const updatedControls = applyActionsToControls(controls, actions);
+  //           //                 setControls(updatedControls)
+  //           //                 setButtonSave(hasButtonSaveEnable)
+  //           //                 if(!hasButtonSaveEnable){
+  //           //                   return;
+  //           //                 }
+  //           //               }
+  //           //               console.log("hasButtonSaveEnable-------------------")
+  //           //               const updatedControls = applyActionsToControls(controls, actions);
+  //           //               setControls(updatedControls)
 
-    const { actions } = evaluateRulesWithActions(scriptRules, formValues);
-    const hasButtonSaveEnable = actions.some(
-      item => item?.field === "buttonSave"
-    );
-    if (hasButtonSaveEnable) {
-      const hasButtonSaveEnable = actions.some(
-        item => item?.field === "buttonSave" && item.action === "enable"
-      );
-      setButtonSave(hasButtonSaveEnable)
-    }
-    const updatedControls = applyActionsToControls(controls, actions);
-    setControls(updatedControls)
-  }
-
-  useEffect(() => {
-    // checkScript()
-  }, [formValues]);
+  //  }, [formValues]);
 
 
   const renderItem = useCallback(
