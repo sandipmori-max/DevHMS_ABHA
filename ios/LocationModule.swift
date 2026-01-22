@@ -29,8 +29,6 @@ class LocationModule: NSObject {
             let token = item["token"]
             let link = item["link"]
 
-            print("➡️ [LocationModule] Processing item \(index): token=\(token ?? "nil"), link=\(link ?? "nil")")
-
             if let token = token, let link = link {
                 LocationService.shared.userDataList.append((token, link))
                 print("✅ [LocationModule] Added token-link pair: \(token) | \(link)")
@@ -44,7 +42,6 @@ class LocationModule: NSObject {
 
     @objc
     static func requiresMainQueueSetup() -> Bool {
-        print("⚙️ [LocationModule] requiresMainQueueSetup() called")
         return true
     }
 }

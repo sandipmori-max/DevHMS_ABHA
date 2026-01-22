@@ -13,6 +13,8 @@ import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import { useAppSelector } from '../../../../store/hooks';
 import useTranslations from '../../../../hooks/useTranslations';
+import FastImage from 'react-native-fast-image';
+import { ERP_GIF } from '../../../../assets';
 
 const ErrorModal = ({
   visible,
@@ -153,7 +155,16 @@ const ErrorModal = ({
               />
             </TouchableOpacity>
           </View>
-
+              <View style={{width:'100%', alignContent:'center', alignItems:'center', alignSelf:'center'}}>
+                <FastImage
+                source={ERP_GIF.ERROR}
+                style={{
+                  height: 160,
+                  width: 120
+                }}
+                resizeMode={FastImage.resizeMode.contain}
+              />
+              </View>
           <View style={{ marginVertical: 14 }}>
             <FlatList
               data={errors}

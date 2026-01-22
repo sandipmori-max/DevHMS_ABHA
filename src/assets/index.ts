@@ -15,16 +15,15 @@ const PROFILE = require(`${ERP_BASE_URL_ICONS}/user.png`);
 const ACTIVE_PROFILE = require(`${ERP_BASE_URL_ICONS}/active_user.png`);
 const BACK = require(`${ERP_BASE_URL_ICONS}/back.png`);
 const ERROR_ICON = require(`${ERP_BASE_URL_ICONS}/error.png`);
-const MENU = require(`${ERP_BASE_URL_ICONS}/menu.png`);
-
+ 
 const ERROR = require(`${ERP_BASE_URL_GIF}/error.gif`);
+const LOCATION = require(`${ERP_BASE_URL_GIF}/location.gif`);
+
 const LOADING = require(`${ERP_BASE_URL_GIF}/loader.gif`);
-const SEARCH_LOADER = require(`${ERP_BASE_URL_GIF}/search.gif`);
-const NO_INTERNET = require(`${ERP_BASE_URL_GIF}/not_internet.png`);
+ const NO_INTERNET = require(`${ERP_BASE_URL_GIF}/not_internet.png`);
 const NO_DATA = require(`${ERP_BASE_URL_GIF}/no_data.png`);
 const SUCCESS = require(`${ERP_BASE_URL_GIF}/success.gif`);
-const NO_IMG = require(`${ERP_BASE_URL_ICONS}/no_img.jpg`);
-const BACK_IMG = require(`${ERP_BASE_URL_GIF}/back5.jpg`);
+ const BACK_IMG = require(`${ERP_BASE_URL_GIF}/back5.jpg`);
 
 const Analytics = require(`${ERP_BASE_URL_GIF}/Analytics.gif`);
 const Dashboards = require(`${ERP_BASE_URL_GIF}/Dashboards.gif`);
@@ -46,15 +45,12 @@ export const ERP_ICON = {
   ACTIVE_PROFILE,
   BACK,
   ERROR_ICON,
-  MENU,
-  NO_IMG
-};
+ };
 
 export const ERP_GIF = {
   ERROR,
   LOADING,
-  SEARCH_LOADER,
-  NO_DATA,
+   NO_DATA,
   NO_INTERNET,
   SUCCESS,
   Dashboards,
@@ -62,6 +58,7 @@ export const ERP_GIF = {
   money,
   DataManagement,
   RemoteMonitoring,
-  BACK_IMG
+  BACK_IMG,
+  LOCATION
 };
 

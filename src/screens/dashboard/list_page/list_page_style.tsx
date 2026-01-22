@@ -520,7 +520,7 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     right: 18,
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR, 
-    borderRadius: 56,
+    borderRadius: 12,
     elevation: 5,
     height: 56,
     width: 56,

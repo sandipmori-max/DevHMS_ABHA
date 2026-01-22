@@ -76,6 +76,23 @@
     <string>location</string>
   </array>
 
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>App needs location for tracking.</string>
+<key>NSLocationAlwaysUsageDescription</key>
+<string>App needs location for tracking.</string>
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>App needs location for tracking.</string>
+<key>UIBackgroundModes</key>
+<array>
+    <string>location</string>
+    <string>fetch</string>
+</array>
+<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+</dict>
+
 
   <!-- React Native -->
   <key>RCTNewArchEnabled</key>

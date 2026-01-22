@@ -1,152 +1,147 @@
 import Foundation
 import CoreLocation
+import UIKit
 
-@objcMembers
 class LocationService: NSObject, CLLocationManagerDelegate {
 
     static let shared = LocationService()
-
-    private let manager = CLLocationManager()
-    private var lastLocation: CLLocation?
-
+    
+    private let locationManager = CLLocationManager()
+    private var timer: Timer?
     var userDataList: [(token: String, link: String)] = []
-
-    override init() {
+ 
+       private var lastSentLocation: CLLocation?
+     private override init() {
         super.init()
-        print("🚀 [LocationService] INIT")
-
-        manager.delegate = self
-        manager.desiredAccuracy = kCLLocationAccuracyBest
-        manager.allowsBackgroundLocationUpdates = true
-        manager.pausesLocationUpdatesAutomatically = false
-
-        print("⚙️ [LocationService] CLLocationManager configured")
+        locationManager.delegate = self
+        locationManager.distanceFilter = 5
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.allowsBackgroundLocationUpdates = true
+        locationManager.pausesLocationUpdatesAutomatically = false
     }
-
+    
     func start() {
         print("▶️ [LocationService] start() called")
-
-        let status = manager.authorizationStatus
-        print("🔐 [LocationService] Authorization status BEFORE request: \(status.rawValue)")
-
-        manager.requestAlwaysAuthorization()
-        manager.startUpdatingLocation()
-
-        print("📡 [LocationService] startUpdatingLocation() called")
+        
+        let status = CLLocationManager.authorizationStatus()
+        if status == .notDetermined {
+            locationManager.requestAlwaysAuthorization()
+        } else if status == .denied || status == .restricted {
+            print("❌ [LocationService] Location permission denied")
+            return
+        }
+        
+        locationManager.startUpdatingLocation()
+        requestLocationNow()
+        startTimer()
+      
+      if CLLocationManager.significantLocationChangeMonitoringAvailable() {
+                  locationManager.startMonitoringSignificantLocationChanges()
+                  print("📡 [LocationService] SLC monitoring started")
+              }
     }
-
+    
     func stop() {
-        print("⏹️ [LocationService] stop() called")
-        manager.stopUpdatingLocation()
-        print("🛑 [LocationService] Location updates stopped")
+        print("🛑 [LocationService] stop() called")
+        locationManager.stopUpdatingLocation()
+        timer?.invalidate()
+        timer = nil
     }
-
-    // MARK: - Location Callbacks
-
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print("📍 [LocationService] didUpdateLocations called")
-        print("📍 [LocationService] Locations count: \(locations.count)")
-
-        guard let location = locations.last else {
-            print("❌ [LocationService] No location found")
-            return
-        }
-
-        lastLocation = location
-
-        print("""
-        ✅ [LocationService] New Location:
-        • Lat: \(location.coordinate.latitude)
-        • Lng: \(location.coordinate.longitude)
-        • Accuracy: \(location.horizontalAccuracy)m
-        """)
-
-        syncLocation(location)
-    }
-
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("❌ [LocationService] Location error: \(error.localizedDescription)")
-        sendDisabled()
-    }
-
-    // MARK: - Sync Logic
-
-    private func syncLocation(_ location: CLLocation) {
-        print("🔄 [LocationService] syncLocation() started")
-        print("👥 [LocationService] userDataList count: \(userDataList.count)")
-
-        if userDataList.isEmpty {
-            print("⚠️ [LocationService] No users found, skipping API calls")
-            return
-        }
-
-        for (index, user) in userDataList.enumerated() {
-            print("➡️ [LocationService] Sending location for user \(index)")
-            print("🔑 Token: \(user.token)")
-            print("🌐 Link: \(user.link)")
-
-            callAPI(
-                token: user.token,
-                link: user.link,
-                location: "\(location.coordinate.latitude),\(location.coordinate.longitude)"
-            )
+    
+    private func requestLocationNow() {
+        print("🔥 [LocationService] requestLocationNow() called")
+        if let loc = locationManager.location {
+            handleNewLocation(loc)
         }
     }
-
-    private func sendDisabled() {
-        print("🚫 [LocationService] sendDisabled() called")
-        print("👥 [LocationService] userDataList count: \(userDataList.count)")
-
-        for (index, user) in userDataList.enumerated() {
-            print("➡️ [LocationService] Sending DISABLED status for user \(index)")
-            print("🔑 Token: \(user.token)")
-            print("🌐 Link: \(user.link)")
-
-            callAPI(
-                token: user.token,
-                link: user.link,
-                location: "disabled"
-            )
-        }
+    
+    private func startTimer() {
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true, block: { [weak self] _ in
+            guard let self = self else { return }
+            if let loc = self.locationManager.location {
+                self.handleNewLocation(loc)
+            } else {
+                print("⚠️ [LocationService] No location available yet")
+            }
+        })
+        print("✅ [LocationService] 1-minute timer scheduled")
     }
-
-    // MARK: - API Call
-
-    private func callAPI(token: String, link: String, location: String) {
-        let urlString = "\(link)/msp_api.aspx/syncLocation"
-        print("🌍 [LocationService] API URL: \(urlString)")
-        print("📦 [LocationService] Payload: token=\(token), location=\(location)")
-
-        guard let url = URL(string: urlString) else {
-            print("❌ [LocationService] Invalid URL")
-            return
-        }
-
+    
+  private func handleNewLocation(_ location: CLLocation) {
+         // Check if last location sent exists and distance threshold
+         if let last = lastSentLocation {
+             let distance = location.distance(from: last)
+             if distance < 5 { // 5 meters threshold
+                 print("⚠️ [LocationService] Location changed only \(distance)m, skipping API")
+                 return
+             }
+         }
+         
+         lastSentLocation = location
+         print("📍 [LocationService] New location: \(location.coordinate.latitude), \(location.coordinate.longitude)")
+         
+         for user in userDataList {
+             sendLocation(user.token, user.link, location)
+         }
+     }
+    
+    private func sendLocation(_ token: String, _ link: String, _ location: CLLocation) {
+        let json: [String: Any] = [
+            "token": token,
+            "location": "\(location.coordinate.latitude),\(location.coordinate.longitude)"
+        ]
+        
+      let secureLink = link.replacingOccurrences(of: "http://", with: "https://")
+          
+          guard let url = URL(string: "\(secureLink)/msp_api.aspx/syncLocation"),
+                let data = try? JSONSerialization.data(withJSONObject: json) else { return }
+          
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        let body: [String: Any] = [
-            "token": token,
-            "location": location
-        ]
-
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("❌ [LocationService] API Error: \(error.localizedDescription)")
-                return
+        request.httpBody = data
+        
+        var bgTask = UIBackgroundTaskIdentifier.invalid
+        bgTask = UIApplication.shared.beginBackgroundTask(expirationHandler: {
+            UIApplication.shared.endBackgroundTask(bgTask)
+            bgTask = .invalid
+        })
+        
+        URLSession.shared.dataTask(with: request) { data, resp, err in
+            if let err = err {
+                print("❌ [LocationService] Failed to sync location: \(err)")
+            } else {
+              if let data = data, let respString = String(data: data, encoding: .utf8) {
+                         print("✅ [LocationService] API called for token: \(token)")
+                         print("✅ [LocationService] API Response: \(respString)")
+                     } else {
+                         print("✅ [LocationService] API called for token: \(token) but response is nil")
+                     }
+                     if let resp = resp {
+                         print("✅ [LocationService] URLResponse: \(resp)")
+                     }
             }
-
-            if let httpResponse = response as? HTTPURLResponse {
-                print("📬 [LocationService] API Response Code: \(httpResponse.statusCode)")
-            }
-
-            if let data = data,
-               let responseString = String(data: data, encoding: .utf8) {
-                print("📨 [LocationService] API Response Body: \(responseString)")
-            }
+            UIApplication.shared.endBackgroundTask(bgTask)
+            bgTask = .invalid
         }.resume()
     }
+    
+    // MARK: CLLocationManagerDelegate
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let loc = locations.last else { return }
+        handleNewLocation(loc)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status == .authorizedAlways {
+            print("✅ [LocationService] Permission granted → startUpdatingLocation")
+            locationManager.startUpdatingLocation()
+        } else {
+            print("❌ [LocationService] Permission denied")
+        }
+    }
 }
+

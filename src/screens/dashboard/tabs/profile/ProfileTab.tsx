@@ -46,13 +46,13 @@ const ProfileTab = () => {
     Animated.sequence([
       Animated.timing(profileAnim, {
         toValue: 1,
-        duration: 500,
+        duration: 140,
         useNativeDriver: true,
         easing: Easing.out(Easing.exp),
       }),
       Animated.timing(accountAnim, {
         toValue: 1,
-        duration: 400,
+        duration: 100,
         useNativeDriver: true,
         easing: Easing.out(Easing.exp),
       }),
@@ -148,7 +148,7 @@ const ProfileTab = () => {
               {
                 translateY: accountAnim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [30, 0],
+                  outputRange: [24, 0],
                 }),
               },
             ],
