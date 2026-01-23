@@ -69,11 +69,8 @@ export const styles = StyleSheet.create({
   loginButton: {
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
     padding: 16,
-    borderRadius: 10,
-    marginBottom: 20,
-    shadowColor: ERP_COLOR_CODE.ERP_BLACK,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.6,
+    borderRadius: 8,
+    marginBottom: 20, 
     marginTop: 12,
     borderWidth: 1,
     borderColor: '#FFF'
