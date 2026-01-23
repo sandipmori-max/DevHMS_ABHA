@@ -38,7 +38,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
   const [alertConfig, setAlertConfig] = useState({
     title: '',
     message: '',
-    type: 'info' as 'error' | 'success' | 'info',
+    type: 'info' as 'error' | 'success' | 'info' | 'confirmation',
   });
 
   // Animated values
@@ -134,9 +134,9 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
 
   const handleRemoveAccount = (account: Account) => {
     setAlertConfig({
-      title: 'Remove Account',
+      title: 'Remove account',
       message: `Are you sure you want to remove ${account?.user?.company_code}?`,
-      type: 'error',
+      type: 'confirmation',
     });
     setSelectedAccount(account?.id);
     setAlertVisible(true);

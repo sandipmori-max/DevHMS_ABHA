@@ -45,7 +45,7 @@ export const firstLetterUpperCase = (str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-export const getGifSource = (type: 'error' | 'success' | 'info' | 'location') => {
+export const getGifSource = (type: 'error' | 'success' | 'info' | 'location' | 'confirmation' | 'exit') => {
   switch (type) {
     case 'error':
       return ERP_GIF.ERROR;
@@ -53,6 +53,10 @@ export const getGifSource = (type: 'error' | 'success' | 'info' | 'location') =>
       return ERP_GIF.LOCATION;
     case 'success':
       return ERP_GIF.SUCCESS;
+     case 'confirmation':
+      return ERP_ICON.ALERT;
+       case 'exit':
+      return ERP_ICON.EXITS;
     default:
       return ERP_GIF.SUCCESS;
   }

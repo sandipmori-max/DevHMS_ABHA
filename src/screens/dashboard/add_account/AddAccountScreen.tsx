@@ -157,7 +157,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
 
       if (userExists && codeExists) {
         setAlertConfig({
-          title: t("title.title1"),
+          title: 'Duplicate user',
           message: t("msg.msg1"),
           type: 'error',
         });

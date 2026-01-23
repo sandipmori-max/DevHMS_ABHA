@@ -227,7 +227,13 @@ const PinSetupScreen = () => {
       setScreen('blocked');
       showAlert('Blocked', 'Too many wrong attempts. Try again after 5 minutes.', 'error');
     } else {
-      showAlert('Error', `Incorrect PIN (${newAttempts}/3)`, 'error', 1500);
+      showAlert(
+        'Incorrect PIN',
+        `The PIN you entered is incorrect. Attempt ${newAttempts} of 3.`,
+        'error',
+        35000
+      );
+
     }
   };
 
@@ -319,7 +325,7 @@ const PinSetupScreen = () => {
       if (pin === tempPinRef.current) {
         await performSavePin(pin, true); // navigate back as original did
       } else {
-        showAlert('Error', 'PINs do not match', 'error');
+showAlert('PIN Mismatch', 'The PINs you entered do not match. Please re-enter them.', 'error');
         tempPinRef.current = '';
         setPin('');
         setScreen('setup');
@@ -350,7 +356,7 @@ const PinSetupScreen = () => {
       if (pin === tempPinRef.current) {
         await performSavePin(pin, true); // save and go back
       } else {
-        showAlert('Error', 'PINs do not match', 'error');
+showAlert('PIN Mismatch', 'The PINs you entered do not match. Please re-enter them.', 'error');
         tempPinRef.current = '';
         setPin('');
         setScreen('change_setup');
@@ -390,7 +396,7 @@ const PinSetupScreen = () => {
         // save new PIN
         await performSavePin(pin, true);
       } else {
-        showAlert('Error', 'PINs do not match', 'error');
+showAlert('PIN Mismatch', 'The PINs you entered do not match. Please re-enter them.', 'error');
         tempPinRef.current = '';
         setPin('');
         setScreen('forgot_setup');
