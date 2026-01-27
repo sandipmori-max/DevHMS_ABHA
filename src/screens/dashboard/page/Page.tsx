@@ -117,6 +117,7 @@ const PageScreen = () => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [isValidate, setIsValidate] = useState(false);
 
+  const [tapLoader, setTapLoader] = useState(false)
 
   const [error, setError] = useState<string | null>(null);
   const [formValues, setFormValues] = useState<any>({});
@@ -343,6 +344,15 @@ const PageScreen = () => {
       item?.ctltype === 'PHOTO',
   );
 
+    useFocusEffect(
+      useCallback(() => {
+         setTapLoader(false)
+        return () => {
+        };
+      }, [navigation])
+    );
+   
+
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
@@ -472,6 +482,7 @@ const PageScreen = () => {
   const isFromBusinessCard = route?.params?.isFromBusinessCard || false;
 
   const validateForm = useCallback(() => {
+    setTapLoader(true)
     const validationErrors: Record<string, string> = {};
     const errorMessages: string[] = [];
 
@@ -542,11 +553,12 @@ const PageScreen = () => {
           {controls.length > 0 && (
             <ERPIcon
               name="save-as"
-              isLoading={actionSaveLoader}
+              isLoading={actionSaveLoader || tapLoader}
               onPress={async () => {
                 try {
                   // let sccc = 
                   // { "onClick_buttonSave": { "logic": "OR", "rules": [ { "left": "doctorlocation", "operator": "locationWithin", "right": "inlocation", "meters": 50 } ], "validActions": [ { "field": "buttonSave", "action": "disable" } ], "invalidActions": [ { "field": "buttonSave", "action": "enable" } ] }, "onpage_load": { "logic": "OR", "rules": [ { "left": "doctorlocation", "operator": "locationWithin", "right": "inlocation", "meters": 50 } ], "validActions": [ { "field": "buttonSave", "action": "enable" } ], "invalidActions": [ { "field": "buttonSave", "action": "enable" } ] }, }
+                  setTapLoader(true)
                   let rules;
 
                   if (typeof myScript === "string") {
@@ -664,8 +676,10 @@ const PageScreen = () => {
                   }
 
                   setActionSaveLoader(false);
+                  // setTapLoader(false)
                 } catch (error) {
                   console.error("Save error:", error);
+                  setTapLoader(false)
                   setActionSaveLoader(false);
                 }
               }}
@@ -675,6 +689,7 @@ const PageScreen = () => {
       ),
     });
   }, [
+    tapLoader,
     navigation,
     item?.name,
     id,
@@ -1239,6 +1254,7 @@ const parsedRules = useMemo(() => {
             message={alertConfig.message}
             type={alertConfig.type}
             onClose={() => {
+              setTapLoader(false)
               if (modalClose) setAlertVisible(false);
             }}
             actionLoader={undefined}
@@ -1270,7 +1286,9 @@ const parsedRules = useMemo(() => {
       <ErrorModal
         visible={showErrorModal}
         errors={errorsList}
-        onClose={() => setShowErrorModal(false)}
+        onClose={() => {
+          setTapLoader(false)
+          setShowErrorModal(false)}}
       />
 
       {dateTimePickerVisible && Platform.OS === 'ios' && (
@@ -1349,6 +1367,7 @@ const parsedRules = useMemo(() => {
         message={alertConfig.message}
         type={alertConfig.type}
         onClose={() => {
+          setTapLoader(false)
           setAlertVisible(false);
           if (goBack) {
             navigation.goBack();

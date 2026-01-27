@@ -93,7 +93,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
       setFilteredList(filtered);
     }, 300);
   }, [searchText, allList]);
-
+  
   // Header setup
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -130,7 +130,9 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
         !showSearch && (
           <>
             {allList.length > 5 && <ERPIcon name="search" onPress={() => setShowSearch(true)} />}
-            <ERPIcon name="refresh" onPress={() => setIsRefresh(!isRefresh)} />
+            <ERPIcon 
+            isLoading={isMenuLoading}
+            name="refresh" onPress={() => {setIsRefresh(!isRefresh)}} />
             <ERPIcon name={isHorizontal ? 'dashboard' : 'list'} onPress={() => setIsHorizontal(p => !p)} />
             <ERPIcon name={!showBookmarksOnly ? 'bookmark-outline' : 'bookmark'} onPress={() => setShowBookmarksOnly(p => !p)} />
           </>
@@ -139,7 +141,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
         <ERPIcon extSize={24} isMenu name="menu" onPress={() => navigation.openDrawer()} />
       ),
     });
-  }, [showSearch, showBookmarksOnly, isHorizontal, searchText, allList]);
+  }, [showSearch, showBookmarksOnly, isHorizontal, searchText, allList, isMenuLoading]);
 
   useFocusEffect(
     useCallback(() => {
