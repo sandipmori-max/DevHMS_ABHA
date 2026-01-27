@@ -4,7 +4,7 @@ import { ERP_COLOR_CODE } from '../../../utils/constants';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 8,
+    // paddingHorizontal: 8,
     paddingTop: 0,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
   },
@@ -262,7 +262,7 @@ export const styles = StyleSheet.create({
   },
 
   searchContainer: {
-    marginTop: 8,
+    // marginTop: 8,
     marginBottom: 8,
   },
   searchInputContainer: {

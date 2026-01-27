@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   PermissionsAndroid,
   Platform,
@@ -20,10 +20,9 @@ import FullViewLoader from '../components/loader/FullViewLoader';
 import DeviceInfo from 'react-native-device-info';
 import CustomAlert from '../components/alert/CustomAlert';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
 import { ERP_COLOR_CODE } from '../utils/constants';
 import { changeLanguage } from '../i18n';
-import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { getLastPunchInThunk } from '../store/slices/attendance/thunk';
 import { setReloadApp } from '../store/slices/reloadApp/reloadAppSlice';
 import { updatePinVerifyLoadedState } from '../store/slices/auth/authSlice';
@@ -165,6 +164,7 @@ const RootNavigator = () => {
     };
     fetchDeviceName();
   }, [dispatch,]);
+
   // ------------------------- AppState Listener -------------------------
   useEffect(() => {
     const handleAppStateChange = async nextAppState => {
@@ -309,7 +309,6 @@ const RootNavigator = () => {
     return () => clearTimeout(timer);
   }
 }, [isAuthenticated, reLoading]);
-
 
   // ------------------------- Render -------------------------
   if (isLoading) return <FullViewLoader />;

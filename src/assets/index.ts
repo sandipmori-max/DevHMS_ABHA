@@ -15,9 +15,9 @@ const PROFILE = require(`${ERP_BASE_URL_ICONS}/user.png`);
 const ACTIVE_PROFILE = require(`${ERP_BASE_URL_ICONS}/active_user.png`);
 const BACK = require(`${ERP_BASE_URL_ICONS}/back.png`);
 const ERROR_ICON = require(`${ERP_BASE_URL_ICONS}/error.png`);
-const ALERT = require(`${ERP_BASE_URL_ICONS}/alert.jpg`);
-const EXITS = require(`${ERP_BASE_URL_ICONS}/exit.jpg`);
-const VALIDATON = require(`${ERP_BASE_URL_ICONS}/validation.jpg`);
+const ALERT = require(`${ERP_BASE_URL_ICONS}/alert.png`);
+const EXITS = require(`${ERP_BASE_URL_ICONS}/exit.png`);
+const VALIDATON = require(`${ERP_BASE_URL_ICONS}/validation.png`);
  
 const ERROR = require(`${ERP_BASE_URL_GIF}/error.gif`);
 const LOCATION = require(`${ERP_BASE_URL_GIF}/location.gif`);

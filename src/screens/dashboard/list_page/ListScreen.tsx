@@ -144,7 +144,7 @@ const ListScreen = () => {
     navigation.setOptions({
       headerStyle: {
         backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
-        borderBottomWidth: 1,
+        // borderBottomWidth: 1,
         borderBottomColor: '#fff',
       },
       headerTintColor: '#fff',
@@ -183,7 +183,7 @@ const ListScreen = () => {
           } */}
           {
             !error && <ERPIcon
-              name={!hasDateField ? 'search' : isFilterVisible ? 'filter-alt' : 'filter-alt'}
+              name={!hasDateField ? 'search' : isFilterVisible ? 'close' : 'filter-alt'}
               onPress={() => {
                 setIsFilterVisible(!isFilterVisible);
               }}
@@ -443,7 +443,13 @@ const ListScreen = () => {
   return (
     <View style={[styles.container, theme === 'dark' && { backgroundColor: 'black' }]}>
       {isFilterVisible && (
-        <View>
+        <View style={{backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR, 
+        borderWidth: 1,
+        padding: 8,
+        paddingBottom: 8,
+        borderBottomEndRadius: 12,
+        borderBottomStartRadius: 12
+        }}>
           <View style={styles.searchContainer}>
             <View style={[styles.searchInputContainer,
             theme === 'dark' && {
