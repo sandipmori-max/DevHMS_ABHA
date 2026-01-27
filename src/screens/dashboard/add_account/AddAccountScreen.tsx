@@ -187,7 +187,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
 
       if (loginResult?.success !== 1) {
         setAlertConfig({
-          title: t("title.title1"),
+          title:  'Authentication failed',
           message: loginResult?.message || t("msg.msg2"),
           type: 'error',
         });

@@ -126,10 +126,26 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
   };
 
   const handleRemovedAccount = (accountId: string) => {
-    if (accountId !== activeAccountId) {
+   try {
+     if (accountId !== activeAccountId) {
       dispatch(removeAccountThunk(accountId));
     }
-    onClose();
+    setAlertConfig({
+      title: 'Remove account success',
+      message: `Something went wrong!!`,
+      type: 'success',
+    });
+    setTimeout(() =>{
+      onClose();
+    },1800)
+
+   } catch (error) {
+    setAlertConfig({
+      title: 'Remove account',
+      message: `Something went wrong!!`,
+      type: 'error',
+    });
+   }
   };
 
   const handleRemoveAccount = (account: Account) => {
@@ -146,12 +162,12 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
     const isActive = user?.id.toString() === item?.user?.id.toString();
     const lastLogin = formatDateHr(item?.lastLoginAt, false);
     const lastLoginHr = formatTimeTo12Hour(item?.lastLoginAt);
+    console.log("normalizedBase",  item)
 
     let normalizedBase = (item?.user?.companyLink || '').replace(/\/+$/, '');
     normalizedBase = normalizedBase.replace(/\/devws\/?/, '/');
     normalizedBase = normalizedBase.replace(/^https:\/\//i, Platform.OS === 'ios' ? 'https://' : 'http://');
 
-    console.log("normalizedBase", `${normalizedBase}/FileUpload/1/UserMaster/${item?.user?.id}/profileimage.jpeg?ts=${new Date().getTime()}`)
     return (
       <Animated.View
         style={{

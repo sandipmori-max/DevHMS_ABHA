@@ -574,16 +574,14 @@ const HomeScreen = () => {
 
       <View
         style={{
-          marginTop: 1,
           backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
           padding: 12,
           // width: width,
           borderBottomRightRadius: 24,
           borderBottomLeftRadius: 24,
-          borderWidth: 1,
           borderColor: 'white',
           width: '100%',
-
+          marginBottom: 10
         }}
       >
         <Animated.View

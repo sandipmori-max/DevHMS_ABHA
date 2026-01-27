@@ -58,6 +58,9 @@ const Input = ({ id, isValidate, item, errors, value, setValue, onFocus }: any) 
           },
           theme === 'dark' && value && {
             color: 'white'
+          },
+          item?.borderColor && {
+            borderColor: item?.borderColor
           }
         ]}
         keyboardType={item?.ctltype === 'NUMERIC' ? 'number-pad' : 'default'}

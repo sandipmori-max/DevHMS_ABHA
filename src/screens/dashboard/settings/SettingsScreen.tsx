@@ -259,7 +259,7 @@ const translateY = useRef(new Animated.Value(HIDDEN_POSITION)).current;
           setAlertVisible(true);
           setTimeout(() => {
             setAlertVisible(false);
-          }, 1200);
+          }, 1800);
         }
         break;
       case 'action':
@@ -298,7 +298,7 @@ const translateY = useRef(new Animated.Value(HIDDEN_POSITION)).current;
 
     setTimeout(() => {
       setAlertVisible(false);
-    }, 1200);
+    }, 1800);
   };
 
   const renderSettingItem = ({ item }: { item: SettingItem }) => (

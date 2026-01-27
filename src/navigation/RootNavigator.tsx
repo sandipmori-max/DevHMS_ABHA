@@ -209,14 +209,24 @@ const RootNavigator = () => {
       locationModalShownRef.current = false;
       setAlertVisible(false);
       setBackgroundDeniedModal(false);
-        console.log("testtetseteeee------------------------------------accounts",accounts)
+      console.log("testtetseteeee------------------------------------accounts", accounts, user)
 
       if (accounts.length) {
-        const data = accounts.map(u => ({
-          token: u.user.token,
-          link: u.user.companyLink.replace(/^https:\/\//i, 'http://'),
-        }));
-        console.log("testtetseteeee------------------------------------testtetseteee")
+        const data = accounts
+          .map(u => {
+            if (user?.id.toString() === u?.user?.id.toString()) {
+              return {
+                token: u.user.token,
+                link: u.user.companyLink.replace(/^https:\/\//i, 'http://'),
+              };
+            }
+            return null;
+          })
+          .filter(Boolean);
+
+        console.log(data);
+
+        console.log("data------------------+++++++++++------------------", data)
         NativeModules.LocationModule.setUserTokens(data);
         NativeModules.LocationModule.startService();
         console.log("testtetseteeee")
@@ -273,42 +283,42 @@ const RootNavigator = () => {
       dispatch(updatePinVerifyLoadedState(false))
     })
   }, [])
-  
+
   // ------------------------- Focus -------------------------
- useEffect(() => {
-  if (isAuthenticated) {
-    // Optional: cancel timeout if component unmounts
-    const timer = setTimeout(() => {
-      try {
-        dispatch(getLastPunchInThunk())
-          .unwrap()
-          .then(res => {
-            if (res?.success === 1 || res?.success === '1') {
-              console.log("res-----------------------+++++++++++++++++++++++++++++++++++++++------------------------------+++++++");
-              checkLocation();
-            } else {
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Optional: cancel timeout if component unmounts
+      const timer = setTimeout(() => {
+        try {
+          dispatch(getLastPunchInThunk())
+            .unwrap()
+            .then(res => {
+              if (res?.success === 1 || res?.success === '1') {
+                console.log("res-----------------------+++++++++++++++++++++++++++++++++++++++------------------------------+++++++");
+                checkLocation();
+              } else {
+                setAlertVisible(false);
+                setOpenSettings(false);
+                setBackgroundDeniedModal(false);
+                NativeModules.LocationModule.setUserTokens([]);
+                NativeModules.LocationModule.stopService();
+              }
+            })
+            .catch(err => {
               setAlertVisible(false);
               setOpenSettings(false);
               setBackgroundDeniedModal(false);
               NativeModules.LocationModule.setUserTokens([]);
               NativeModules.LocationModule.stopService();
-            }
-          })
-          .catch(err => {
-            setAlertVisible(false);
-            setOpenSettings(false);
-            setBackgroundDeniedModal(false);
-            NativeModules.LocationModule.setUserTokens([]);
-            NativeModules.LocationModule.stopService();
-          });
-      } catch (error) {
-        console.log(error);
-      }
-    }, 2500);
-    // Cleanup to avoid memory leaks
-    return () => clearTimeout(timer);
-  }
-}, [isAuthenticated, reLoading]);
+            });
+        } catch (error) {
+          console.log(error);
+        }
+      }, 2500);
+      // Cleanup to avoid memory leaks
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, reLoading]);
 
   // ------------------------- Render -------------------------
   if (isLoading) return <FullViewLoader />;

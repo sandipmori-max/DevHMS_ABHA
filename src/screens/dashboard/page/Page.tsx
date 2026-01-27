@@ -159,185 +159,184 @@ const PageScreen = () => {
     item => item?.defaultvalue && item?.defaultvalue === '#location' && item?.visible === "0",
   );
   
-  const customScriptRule = `{
-    "onClickButtonSave":
-     {
-        "logic": "OR",
-         "rules": [
-            {
-               "left": "amount",
-               "operator": "equals",
-               "right": ""
-           }
-       ],
-       "validActions": [
-            { "field": "buttonSave", "action": "disable" }
-       ],
-       "invalidActions": [
-           { "field": "buttonSave", "action": "enable" }
-       ],
-       "message": ""
-   },
-   "onPageLoad":
-   {
-       "logic": "OR",
-       "rules": [
-           {
-               "left": "amount",
-               "operator": "equals",
-               "right": ""
-           }
-       ],
-       "validActions": [
-           { "field": "amount", "action": "enable" }
-           ],
-       "invalidActions": [
-            { "field": "amount", "action": "disable" }
-           ]
-   },
-   "place_onInputChange":
-   {
-       "logic": "OR",
-       "rules": [
-           {
-               "left": "place",
-               "operator": "equals",
-               "right": "test"
-           }
-       ],
-       "validActions": [
-            { "field": "exptype", "action": "disable" } 
-           ],
-       "invalidActions": [
-            { "field": "exptype", "action": "enable" }
-           ]
-   },
-   "projectid_onAjaxChange":
-   {
-       "logic": "OR",
-       "rules": [
-           {
-               "left": "projectname",
-               "operator": "equals",
-               "right": "00"
-           }
-       ],
-       "validActions": [
-            { "field": "qty", "action": "setValue", "text" : "2580258"}
-           ],
-       "invalidActions": [
-            { "field": "qty", "action": "disable" }
-           ]
-   },
-   "entryby_onDropDownChange":
-   {
-       "logic": "OR",
-       "rules": [
-           {
-               "left": "entryby",
-               "operator": "equals",
-               "right": "Sandip Mori"
-           }
-       ],
-       "validActions": [
-            { "field": "buttonSave", "action": "disable" }
-           ],
-       "invalidActions": [
-            { "field": "buttonSave", "action": "enable" }
-           ]
-   },
-   "onBoolChange":
-   {
-       "logic": "OR",
-       "rules": [
-           {
-               "left": "doctorlocation",
-               "operator": "locationWithin",
-               "right": "inlocation",
-               "meters": 50
-           }
-       ],
-       "validActions": [
-            { "field": "buttonSave", "action": "enable" }
-           ],
-       "invalidActions": [
-            { "field": "buttonSave", "action": "enable" }
-           ]
-   },
-    "onImageChange":
-   {
-       "logic": "OR",
-       "rules": [
-           {
-               "left": "doctorlocation",
-               "operator": "locationWithin",
-               "right": "inlocation",
-               "meters": 50
-           }
-       ],
-       "validActions": [
-            { "field": "buttonSave", "action": "enable" }
-           ],
-       "invalidActions": [
-            { "field": "buttonSave", "action": "enable" }
-           ]
-   },
-   "onFileChange":
-   {
-       "logic": "OR",
-       "rules": [
-           {
-               "left": "doctorlocation",
-               "operator": "locationWithin",
-               "right": "inlocation",
-               "meters": 50
-           }
-       ],
-       "validActions": [
-            { "field": "buttonSave", "action": "disable" }
-           ],
-       "invalidActions": [
-            { "field": "buttonSave", "action": "enable" }
-           ]
-   },
-    "onLocationChange":
-   {
-       "logic": "OR",
-       "rules": [
-           {
-               "left": "doctorlocation",
-               "operator": "locationWithin",
-               "right": "inlocation",
-               "meters": 50
-           }
-       ],
-       "validActions": [
-            { "field": "buttonSave", "action": "enable" }
-           ],
-       "invalidActions": [
-            { "field": "buttonSave", "action": "enable" }
-           ]
-   },
-   "onBarCodeChange":
-   {
-       "logic": "OR",
-       "rules": [
-           {
-               "left": "doctorlocation",
-               "operator": "locationWithin",
-               "right": "inlocation",
-               "meters": 50
-           }
-       ],
-       "validActions": [
-            { "field": "buttonSave", "action": "enable" }
-           ],
-       "invalidActions": [
-            { "field": "buttonSave", "action": "enable" }
-           ]
-   }
-}`
-
+  const customScriptRule = '';
+//   const customScriptRule = `{
+//     "onClickButtonSave":
+//      {
+//         "logic": "OR",
+//          "rules": [
+//             {
+//                "left": "amount",
+//                "operator": "equals",
+//                "right": ""
+//            }
+//        ],
+//        "validActions": [
+//             { "field": "buttonSave", "action": "disable" }
+//        ],
+//        "invalidActions": [
+//            { "field": "buttonSave", "action": "enable" }
+//        ],
+//        "message": ""
+//    },
+//    "onPageLoad":
+//    {
+//        "logic": "OR",
+//        "rules": [
+//            {
+//                "left": "amount",
+//                "operator": "equals",
+//                "right": ""
+//            }
+//        ],
+//        "validActions": [
+//            { "field": "amount", "action": "enable" }
+//            ],
+//        "invalidActions": [
+//             { "field": "amount", "action": "disable" }
+//            ]
+//    },
+//    "place_onInputChange":
+//    {
+//        "logic": "OR",
+//        "rules": [
+//            {
+//                "left": "place",
+//                "operator": "equals",
+//                "right": "test"
+//            }
+//        ],
+//        "validActions": [
+//             { "field": "exptype", "action": "disable" } 
+//            ],
+//        "invalidActions": [
+//             { "field": "exptype", "action": "enable" }
+//            ]
+//    },
+//    "projectid_onAjaxChange":
+//    {
+//        "logic": "OR",
+//        "rules": [
+//            {
+//                "left": "projectname",
+//                "operator": "equals",
+//                "right": "00"
+//            }
+//        ],
+//        "validActions": [
+//             { "field": "qty", "action": "setValue", "text" : "2580258"}
+//            ],
+//        "invalidActions": [
+//             { "field": "qty", "action": "disable" }
+//            ]
+//    },
+//    "entryby_onDropDownChange":
+//    {
+//        "logic": "OR",
+//        "rules": [
+//            {
+//                "left": "entryby",
+//                "operator": "equals",
+//                "right": "Sandip Mori"
+//            }
+//        ],
+//        "validActions": [
+//             { "field": "buttonSave", "action": "disable" }
+//            ],
+//        "invalidActions": [
+//             { "field": "buttonSave", "action": "enable" }
+//            ]
+//    },
+//    "status_onBoolChange":
+//    {
+//        "logic": "OR",
+//        "rules": [
+//            {
+//                "left": "propname",
+//                "operator": "equals",
+//                "right": "Active"
+//             }
+//        ],
+//        "validActions": [
+//             { "field": "propname", "action": "borderColor", "borderColor" :"red"}
+//            ],
+//        "invalidActions": [
+//             { "field": "buttonSave", "action": "enable" }
+//            ]
+//    },
+//     "onImageChange":
+//    {
+//        "logic": "OR",
+//        "rules": [
+//            {
+//                "left": "doctorlocation",
+//                "operator": "locationWithin",
+//                "right": "inlocation",
+//                "meters": 50
+//            }
+//        ],
+//        "validActions": [
+//             { "field": "buttonSave", "action": "enable" }
+//            ],
+//        "invalidActions": [
+//             { "field": "buttonSave", "action": "enable" }
+//            ]
+//    },
+//    "onFileChange":
+//    {
+//        "logic": "OR",
+//        "rules": [
+//            {
+//                "left": "doctorlocation",
+//                "operator": "locationWithin",
+//                "right": "inlocation",
+//                "meters": 50
+//            }
+//        ],
+//        "validActions": [
+//             { "field": "buttonSave", "action": "disable" }
+//            ],
+//        "invalidActions": [
+//             { "field": "buttonSave", "action": "enable" }
+//            ]
+//    },
+//     "onLocationChange":
+//    {
+//        "logic": "OR",
+//        "rules": [
+//            {
+//                "left": "doctorlocation",
+//                "operator": "locationWithin",
+//                "right": "inlocation",
+//                "meters": 50
+//            }
+//        ],
+//        "validActions": [
+//             { "field": "buttonSave", "action": "enable" }
+//            ],
+//        "invalidActions": [
+//             { "field": "buttonSave", "action": "enable" }
+//            ]
+//    },
+//    "onBarCodeChange":
+//    {
+//        "logic": "OR",
+//        "rules": [
+//            {
+//                "left": "doctorlocation",
+//                "operator": "locationWithin",
+//                "right": "inlocation",
+//                "meters": 50
+//            }
+//        ],
+//        "validActions": [
+//             { "field": "buttonSave", "action": "enable" }
+//            ],
+//        "invalidActions": [
+//             { "field": "buttonSave", "action": "enable" }
+//            ]
+//    }
+// }`
 
   const hasMediaField = controls.some(
     item => item?.ctltype === 'IMAGE' ||
@@ -651,7 +650,7 @@ const PageScreen = () => {
                       setTimeout(() => {
                         setAlertVisible(false);
                         navigation.goBack();
-                      }, 1500);
+                      }, 1800);
                     } catch (err: any) {
                       setLoader(false);
                       setAlertConfig({
