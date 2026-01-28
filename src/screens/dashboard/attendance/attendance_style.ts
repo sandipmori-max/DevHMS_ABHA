@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
   },
   dateRow: {
     flex: 1,
-    marginRight: 8,
+
   },
   dateLabel: {
     fontSize: 14,
@@ -70,6 +70,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
     alignItems: 'center',
+    width: '98%'
   },
   dateButtonText: {
     fontSize: 14,

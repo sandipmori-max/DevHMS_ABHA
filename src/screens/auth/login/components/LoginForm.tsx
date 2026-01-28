@@ -115,7 +115,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
         );
       } else {
         showAlert({
-          title: t('auth.error'),
+          title: "Authentication failed",
           message: loginResult?.message || t('auth.loginFailed'),
           type: 'error',
         });
