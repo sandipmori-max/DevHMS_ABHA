@@ -418,10 +418,7 @@ const styles = StyleSheet.create({
                         const selectedData = listData?.find(
                           d => normalizeDate(d?.date) === day?.dateString,
                         );
-                        Alert.alert(
-                          `${t("text.text19")} ${day?.dateString}`,
-                          selectedData ? JSON.stringify(selectedData, null, 2) : t("text.text20"),
-                        );
+                       openDetails(selectedData)
                       }}
                       markingType={'custom'}
                       markedDates={markedDates}

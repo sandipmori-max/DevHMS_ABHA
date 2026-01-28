@@ -9,12 +9,10 @@
 // gradlew app:assembleRelease 
 // cmd - gradlew assemble[BRAND_NAME]Release
 
-
 // How to used - .env.clientA and .env.cientB ??
 
 // How to run - clientA and clientB app ??
 // gradlew installClientADebug -Pbrand=[BRAND_NAME]
-
 
 Payroll Mobile App – API Documentation
 

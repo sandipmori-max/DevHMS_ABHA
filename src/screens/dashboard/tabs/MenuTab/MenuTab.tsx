@@ -149,13 +149,19 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
       setShowSearch(false);
       setIsRefresh(false);
       setShowBookmarksOnly(false)
+      if (isAuthenticated) {
+      setEntryLoader(true);
+      dispatch(getERPMenuThunk())
+        .unwrap()
+        .finally(() => setEntryLoader(false));
+    }
       return () => {};
-    }, [])
+    }, [isAuthenticated, activeToken, isRefresh])
   );
 
   // Menu loading
   useEffect(() => {
-    if (isAuthenticated) {
+     if (isAuthenticated) {
       setEntryLoader(true);
       dispatch(getERPMenuThunk())
         .unwrap()
