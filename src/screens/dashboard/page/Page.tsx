@@ -556,8 +556,6 @@ const PageScreen = () => {
               isLoading={actionSaveLoader || tapLoader}
               onPress={async () => {
                 try {
-                  // let sccc = 
-                  // { "onClick_buttonSave": { "logic": "OR", "rules": [ { "left": "doctorlocation", "operator": "locationWithin", "right": "inlocation", "meters": 50 } ], "validActions": [ { "field": "buttonSave", "action": "disable" } ], "invalidActions": [ { "field": "buttonSave", "action": "enable" } ] }, "onpage_load": { "logic": "OR", "rules": [ { "left": "doctorlocation", "operator": "locationWithin", "right": "inlocation", "meters": 50 } ], "validActions": [ { "field": "buttonSave", "action": "enable" } ], "invalidActions": [ { "field": "buttonSave", "action": "enable" } ] }, }
                   setTapLoader(true)
                   if (myScript) {
                     let rules;
@@ -567,6 +565,7 @@ const PageScreen = () => {
                         rules = JSON.parse(myScript);
                       } catch (e) {
                         console.error("Invalid JSON from backend", e);
+                        setTapLoader(false)
                         return;
                       }
                     } else {
@@ -853,98 +852,99 @@ const PageScreen = () => {
     ({ item, index }: { item: any; index: number }) => {
 
       const setValue = (val) => {
-        console.log('================ SET VALUE START ================');
 
-        console.log('Incoming value:', val);
-        console.log('Field:', item?.field);
-        console.log('Item:', item);
+        if (myScript) {
+          console.log('================ SET VALUE START ================');
 
-        let updatedValues;
+          console.log('Incoming value:', val);
+          console.log('Field:', item?.field);
+          console.log('Item:', item);
 
-        if (typeof val === 'object' && val !== null) {
-          updatedValues = { ...formValues, ...val };
-          console.log('Merged object value:', updatedValues);
-        } else {
-          updatedValues = { ...formValues, [item.field]: val };
-          console.log('Single field update:', updatedValues);
-        }
+          let updatedValues;
 
-        // 🔹 Update form values
-        setFormValues(updatedValues);
-
-        // 🔹 Clear field error
-        setErrors(prev => ({ ...prev, [item?.field]: '' }));
-
-        // 🔥 RULE EXECUTION LOGS
-        const eventName = getEventByControl(item);
-        console.log('Detected Event:', eventName);
-
-        const ruleKey = `${item.field}_${eventName}`;
-        console.log('Generated Rule Key:', ruleKey);
-
-        console.log('All Parsed Rules Keys:', Object.keys(parsedRules || {}));
-
-        const rule = parsedRules?.[ruleKey];
-        console.log('Matched Rule:', rule);
-
-        if (!rule) {
-          console.log('❌ No rule found for:', ruleKey);
-          console.log('================ SET VALUE END ==================');
-          return;
-        }
-
-        console.log('✅ Rule Found → Evaluating...');
-
-        const { actions } = evaluateRulesWithActions(rule, updatedValues);
-        console.log('Rule Actions:', actions);
-
-        if (!actions || actions.length === 0) {
-          console.log('⚠️ No actions returned from rule');
-          console.log('================ SET VALUE END ==================');
-          return;
-        }
-
-        /* 🔥 NEW PART — handle setValue action */
-        let newFormValues = { ...updatedValues };
-        let isFormValueChanged = false;
-
-        actions.forEach(action => {
-          if (action?.action === 'setValue' && action?.field) {
-            newFormValues[action.field] = action.text ?? '';
-            isFormValueChanged = true;
-
-            console.log(
-              `📝 setValue → ${action.field} = ${action.text}`
-            );
+          if (typeof val === 'object' && val !== null) {
+            updatedValues = { ...formValues, ...val };
+            console.log('Merged object value:', updatedValues);
+          } else {
+            updatedValues = { ...formValues, [item.field]: val };
+            console.log('Single field update:', updatedValues);
           }
-        });
 
-        /* 🔹 Update formValues only if needed */
-        if (isFormValueChanged) {
-          console.log('Updated FormValues:', newFormValues);
-          setFormValues(newFormValues);
+          // 🔹 Update form values
+          setFormValues(updatedValues);
+
+          // 🔹 Clear field error
+          setErrors(prev => ({ ...prev, [item?.field]: '' }));
+
+          // 🔥 RULE EXECUTION LOGS
+          const eventName = getEventByControl(item);
+          console.log('Detected Event:', eventName);
+
+          const ruleKey = `${item.field}_${eventName}`;
+          console.log('Generated Rule Key:', ruleKey);
+
+          console.log('All Parsed Rules Keys:', Object.keys(parsedRules || {}));
+
+          const rule = parsedRules?.[ruleKey];
+          console.log('Matched Rule:', rule);
+
+          if (!rule) {
+            console.log('❌ No rule found for:', ruleKey);
+            console.log('================ SET VALUE END ==================');
+            return;
+          }
+
+          console.log('✅ Rule Found → Evaluating...');
+
+          const { actions } = evaluateRulesWithActions(rule, updatedValues);
+          console.log('Rule Actions:', actions);
+
+          if (!actions || actions.length === 0) {
+            console.log('⚠️ No actions returned from rule');
+            console.log('================ SET VALUE END ==================');
+            return;
+          }
+
+          /* 🔥 NEW PART — handle setValue action */
+          let newFormValues = { ...updatedValues };
+          let isFormValueChanged = false;
+
+          actions.forEach(action => {
+            if (action?.action === 'setValue' && action?.field) {
+              newFormValues[action.field] = action.text ?? '';
+              isFormValueChanged = true;
+
+              console.log(
+                `📝 setValue → ${action.field} = ${action.text}`
+              );
+            }
+          });
+
+          /* 🔹 Update formValues only if needed */
+          if (isFormValueChanged) {
+            console.log('Updated FormValues:', newFormValues);
+            setFormValues(newFormValues);
+          }
+
+          /* 🔹 Existing logic (unchanged) */
+          const updatedControls = applyActionsToControls(controls, actions);
+          console.log('Updated Controls:', updatedControls);
+
+          setControls(updatedControls);
+
+          console.log('================ SET VALUE END ==================');
         }
+        else {
 
-        /* 🔹 Existing logic (unchanged) */
-        const updatedControls = applyActionsToControls(controls, actions);
-        console.log('Updated Controls:', updatedControls);
-
-        setControls(updatedControls);
-
-        console.log('================ SET VALUE END ==================');
+          if (typeof val === 'object' && val !== null) {
+            setFormValues(prev => ({ ...prev, ...val }));
+          } else {
+            setFormValues(prev => ({ ...prev, [item?.field]: val }));
+          }
+          setErrors(prev => ({ ...prev, [item?.field]: '' }));
+        }
 
       };
-
-
-
-      // const setValue = (val: any) => {
-      //   if (typeof val === 'object' && val !== null) {
-      //     setFormValues(prev => ({ ...prev, ...val }));
-      //   } else {
-      //     setFormValues(prev => ({ ...prev, [item?.field]: val }));
-      //   }
-      //   setErrors(prev => ({ ...prev, [item?.field]: '' }));
-      // };
 
 
       const value = formValues[item?.field] || formValues[item?.text] || '';

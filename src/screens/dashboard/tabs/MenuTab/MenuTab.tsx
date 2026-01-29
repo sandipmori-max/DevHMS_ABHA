@@ -37,12 +37,12 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [filteredList, setFilteredList] = useState(allList);
-  const [toast, setToast] = useState({ visible: false, message: '' });
+  const [toast, setToast] = useState({ visible: false, message: '', backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR });
 
   const searchTimeout = useRef(null);
   const list = showBookmarksOnly ? filteredList.filter(i => bookmarks[i.id]) : filteredList;
 
-  const showToast = msg => setToast({ visible: true, message: msg });
+  const showToast = (msg, backgroundColor) => setToast({ visible: true, message: msg , backgroundColor: backgroundColor});
   const hideToast = () => setToast(t => ({ ...t, visible: false }));
 
   function getInitials(name) {
@@ -70,14 +70,14 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
   }, []);
 
   // Toggle bookmark
-  const toggleBookmark = async id => {
+  const toggleBookmark = async (name, id, backgroundColor) =>  {
     const updated = !bookmarks[id];
     setBookmarks(prev => ({ ...prev, [id]: updated }));
 
     const db = await getDBConnection();
     await insertOrUpdateBookmark(db, id, user?.id, updated);
 
-    showToast('Bookmark Updated!');
+    showToast(`${name} - Bookmark Updated!`, backgroundColor);
   };
 
   // Search effect
@@ -186,7 +186,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
           item.url.includes('.') ? navigation.navigate('Web', { item }) : navigation.navigate('List', { item })
         }
       >
-        <TouchableOpacity onPress={() => toggleBookmark(item.id)} style={{ position: 'absolute', top: 0, right: 0 }}>
+        <TouchableOpacity onPress={() => toggleBookmark(getInitials(item?.name) ,item.id, backgroundColor)} style={{ position: 'absolute', top: 0, right: 0 }}>
           <MaterialIcons 
           color={theme === 'dark' ? 'white' : 'black'}
           name={bookmarks[item.id] ? 'bookmark' : 'bookmark-outline'} size={24} />
@@ -244,7 +244,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
-      <Toast visible={toast.visible} message={toast.message} onHide={hideToast} />
+      <Toast visible={toast.visible} message={toast.message} onHide={hideToast} tbackgroundColor={toast.backgroundColor} />
     </View>
   );
 };

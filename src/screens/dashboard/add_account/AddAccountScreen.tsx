@@ -56,6 +56,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
   const formAnim = useRef(new Animated.Value(0)).current; // form container
   const buttonAnim = useRef(new Animated.Value(0)).current; // Add button
   const backdropAnim = useRef(new Animated.Value(0)).current;
+  console.log("user----88888888-------------------", user)
 
   useEffect(() => {
     setLoader(false);
@@ -142,10 +143,45 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
         duration: 850,
         useNativeDriver: true,
       }),
-    ]).start(() => {
+    ]).start(async () => {
+      DevERPService.setAppId(user?.app_id);
+      DevERPService.setToken(user?.token);
+      await AsyncStorage.setItem('erp_token', user?.token || '');
+      await AsyncStorage.setItem('auth_token', user?.token || '');
+      await AsyncStorage.setItem('erp_token_valid_till', user?.tokenValidTill || '');
+
+      DevERPService.setAppId(user?.app_id || '');
+      const validation = await validateCompanyCode(() =>
+        DevERPService.validateCompanyCode(user?.company_code),
+      );
+
+
+      const currentFcmToken = Platform.OS === 'ios' ? "" : fcmToken || (await getMessaging().getToken());
+
+      const loginResult = await loginWithERP(() =>
+        DevERPService.loginToERP({
+          user: user?.username,
+          pass: user?.password,
+          firebaseid: currentFcmToken,
+        }),
+      );
+
+
+      console.log("loginResult", loginResult)
+      DevERPService.setToken(loginResult?.token);
+      await AsyncStorage.setItem('erp_token', loginResult?.token || '');
+      await AsyncStorage.setItem('auth_token', loginResult?.token || '');
+      await AsyncStorage.setItem('erp_token_valid_till', loginResult?.tokenValidTill || '');
+
+       
+
       onClose();
     });
   };
+
+  const resetUserOnFail = () => {
+
+  }
 
 
   const handleAddAccount = async (values: { company_code: string; user: string; password: string }) => {
@@ -186,13 +222,35 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
       );
 
       if (loginResult?.success !== 1) {
+        console.log("user---------*******************--------------", user)
+        DevERPService.setAppId(user?.app_id);
+        DevERPService.setToken(user?.token);
+        await AsyncStorage.setItem('erp_token', user?.token || '');
+        await AsyncStorage.setItem('auth_token', user?.token || '');
+        await AsyncStorage.setItem('erp_token_valid_till', user?.tokenValidTill || '');
+        await validateCompanyCode(() =>
+          DevERPService.validateCompanyCode(user?.company_code),
+        );
+        const currentFcmToken = Platform.OS === 'ios' ? "" : fcmToken || (await getMessaging().getToken());
+        const loginResult = await loginWithERP(() =>
+          DevERPService.loginToERP({
+            user: user?.username,
+            pass: user?.password,
+            firebaseid: currentFcmToken,
+          }),
+        );
+        console.log("loginResult", loginResult)
+        DevERPService.setToken(loginResult?.token);
+        await AsyncStorage.setItem('erp_token', loginResult?.token || '');
+        await AsyncStorage.setItem('auth_token', loginResult?.token || '');
+        await AsyncStorage.setItem('erp_token_valid_till', loginResult?.tokenValidTill || '');
+        setAlertVisible(true);
+        setLoader(false);
         setAlertConfig({
-          title:  'Authentication failed',
+          title: 'Authentication failed',
           message: loginResult?.message || t("msg.msg2"),
           type: 'error',
         });
-        setAlertVisible(true);
-        setLoader(false);
         return;
       }
 
@@ -275,7 +333,9 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
       >
         <View style={[styles.header, theme === 'dark' && { backgroundColor: 'black' }
         ]}>
-          <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+          <TouchableOpacity onPress={() =>{
+            handleClose()
+          }} style={styles.closeButton}>
             <Image source={ERP_ICON.BACK} style={styles.back} />
           </TouchableOpacity>
           <Text style={styles.title}>{t('account.addAccount')}</Text>
@@ -610,6 +670,38 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
                   await AsyncStorage.setItem('erp_token', user?.token || '');
                   await AsyncStorage.setItem('auth_token', user?.token || '');
                   await AsyncStorage.setItem('erp_token_valid_till', user?.tokenValidTill || '');
+
+                  DevERPService.setAppId(user?.app_id || '');
+                  const validation = await validateCompanyCode(() =>
+                    DevERPService.validateCompanyCode(user?.company_code),
+                  );
+
+
+                  const currentFcmToken = Platform.OS === 'ios' ? "" : fcmToken || (await getMessaging().getToken());
+
+                  const loginResult = await loginWithERP(() =>
+                    DevERPService.loginToERP({
+                      user: user?.username,
+                      pass: user?.password,
+                      firebaseid: currentFcmToken,
+                    }),
+                  );
+
+
+                  console.log("loginResult", loginResult)
+                  DevERPService.setToken(loginResult?.token);
+                  await AsyncStorage.setItem('erp_token', loginResult?.token || '');
+                  await AsyncStorage.setItem('auth_token', loginResult?.token || '');
+                  await AsyncStorage.setItem('erp_token_valid_till', loginResult?.tokenValidTill || '');
+
+                  setAlertVisible(false);
+                  setLoader(false);
+                  setAlertConfig({
+                    title: 'Authentication failed',
+                    message: loginResult?.message || t("msg.msg2"),
+                    type: 'error',
+                  });
+
                 }}
                 actionLoader={undefined}
               />
