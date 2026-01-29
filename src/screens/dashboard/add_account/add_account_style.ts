@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
     padding: 12,
      borderBottomWidth: 1,
     borderBottomColor: ERP_COLOR_CODE.ERP_e0e0e0,
-    marginTop: 45
+    marginTop: Platform?.OS === 'android' ? 25 : 45
   },
   title: {
     fontSize: 18,

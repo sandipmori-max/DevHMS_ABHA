@@ -159,199 +159,199 @@ const PageScreen = () => {
   const hasLocationField = controls.some(
     item => item?.defaultvalue && item?.defaultvalue === '#location' && item?.visible === "0",
   );
-  
+
   const customScriptRule = '';
-//   const customScriptRule = `{
-//     "onClickButtonSave":
-//      {
-//         "logic": "OR",
-//          "rules": [
-//             {
-//                "left": "amount",
-//                "operator": "equals",
-//                "right": ""
-//            }
-//        ],
-//        "validActions": [
-//             { "field": "buttonSave", "action": "disable" }
-//        ],
-//        "invalidActions": [
-//            { "field": "buttonSave", "action": "enable" }
-//        ],
-//        "message": ""
-//    },
-//    "onPageLoad":
-//    {
-//        "logic": "OR",
-//        "rules": [
-//            {
-//                "left": "amount",
-//                "operator": "equals",
-//                "right": ""
-//            }
-//        ],
-//        "validActions": [
-//            { "field": "amount", "action": "enable" }
-//            ],
-//        "invalidActions": [
-//             { "field": "amount", "action": "disable" }
-//            ]
-//    },
-//    "place_onInputChange":
-//    {
-//        "logic": "OR",
-//        "rules": [
-//            {
-//                "left": "place",
-//                "operator": "equals",
-//                "right": "test"
-//            }
-//        ],
-//        "validActions": [
-//             { "field": "exptype", "action": "disable" } 
-//            ],
-//        "invalidActions": [
-//             { "field": "exptype", "action": "enable" }
-//            ]
-//    },
-//    "projectid_onAjaxChange":
-//    {
-//        "logic": "OR",
-//        "rules": [
-//            {
-//                "left": "projectname",
-//                "operator": "equals",
-//                "right": "00"
-//            }
-//        ],
-//        "validActions": [
-//             { "field": "qty", "action": "setValue", "text" : "2580258"}
-//            ],
-//        "invalidActions": [
-//             { "field": "qty", "action": "disable" }
-//            ]
-//    },
-//    "entryby_onDropDownChange":
-//    {
-//        "logic": "OR",
-//        "rules": [
-//            {
-//                "left": "entryby",
-//                "operator": "equals",
-//                "right": "Sandip Mori"
-//            }
-//        ],
-//        "validActions": [
-//             { "field": "buttonSave", "action": "disable" }
-//            ],
-//        "invalidActions": [
-//             { "field": "buttonSave", "action": "enable" }
-//            ]
-//    },
-//    "status_onBoolChange":
-//    {
-//        "logic": "OR",
-//        "rules": [
-//            {
-//                "left": "propname",
-//                "operator": "equals",
-//                "right": "Active"
-//             }
-//        ],
-//        "validActions": [
-//             { "field": "propname", "action": "borderColor", "borderColor" :"red"}
-//            ],
-//        "invalidActions": [
-//             { "field": "buttonSave", "action": "enable" }
-//            ]
-//    },
-//     "onImageChange":
-//    {
-//        "logic": "OR",
-//        "rules": [
-//            {
-//                "left": "doctorlocation",
-//                "operator": "locationWithin",
-//                "right": "inlocation",
-//                "meters": 50
-//            }
-//        ],
-//        "validActions": [
-//             { "field": "buttonSave", "action": "enable" }
-//            ],
-//        "invalidActions": [
-//             { "field": "buttonSave", "action": "enable" }
-//            ]
-//    },
-//    "onFileChange":
-//    {
-//        "logic": "OR",
-//        "rules": [
-//            {
-//                "left": "doctorlocation",
-//                "operator": "locationWithin",
-//                "right": "inlocation",
-//                "meters": 50
-//            }
-//        ],
-//        "validActions": [
-//             { "field": "buttonSave", "action": "disable" }
-//            ],
-//        "invalidActions": [
-//             { "field": "buttonSave", "action": "enable" }
-//            ]
-//    },
-//     "onLocationChange":
-//    {
-//        "logic": "OR",
-//        "rules": [
-//            {
-//                "left": "doctorlocation",
-//                "operator": "locationWithin",
-//                "right": "inlocation",
-//                "meters": 50
-//            }
-//        ],
-//        "validActions": [
-//             { "field": "buttonSave", "action": "enable" }
-//            ],
-//        "invalidActions": [
-//             { "field": "buttonSave", "action": "enable" }
-//            ]
-//    },
-//    "onBarCodeChange":
-//    {
-//        "logic": "OR",
-//        "rules": [
-//            {
-//                "left": "doctorlocation",
-//                "operator": "locationWithin",
-//                "right": "inlocation",
-//                "meters": 50
-//            }
-//        ],
-//        "validActions": [
-//             { "field": "buttonSave", "action": "enable" }
-//            ],
-//        "invalidActions": [
-//             { "field": "buttonSave", "action": "enable" }
-//            ]
-//    }
-// }`
+  //   const customScriptRule = `{
+  //     "onClickButtonSave":
+  //      {
+  //         "logic": "OR",
+  //          "rules": [
+  //             {
+  //                "left": "amount",
+  //                "operator": "equals",
+  //                "right": ""
+  //            }
+  //        ],
+  //        "validActions": [
+  //             { "field": "buttonSave", "action": "disable" }
+  //        ],
+  //        "invalidActions": [
+  //            { "field": "buttonSave", "action": "enable" }
+  //        ],
+  //        "message": ""
+  //    },
+  //    "onPageLoad":
+  //    {
+  //        "logic": "OR",
+  //        "rules": [
+  //            {
+  //                "left": "amount",
+  //                "operator": "equals",
+  //                "right": ""
+  //            }
+  //        ],
+  //        "validActions": [
+  //            { "field": "amount", "action": "enable" }
+  //            ],
+  //        "invalidActions": [
+  //             { "field": "amount", "action": "disable" }
+  //            ]
+  //    },
+  //    "place_onInputChange":
+  //    {
+  //        "logic": "OR",
+  //        "rules": [
+  //            {
+  //                "left": "place",
+  //                "operator": "equals",
+  //                "right": "test"
+  //            }
+  //        ],
+  //        "validActions": [
+  //             { "field": "exptype", "action": "disable" } 
+  //            ],
+  //        "invalidActions": [
+  //             { "field": "exptype", "action": "enable" }
+  //            ]
+  //    },
+  //    "projectid_onAjaxChange":
+  //    {
+  //        "logic": "OR",
+  //        "rules": [
+  //            {
+  //                "left": "projectname",
+  //                "operator": "equals",
+  //                "right": "00"
+  //            }
+  //        ],
+  //        "validActions": [
+  //             { "field": "qty", "action": "setValue", "text" : "2580258"}
+  //            ],
+  //        "invalidActions": [
+  //             { "field": "qty", "action": "disable" }
+  //            ]
+  //    },
+  //    "entryby_onDropDownChange":
+  //    {
+  //        "logic": "OR",
+  //        "rules": [
+  //            {
+  //                "left": "entryby",
+  //                "operator": "equals",
+  //                "right": "Sandip Mori"
+  //            }
+  //        ],
+  //        "validActions": [
+  //             { "field": "buttonSave", "action": "disable" }
+  //            ],
+  //        "invalidActions": [
+  //             { "field": "buttonSave", "action": "enable" }
+  //            ]
+  //    },
+  //    "status_onBoolChange":
+  //    {
+  //        "logic": "OR",
+  //        "rules": [
+  //            {
+  //                "left": "propname",
+  //                "operator": "equals",
+  //                "right": "Active"
+  //             }
+  //        ],
+  //        "validActions": [
+  //             { "field": "propname", "action": "borderColor", "borderColor" :"red"}
+  //            ],
+  //        "invalidActions": [
+  //             { "field": "buttonSave", "action": "enable" }
+  //            ]
+  //    },
+  //     "onImageChange":
+  //    {
+  //        "logic": "OR",
+  //        "rules": [
+  //            {
+  //                "left": "doctorlocation",
+  //                "operator": "locationWithin",
+  //                "right": "inlocation",
+  //                "meters": 50
+  //            }
+  //        ],
+  //        "validActions": [
+  //             { "field": "buttonSave", "action": "enable" }
+  //            ],
+  //        "invalidActions": [
+  //             { "field": "buttonSave", "action": "enable" }
+  //            ]
+  //    },
+  //    "onFileChange":
+  //    {
+  //        "logic": "OR",
+  //        "rules": [
+  //            {
+  //                "left": "doctorlocation",
+  //                "operator": "locationWithin",
+  //                "right": "inlocation",
+  //                "meters": 50
+  //            }
+  //        ],
+  //        "validActions": [
+  //             { "field": "buttonSave", "action": "disable" }
+  //            ],
+  //        "invalidActions": [
+  //             { "field": "buttonSave", "action": "enable" }
+  //            ]
+  //    },
+  //     "onLocationChange":
+  //    {
+  //        "logic": "OR",
+  //        "rules": [
+  //            {
+  //                "left": "doctorlocation",
+  //                "operator": "locationWithin",
+  //                "right": "inlocation",
+  //                "meters": 50
+  //            }
+  //        ],
+  //        "validActions": [
+  //             { "field": "buttonSave", "action": "enable" }
+  //            ],
+  //        "invalidActions": [
+  //             { "field": "buttonSave", "action": "enable" }
+  //            ]
+  //    },
+  //    "onBarCodeChange":
+  //    {
+  //        "logic": "OR",
+  //        "rules": [
+  //            {
+  //                "left": "doctorlocation",
+  //                "operator": "locationWithin",
+  //                "right": "inlocation",
+  //                "meters": 50
+  //            }
+  //        ],
+  //        "validActions": [
+  //             { "field": "buttonSave", "action": "enable" }
+  //            ],
+  //        "invalidActions": [
+  //             { "field": "buttonSave", "action": "enable" }
+  //            ]
+  //    }
+  // }`
 
   const hasMediaField = controls.some(
     item => item?.ctltype === 'IMAGE' ||
       item?.ctltype === 'PHOTO',
   );
 
-    useFocusEffect(
-      useCallback(() => {
-         setTapLoader(false)
-        return () => {
-        };
-      }, [navigation])
-    );
-   
+  useFocusEffect(
+    useCallback(() => {
+      setTapLoader(false)
+      return () => {
+      };
+    }, [navigation])
+  );
+
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -559,38 +559,41 @@ const PageScreen = () => {
                   // let sccc = 
                   // { "onClick_buttonSave": { "logic": "OR", "rules": [ { "left": "doctorlocation", "operator": "locationWithin", "right": "inlocation", "meters": 50 } ], "validActions": [ { "field": "buttonSave", "action": "disable" } ], "invalidActions": [ { "field": "buttonSave", "action": "enable" } ] }, "onpage_load": { "logic": "OR", "rules": [ { "left": "doctorlocation", "operator": "locationWithin", "right": "inlocation", "meters": 50 } ], "validActions": [ { "field": "buttonSave", "action": "enable" } ], "invalidActions": [ { "field": "buttonSave", "action": "enable" } ] }, }
                   setTapLoader(true)
-                  let rules;
+                  if (myScript) {
+                    let rules;
 
-                  if (typeof myScript === "string") {
-                    try {
-                      rules = JSON.parse(myScript);
-                    } catch (e) {
-                      console.error("Invalid JSON from backend", e);
-                      return;
+                    if (typeof myScript === "string") {
+                      try {
+                        rules = JSON.parse(myScript);
+                      } catch (e) {
+                        console.error("Invalid JSON from backend", e);
+                        return;
+                      }
+                    } else {
+                      rules = myScript;
                     }
-                  } else {
-                    rules = myScript;
-                  }
 
-                  const { actions } = evaluateRulesWithActions(rules, formValues);
-                  const hasButtonSaveEnable = actions.some(
-                    item => item?.field === "buttonSave"
-                  );
-                  if (hasButtonSaveEnable) {
+                    const { actions } = evaluateRulesWithActions(rules, formValues);
                     const hasButtonSaveEnable = actions.some(
-                      item => item?.field === "buttonSave" && item.action === "enable"
+                      item => item?.field === "buttonSave"
                     );
+                    if (hasButtonSaveEnable) {
+                      const hasButtonSaveEnable = actions.some(
+                        item => item?.field === "buttonSave" && item.action === "enable"
+                      );
+                      const updatedControls = applyActionsToControls(controls, actions);
+                      setControls(updatedControls)
+                      setButtonSave(hasButtonSaveEnable)
+                      if (!hasButtonSaveEnable) {
+                        setTapLoader(false);
+                        Alert.alert("Error", myScript?.message)
+                        return;
+                      }
+                    }
                     const updatedControls = applyActionsToControls(controls, actions);
                     setControls(updatedControls)
-                    setButtonSave(hasButtonSaveEnable)
-                    if (!hasButtonSaveEnable) {
-                      Alert.alert("Error", myScript?.message)
-                      return;
-                    }
                   }
                   console.log("hasButtonSaveEnable-------------------")
-                  const updatedControls = applyActionsToControls(controls, actions);
-                  setControls(updatedControls)
 
                   const locationEnabled = hasLocationField ? await DeviceInfo.isLocationEnabled() : true;
 
@@ -676,10 +679,14 @@ const PageScreen = () => {
                   }
 
                   setActionSaveLoader(false);
-                  // setTapLoader(false)
+                  setTimeout(() => {
+                    setTapLoader(false)
+                  }, 600)
                 } catch (error) {
                   console.error("Save error:", error);
-                  setTapLoader(false)
+                  setTimeout(() => {
+                    setTapLoader(false)
+                  }, 600)
                   setActionSaveLoader(false);
                 }
               }}
@@ -789,144 +796,144 @@ const PageScreen = () => {
     hideDateTimePicker();
   };
 
-  useEffect(() => {
-    let parsedRules;
+  // useEffect(() => {
+  //   let parsedRules;
 
-    if (typeof customScriptRule === 'string') {
-      try {
-        const json = JSON.parse(customScriptRule);
-        parsedRules = json.onPageLoad; 
-      } catch (e) {
-        console.error('Invalid JSON from backend', e);
-        return;
-      }
-    } else {
-      parsedRules = customScriptRule?.onPageLoad;
-    }
+  //   if (typeof customScriptRule === 'string') {
+  //     try {
+  //       const json = JSON.parse(customScriptRule);
+  //       parsedRules = json.onPageLoad; 
+  //     } catch (e) {
+  //       console.error('Invalid JSON from backend', e);
+  //       return;
+  //     }
+  //   } else {
+  //     parsedRules = customScriptRule?.onPageLoad;
+  //   }
 
-    if (!parsedRules) return;
+  //   if (!parsedRules) return;
 
-    console.log('Parsed Rules:', parsedRules);
+  //   console.log('Parsed Rules:', parsedRules);
 
-    const { actions = [] } = evaluateRulesWithActions(parsedRules, formValues);
+  //   const { actions = [] } = evaluateRulesWithActions(parsedRules, formValues);
 
-    console.log('Actions:', actions);
+  //   console.log('Actions:', actions);
 
-    // ✅ Check buttonSave enable action
-    const isButtonSaveEnabled = actions.some(
-      item => item?.field === 'buttonSave' && item?.action === 'enable'
-    );
+  //   // ✅ Check buttonSave enable action
+  //   const isButtonSaveEnabled = actions.some(
+  //     item => item?.field === 'buttonSave' && item?.action === 'enable'
+  //   );
 
-    // ✅ Apply actions once
-    const updatedControls = applyActionsToControls(controls, actions);
-    setControls(updatedControls);
+  //   // ✅ Apply actions once
+  //   const updatedControls = applyActionsToControls(controls, actions);
+  //   setControls(updatedControls);
 
-    // ✅ Update button state
-    setButtonSave(isButtonSaveEnabled);
+  //   // ✅ Update button state
+  //   setButtonSave(isButtonSaveEnabled);
 
-  }, [formValues]);
+  // }, [formValues]);
 
   const applyActionsToFormValues = (formValues, actions) => {
-  let updatedValues = { ...formValues };
+    let updatedValues = { ...formValues };
 
-  actions.forEach(action => {
-    if (action?.action === 'setValue' && action?.field) {
-      updatedValues[action.field] = action.text ?? '';
-      console.log(
-        `✅ setValue applied → ${action.field} = ${action.text}`
-      );
-    }
-  });
+    actions.forEach(action => {
+      if (action?.action === 'setValue' && action?.field) {
+        updatedValues[action.field] = action.text ?? '';
+        console.log(
+          `✅ setValue applied → ${action.field} = ${action.text}`
+        );
+      }
+    });
 
-  return updatedValues;
-};
+    return updatedValues;
+  };
 
 
   const renderItem = useCallback(
     ({ item, index }: { item: any; index: number }) => {
 
-       const setValue = (val) => {
-          console.log('================ SET VALUE START ================');
+      const setValue = (val) => {
+        console.log('================ SET VALUE START ================');
 
-          console.log('Incoming value:', val);
-          console.log('Field:', item?.field);
-          console.log('Item:', item);
+        console.log('Incoming value:', val);
+        console.log('Field:', item?.field);
+        console.log('Item:', item);
 
-          let updatedValues;
+        let updatedValues;
 
-          if (typeof val === 'object' && val !== null) {
-            updatedValues = { ...formValues, ...val };
-            console.log('Merged object value:', updatedValues);
-          } else {
-            updatedValues = { ...formValues, [item.field]: val };
-            console.log('Single field update:', updatedValues);
-          }
+        if (typeof val === 'object' && val !== null) {
+          updatedValues = { ...formValues, ...val };
+          console.log('Merged object value:', updatedValues);
+        } else {
+          updatedValues = { ...formValues, [item.field]: val };
+          console.log('Single field update:', updatedValues);
+        }
 
-          // 🔹 Update form values
-          setFormValues(updatedValues);
+        // 🔹 Update form values
+        setFormValues(updatedValues);
 
-          // 🔹 Clear field error
-           setErrors(prev => ({ ...prev, [item?.field]: '' }));
+        // 🔹 Clear field error
+        setErrors(prev => ({ ...prev, [item?.field]: '' }));
 
-          // 🔥 RULE EXECUTION LOGS
-          const eventName = getEventByControl(item);
-          console.log('Detected Event:', eventName);
+        // 🔥 RULE EXECUTION LOGS
+        const eventName = getEventByControl(item);
+        console.log('Detected Event:', eventName);
 
-          const ruleKey = `${item.field}_${eventName}`;
-          console.log('Generated Rule Key:', ruleKey);
+        const ruleKey = `${item.field}_${eventName}`;
+        console.log('Generated Rule Key:', ruleKey);
 
-          console.log('All Parsed Rules Keys:', Object.keys(parsedRules || {}));
+        console.log('All Parsed Rules Keys:', Object.keys(parsedRules || {}));
 
-          const rule = parsedRules?.[ruleKey];
-          console.log('Matched Rule:', rule);
+        const rule = parsedRules?.[ruleKey];
+        console.log('Matched Rule:', rule);
 
-          if (!rule) {
-            console.log('❌ No rule found for:', ruleKey);
-            console.log('================ SET VALUE END ==================');
-            return;
-          }
-
-         console.log('✅ Rule Found → Evaluating...');
-
-          const { actions } = evaluateRulesWithActions(rule, updatedValues);
-          console.log('Rule Actions:', actions);
-
-          if (!actions || actions.length === 0) {
-            console.log('⚠️ No actions returned from rule');
-            console.log('================ SET VALUE END ==================');
-            return;
-          }
-
-          /* 🔥 NEW PART — handle setValue action */
-          let newFormValues = { ...updatedValues };
-          let isFormValueChanged = false;
-
-          actions.forEach(action => {
-            if (action?.action === 'setValue' && action?.field) {
-              newFormValues[action.field] = action.text ?? '';
-              isFormValueChanged = true;
-
-              console.log(
-                `📝 setValue → ${action.field} = ${action.text}`
-              );
-            }
-          });
-
-          /* 🔹 Update formValues only if needed */
-          if (isFormValueChanged) {
-            console.log('Updated FormValues:', newFormValues);
-            setFormValues(newFormValues);
-          }
-
-          /* 🔹 Existing logic (unchanged) */
-          const updatedControls = applyActionsToControls(controls, actions);
-          console.log('Updated Controls:', updatedControls);
-
-          setControls(updatedControls);
-
+        if (!rule) {
+          console.log('❌ No rule found for:', ruleKey);
           console.log('================ SET VALUE END ==================');
+          return;
+        }
 
-        };
+        console.log('✅ Rule Found → Evaluating...');
+
+        const { actions } = evaluateRulesWithActions(rule, updatedValues);
+        console.log('Rule Actions:', actions);
+
+        if (!actions || actions.length === 0) {
+          console.log('⚠️ No actions returned from rule');
+          console.log('================ SET VALUE END ==================');
+          return;
+        }
+
+        /* 🔥 NEW PART — handle setValue action */
+        let newFormValues = { ...updatedValues };
+        let isFormValueChanged = false;
+
+        actions.forEach(action => {
+          if (action?.action === 'setValue' && action?.field) {
+            newFormValues[action.field] = action.text ?? '';
+            isFormValueChanged = true;
+
+            console.log(
+              `📝 setValue → ${action.field} = ${action.text}`
+            );
+          }
+        });
+
+        /* 🔹 Update formValues only if needed */
+        if (isFormValueChanged) {
+          console.log('Updated FormValues:', newFormValues);
+          setFormValues(newFormValues);
+        }
+
+        /* 🔹 Existing logic (unchanged) */
+        const updatedControls = applyActionsToControls(controls, actions);
+        console.log('Updated Controls:', updatedControls);
+
+        setControls(updatedControls);
+
+        console.log('================ SET VALUE END ==================');
+
+      };
 
 
 
@@ -939,11 +946,11 @@ const PageScreen = () => {
       //   setErrors(prev => ({ ...prev, [item?.field]: '' }));
       // };
 
-      
+
       const value = formValues[item?.field] || formValues[item?.text] || '';
 
-   
-  
+
+
       if (item?.visible === '1') return null;
 
       let content = null;
@@ -1148,33 +1155,33 @@ const PageScreen = () => {
     [formValues, errors, controls, locationEnabled],
   );
 
-const getEventByControl = (item) => {
-  if (item?.ctltype === 'BOOL') return 'onBoolChange';
-  if (item?.ctltype === 'IMAGE') return 'onImageChange';
-  if (item?.ctltype === 'FILE') return 'onFileChange';
-  if (item?.defaultvalue === '#location') return 'onLocationChange';
-  if (item?.ctltype === 'QRSCANNER') return 'onBarCodeChange';
+  const getEventByControl = (item) => {
+    if (item?.ctltype === 'BOOL') return 'onBoolChange';
+    if (item?.ctltype === 'IMAGE') return 'onImageChange';
+    if (item?.ctltype === 'FILE') return 'onFileChange';
+    if (item?.defaultvalue === '#location') return 'onLocationChange';
+    if (item?.ctltype === 'QRSCANNER') return 'onBarCodeChange';
 
-  if (item?.ajax === 1) return 'onAjaxChange';
-  if (item?.ddl && item?.ddl !== '') return 'onDropDownChange';
+    if (item?.ajax === 1) return 'onAjaxChange';
+    if (item?.ddl && item?.ddl !== '') return 'onDropDownChange';
 
-  return 'onInputChange'; // default
-};
+    return 'onInputChange'; // default
+  };
 
 
   const getRuleKey = (item) => {
-  const eventName = getEventByControl(item);
-  return `${item.field}_${eventName}`;
-};
+    const eventName = getEventByControl(item);
+    return `${item.field}_${eventName}`;
+  };
 
-const parsedRules = useMemo(() => {
-  try {
-    return JSON.parse(customScriptRule);
-  } catch (e) {
-    console.error('Invalid rules JSON');
-    return {};
-  }
-}, []);
+  const parsedRules = useMemo(() => {
+    try {
+      return JSON.parse(customScriptRule);
+    } catch (e) {
+      console.error('Invalid rules JSON');
+      return {};
+    }
+  }, []);
 
   const showDatePicker = (field: string, date: any) => {
     setActiveDateField(field);
@@ -1288,7 +1295,8 @@ const parsedRules = useMemo(() => {
         errors={errorsList}
         onClose={() => {
           setTapLoader(false)
-          setShowErrorModal(false)}}
+          setShowErrorModal(false)
+        }}
       />
 
       {dateTimePickerVisible && Platform.OS === 'ios' && (
