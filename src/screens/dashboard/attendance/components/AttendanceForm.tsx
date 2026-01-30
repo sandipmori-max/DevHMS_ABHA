@@ -29,6 +29,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
   const baseLink = useBaseLink();
   const theme = useAppSelector(state => state?.theme.mode);
 
+
   const [statusImage, setStatusImage] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
@@ -49,6 +50,9 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
     setFieldValue: (field: keyof AttendanceFormValues, value: any) => void;
     handleSubmit: () => void;
   } | null>(null);
+
+
+
 
   // -------------------- AppState Listener --------------------
   useEffect(() => {
@@ -127,7 +131,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
         message: t('errors.cameraLocationPermission'),
         type: 'error',
       });
-      setModalClose(true);
+      setModalClose(false);
       setAlertVisible(true);
       setIsSettingVisible(true);
 
@@ -478,9 +482,10 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
           setLocationLoading(false);
           setAttendanceDone(false);
           setLocationAlertVisible(false);
-        }}
+        } }
         actionLoader={undefined}
-        isSettingVisible={false}
+        isSettingVisible={false} 
+        closeHide={undefined}    
       />
 
       <CustomAlert
@@ -502,10 +507,10 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
               }, 1000);
             }
           }
-        }}
+        } }
         actionLoader={undefined}
-        isSettingVisible={isSettingVisible}
-      />
+        isSettingVisible={isSettingVisible} 
+        closeHide={undefined}      />
     </View>
   );
 };

@@ -52,7 +52,7 @@ const HomeScreen = () => {
     state => state.auth,
   );
 
-  
+
   const [loadingPageId, setLoadingPageId] = useState<any>(null);
   const [isRefresh, setIsRefresh] = useState<boolean>(false);
   const [fromDate, setFromDate] = useState<string>('');
@@ -111,12 +111,12 @@ const HomeScreen = () => {
     ).start();
   }, []);
 
-  
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: {
         backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
-         borderBottomWidth:  theme === 'dark' ? 1 : 0,
+        borderBottomWidth: theme === 'dark' ? 1 : 0,
         borderBottomColor: theme === 'dark' ? '#fff' : ERP_COLOR_CODE.ERP_APP_COLOR,
       },
       headerTintColor: '#fff',
@@ -159,8 +159,6 @@ const HomeScreen = () => {
         <>
           {!showSearch && (
             <>
-
-
               <ERPIcon
                 name="refresh"
                 onPress={() => {
@@ -168,14 +166,13 @@ const HomeScreen = () => {
                   setActionLoader(true);
                   setIsRefresh(!isRefresh);
                   dispatch(getERPDashboardThunk({ branch: auth.dashboardBranch, type: auth.dashboardType, fd: auth.dashboardFromDate, td: auth.dashboardToDate }));
-                   
                   const timer = setTimeout(() => {
-                     setActionLoader(false);
-                      setControlsLoader(false);
-                      dispatch(setDashboardLoading(false));
-                    }, 3000);
-                    return () => clearTimeout(timer); 
-                  
+                    setActionLoader(false);
+                    setControlsLoader(false);
+                    dispatch(setDashboardLoading(false));
+                  }, 3000);
+                  return () => clearTimeout(timer);
+
                 }}
                 isLoading={actionLoader}
               />
@@ -195,37 +192,37 @@ const HomeScreen = () => {
         </>
       ),
       headerLeft: () => (
-        <ERPIcon extSize={24} isMenu={true} name="menu" onPress={() => navigation?.openDrawer()} />
+        <TouchableOpacity
+          onPress={() => navigation?.openDrawer()}
+          style={{ height: 46, width: 46, justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+          <ERPIcon extSize={24} isMenu={true} name="menu" onPress={() => navigation?.openDrawer()} />
+        </TouchableOpacity>
       ),
     });
-  }, [actionLoader ,navigation, isHorizontal, isRefresh, showSearch, dashboard, searchText, filteredDashboard, isFilterVisible]);
+  }, [actionLoader, navigation, isHorizontal, isRefresh, showSearch, dashboard, searchText, filteredDashboard, isFilterVisible]);
 
- useFocusEffect(
-  useCallback(() => {
-    let timer;
+  useFocusEffect(
+    useCallback(() => {
+      let timer;
 
-    if (isAuthenticated) {
-      setLoadingPageId(true);
-
-      // dispatch(getERPAppConfigMenuThunk());
-      const params = {branch: '', type: '', fd: '', td: ''}
-      dispatch(getERPDashboardThunk(params));
-      dispatch(getERPMenuThunk());
-
-      timer = setTimeout(() => {
-        dispatch(setDashboardLoading(false));
-      }, 3000);
-    }
-
-    // ✅ single cleanup function
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
+      if (isAuthenticated) {
+        setLoadingPageId(true);
+        // dispatch(getERPAppConfigMenuThunk());
+        const params = { branch: '', type: '', fd: '', td: '' }
+        dispatch(getERPDashboardThunk(params));
+        dispatch(getERPMenuThunk());
+        timer = setTimeout(() => {
+          dispatch(setDashboardLoading(false));
+        }, 3000);
       }
-    };
-  }, [isAuthenticated, dispatch])
-);
-
+      // ✅ single cleanup function
+      return () => {
+        if (timer) {
+          clearTimeout(timer);
+        }
+      };
+    }, [isAuthenticated, dispatch])
+  );
 
   const dummyUpcomingEvents = [];
 
@@ -432,7 +429,7 @@ const HomeScreen = () => {
   };
 
   const scrollY = useRef(new Animated.Value(0)).current;
-  
+
   const getCurrentMonthRange = useCallback(() => {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -449,13 +446,13 @@ const HomeScreen = () => {
 
   }, [getCurrentMonthRange]);
 
-  useFocusEffect(
-    useCallback(() => {
-      const { fromDate: initialFromDate, toDate: initialToDate } = getCurrentMonthRange();
-      // fetchListData(initialFromDate, initialToDate);
-      return () => { };
-    }, [getCurrentMonthRange,]),
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const { fromDate: initialFromDate, toDate: initialToDate } = getCurrentMonthRange();
+  //     // fetchListData(initialFromDate, initialToDate);
+  //     return () => { };
+  //   }, [getCurrentMonthRange,]),
+  // );
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
     if (event?.type === 'dismissed' || !selectedDate) {
@@ -526,10 +523,10 @@ const HomeScreen = () => {
   useEffect(() => {
     dispatch(getERPDashboardThunk({ branch: auth?.dashboardBranch || "", type: auth?.dashboardType || "", fd: auth?.dashboardFromDate || "", td: auth?.dashboardToDate || "" }));
     const timer = setTimeout(() => {
-    dispatch(setDashboardLoading(false));
-  }, 3000);
-  return () => clearTimeout(timer);
-  
+      dispatch(setDashboardLoading(false));
+    }, 3000);
+    return () => clearTimeout(timer);
+
   }, [auth.dashboardBranch, auth.dashboardType, auth.dashboardFromDate, auth.dashboardToDate])
 
   function SmallItem({ left, primary, secondary, type }) {
@@ -560,7 +557,7 @@ const HomeScreen = () => {
     );
   }
 
-  if (isDashboardLoading ) return <FullViewLoader />
+  if (isDashboardLoading) return <FullViewLoader />
   if (!actionLoader && filteredDashboard?.length === 0) {
     return <View
       style={{

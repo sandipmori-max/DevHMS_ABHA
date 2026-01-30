@@ -334,7 +334,7 @@ export const getERPDashboardThunk = createAsyncThunk(
         fd,
         td
       );
-      console.log("dashboard---------------------")
+      console.log("dashboard---------------------", dashboard)
       return dashboard;
     } catch (error: any) {
       console.log("dashboard-----------error----------", error)

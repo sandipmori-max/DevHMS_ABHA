@@ -333,9 +333,14 @@ const RootNavigator = () => {
             title={alertConfig.title}
             message={alertConfig.message}
             type={alertConfig.type}
-            onClose={() => { }}
+            onClose={() => { 
+        console.log("data------------------+++++++++++------------------", 'data')
+        // setAlertVisible(true)
+
+            }}
             isSettingVisible={openSettings}
             actionLoader={undefined}
+            closeHide={true}
           />
         )
       }

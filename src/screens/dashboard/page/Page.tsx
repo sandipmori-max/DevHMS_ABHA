@@ -54,6 +54,7 @@ import VideoRecorder from './components/VideoRecorder';
 import ScanScreen from './components/ScanScreen';
 import BarCodeScan from './components/BarCodeScan';
 import { styles } from './page_style';
+import { openSettings } from 'react-native-permissions';
 
 type PageRouteParams = { PageScreen: { item: any } };
 
@@ -603,13 +604,15 @@ const PageScreen = () => {
                   const hasCameraPermission = hasMediaField ? await requestCameraPermission() : true;
 
                   if (!hasCameraPermission && hasMediaField) {
+                    setAlertVisible(true);
+                    setModalClose(true);
+                    setIsSettingVisible(true)
                     setAlertConfig({
                       title: t('title.title16'),
                       message: t("msg.msg15"),
                       type: 'error',
                     });
-                    setAlertVisible(true);
-                    setModalClose(false);
+                    
                     return;
                   }
 
@@ -620,7 +623,8 @@ const PageScreen = () => {
                       type: 'error',
                     });
                     setAlertVisible(true);
-                    setModalClose(false);
+                    setModalClose(true);
+                     setIsSettingVisible(true)
                     return;
                   }
 
@@ -1375,6 +1379,7 @@ const PageScreen = () => {
         message={alertConfig.message}
         type={alertConfig.type}
         onClose={() => {
+           
           setTapLoader(false)
           setAlertVisible(false);
           if (goBack) {
