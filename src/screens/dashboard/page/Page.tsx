@@ -509,7 +509,10 @@ const PageScreen = () => {
         backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
         borderBottomWidth: 1,
         borderBottomColor: '#fff',
+        
       },
+        
+      
       headerTintColor: '#fff',
       headerTitle: () => (
         <View style={{ flexDirection: 'row', alignItems: 'center', maxWidth: 210 }}>

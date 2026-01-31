@@ -18,8 +18,7 @@ import { DARK_COLOR, ERP_COLOR_CODE } from '../../../../utils/constants';
 import Toast from '../../../../components/Toast/Toast';
 
 import { StyleSheet } from 'react-native';
-const accentColors = ['#dbe0f5ff', '#c8f3edff', '#faf1e0ff', '#f0e1e1ff', '#f2e3f8ff', '#e0f3edff'];
-
+const accentColors = ['#dbe0f5ff', '#c8f3edff', '#faf1e0ff', '#f0e1e1ff', '#f2e3f8ff', '#e0f3edff',];
 const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
@@ -99,8 +98,8 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
     navigation.setOptions({
       headerStyle: {
         backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
-         borderBottomWidth: 1,
-        borderBottomColor: '#fff',
+        //  borderBottomWidth: 1,
+        // borderBottomColor: '#fff',
       },
       headerTintColor: 'white',
       headerTitle: () =>

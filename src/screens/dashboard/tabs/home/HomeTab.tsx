@@ -97,9 +97,21 @@ const HomeScreen = () => {
     }, 300);
 
     return () => {
+      
       if (searchTimeout.current) clearTimeout(searchTimeout.current);
     };
   }, [searchText, dashboard]);
+
+  useFocusEffect(
+      useCallback(() => {
+          dispatch(setActiveDashboardBranchId(''))
+          dispatch(setActiveDashboardBranch(''))
+          dispatch(setActiveDashboardType(''))
+          dispatch(setActiveDashboardTypeId(''))
+          setIsFilterVisible(false)
+        return () => {};
+      }, [isAuthenticated,  navigation])
+    );
 
   useEffect(() => {
     Animated.loop(
@@ -165,7 +177,7 @@ const HomeScreen = () => {
                   setControlsLoader(true);
                   setActionLoader(true);
                   setIsRefresh(!isRefresh);
-                  dispatch(getERPDashboardThunk({ branch: auth.dashboardBranch, type: auth.dashboardType, fd: auth.dashboardFromDate, td: auth.dashboardToDate }));
+                  dispatch(getERPDashboardThunk({ branch: auth.dashboardBranch.trim(), type: auth.dashboardType.trim(), fd: auth.dashboardFromDate.trim(), td: auth.dashboardToDate.trim() }));
                   const timer = setTimeout(() => {
                     setActionLoader(false);
                     setControlsLoader(false);
@@ -203,6 +215,7 @@ const HomeScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+       
       let timer;
 
       if (isAuthenticated) {
@@ -520,8 +533,10 @@ const HomeScreen = () => {
     fetchPageData();
   }, []);
 
+   
+
   useEffect(() => {
-    dispatch(getERPDashboardThunk({ branch: auth?.dashboardBranch || "", type: auth?.dashboardType || "", fd: auth?.dashboardFromDate || "", td: auth?.dashboardToDate || "" }));
+    dispatch(getERPDashboardThunk({ branch: auth?.dashboardBranch.trim() || "", type: auth?.dashboardType.trim() || "", fd: auth?.dashboardFromDate.trim() || "", td: auth?.dashboardToDate.trim() || "" }));
     const timer = setTimeout(() => {
       dispatch(setDashboardLoading(false));
     }, 3000);
