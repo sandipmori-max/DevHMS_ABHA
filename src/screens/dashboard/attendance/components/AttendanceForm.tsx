@@ -28,8 +28,6 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
   const { user } = useAppSelector(state => state?.auth);
   const baseLink = useBaseLink();
   const theme = useAppSelector(state => state?.theme.mode);
-
-
   const [statusImage, setStatusImage] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
@@ -50,9 +48,6 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
     setFieldValue: (field: keyof AttendanceFormValues, value: any) => void;
     handleSubmit: () => void;
   } | null>(null);
-
-
-
 
   // -------------------- AppState Listener --------------------
   useEffect(() => {
@@ -189,6 +184,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
   const fadeRemark = useRef(new Animated.Value(0)).current;
   const fadeImage = useRef(new Animated.Value(0)).current;
   const fadeButton = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
     Animated.stagger(120, [
       Animated.parallel([
@@ -338,11 +334,8 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
                   >
                     <View style={styles.profileRow}>
                       <ProfileImage userId={user?.id} baseLink={baseLink} userName={user?.name} />
-
                     </View>
                   </Animated.View>
-
-
                 ) : (
                   <View
                     style={[
@@ -366,16 +359,12 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
                         {user?.name ? user?.name.substring(0, 2).toUpperCase() : ''}
                       </Text>
                     </Animated.View>
-
-
-
                   </View>
                 )}
               </View>
             </View>
 
             <View style={{}}>
-
               <Animated.View
                 style={{
                   opacity: fadeRemark,
@@ -394,7 +383,6 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
                       backgroundColor: 'black'
                     },
                     {backgroundColor: ERP_COLOR_CODE.ERP_BORDER_LINE}
-                  
                   ]}
                     value={formatName(values?.name)}
                     editable={false}
@@ -403,7 +391,6 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
                     <Text style={styles.errorText}>{errors?.name}</Text>
                   ) : null}
                 </View>
-
                 <View style={styles.formGroup}>
                   <Text style={[styles.label, theme === 'dark' && {
                     color: 'white'
@@ -423,17 +410,12 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
                   />
                 </View>
               </Animated.View>
-
-
-
-
               {statusImage && (
                 <View>
                   <Image source={{ uri: statusImage }} style={styles.selfyAvatar} />
                   <Text style={styles.imageLabel}>{t('attendance.capturedPhoto')}</Text>
                 </View>
               )}
-
               <Animated.View
                 style={{
                   opacity: fadeButton,
@@ -459,9 +441,6 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
                   />
                 </View>
               </Animated.View>
-
-
-
             </View>
           </View>
         )}
@@ -475,7 +454,6 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
         onClose={() => {
           setBlocked(true);
           setAlertVisible(false);
-
           setTimeout(() => {
             setBlocked(false);
           }, 1000);
@@ -501,7 +479,6 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
             } else {
               setBlocked(true);
               setAlertVisible(false);
-
               setTimeout(() => {
                 setBlocked(false);
               }, 1000);
@@ -510,7 +487,8 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
         } }
         actionLoader={undefined}
         isSettingVisible={isSettingVisible} 
-        closeHide={undefined}      />
+        closeHide={undefined}      
+      />
     </View>
   );
 };

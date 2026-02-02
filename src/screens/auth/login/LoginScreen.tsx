@@ -11,12 +11,11 @@ import {
   Animated,
   Dimensions,
   ImageBackground,
-  StatusBar,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { getERPAppConfigMenuThunk, loginUserThunk } from '../../../store/slices/auth/thunk';
+import {  loginUserThunk } from '../../../store/slices/auth/thunk';
 import CustomAlert from '../../../components/alert/CustomAlert';
 import useTranslations from '../../../hooks/useTranslations';
 import { styles } from './login_style';
@@ -25,9 +24,7 @@ import LoginForm from './components/LoginForm';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
 import { setReloadApp } from '../../../store/slices/reloadApp/reloadAppSlice';
-import FastImage from 'react-native-fast-image';
 import { ERP_GIF } from '../../../assets';
-import { Directions } from 'react-native-gesture-handler';
 
 const LoginScreen = ({ navigation, route }: any) => {
   const { t } = useTranslations();
@@ -174,7 +171,8 @@ const LoginScreen = ({ navigation, route }: any) => {
                   message={alertConfig.message}
                   type={alertConfig.type}
                   onClose={() => setAlertVisible(false)}
-                  actionLoader={undefined}
+                  actionLoader={undefined} 
+                  closeHide={undefined}                
                 />
               </>
             )}

@@ -217,7 +217,6 @@ const AttendanceScreen = () => {
           alignContent: 'center',
           alignItems: 'center',
           height: Dimensions.get('screen').height * 0.85,
-
         }}
       >
         <FullViewLoader />

@@ -154,10 +154,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
       const validation = await validateCompanyCode(() =>
         DevERPService.validateCompanyCode(user?.company_code),
       );
-
-
       const currentFcmToken = Platform.OS === 'ios' ? "" : fcmToken || (await getMessaging().getToken());
-
       const loginResult = await loginWithERP(() =>
         DevERPService.loginToERP({
           user: user?.username,
@@ -165,35 +162,24 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
           firebaseid: currentFcmToken,
         }),
       );
-
-
       console.log("loginResult", loginResult)
       DevERPService.setToken(loginResult?.token);
       await AsyncStorage.setItem('erp_token', loginResult?.token || '');
       await AsyncStorage.setItem('auth_token', loginResult?.token || '');
       await AsyncStorage.setItem('erp_token_valid_till', loginResult?.tokenValidTill || '');
-
-       
-
       onClose();
     });
   };
-
-  const resetUserOnFail = () => {
-
-  }
-
-
+ 
   const handleAddAccount = async (values: { company_code: string; user: string; password: string }) => {
     try {
       DevERPService.setDevice(deviceId);
       setLoader(true);
       const userExists = accounts?.some(acc => acc?.user?.name === values?.user);
       const codeExists = accounts?.some(acc => acc?.user?.company_code === values?.company_code);
-
       if (userExists && codeExists) {
         setAlertConfig({
-          title: 'Duplicate user',
+          title: t('test5'),
           message: t("msg.msg1"),
           type: 'error',
         });
@@ -321,13 +307,10 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
 
   return (
     <Modal visible={visible} transparent onRequestClose={handleClose}>
-
-
       <ImageBackground
         source={ERP_GIF.BACK_IMG}
         style={{
           height: Dimensions.get('screen').height,
-          // width: Dimensions.get('screen').width
         }}
         resizeMode='cover'
       >
@@ -672,23 +655,21 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
                   await AsyncStorage.setItem('erp_token_valid_till', user?.tokenValidTill || '');
 
                   DevERPService.setAppId(user?.app_id || '');
-                  const validation = await validateCompanyCode(() =>
-                    DevERPService.validateCompanyCode(user?.company_code),
+                  const validation = await validateCompanyCode(() => DevERPService.validateCompanyCode(user?.company_code)
                   );
 
 
                   const currentFcmToken = Platform.OS === 'ios' ? "" : fcmToken || (await getMessaging().getToken());
 
-                  const loginResult = await loginWithERP(() =>
-                    DevERPService.loginToERP({
-                      user: user?.username,
-                      pass: user?.password,
-                      firebaseid: currentFcmToken,
-                    }),
+                  const loginResult = await loginWithERP(() => DevERPService.loginToERP({
+                    user: user?.username,
+                    pass: user?.password,
+                    firebaseid: currentFcmToken,
+                  })
                   );
 
 
-                  console.log("loginResult", loginResult)
+                  console.log("loginResult", loginResult);
                   DevERPService.setToken(loginResult?.token);
                   await AsyncStorage.setItem('erp_token', loginResult?.token || '');
                   await AsyncStorage.setItem('auth_token', loginResult?.token || '');
@@ -702,15 +683,14 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
                     type: 'error',
                   });
 
-                }}
+                } }
                 actionLoader={undefined}
+                closeHide={undefined}
               />
             </Animated.View>
           </ScrollView>
         </KeyboardAvoidingView>
       </ImageBackground>
-
-
     </Modal>
   );
 };
