@@ -31,7 +31,6 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [accepted, setAccepted] = useState(false);
 
-
   useEffect(() => {
     const checkAcceptance = async () => {
       const value = await AsyncStorage.getItem("TERMS_ACCEPTED");
@@ -40,7 +39,6 @@ const App = () => {
       }
       setIsLoading(false);
     };
-
     checkAcceptance();
   }, []);
 
@@ -58,7 +56,6 @@ const App = () => {
         clearAllTempFiles();
       }
     });
-
     return () => subscription.remove();
   }, []);
 

@@ -234,7 +234,6 @@ const AttendanceScreen = () => {
         style={[
           {
             height: Dimensions.get('screen').height,
-            width: Dimensions.get('screen').width,
             flex: 1,
             backgroundColor: 'white'
           },
@@ -379,20 +378,12 @@ const AttendanceScreen = () => {
               resizeMode='cover'
               style={{
                 height: Dimensions.get('screen').height * 0.85,
-                width: Dimensions.get('screen').width,
                 flex: 1
               }}
             >
               <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, theme === 'dark' && { backgroundColor: 'black' }]}>
-
-
                 <>
-
-
-
                   <AttendanceForm setBlockAction={setBlockAction} resData={resData} />
-
-
                 </>
               </ScrollView>
             </ImageBackground>

@@ -327,7 +327,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
         source={ERP_GIF.BACK_IMG}
         style={{
           height: Dimensions.get('screen').height,
-          width: Dimensions.get('screen').width
+          // width: Dimensions.get('screen').width
         }}
         resizeMode='cover'
       >
