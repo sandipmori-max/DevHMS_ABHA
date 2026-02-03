@@ -40,7 +40,10 @@ export function formatHeaderTitle(key: string): string {
 
 export const firstLetterUpperCase = (str: string): string => {
   if (!str) return '';
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  return str
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 };
 
 export const getGifSource = (type: 'error' | 'success' | 'info' | 'location' | 'confirmation' | 'exit') => {
@@ -675,13 +678,16 @@ const operators = {
   isAfterDate: (a, b) => new Date(a) > new Date(b),
 
   locationWithin: (a, b, meters = 50) => {
-    if (!a || !b) return false;
+  if (!a || !b) return false;
 
-    const [lat1, lon1] = a.split(',').map(Number);
-    const [lat2, lon2] = b.split(',').map(Number);
+  const radius = Number(meters);
+  if (isNaN(radius)) return false;
 
-    return getDistanceInMeters(lat1, lon1, lat2, lon2) <= meters;
-  },
+  const [lat1, lon1] = a.split(',').map(Number);
+  const [lat2, lon2] = b.split(',').map(Number);
+
+  return getDistanceInMeters(lat1, lon1, lat2, lon2) <= radius;
+},
   between: (a, min, max) => {
     const num = Number(a);
     return num >= Number(min) && num <= Number(max);
@@ -746,11 +752,12 @@ const getDistanceInMeters = (lat1, lon1, lat2, lon2) => {
 // =======================
 const evaluateCondition = (rule, values) => {
   if (!rule || !rule.operator) return false;
+
   const leftValue = values[rule.left];
   const rightValue =
     typeof rule.right === "string" && values.hasOwnProperty(rule.right)
-      ? values[rule.right] // field-to-field comparison
-      : rule.right;        // field-to-value comparison
+      ? values[rule.right]
+      : rule.right;
 
   const operatorFn = operators[rule.operator];
   if (!operatorFn) {
@@ -758,8 +765,9 @@ const evaluateCondition = (rule, values) => {
     return false;
   }
 
-  return operatorFn(leftValue, rightValue);
+  return operatorFn(leftValue, rightValue, rule.meters);
 };
+
 
 
 
@@ -806,8 +814,9 @@ const evaluateCondition2 = (rule, values) => {
     return false;
   }
 
-  return operatorFn(leftValue, rightValue);
+  return operatorFn(leftValue, rightValue, rule.meters);
 };
+
 
 export const evaluateRules2 = (condition, values) => {
   if (!condition) return false;

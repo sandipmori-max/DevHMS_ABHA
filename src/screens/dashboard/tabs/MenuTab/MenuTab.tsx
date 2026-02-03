@@ -180,6 +180,11 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
             backgroundColor: theme === 'dark' ? 'black' : backgroundColor,
             flexDirection: isHorizontal ? 'row' : 'column',
           },
+          isHorizontal && {
+              paddingVertical: 8,
+              paddingHorizontal: 8,
+              marginBottom: 8
+          }
         ]}
         onPress={() =>
           item.url.includes('.') ? navigation.navigate('Web', { item }) : navigation.navigate('List', { item })
@@ -208,10 +213,11 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
         </View>
 
         <View style={{ marginLeft: isHorizontal ? 16 : 0, marginTop: isHorizontal ? 0 : 12 }}>
-          <Text numberOfLines={2} style={[styles.title, 
+          <Text 
+          numberOfLines={2} style={[styles.title, 
             {
-              maxWidth: isHorizontal ? '95%' : 'auto',
-              textAlign: isHorizontal ? 'left' : 'center'
+              maxWidth: isHorizontal ? 220 : 'auto',
+              textAlign: isHorizontal ? 'left' : 'center',
             },
             theme === 'dark' && { color: 'white' }]}>
             {item.name}
@@ -272,12 +278,12 @@ export const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    borderRadius: 10,
-    paddingVertical: 24,
-    paddingHorizontal: 16,
-    marginBottom: 16,
+    borderRadius: 6,
+    paddingVertical: 20,
+    paddingHorizontal: 12,
+    marginBottom: 10,
     alignItems: 'center',
-    marginHorizontal: 8,
+    marginHorizontal: 6,
   },
   iconContainer: {
     width: 56,

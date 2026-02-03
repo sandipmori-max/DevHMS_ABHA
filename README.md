@@ -6,7 +6,7 @@
 // gradlew --stop
 // gradlew clean
 // gradlew generateCodegenArtifactsFromSchema 
-// gradlew app:assembleRelease 
+// cc 
 // cmd - gradlew assemble[BRAND_NAME]Release
 
 // How to used - .env.clientA and .env.cientB ??

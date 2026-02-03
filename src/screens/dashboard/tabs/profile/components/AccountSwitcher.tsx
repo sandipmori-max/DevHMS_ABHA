@@ -9,7 +9,7 @@ import { DevERPService } from '../../../../../services/api';
 import CustomAlert from '../../../../../components/alert/CustomAlert';
 import { ERP_ICON } from '../../../../../assets';
 import { useApi } from '../../../../../hooks/useApi';
-import { formatDateHr, formatTimeTo12Hour, isTokenValid } from '../../../../../utils/helpers';
+import { firstLetterUpperCase, formatDateHr, formatTimeTo12Hour, isTokenValid } from '../../../../../utils/helpers';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import FastImage from 'react-native-fast-image';
 import { ERP_COLOR_CODE } from '../../../../../utils/constants';
@@ -235,7 +235,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
             />
             <View style={styles.accountInfo}>
               <Text style={[styles.accountName, isActive && styles.activeText, theme === 'dark' && { color: 'white' }]}>
-                {item?.user?.name.charAt(0).toUpperCase() + item?.user?.name.slice(1)}
+                {firstLetterUpperCase(item?.user?.name || '')}
               </Text>
               <Text numberOfLines={1} style={[styles.accountEmail, isActive && styles.activeText, theme === 'dark' && { color: 'white' }]}>
                 {item?.user?.companyName}

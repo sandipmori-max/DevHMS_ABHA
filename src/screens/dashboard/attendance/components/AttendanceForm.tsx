@@ -6,7 +6,7 @@ import Geolocation from '@react-native-community/geolocation';
 import { launchCamera } from 'react-native-image-picker';
 
 import { AttendanceFormValues, UserLocation } from '../types';
-import { requestCameraAndLocationPermission } from '../../../../utils/helpers';
+import { firstLetterUpperCase, requestCameraAndLocationPermission } from '../../../../utils/helpers';
 import useTranslations from '../../../../hooks/useTranslations';
 import { styles } from '../attendance_style';
 import CustomAlert from '../../../../components/alert/CustomAlert';
@@ -333,7 +333,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
                     }}
                   >
                     <View style={styles.profileRow}>
-                      <ProfileImage userId={user?.id} baseLink={baseLink} userName={user?.name} />
+                      <ProfileImage userId={user?.id} baseLink={baseLink} userName={firstLetterUpperCase(user?.name || '')} />
                     </View>
                   </Animated.View>
                 ) : (
@@ -356,7 +356,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
                       <Text
                         style={{ color: ERP_COLOR_CODE.ERP_WHITE, fontWeight: 'bold', fontSize: 26 }}
                       >
-                        {user?.name ? user?.name.substring(0, 2).toUpperCase() : ''}
+                        {firstLetterUpperCase(user?.name || '')}
                       </Text>
                     </Animated.View>
                   </View>

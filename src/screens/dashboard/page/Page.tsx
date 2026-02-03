@@ -36,7 +36,7 @@ import Input from './components/Input';
 import CustomAlert from '../../../components/alert/CustomAlert';
 import AjaxPicker from './components/AjaxPicker';
 import DateTimePicker from 'react-native-modal-datetime-picker';
-import { applyActionsToControls, computeControlVisibility, evaluateRules, evaluateRulesWithActions, parseCustomDatePage, requestCameraPermission } from '../../../utils/helpers';
+import { applyActionsToControls, evaluateRulesWithActions, parseCustomDatePage, requestCameraPermission } from '../../../utils/helpers';
 import DateRow from './components/Date';
 import BoolInput from './components/BoolInput';
 import SignaturePad from './components/SignaturePad';
@@ -479,7 +479,6 @@ const PageScreen = () => {
 
   const route = useRoute<RouteProp<PageRouteParams, 'PageScreen'>>();
   const { item, title, id, isFromNew, url, pageTitle }: any = route?.params;
-  const authUser = item?.authuser;
   const isFromBusinessCard = route?.params?.isFromBusinessCard || false;
 
   const validateForm = useCallback(() => {
@@ -509,10 +508,7 @@ const PageScreen = () => {
         backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
         borderBottomWidth: 1,
         borderBottomColor: '#fff',
-        
       },
-        
-      
       headerTintColor: '#fff',
       headerTitle: () => (
         <View style={{ flexDirection: 'row', alignItems: 'center', maxWidth: 210 }}>
@@ -716,21 +712,16 @@ const PageScreen = () => {
     actionSaveLoader,
     buttonSave,
     error
-
   ]);
 
   const fetchPageData = useCallback(async () => {
     try {
       setError(null);
       setLoadingPageId(isFromNew ? '0' : id);
-
       const parsed = await dispatch(
         getERPPageThunk({ page: url, id: isFromNew ? 0 : id }),
       ).unwrap();
-
-      console.log("parsed", parsed?.script);
       setMyScript(parsed?.script);
-
       if (!isFromNew) {
         setInfoData({
           id: id?.toString(),
@@ -1168,11 +1159,9 @@ const PageScreen = () => {
     if (item?.ctltype === 'FILE') return 'onFileChange';
     if (item?.defaultvalue === '#location') return 'onLocationChange';
     if (item?.ctltype === 'QRSCANNER') return 'onBarCodeChange';
-
     if (item?.ajax === 1) return 'onAjaxChange';
     if (item?.ddl && item?.ddl !== '') return 'onDropDownChange';
-
-    return 'onInputChange'; // default
+    return 'onInputChange'; 
   };
 
 
@@ -1263,17 +1252,17 @@ const PageScreen = () => {
 
           </View>
           <CustomAlert
-            visible={alertVisible}
-            title={alertConfig.title}
-            message={alertConfig.message}
-            type={alertConfig.type}
-            onClose={() => {
-              setTapLoader(false)
-              if (modalClose) setAlertVisible(false);
-            }}
-            actionLoader={undefined}
-            isSettingVisible={isSettingVisible}
-          />
+                visible={alertVisible}
+                title={alertConfig.title}
+                message={alertConfig.message}
+                type={alertConfig.type}
+                onClose={() => {
+                  setTapLoader(false);
+                  if (modalClose) setAlertVisible(false);
+                } }
+                actionLoader={undefined}
+                isSettingVisible={isSettingVisible}
+                closeHide={undefined}          />
           {loader && (
             <View
               style={{
@@ -1382,15 +1371,15 @@ const PageScreen = () => {
         message={alertConfig.message}
         type={alertConfig.type}
         onClose={() => {
-           
-          setTapLoader(false)
+
+          setTapLoader(false);
           setAlertVisible(false);
           if (goBack) {
             navigation.goBack();
           }
-        }}
-        actionLoader={undefined}
-      />
+        } }
+        actionLoader={undefined} 
+        closeHide={undefined}      />
     </View>
   );
 };

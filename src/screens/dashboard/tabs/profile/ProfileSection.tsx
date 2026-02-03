@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import { useAppSelector } from '../../../../store/hooks';
+import { firstLetterUpperCase } from '../../../../utils/helpers';
 
 const ProfileSection = ({ baseLink, user, onEditPress }: any) => {
   const theme = useAppSelector(state => state?.theme.mode);
@@ -36,7 +37,7 @@ const ProfileSection = ({ baseLink, user, onEditPress }: any) => {
           <View style={styles.profileInfo}>
             <Text style={[styles.profileName, theme === 'dark' && {
               color: 'white'
-            }]}>{user?.name || 'User Name'}</Text>
+            }]}>{firstLetterUpperCase(user?.name || '') || 'User Name'}</Text>
             <Text style={styles.profileEmail}>{user?.companyName || 'Company'}</Text>
             <View style={[styles.roleBadge, theme === 'dark' && {
               backgroundColor: 'white'

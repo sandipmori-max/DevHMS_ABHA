@@ -77,7 +77,7 @@ export default {
     security: 'Security',
     general: 'General',
     account: 'Account',
-    logoutConfirm: 'Are you sure you want to logout?',
+    logoutConfirm: 'are you sure you want to logout?',
   },
   profile: {
     title: 'Profile',
@@ -261,5 +261,19 @@ export default {
   test6: "Please wait...",
   test7: "Fetching the latest information securely...",
   test8: "No Data Found",
-  test9: "Oops! No data available. Please refresh or check again later."
+  test9: "Oops! No data available. Please refresh or check again later.",
+  test10: "Open Settings",
+  test11: "Remarks",
+  test12: "Enter remarks",
+  test13: "Update Available 🚀",
+  test14: "A new version of the app is available. Please update to continue using the app with latest features.",
+  test15: "Update Now",
+  test16: "Skip for now",
+  test17: 'Align the barcode inside the frame to scan automatically.',
+  test18: "Scanning...",
+  test19: "Scan Code",
+  test20: "Align the QR code inside the frame to scan automatically.",
+  test21: "Allow Background Location",
+  test22: "Set location access to Always Allow in settings for continuous tracking.",
+  test23: "Open Settings"
 };
