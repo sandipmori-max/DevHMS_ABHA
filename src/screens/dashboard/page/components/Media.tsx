@@ -420,10 +420,9 @@ const Media = ({ isValidate, item, handleAttachment, infoData, baseLink, isFromN
           if (!modalClose) {
             setAlertVisible(false);
           }
-        }}
+        } }
         isSettingVisible={isSettingVisible}
-        actionLoader={undefined}
-      />
+        actionLoader={undefined} closeHide={undefined}      />
     </>
   );
 };

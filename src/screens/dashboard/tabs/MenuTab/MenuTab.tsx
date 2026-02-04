@@ -79,19 +79,27 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
     showToast(`${name} - Bookmark Updated!`, backgroundColor);
   };
 
+  console.log("allList", allList)
   // Search effect
   useEffect(() => {
-    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+  if (searchTimeout.current) {
+    clearTimeout(searchTimeout.current);
+  }
 
-    searchTimeout.current = setTimeout(() => {
-      const filtered = allList.filter(
-        item =>
-          item.name.toLowerCase().includes(searchText.toLowerCase()) ||
-          item.title.toLowerCase().includes(searchText.toLowerCase())
-      );
-      setFilteredList(filtered);
-    }, 300);
-  }, [searchText, allList]);
+  searchTimeout.current = setTimeout(() => {
+    const text = (searchText ?? '').toLowerCase();
+
+    const filtered = allList.filter(item => {
+      const name = String(item?.name ?? '').toLowerCase();
+      const title = String(item?.title ?? '').toLowerCase();
+
+      return name.includes(text) || title.includes(text);
+    });
+
+    setFilteredList(filtered);
+  }, 300);
+}, [searchText, allList]);
+
   
   // Header setup
   useLayoutEffect(() => {

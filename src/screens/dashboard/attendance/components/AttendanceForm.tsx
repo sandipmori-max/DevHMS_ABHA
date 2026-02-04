@@ -1,4 +1,4 @@
-import { View, Text, Image, TextInput, AppState, Dimensions, Animated } from 'react-native';
+import { View, Text, Image, TextInput, AppState, Dimensions, Animated, TouchableOpacity } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -20,9 +20,12 @@ import ProfileImage from '../../../../components/profile/ProfileImage';
 import DeviceInfo from 'react-native-device-info';
 import { setReloadApp } from '../../../../store/slices/reloadApp/reloadAppSlice';
 import { Easing } from 'react-native';
+import ImageBottomSheetModal from '../../../../components/bottomsheet/ImageBottomSheetModal';
 
 const AttendanceForm = ({ setBlockAction, resData }: any) => {
   const { t } = useTranslations();
+  const [showModal, setShowModal] = useState(false);
+  const [img, setImg] = useState('')
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector(state => state?.auth);
@@ -258,7 +261,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
   return (
     <View style={{
       width: '100%',
-      padding: 16, 
+      padding: 16,
       // backgroundColor: theme === 'dark' ? 'black' : 'white'
     }}>
       <Formik
@@ -318,24 +321,32 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
         }}
       >
         {({ values, errors, touched, setFieldValue, handleSubmit }) => (
-          <View style={[styles.profileCard, 
-            {
+          <View style={[styles.profileCard,
+          {
             backgroundColor: theme === 'dark' ? 'black' : 'transparent'
           }
           ]}>
             <View style={styles.profileRow}>
               <View style={styles.imageCol}>
                 {`${baseLink}/FileUpload/1/UserMaster/${user?.id}/profileimage.jpeg` ? (
-                  <Animated.View
-                    style={{
-                      opacity: fadeProfile,
-                      transform: [{ translateY: animProfile }],
+                  <TouchableOpacity
+                    onPress={() => {
+                      setImg(`${baseLink}/FileUpload/1/UserMaster/${user?.id}/profileimage.jpeg`)
+                      setShowModal(true)
                     }}
                   >
-                    <View style={styles.profileRow}>
-                      <ProfileImage userId={user?.id} baseLink={baseLink} userName={firstLetterUpperCase(user?.name || '')} />
-                    </View>
-                  </Animated.View>
+                    <Animated.View
+                      style={{
+                        opacity: fadeProfile,
+                        transform: [{ translateY: animProfile }],
+                      }}
+                    >
+                      <View style={styles.profileRow}>
+                        <ProfileImage userId={user?.id} baseLink={baseLink} userName={firstLetterUpperCase(user?.name || '')} />
+                      </View>
+                    </Animated.View>
+                  </TouchableOpacity>
+
                 ) : (
                   <View
                     style={[
@@ -382,8 +393,8 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
                       color: 'white',
                       backgroundColor: 'black'
                     },
-                    {backgroundColor: ERP_COLOR_CODE.ERP_BORDER_LINE}
-                  ]}
+                    { backgroundColor: ERP_COLOR_CODE.ERP_BORDER_LINE }
+                    ]}
                     value={formatName(values?.name)}
                     editable={false}
                   />
@@ -446,6 +457,12 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
         )}
       </Formik>
 
+   <ImageBottomSheetModal
+          visible={showModal}
+          onClose={() => setShowModal(false)}
+          imageUrl={img}
+        />
+
       <CustomAlert
         visible={alertLocationVisible}
         title={t("title.title4")}
@@ -460,10 +477,10 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
           setLocationLoading(false);
           setAttendanceDone(false);
           setLocationAlertVisible(false);
-        } }
+        }}
         actionLoader={undefined}
-        isSettingVisible={false} 
-        closeHide={undefined}    
+        isSettingVisible={false}
+        closeHide={undefined}
       />
 
       <CustomAlert
@@ -484,10 +501,10 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
               }, 1000);
             }
           }
-        } }
+        }}
         actionLoader={undefined}
-        isSettingVisible={isSettingVisible} 
-        closeHide={undefined}      
+        isSettingVisible={isSettingVisible}
+        closeHide={undefined}
       />
     </View>
   );

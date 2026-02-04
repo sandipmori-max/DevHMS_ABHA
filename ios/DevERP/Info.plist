@@ -93,6 +93,7 @@
     <true/>
 </dict>
 
+ 
 
   <!-- React Native -->
   <key>RCTNewArchEnabled</key>
@@ -105,9 +106,7 @@
   </array>
   <key>UISupportedInterfaceOrientations</key>
   <array>
-    <string>UIInterfaceOrientationPortrait</string>
-    <string>UIInterfaceOrientationLandscapeLeft</string>
-    <string>UIInterfaceOrientationLandscapeRight</string>
+    <string>UIInterfaceOrientationPortrait</string> 
   </array>
   <key>UIViewControllerBasedStatusBarAppearance</key>
   <false/>

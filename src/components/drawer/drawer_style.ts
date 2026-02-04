@@ -16,7 +16,8 @@ export const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
     borderWidth: 2,
-    top: -40,
+    top: -55,
+    left: -40,
     position:'absolute',
     borderColor: ERP_COLOR_CODE.ERP_WHITE
   },

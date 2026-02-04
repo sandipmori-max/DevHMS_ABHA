@@ -20,6 +20,7 @@ import { resetDropdownState } from '../../../../../store/slices/dropdown/dropdow
 import { resetSyncLocationState } from '../../../../../store/slices/location/syncLocationSlice';
 import { getLastPunchInThunk } from '../../../../../store/slices/attendance/thunk';
 import { setReloadApp } from '../../../../../store/slices/reloadApp/reloadAppSlice';
+import ImageBottomSheetModal from '../../../../../components/bottomsheet/ImageBottomSheetModal';
 
 interface AccountSwitcherProps {
   visible: boolean;
@@ -33,6 +34,9 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
   const { execute: validateCompanyCode } = useApi();
   const theme = useAppSelector(state => state?.theme.mode);
 
+
+  const [showModal, setShowModal] = useState(false);
+  const [img, setImg] = useState('')
   const { accounts, activeAccountId, user } = useAppSelector(state => state?.auth);
   const [alertVisible, setAlertVisible] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<any>(null);
@@ -225,14 +229,22 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
           }}
         >
           <View style={styles.accountContent}>
-            <FastImage
-              style={styles.avatar}
-              source={{
-                uri: `${normalizedBase}/FileUpload/1/UserMaster/${item?.user?.id}/profileimage.jpeg?ts=${new Date().getTime()}`,
-                priority: FastImage.priority.normal,
-                cache: FastImage.cacheControl.web,
+            <TouchableOpacity
+              onPress={() => {
+                setImg(`${normalizedBase}/FileUpload/1/UserMaster/${item?.user?.id}/profileimage.jpeg?ts=${new Date().getTime()}`)
+                setShowModal(true)
               }}
-            />
+            >
+              <FastImage
+                style={styles.avatar}
+                source={{
+                  uri: `${normalizedBase}/FileUpload/1/UserMaster/${item?.user?.id}/profileimage.jpeg?ts=${new Date().getTime()}`,
+                  priority: FastImage.priority.normal,
+                  cache: FastImage.cacheControl.web,
+                }}
+              />
+            </TouchableOpacity>
+
             <View style={styles.accountInfo}>
               <Text style={[styles.accountName, isActive && styles.activeText, theme === 'dark' && { color: 'white' }]}>
                 {firstLetterUpperCase(item?.user?.name || '')}
@@ -390,9 +402,15 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
           onDone={() => handleRemovedAccount(selectedAccount)}
           doneText="Remove"
           color={ERP_COLOR_CODE.ERP_ERROR}
-          actionLoader={undefined}
+          actionLoader={undefined} closeHide={undefined} />
+
+        <ImageBottomSheetModal
+          visible={showModal}
+          onClose={() => setShowModal(false)}
+          imageUrl={img}
         />
       </Animated.View>
+
     </Modal>
   );
 };

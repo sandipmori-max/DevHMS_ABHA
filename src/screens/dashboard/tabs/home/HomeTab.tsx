@@ -91,7 +91,7 @@ const HomeScreen = () => {
 
     searchTimeout.current = setTimeout(() => {
       const filtered = dashboard.filter(item =>
-        (item.name || '').toLowerCase().includes(searchText.toLowerCase()),
+        (item?.name || '').toLowerCase().includes(searchText?.toLowerCase()),
       );
       setFilteredDashboard(filtered);
     }, 300);

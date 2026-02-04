@@ -687,7 +687,7 @@ const ListScreen = () => {
         isBottomButtonVisible={true}
         doneText={alertConfig.title}
         color={alertConfig.color}
-        onDone={async remark => {
+        onDone={async (remark) => {
           try {
             const type = `page${alertConfig.title}`;
             await dispatch(
@@ -696,7 +696,7 @@ const ListScreen = () => {
                 id: alertConfig.id.toString(),
                 remarks: remark,
                 page: alertConfig?.actionValue,
-              }),
+              })
             ).unwrap();
 
             setAlertVisible(false);
@@ -713,9 +713,8 @@ const ListScreen = () => {
             });
             setApiError(true);
           }
-        }}
-        isFromButtonList={true}
-      />
+        } }
+        isFromButtonList={true} closeHide={undefined}      />
 
       <CustomAlert
         visible={apiError}
@@ -724,8 +723,7 @@ const ListScreen = () => {
         type={alertConfig.type}
         onClose={() => setApiError(false)}
         onCancel={() => setApiError(false)}
-        actionLoader={actionLoader}
-      />
+        actionLoader={actionLoader} closeHide={undefined}      />
     </View>
   );
 };
