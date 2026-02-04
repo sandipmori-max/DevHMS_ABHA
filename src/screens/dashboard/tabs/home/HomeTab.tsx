@@ -33,6 +33,7 @@ import {
   Platform,
 } from 'react-native';
 import { ERP_ICON } from '../../../../assets';
+import { NativeModules } from 'react-native';
 
 const { width } = Dimensions.get('screen');
 
@@ -104,13 +105,17 @@ const HomeScreen = () => {
 
   useFocusEffect(
       useCallback(() => {
+          NativeModules.OrientationModule.enableLandscape();
+          console.log("NativeModules+++++++++++++++++++++++++++++++++++++++++++", NativeModules)
           dispatch(setActiveDashboardBranchId(''))
           dispatch(setActiveDashboardBranch(''))
           dispatch(setActiveDashboardType(''))
           dispatch(setActiveDashboardTypeId(''))
           setIsFilterVisible(false)
           setIsHorizontal(false)
-        return () => {};
+        return () => {
+          NativeModules.OrientationModule.disableLandscape();
+        };
       }, [isAuthenticated,  navigation])
     );
 

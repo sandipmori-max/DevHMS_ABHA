@@ -29,6 +29,7 @@ import { DARK_COLOR } from '../../utils/constants';
 import ContactRow from './ContactRow';
 import { ERP_ICON } from '../../assets';
 import ImageBottomSheetModal from '../bottomsheet/ImageBottomSheetModal';
+import { NativeModules } from 'react-native';
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
   const navigation = useNavigation();
@@ -249,6 +250,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
                       return;
                     }
                     if (item?.route === "Attendance") {
+                      NativeModules.OrientationModule.enableLandscape();
                       props?.navigation.closeDrawer();
                       navigation.navigate(item?.route, { isFor: 'Attendance' });
                       return;

@@ -16,6 +16,7 @@ import ErrorMessage from '../../../../components/error/Error';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { DARK_COLOR, ERP_COLOR_CODE } from '../../../../utils/constants';
 import Toast from '../../../../components/Toast/Toast';
+import { NativeModules } from 'react-native';
 
 import { StyleSheet } from 'react-native';
 const accentColors = ['#dbe0f5ff', '#c8f3edff', '#faf1e0ff', '#f0e1e1ff', '#f2e3f8ff', '#e0f3edff',];
@@ -152,6 +153,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
 
   useFocusEffect(
     useCallback(() => {
+      NativeModules.OrientationModule.enableLandscape();
       setIsHorizontal(false)
       setShowSearch(false);
       setIsRefresh(false);
@@ -162,7 +164,9 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
         .unwrap()
         .finally(() => setEntryLoader(false));
     }
-      return () => {};
+      return () => {
+        NativeModules.OrientationModule.disableLandscape();
+      };
     }, [isAuthenticated, activeToken, isRefresh])
   );
 
