@@ -1296,14 +1296,7 @@ const PageScreen = () => {
       />
 
       {dateTimePickerVisible && Platform.OS === 'ios' && (
-        <Modal transparent animationType="slide" statusBarTranslucent>
-          <View style={styles.overlay}>
-            <View style={styles.sheet}>
-              {/* Divider */}
-              <View style={styles.divider} />
-
-              {/* Date Picker */}
-              <DateTimePicker
+        <DateTimePicker
                 isVisible={dateTimePickerVisible}
                 mode="datetime"
                 display='spinner'
@@ -1311,23 +1304,15 @@ const PageScreen = () => {
                 date={activeDateTime ? parseCustomDatePage(activeDateTime) : new Date()}
                 onConfirm={handleDateTimeConfirm}
                 onCancel={hideDateTimePicker}
+                cancelTextIOS="Cancel"
+  confirmTextIOS="Done"
               />
-            </View>
-          </View>
-        </Modal>
 
       )}
 
 
       {datePickerVisible && Platform.OS === 'ios' && (
-        <Modal transparent animationType="slide" statusBarTranslucent>
-          <View style={styles.overlay}>
-            <View style={styles.sheet}>
-              {/* Divider */}
-              <View style={styles.divider} />
-
-              {/* Date Picker */}
-              <DateTimePicker
+         <DateTimePicker
                 isVisible={datePickerVisible}
                 mode="date"
                 date={activeDate ? parseCustomDatePage(activeDate) : new Date()}
@@ -1335,10 +1320,9 @@ const PageScreen = () => {
                 onCancel={hideDatePicker}
                 display="spinner"
                 is24Hour={false}
+                cancelTextIOS="Cancel"
+  confirmTextIOS="Done"
               />
-            </View>
-          </View>
-        </Modal>
       )}
 
       {
@@ -1350,6 +1334,8 @@ const PageScreen = () => {
           date={activeDateTime ? parseCustomDatePage(activeDateTime) : new Date()}
           onConfirm={handleDateTimeConfirm}
           onCancel={hideDateTimePicker}
+          cancelTextIOS="Cancel"
+  confirmTextIOS="Done"
         />
       }
 
@@ -1362,6 +1348,8 @@ const PageScreen = () => {
           date={activeDate ? parseCustomDatePage(activeDate) : new Date()}
           onConfirm={handleConfirm}
           onCancel={hideDatePicker}
+          cancelTextIOS="Cancel"
+          confirmTextIOS="Done"
         />
       }
 

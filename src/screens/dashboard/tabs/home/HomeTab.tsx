@@ -16,6 +16,7 @@ import PieChartSection from './chartData';
 
 import { formatDateForAPI, parseCustomDate } from '../../../../utils/helpers';
 import DateTimePicker from '@react-native-community/datetimepicker';
+
 import CustomPicker from '../../page/components/CustomPicker';
 import { setActiveDashboardBranch, setActiveDashboardBranchId, setActiveDashboardFromDate, setActiveDashboardToDate, setActiveDashboardType, setActiveDashboardTypeId, setDashboardLoading } from '../../../../store/slices/auth/authSlice';
 import {
@@ -713,6 +714,16 @@ const HomeScreen = () => {
             <View style={styles.overlay}>
               <View style={styles.sheet}>
                 {/* Divider */}
+                                 <View style={{flexDirection:'row', justifyContent:'space-between', paddingHorizontal: 12, alignContent:"center", alignItems:'center'}}>
+                                   <Text>Select date</Text>
+                                  <TouchableOpacity onPress={() =>{
+                                       setShowDatePicker(null);
+
+
+                                  }}>
+                                    <MaterialIcons name='close' size={24}/>
+                                  </TouchableOpacity>
+                                 </View>
                 <View style={styles.divider} />
 
                 {/* Date Picker */}
@@ -879,6 +890,16 @@ const HomeScreen = () => {
             <View style={styles.overlay}>
               <View style={styles.sheet}>
                 {/* Divider */}
+                                 <View style={{flexDirection:'row', justifyContent:'space-between', padding: 12, alignContent:"center", alignItems:'center'}}>
+                                   <Text>Select date</Text>
+                                  <TouchableOpacity onPress={() =>{
+                                    // setShowDatePicker()
+    setShowDatePicker(null);
+
+                                  }}>
+                                    <MaterialIcons name='close' size={24}/>
+                                  </TouchableOpacity>
+                                 </View>
                 <View style={styles.divider} />
 
                 {/* Date Picker */}

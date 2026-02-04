@@ -19,6 +19,7 @@ import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
 import useTranslations from '../../../hooks/useTranslations';
 import { tags } from 'react-native-svg/lib/typescript/xmlTags';
+import { JumpingTransition } from 'react-native-reanimated';
 
 const ListScreen = () => {
   const navigation = useNavigation();
@@ -548,6 +549,15 @@ const ListScreen = () => {
                 <View style={styles.sheet}>
                   {/* Divider */}
                   <View style={styles.divider} />
+                 <View style={{flexDirection:'row', justifyContent:'space-between', paddingHorizontal: 12, alignContent:"center", alignItems:'center'}}>
+                   <Text>Select date</Text>
+                  <TouchableOpacity onPress={() =>{
+                       setShowDatePicker(null);
+                  }}>
+                    <MaterialIcons name='close' size={24}/>
+                  </TouchableOpacity>
+                 </View>
+                  <View style={styles.divider} />
 
                   {/* Date Picker */}
                   <DateTimePicker
@@ -584,7 +594,7 @@ const ListScreen = () => {
               display="spinner"
               is24Hour={false}
               onChange={handleDateChange}
-            />
+             />
 
           )}
         </View>
