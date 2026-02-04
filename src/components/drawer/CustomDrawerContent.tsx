@@ -25,7 +25,7 @@ import { firstLetterUpperCase, handleEmailPress, handlePhonePress } from '../../
 import { ERP_DRAWER_LIST } from '../../constants';
 import { styles } from './drawer_style';
 import { useBaseLink } from '../../hooks/useBaseLink';
-import { DARK_COLOR } from '../../utils/constants';
+import { DARK_COLOR, ERP_COLOR_CODE } from '../../utils/constants';
 import ContactRow from './ContactRow';
 import { ERP_ICON } from '../../assets';
 import ImageBottomSheetModal from '../bottomsheet/ImageBottomSheetModal';
@@ -40,6 +40,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
   const { user } = useAppSelector(state => state.auth);
   const theme = useAppSelector(state => state.theme.mode);
   const baseLink = useBaseLink();
+  console.log("baseLink", baseLink)
 
   /* ================= SAFE CURRENT ROUTE ================= */
   const currentRoute = useNavigationState(state => {
@@ -318,15 +319,29 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
           opacity: footerOpacity,
         }}
       >
-        <View style={{ alignItems: 'center', marginBottom: 10 }}>
+        <View style={{ alignItems: 'center', marginBottom: 0 }}>
           <Image
-            source={ERP_ICON.APP_LOGO}
-            style={{ height: 40, width: 40 }}
+            source={{
+              uri:  `${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`
+            }}
+            style={{ height: 80, width: 80 }}
             resizeMode="contain"
           />
         </View>
 
         <View style={styles.logoutButton}>
+          <Text
+            style={[
+              styles.logoutText,
+              {
+                fontSize: 12,
+                color: ERP_COLOR_CODE.ERP_777
+              },
+              theme === 'dark' && { color: 'white' },
+            ]}
+          >
+            Developed by
+          </Text>
           <Text
             style={[
               styles.logoutText,

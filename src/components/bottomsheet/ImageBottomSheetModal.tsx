@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Modal,
   View,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Animated,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 
 const { height } = Dimensions.get('window');
@@ -19,9 +20,13 @@ const ImageBottomSheetModal = ({
   imageUrl,
 }) => {
   const translateY = useRef(new Animated.Value(MODAL_HEIGHT)).current;
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (visible) {
+      setShowModal(true);
+      setLoading(true);
       Animated.timing(translateY, {
         toValue: 0,
         duration: 300,
@@ -32,91 +37,127 @@ const ImageBottomSheetModal = ({
         toValue: MODAL_HEIGHT,
         duration: 300,
         useNativeDriver: true,
-      }).start();
+      }).start(() => {
+        setShowModal(false);
+      });
     }
   }, [visible]);
 
+  if (!showModal) return null;
+
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="none"
-    >
-      <View style={styles.overlay}>
+    <Modal transparent animationType="none">
+      <TouchableOpacity
+        activeOpacity={1}
+        style={styles.overlay}
+        onPress={onClose}
+      >
         <Animated.View
           style={[
             styles.container,
             { transform: [{ translateY }] },
           ]}
         >
+          {/* Handle */}
+          <View style={styles.handle} />
+
           {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.title}>Photo</Text>
-            <View style={{ width: 24 }} />
-            <TouchableOpacity
-              style={{
-                height: 34, width: 34,
-                alignContent: 'center',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-              onPress={onClose}>
-              <Text style={styles.closeIcon}>✕</Text>
-            </TouchableOpacity>
-          </View>
+         
 
           {/* Image */}
           <View style={styles.imageWrapper}>
+            {loading && (
+              <View style={styles.loader}>
+                <ActivityIndicator size="large" color="#666" />
+              </View>
+            )}
+
             <Image
               source={{ uri: imageUrl }}
               style={styles.image}
+              onLoadStart={() => setLoading(true)}
+              onLoadEnd={() => setLoading(false)}
             />
           </View>
         </Animated.View>
-      </View>
+      </TouchableOpacity>
     </Modal>
   );
 };
 
 export default ImageBottomSheetModal;
-
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(0,0,0,0.45)',
     justifyContent: 'flex-end',
   },
+
   container: {
     height: MODAL_HEIGHT,
     backgroundColor: '#fff',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    overflow: 'hidden',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 16,
+
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 10,
   },
+
+  handle: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#D1D1D6',
+    borderRadius: 4,
+    alignSelf: 'center',
+    marginVertical: 8,
+  },
+
   header: {
-    height: 56,
-    alignContent: 'center',
-    alignItems: 'center',
+    height: 52,
     flexDirection: 'row',
-    paddingHorizontal: 16,
+    alignItems: 'center',
     justifyContent: 'space-between',
+    paddingHorizontal: 16,
   },
-  closeIcon: {
-    fontSize: 22,
-  },
+
   title: {
     fontSize: 16,
     fontWeight: '600',
+    color: '#111',
   },
+
+  closeIcon: {
+    fontSize: 22,
+    color: '#444',
+  },
+
   imageWrapper: {
-    height: '88%',
+    flex: 1,
     padding: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   image: {
     width: '100%',
     height: '100%',
-    borderRadius: 12,
+    borderRadius: 14,
+    resizeMode: 'cover',
+    backgroundColor: '#F2F2F2',
+  },
+
+  loader: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
   },
 });

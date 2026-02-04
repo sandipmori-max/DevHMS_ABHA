@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
         color: '#FFF',
   },
   menuContainer: {
-    height: Dimensions.get("screen").height * 0.55,
+    height: Dimensions.get("screen").height * 0.52,
     paddingTop: 10,
     top: 30
   },

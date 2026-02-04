@@ -99,26 +99,26 @@ const HomeScreen = () => {
     }, 300);
 
     return () => {
-      
+
       if (searchTimeout.current) clearTimeout(searchTimeout.current);
     };
   }, [searchText, dashboard]);
 
   useFocusEffect(
-      useCallback(() => {
-          NativeModules.OrientationModule.enableLandscape();
-          console.log("NativeModules+++++++++++++++++++++++++++++++++++++++++++", NativeModules)
-          dispatch(setActiveDashboardBranchId(''))
-          dispatch(setActiveDashboardBranch(''))
-          dispatch(setActiveDashboardType(''))
-          dispatch(setActiveDashboardTypeId(''))
-          setIsFilterVisible(false)
-          setIsHorizontal(false)
-        return () => {
-          NativeModules.OrientationModule.disableLandscape();
-        };
-      }, [isAuthenticated,  navigation])
-    );
+    useCallback(() => {
+      NativeModules.OrientationModule.enableLandscape();
+      console.log("NativeModules+++++++++++++++++++++++++++++++++++++++++++", NativeModules)
+      dispatch(setActiveDashboardBranchId(''))
+      dispatch(setActiveDashboardBranch(''))
+      dispatch(setActiveDashboardType(''))
+      dispatch(setActiveDashboardTypeId(''))
+      setIsFilterVisible(false)
+      setIsHorizontal(false)
+      return () => {
+        NativeModules.OrientationModule.disableLandscape();
+      };
+    }, [isAuthenticated, navigation])
+  );
 
   useEffect(() => {
     Animated.loop(
@@ -222,7 +222,7 @@ const HomeScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-       
+
       let timer;
 
       if (isAuthenticated) {
@@ -540,7 +540,7 @@ const HomeScreen = () => {
     fetchPageData();
   }, []);
 
-   
+
 
   useEffect(() => {
     dispatch(getERPDashboardThunk({ branch: auth?.dashboardBranch.trim() || "", type: auth?.dashboardType.trim() || "", fd: auth?.dashboardFromDate.trim() || "", td: auth?.dashboardToDate.trim() || "" }));
@@ -714,16 +714,16 @@ const HomeScreen = () => {
             <View style={styles.overlay}>
               <View style={styles.sheet}>
                 {/* Divider */}
-                                 <View style={{flexDirection:'row', justifyContent:'space-between', paddingHorizontal: 12, alignContent:"center", alignItems:'center'}}>
-                                   <Text>Select date</Text>
-                                  <TouchableOpacity onPress={() =>{
-                                       setShowDatePicker(null);
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12, alignContent: "center", alignItems: 'center' }}>
+                  <Text>Select date</Text>
+                  <TouchableOpacity onPress={() => {
+                    setShowDatePicker(null);
 
 
-                                  }}>
-                                    <MaterialIcons name='close' size={24}/>
-                                  </TouchableOpacity>
-                                 </View>
+                  }}>
+                    <MaterialIcons name='close' size={24} />
+                  </TouchableOpacity>
+                </View>
                 <View style={styles.divider} />
 
                 {/* Date Picker */}
@@ -890,16 +890,15 @@ const HomeScreen = () => {
             <View style={styles.overlay}>
               <View style={styles.sheet}>
                 {/* Divider */}
-                                 <View style={{flexDirection:'row', justifyContent:'space-between', padding: 12, alignContent:"center", alignItems:'center'}}>
-                                   <Text>Select date</Text>
-                                  <TouchableOpacity onPress={() =>{
-                                    // setShowDatePicker()
-    setShowDatePicker(null);
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 12, alignContent: "center", alignItems: 'center' }}>
+                  <Text>Select date</Text>
+                  <TouchableOpacity onPress={() => {
+                    setShowDatePicker(null);
 
-                                  }}>
-                                    <MaterialIcons name='close' size={24}/>
-                                  </TouchableOpacity>
-                                 </View>
+                  }}>
+                    <MaterialIcons name='close' size={24} />
+                  </TouchableOpacity>
+                </View>
                 <View style={styles.divider} />
 
                 {/* Date Picker */}

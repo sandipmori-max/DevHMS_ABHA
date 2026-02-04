@@ -87,7 +87,7 @@ const AttendanceScreen = () => {
       setIsListVisible(false);
     }
   }, [navigation])
- 
+
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -145,13 +145,13 @@ const AttendanceScreen = () => {
     theme,
   ]);
 
-    useFocusEffect(
-      useCallback(() => {
-        NativeModules.OrientationModule.disableLandscape();
-        return () => {
-        };
-      }, [navigation])
-    );
+  useFocusEffect(
+    useCallback(() => {
+      NativeModules.OrientationModule.disableLandscape();
+      return () => {
+      };
+    }, [navigation])
+  );
 
   const checkAttendance = () => {
     setIsLoading(true);
@@ -317,6 +317,16 @@ const AttendanceScreen = () => {
             <View style={styles.overlay}>
               <View style={styles.sheet}>
                 {/* Divider */}
+
+                {/* Divider */}
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 12, alignContent: "center", alignItems: 'center' }}>
+                  <Text>Select date</Text>
+                  <TouchableOpacity onPress={() => {
+                    setShowDatePicker(null);
+                  }}>
+                    <MaterialIcons name='close' size={24} />
+                  </TouchableOpacity>
+                </View>
                 <View style={styles.divider} />
 
                 {/* Date Picker */}
