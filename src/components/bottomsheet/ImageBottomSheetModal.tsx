@@ -51,7 +51,6 @@ const ImageBottomSheetModal = ({
         >
           {/* Header */}
           <View style={styles.header}>
-
             <Text style={styles.title}>Photo</Text>
             <View style={{ width: 24 }} />
             <TouchableOpacity

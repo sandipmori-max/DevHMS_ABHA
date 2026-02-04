@@ -109,6 +109,7 @@ const HomeScreen = () => {
           dispatch(setActiveDashboardType(''))
           dispatch(setActiveDashboardTypeId(''))
           setIsFilterVisible(false)
+          setIsHorizontal(false)
         return () => {};
       }, [isAuthenticated,  navigation])
     );

@@ -156,7 +156,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
   const handleRemoveAccount = (account: Account) => {
     setAlertConfig({
       title: 'Remove account',
-      message: `Are you sure you want to remove ${account?.user?.company_code}?`,
+      message: `Are you sure you want to remove - ${firstLetterUpperCase(account?.user?.name)} ?`,
       type: 'confirmation',
     });
     setSelectedAccount(account?.id);
