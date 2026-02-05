@@ -138,6 +138,7 @@ export default {
     dateTime: 'तिथि और समय',
     email: 'ईमेल',
     remark: 'टिप्पणी - वैकल्पिक',
+    outremark: 'Out-Remark, (optional)',
     enterRemark: 'टिप्पणी दर्ज करें',
     capturedPhoto: 'कैप्चर की गई फोटो',
     checkIn: 'चेक इन',

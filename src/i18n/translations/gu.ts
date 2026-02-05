@@ -138,6 +138,7 @@ export default {
     dateTime: 'તારીખ અને સમય',
     email: 'ઇમેલ',
     remark: 'રીમાર્ક - વૈકલ્પિક',
+    outremark: 'Out-Remark, (optional)',
     enterRemark: 'રીમાર્ક દાખલ કરો',
     capturedPhoto: 'કૅપ્ચર કરેલ ફોટો',
     checkIn: 'ચેક ઇન',

@@ -721,7 +721,12 @@ const PageScreen = () => {
       const parsed = await dispatch(
         getERPPageThunk({ page: url, id: isFromNew ? 0 : id }),
       ).unwrap();
-      setMyScript(parsed?.script);
+     if (
+          parsed?.script &&
+          !parsed.script.trim().toLowerCase().includes("<script")
+        ) {
+          setMyScript(parsed.script);
+        }
       if (!isFromNew) {
         setInfoData({
           id: id?.toString(),
