@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image } from 'react-native';
+import { Image, Platform, View } from 'react-native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 
 import SettingsScreen from '../screens/dashboard/settings/SettingsScreen';
@@ -17,6 +17,7 @@ import StartupScreen from '../screens/dashboard/startup/StartupScreen';
 import PinSetupScreen from '../screens/dashboard/pinset/Pinset';
 import PinVerifyScreen from '../screens/dashboard/pinset/PinVerify';
 import { useAppSelector } from '../store/hooks';
+import MaterialIcons from '@react-native-vector-icons/material-icons';
 
 const Stack = createStackNavigator<any>();
 
@@ -32,9 +33,52 @@ const StackNavigator = () => {
   };
  
 
+  const globalTransition = {
+  gestureEnabled: true,
+  gestureDirection: 'horizontal',
+  cardStyleInterpolator: ({ current, layouts }) => ({
+    cardStyle: {
+      opacity: current.progress,
+      transform: [
+        {
+          translateX: current.progress.interpolate({
+            inputRange: [0, 1],
+            outputRange: [layouts.screen.width * 0.08, 0],
+          }),
+        },
+        {
+          scale: current.progress.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0.98, 1],
+          }),
+        },
+      ],
+    },
+  }),
+  transitionSpec: {
+    open: {
+      animation: 'timing',
+      config: { duration: 320 },
+    },
+    close: {
+      animation: 'timing',
+      config: { duration: 280 },
+    },
+  },
+};
+
   const screenOptions = {
     headerShown: true,
-    headerBackImage: () => ( 
+    headerBackImage: () => Platform.OS === 'ios' ? 
+    ( 
+      <View
+        style={{ width: 24,  marginLeft: 12, }}
+      >
+        <MaterialIcons name="chevron-left" size={34} color="#fff" />
+      </View>
+    )
+    : ( 
+       
       <Image
         source={ERP_ICON.BACK}
         style={{ width: 24, height: 24, marginLeft: 10, tintColor: 'white' }}

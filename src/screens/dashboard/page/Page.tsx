@@ -509,6 +509,7 @@ const PageScreen = () => {
         borderBottomWidth: 1,
         borderBottomColor: '#fff',
       },
+      headerBackTitle: '',
       headerTintColor: '#fff',
       headerTitle: () => (
         <View style={{ flexDirection: 'row', alignItems: 'center', maxWidth: 210 }}>

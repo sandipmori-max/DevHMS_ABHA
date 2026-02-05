@@ -80,6 +80,7 @@ const WebScreen = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerBackTitle: '',
       headerTitle: () => (
         <Text
           numberOfLines={1}
