@@ -107,7 +107,6 @@ const HomeScreen = () => {
   useFocusEffect(
     useCallback(() => {
       NativeModules.OrientationModule.enableLandscape();
-      console.log("NativeModules+++++++++++++++++++++++++++++++++++++++++++", NativeModules)
       dispatch(setActiveDashboardBranchId(''))
       dispatch(setActiveDashboardBranch(''))
       dispatch(setActiveDashboardType(''))

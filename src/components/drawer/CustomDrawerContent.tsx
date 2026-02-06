@@ -40,7 +40,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
   const { user } = useAppSelector(state => state.auth);
   const theme = useAppSelector(state => state.theme.mode);
   const baseLink = useBaseLink();
-  console.log("baseLink", baseLink)
 
   /* ================= SAFE CURRENT ROUTE ================= */
   const currentRoute = useNavigationState(state => {

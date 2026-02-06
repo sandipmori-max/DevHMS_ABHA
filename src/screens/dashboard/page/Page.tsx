@@ -851,14 +851,15 @@ const PageScreen = () => {
     return updatedValues;
   };
 
+          console.log('================ SET VALUE START ================', formValues);
 
   const renderItem = useCallback(
     ({ item, index }: { item: any; index: number }) => {
 
       const setValue = (val) => {
+          console.log('================********* SET VALUE START ================', item?.field , '=====,' , val);
 
         if (myScript) {
-          console.log('================ SET VALUE START ================');
 
           console.log('Incoming value:', val);
           console.log('Field:', item?.field);
@@ -951,8 +952,8 @@ const PageScreen = () => {
       };
 
 
-      const value = formValues[item?.field] || formValues[item?.text] || '';
-
+      const value =  formValues[item?.field] === '#location' ?  '': formValues[item?.field] || formValues[item?.text] || '';
+      console.log("value=================-------",  item?.field , '------', value)
 
 
       if (item?.visible === '1') return null;
@@ -1141,7 +1142,7 @@ const PageScreen = () => {
             onFocus={() => flatListRef.current?.scrollToIndex({ index, animated: true })}
             item={item}
             errors={errors}
-            value={value}
+            value={ value}
             setValue={setValue}
           />
         );

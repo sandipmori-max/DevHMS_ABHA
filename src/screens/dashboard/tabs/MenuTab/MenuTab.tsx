@@ -80,7 +80,6 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
     showToast(`${name} - Bookmark Updated!`, backgroundColor);
   };
 
-  console.log("allList", allList)
   // Search effect
   useEffect(() => {
   if (searchTimeout.current) {

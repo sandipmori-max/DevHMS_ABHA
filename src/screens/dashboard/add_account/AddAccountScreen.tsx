@@ -58,7 +58,6 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
   const formAnim = useRef(new Animated.Value(0)).current; // form container
   const buttonAnim = useRef(new Animated.Value(0)).current; // Add button
   const backdropAnim = useRef(new Animated.Value(0)).current;
-  console.log("user----88888888-------------------", user)
 
   useEffect(() => {
     setLoader(false);
@@ -164,7 +163,6 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
           firebaseid: currentFcmToken,
         }),
       );
-      console.log("loginResult", loginResult)
       DevERPService.setToken(loginResult?.token);
       await AsyncStorage.setItem('erp_token', loginResult?.token || '');
       await AsyncStorage.setItem('auth_token', loginResult?.token || '');
@@ -210,7 +208,6 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
       );
 
       if (loginResult?.success !== 1) {
-        console.log("user---------*******************--------------", user)
         DevERPService.setAppId(user?.app_id);
         DevERPService.setToken(user?.token);
         await AsyncStorage.setItem('erp_token', user?.token || '');
@@ -227,7 +224,6 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
             firebaseid: currentFcmToken,
           }),
         );
-        console.log("loginResult", loginResult)
         DevERPService.setToken(loginResult?.token);
         await AsyncStorage.setItem('erp_token', loginResult?.token || '');
         await AsyncStorage.setItem('auth_token', loginResult?.token || '');
@@ -249,7 +245,6 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
       dispatch(clearAuthState());
       dispatch(resetDropdownState());
       dispatch(resetSyncLocationState());
-      console.log("loginResult", loginResult)
       DevERPService.setToken(loginResult?.token);
       await AsyncStorage.setItem('erp_token', loginResult?.token || '');
       await AsyncStorage.setItem('auth_token', loginResult?.token || '');
@@ -682,8 +677,6 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
                   })
                   );
 
-
-                  console.log("loginResult", loginResult);
                   DevERPService.setToken(loginResult?.token);
                   await AsyncStorage.setItem('erp_token', loginResult?.token || '');
                   await AsyncStorage.setItem('auth_token', loginResult?.token || '');

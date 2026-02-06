@@ -29,7 +29,6 @@ interface AccountSwitcherProps {
 }
 
 const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onAddAccount, tapLoader }: any) => {
-  console.log("tapLoader", tapLoader)
   const dispatch = useAppDispatch();
   const { execute: validateCompanyCode } = useApi();
   const theme = useAppSelector(state => state?.theme.mode);
@@ -167,7 +166,6 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
     const isActive = user?.id.toString() === item?.user?.id.toString();
     const lastLogin = formatDateHr(item?.lastLoginAt, false);
     const lastLoginHr = formatTimeTo12Hour(item?.lastLoginAt);
-    console.log("normalizedBase", item)
 
     let normalizedBase = (item?.user?.companyLink || '').replace(/\/+$/, '');
     normalizedBase = normalizedBase.replace(/\/devws\/?/, '/');
