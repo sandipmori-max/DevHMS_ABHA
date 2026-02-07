@@ -13,6 +13,7 @@ import ERPTextInput from '../../../../components/input/ERPTextInput';
 import ERPButton from '../../../../components/button/ERPButton';
 import useFcmToken from '../../../../hooks/useFcmToken';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
+import { erpAddAccountValidationSchema } from '../../../../utils/validations/add_accounts';
  
 const LoginForm: React.FC<LoginFormProps> = ({
   deviceId,
@@ -136,7 +137,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
       <Formik
         initialValues={initialFormValues}
-        validationSchema={erp_login_validation_schema}
+        validationSchema={erpAddAccountValidationSchema(t)}
         onSubmit={handleLoginSubmit}
       >
         {({ handleChange, handleBlur, values, errors, touched, handleSubmit }) => (

@@ -233,6 +233,7 @@ const ReadableView = ({
                 id: item?.id,
                 url: pageName,
                 isFromBusinessCard,
+                isFromProfile: false
               });
             }
           }}
@@ -342,6 +343,7 @@ const ReadableView = ({
                 id: item?.id,
                 url: pageName,
                 isFromBusinessCard,
+                isFromProfile: false
               });
             }
           }}

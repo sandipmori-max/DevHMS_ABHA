@@ -113,6 +113,8 @@ const ProfileTab = () => {
         },
       ]}
     >
+            <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
+      
       <ScrollView
         style={[
           styles.scrollContainer,
@@ -151,6 +153,7 @@ const ProfileTab = () => {
                 title: t('profile.myProfile'),
                 isFromNew: false,
                 url: 'UserProfile',
+                isFromProfile: true
               })
             }
           />

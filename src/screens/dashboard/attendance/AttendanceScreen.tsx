@@ -238,15 +238,21 @@ const AttendanceScreen = () => {
         Keyboard.dismiss();
       }}
     >
-      <View
+      <>
+      
+        <View
         style={[
           {
             height: Dimensions.get('screen').height,
             flex: 1,
             backgroundColor: 'white'
           },
+         isListVisible && showDateFilter && {
+            backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+          }, 
           theme === 'dark' && { backgroundColor: 'black' }]}
       >
+        
         {isListVisible && showDateFilter && (
           <View style={[styles.dateContainer, theme === 'dark' && {
             backgroundColor: 'black'
@@ -389,6 +395,7 @@ const AttendanceScreen = () => {
               backgroundColor: theme === 'dark' ? 'black' :'white',
               height: '100%'
             }}>
+                   <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
               <List
                 selectedMonth={formattedMonth}
                 showFilter={showFilter}
@@ -416,6 +423,7 @@ const AttendanceScreen = () => {
             >
               <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, theme === 'dark' && { backgroundColor: 'black' }]}>
                 <>
+      <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
                   <AttendanceForm setBlockAction={setBlockAction} resData={resData} />
                 </>
               </ScrollView>
@@ -424,6 +432,8 @@ const AttendanceScreen = () => {
         }
 
       </View>
+      </>
+    
 
     </TouchableWithoutFeedback>
   );

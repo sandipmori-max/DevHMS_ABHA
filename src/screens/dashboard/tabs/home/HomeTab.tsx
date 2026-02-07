@@ -578,7 +578,7 @@ const HomeScreen = () => {
     );
   }
 
-  if (isDashboardLoading) return <FullViewLoader />
+  if (isDashboardLoading) return <FullViewLoader isShowTop={theme === 'dark' ? false : true}/>
   if (!actionLoader && filteredDashboard?.length === 0) {
     return <View
       style={{
@@ -732,8 +732,6 @@ const HomeScreen = () => {
                   }}>{t('text89')}</Text>
                   <TouchableOpacity onPress={() => {
                     setShowDatePicker(null);
-
-
                   }}>
                     <MaterialIcons name='close' color={ 'black'} size={24} />
                   </TouchableOpacity>
@@ -777,7 +775,7 @@ const HomeScreen = () => {
         )}
       </View>
 
-      <NoData />
+      <NoData isShowTop = {false} />
 
     </View>
   };

@@ -478,7 +478,7 @@ const PageScreen = () => {
   );
 
   const route = useRoute<RouteProp<PageRouteParams, 'PageScreen'>>();
-  const { item, title, id, isFromNew, url, pageTitle }: any = route?.params;
+  const { item, title, id, isFromNew, url, pageTitle , isFromProfile}: any = route?.params;
   const isFromBusinessCard = route?.params?.isFromBusinessCard || false;
 
   const validateForm = useCallback(() => {
@@ -523,7 +523,8 @@ const PageScreen = () => {
           >
             {title || pageTitle || 'Details'}
           </Text>
-          <Text
+          {
+             isFromProfile === false &&  <Text
             style={{
               fontSize: 18,
               fontWeight: '700',
@@ -533,6 +534,8 @@ const PageScreen = () => {
           >
             {isFromNew ? `( ${t("text.text44")} )` : `( ${t('text.text45')} )`}
           </Text>
+          }
+         
         </View>
       ),
       headerRight: () => (
@@ -1221,8 +1224,15 @@ const PageScreen = () => {
     };
   }, []);
 
+  if(loadingPageId){
+       return <FullViewLoader isShowTop={theme === 'dark' ? false : true}/>
+  }
   return (
-    <View style={{ flex: 1, padding: 16, backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE }}>
+    <>
+    {
+      theme !== 'dark' &&  <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
+    }
+           <View style={{ flex: 1, padding: 16, backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE }}>
       {loadingPageId ? (
         <FullViewLoader />
       ) : !!error ? (
@@ -1375,6 +1385,8 @@ const PageScreen = () => {
         actionLoader={undefined} 
         closeHide={undefined}      />
     </View>
+    </>
+  
   );
 };
 

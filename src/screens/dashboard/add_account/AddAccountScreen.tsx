@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { loginUserThunk } from '../../../store/slices/auth/thunk';
 
 import { styles } from './add_account_style';
-import { erp_add_account_validation_schema } from '../../../utils/validations/add_accounts';
+import { erp_add_account_validation_schema, erpAddAccountValidationSchema } from '../../../utils/validations/add_accounts';
 import { AddAccountScreenProps } from './type';
 import { ERP_GIF, ERP_ICON } from '../../../assets';
 import { DevERPService } from '../../../services/api';
@@ -390,7 +390,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
 
                       <Formik
                         initialValues={{ company_code: '', user: '', password: '' }}
-                        validationSchema={erp_add_account_validation_schema}
+                        validationSchema={erpAddAccountValidationSchema(t)}
                         onSubmit={handleAddAccount}
                       >
                         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => {

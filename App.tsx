@@ -45,10 +45,7 @@ const AppContent = () => {
       ? '#000000'
       : ERP_COLOR_CODE.ERP_APP_COLOR;
 
-  const barStyle =
-    theme === 'dark'
-      ? 'light-content'
-      : 'dark-content';
+  const barStyle ='light-content';
 
   const [isSplashVisible, setSplashVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -90,17 +87,17 @@ const AppContent = () => {
 
     const unsubscribeForeground = onMessageListener(remoteMessage => {
       Alert.alert(
-        remoteMessage.notification?.title ?? 'New Message',
-        remoteMessage.notification?.body ?? JSON.stringify(remoteMessage.data),
+        remoteMessage?.notification?.title ?? 'New Message',
+        remoteMessage?.notification?.body ?? JSON.stringify(remoteMessage?.data),
       );
     });
 
     const unsubscribeBackground = onNotificationOpenedAppListener(remoteMessage => {
-      Alert.alert('App opened from background', JSON.stringify(remoteMessage.data));
+      Alert.alert('App opened from background', JSON.stringify(remoteMessage?.data));
     });
 
     checkInitialNotification(remoteMessage => {
-      Alert.alert('App opened from quit state', JSON.stringify(remoteMessage.data));
+      Alert.alert('App opened from quit state', JSON.stringify(remoteMessage?.data));
     });
 
     return () => {

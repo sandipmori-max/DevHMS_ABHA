@@ -412,6 +412,7 @@ const ListScreen = () => {
       url: pageName,
       pageTitle: pageTitle,
       isFromBusinessCard: isFromBusinessCard,
+      isFromProfile : false
     });
   };
 
@@ -427,6 +428,7 @@ const ListScreen = () => {
         url: left,
         pageTitle: pageTitle,
         isFromBusinessCard: false,
+        isFromProfile: false
       });
     } else {
       setAlertConfig({
@@ -461,8 +463,14 @@ const ListScreen = () => {
     );
   }
 
+  if(loadingListId){
+    return <FullViewLoader isShowTop={theme === 'dark' ? false : true}/>
+  }
+
   return (
     <View style={[styles.container, theme === 'dark' && { backgroundColor: 'black' }]}>
+       <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
+           
       {isFilterVisible && (
         <View style={{
           backgroundColor: theme === 'dark' ?  '#000': ERP_COLOR_CODE.ERP_APP_COLOR,

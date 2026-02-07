@@ -20,6 +20,7 @@ import { NativeModules } from 'react-native';
 
 import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { setMenuLoading } from '../../../../store/slices/auth/authSlice';
 const accentColors = ['#dbe0f5ff', '#c8f3edff', '#faf1e0ff', '#f0e1e1ff', '#f2e3f8ff', '#e0f3edff',];
 const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
   const navigation = useNavigation();
@@ -164,7 +165,13 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
       setEntryLoader(true);
       dispatch(getERPMenuThunk())
         .unwrap()
-        .finally(() => setEntryLoader(false));
+        .finally(() => {
+           const timer = setTimeout(() => {
+                dispatch(setMenuLoading(false));
+                setEntryLoader(false)
+              }, 850);
+              return () => clearTimeout(timer);
+          });
     }
       return () => {
         NativeModules.OrientationModule.disableLandscape();
@@ -178,7 +185,13 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
       setEntryLoader(true);
       dispatch(getERPMenuThunk())
         .unwrap()
-        .finally(() => setEntryLoader(false));
+        .finally(() => {
+           const timer = setTimeout(() => {
+                dispatch(setMenuLoading(false));
+                setEntryLoader(false)
+              }, 850);
+              return () => clearTimeout(timer);
+          });
     }
   }, [isAuthenticated, activeToken, isRefresh]);
 
@@ -248,12 +261,13 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
     );
   };
 
-  if (isMenuLoading) return <FullViewLoader />;
+  if (isMenuLoading) return <FullViewLoader isShowTop={theme === 'dark' ? false : true}/>;
   if (error) return <ErrorMessage message={error} />;
   if (list.length === 0) return <NoData />;
 
   return (
     <View style={{ flex: 1, backgroundColor: theme === 'dark' ? 'black' : 'white' }}>
+      <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
       <FlatList
         key={`${isHorizontal}-${showBookmarksOnly}-${searchText}`}
         data={list}

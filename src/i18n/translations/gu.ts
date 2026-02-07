@@ -352,5 +352,8 @@ export default {
   text96: "ખાતું ઉમેરો...",
   text97: "ખાતું ઉમેરો",
   text98: "દૂર કરો",
-  text99: "નમસ્તે"
+  text99: "નમસ્તે",
+  company_code_required: "કંપની કોડ જરૂરી છે",
+  user_name_required: "વપરાશકર્તા નામ જરૂરી છે",
+  password_required: "પાસવર્ડ જરૂરી છે"
 };

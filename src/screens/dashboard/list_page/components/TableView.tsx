@@ -123,6 +123,7 @@ const TableView = ({
               id: item?.id,
               url: pageName,
               isFromBusinessCard: isFromBusinessCard,
+              isFromProfile: false
             });
           }
         }}
