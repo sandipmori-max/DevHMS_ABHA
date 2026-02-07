@@ -566,7 +566,7 @@ const ListScreen = () => {
                                  }]}>
                                  <Text style={{
                                    color: theme === 'dark' ? 'white' : 'black'
-                                 }}>Select date</Text>
+                                 }}>{t('test27')}</Text>
                                  <TouchableOpacity onPress={() => {
                                    setShowDatePicker(null);
                

@@ -58,41 +58,6 @@ const slides = [
 ];
 
 
-const DotIndicator = ({ slides, currentIndex }) => {
-  const animations = useRef(
-    slides.map(() => new Animated.Value(0))
-  ).current;
-
-  useEffect(() => {
-    animations.forEach((a, i) => {
-      Animated.timing(a, {
-        toValue: i === currentIndex ? 1 : 0,
-        duration: 300,
-        useNativeDriver: false,
-      }).start();
-    });
-  }, [currentIndex]);
-
-  return (
-    <View style={styles.dotsContainer}>
-      {slides.map((_, i) => {
-        const width = animations[i].interpolate({
-          inputRange: [0, 1],
-          outputRange: [10, 22],
-        });
-
-        return (
-          <Animated.View
-            key={i}
-            style={[styles.dot, { width }]}
-          />
-        );
-      })}
-    </View>
-  );
-};
-
-
 const Onboarding = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollX = useRef(new Animated.Value(0)).current;

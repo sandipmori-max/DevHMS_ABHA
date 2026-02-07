@@ -89,7 +89,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
           }
         ]}
       >
-        Hello, {firstLetterUpperCase(user?.name || '')} 
+        {t('text99')}, {firstLetterUpperCase(user?.name || '')} 
       </Animated.Text>
       }
      

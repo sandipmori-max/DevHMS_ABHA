@@ -91,7 +91,7 @@ const AttendanceScreen = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: isFor === 'MyAttendance' ? "My attendance" : "Attendance",
+      title: isFor === 'MyAttendance' ? t('test25') : t('test26'),
       headerTitleAlign: 'left',
       headerTitleStyle: {
         color: '#FFFFFF',
@@ -333,7 +333,7 @@ const AttendanceScreen = () => {
                                 }]}>
                                 <Text style={{
                                   color: theme === 'dark' ? 'white' : 'black'
-                                }}>Select date</Text>
+                                }}>{t('text27')}</Text>
                                 <TouchableOpacity onPress={() => {
                                   setShowDatePicker(null);
               

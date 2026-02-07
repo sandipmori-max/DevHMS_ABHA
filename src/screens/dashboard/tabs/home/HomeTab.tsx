@@ -145,7 +145,7 @@ const HomeScreen = () => {
               value={searchText}
               onChangeText={setSearchText}
               autoFocus={true}
-              placeholder="Search dashboard here..."
+              placeholder={t('text83')}
               style={{
                 flex: 1,
                 backgroundColor: '#f0f0f0',
@@ -170,7 +170,7 @@ const HomeScreen = () => {
           </View>
         ) : (
           <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>
-            Home
+            {t('text84')}
           </Text>
         ),
       headerRight: () => (
@@ -393,7 +393,7 @@ const HomeScreen = () => {
                 <View style={{ marginBottom: 8, flexDirection: 'row', alignItems: 'center' }}>
                   <ActivityIndicator size="small" color={ERP_COLOR_CODE.ERP_007AFF} />
                   <Text style={{ marginLeft: 8, color: ERP_COLOR_CODE.ERP_6C757D }}>
-                    Loading page...
+                    {t('text85')}
                   </Text>
                 </View>
               )}
@@ -488,8 +488,8 @@ const HomeScreen = () => {
       if (fromDate) {
         const fromDateObj = new Date(fromDate.split('-').reverse().join('-'));
         if (selectedDate < fromDateObj) {
-          Alert.alert('Invalid Date Range', 'To date cannot be before From date.', [
-            { text: 'OK' },
+          Alert.alert(t('text86'), t('text87'), [
+            { text: t('text88') },
           ]);
           setShowDatePicker(null);
           return;
@@ -729,7 +729,7 @@ const HomeScreen = () => {
                   }]}>
                   <Text style={{
                     color: theme === 'dark' ? 'white' : 'black'
-                  }}>Select date</Text>
+                  }}>{t('text89')}</Text>
                   <TouchableOpacity onPress={() => {
                     setShowDatePicker(null);
 
@@ -921,7 +921,7 @@ const HomeScreen = () => {
                   }]}>
                   <Text style={{
                     color: theme === 'dark' ? 'white' : 'black'
-                  }}>Select date</Text>
+                  }}>{t('text89')}</Text>
                   <TouchableOpacity onPress={() => {
                     setShowDatePicker(null);
 

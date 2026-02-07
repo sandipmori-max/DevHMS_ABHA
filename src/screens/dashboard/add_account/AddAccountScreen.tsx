@@ -170,7 +170,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
       onClose();
     });
   };
- 
+
   const handleAddAccount = async (values: { company_code: string; user: string; password: string }) => {
     try {
       DevERPService.setDevice(deviceId);
@@ -231,7 +231,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
         setAlertVisible(true);
         setLoader(false);
         setAlertConfig({
-          title: 'Authentication failed',
+          title: t('test4'),
           message: loginResult?.message || t("msg.msg2"),
           type: 'error',
         });
@@ -305,7 +305,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
   return (
     <Modal visible={visible} transparent onRequestClose={handleClose}>
       <ImageBackground
-        source={ theme === 'dark'  ? "" :ERP_GIF.BACK_IMG}
+        source={theme === 'dark' ? "" : ERP_GIF.BACK_IMG}
         style={{
           height: Dimensions.get('screen').height,
         }}
@@ -313,21 +313,21 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
       >
         <View style={[styles.header, theme === 'dark' && { backgroundColor: 'black' }
         ]}>
-          <TouchableOpacity onPress={() =>{
+          <TouchableOpacity onPress={() => {
             handleClose()
           }} style={styles.closeButton}>
             {
               Platform.OS === 'ios' ? <>
-                            <MaterialIcons name="chevron-left" size={28} color= {theme === 'dark' ? 'white': "#000" }/>
-                        
-                            </> :  <Image source={ERP_ICON.BACK} style={styles.back} />
+                <MaterialIcons name="chevron-left" size={28} color={theme === 'dark' ? 'white' : "#000"} />
+
+              </> : <Image source={ERP_ICON.BACK} style={styles.back} />
             }
-           
+
           </TouchableOpacity>
-          <Text style={[styles.title, 
-            {
-              color: theme === 'dark' ? 'white' : 'black'
-            }
+          <Text style={[styles.title,
+          {
+            color: theme === 'dark' ? 'white' : 'black'
+          }
           ]}>{t('account.addAccount')}</Text>
         </View>
         <KeyboardAvoidingView
@@ -336,7 +336,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
         >
           <ScrollView
             keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false} 
+            showsVerticalScrollIndicator={false}
           >
             <Animated.View
               style={[
@@ -379,12 +379,12 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
                     }}
                   >
                     <View style={styles.formContainer}>
-                      <Image 
-            //            source={{
-            //   uri:  `${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`
-            // }}
-                      source={ERP_ICON.APP_LOGO} 
-                      style={styles.logo} resizeMode="contain" />
+                      <Image
+                        //            source={{
+                        //   uri:  `${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`
+                        // }}
+                        source={ERP_ICON.APP_LOGO}
+                        style={styles.logo} resizeMode="contain" />
 
                       <Text style={[styles.subtitle, theme === 'dark' && { color: 'white' }]}>{t('account.msg')}</Text>
 
@@ -652,7 +652,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
                         }}
                       </Formik>
                     </View>
-                    <View style={{height: 150}}/>
+                    <View style={{ height: 150 }} />
                   </Animated.View>
                 )}
               />
@@ -692,12 +692,12 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
                   setAlertVisible(false);
                   setLoader(false);
                   setAlertConfig({
-                    title: 'Authentication failed',
+                    title: t('test4'),
                     message: loginResult?.message || t("msg.msg2"),
                     type: 'error',
                   });
 
-                } }
+                }}
                 actionLoader={undefined}
                 closeHide={undefined}
               />

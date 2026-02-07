@@ -26,12 +26,6 @@ import FullViewLoader from './src/components/loader/FullViewLoader';
 import TermsAndConsent from './src/screens/TermsConditions/TermsCondition';
 import { useAppSelector } from './src/store/hooks';
 
-
-
-/* =========================
-   MAIN APP WRAPPER
-========================= */
-
 const App = () => {
   return (
     <Provider store={store}>
@@ -41,11 +35,6 @@ const App = () => {
     </Provider>
   );
 };
-
-
-/* =========================
-   ACTUAL APP CONTENT
-========================= */
 
 const AppContent = () => {
   const isConnected = useNetworkStatus();
@@ -65,11 +54,6 @@ const AppContent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [accepted, setAccepted] = useState(false);
 
-
-  /* =========================
-     CHECK TERMS ACCEPTANCE
-  ========================= */
-
   useEffect(() => {
     const checkAcceptance = async () => {
       const value = await AsyncStorage.getItem('TERMS_ACCEPTED');
@@ -86,11 +70,6 @@ const AppContent = () => {
     setAccepted(true);
   };
 
-
-  /* =========================
-     CLEAR TEMP FILES
-  ========================= */
-
   useEffect(() => {
     clearAllTempFiles();
   }, []);
@@ -104,11 +83,6 @@ const AppContent = () => {
 
     return () => subscription.remove();
   }, []);
-
-
-  /* =========================
-     FIREBASE NOTIFICATIONS
-  ========================= */
 
   useEffect(() => {
     requestUserPermission();
@@ -134,11 +108,6 @@ const AppContent = () => {
       unsubscribeBackground();
     };
   }, []);
-
-
-  /* =========================
-     CONDITIONAL SCREENS
-  ========================= */
 
   if (isLoading) {
     return (
@@ -188,11 +157,6 @@ const AppContent = () => {
     </>
   );
 };
-
-
-/* =========================
-   STYLES
-========================= */
 
 const styles = StyleSheet.create({
   safeArea: {
