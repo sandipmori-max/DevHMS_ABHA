@@ -807,7 +807,12 @@ const PinSetupScreen = () => {
                       }}
                     >
                       <TouchableOpacity
-                        style={styles.key}
+                        style={[styles.key, 
+                          theme === 'dark' && {
+                            borderWidth : 1,
+                            borderColor: 'white'
+                          }
+                        ]}
                         onPress={() => {
                           if (screen === 'blocked') return;
 
@@ -828,7 +833,9 @@ const PinSetupScreen = () => {
                             color={pin.length === 4 ? '#16a34a' : '#9ca3af'}
                           />
                         ) : (
-                          <Text style={styles.keyText}>{item}</Text>
+                          <Text style={[styles.keyText, theme === 'dark' && {
+                            color : 'white'
+                          }]}>{item}</Text>
                         )}
                       </TouchableOpacity>
                     </Animated.View>
@@ -848,8 +855,7 @@ const PinSetupScreen = () => {
         message={alertConfig.message}
         type={alertConfig.type}
         onClose={() => setAlertVisible(false)}
-        actionLoader={undefined}
-      />
+        actionLoader={undefined} closeHide={undefined}      />
 
       {/* Menu */}
       {menuVisible && (
@@ -886,7 +892,9 @@ const PinSetupScreen = () => {
               }}
               style={{ paddingVertical: 10, paddingHorizontal: 14 }}
             >
-              <Text style={{ color: ERP_COLOR_CODE.ERP_APP_COLOR, fontSize: 15 }}>
+              <Text style={[{ color: ERP_COLOR_CODE.ERP_APP_COLOR, fontSize: 15 }, theme == 'dark' && {
+                color:'white'
+              }]}>
                 Change PIN
               </Text>
             </TouchableOpacity>

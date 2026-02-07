@@ -122,7 +122,7 @@ const WebScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor={ERP_COLOR_CODE.ERP_APP_COLOR} translucent={false} />
+      <StatusBar backgroundColor={theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR} translucent={false} />
       {token ? (
         <>
           <WebView

@@ -305,7 +305,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
   return (
     <Modal visible={visible} transparent onRequestClose={handleClose}>
       <ImageBackground
-        source={ERP_GIF.BACK_IMG}
+        source={ theme === 'dark'  ? "" :ERP_GIF.BACK_IMG}
         style={{
           height: Dimensions.get('screen').height,
         }}
@@ -318,13 +318,17 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
           }} style={styles.closeButton}>
             {
               Platform.OS === 'ios' ? <>
-                            <MaterialIcons name="chevron-left" size={28} color="#000" />
+                            <MaterialIcons name="chevron-left" size={28} color= {theme === 'dark' ? 'white': "#000" }/>
                         
                             </> :  <Image source={ERP_ICON.BACK} style={styles.back} />
             }
            
           </TouchableOpacity>
-          <Text style={styles.title}>{t('account.addAccount')}</Text>
+          <Text style={[styles.title, 
+            {
+              color: theme === 'dark' ? 'white' : 'black'
+            }
+          ]}>{t('account.addAccount')}</Text>
         </View>
         <KeyboardAvoidingView
           style={{ flex: 1 }}
@@ -332,8 +336,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
         >
           <ScrollView
             keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 40 }}
+            showsVerticalScrollIndicator={false} 
           >
             <Animated.View
               style={[
@@ -350,6 +353,9 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
                   ],
                   opacity: slideAnim,
                 },
+                theme === 'dark' && {
+                  marginTop: 0
+                }
               ]}
             >
               <FlatList
@@ -646,6 +652,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
                         }}
                       </Formik>
                     </View>
+                    <View style={{height: 150}}/>
                   </Animated.View>
                 )}
               />

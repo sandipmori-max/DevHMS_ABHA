@@ -134,8 +134,7 @@ const HomeScreen = () => {
     navigation.setOptions({
       headerStyle: {
         backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
-        borderBottomWidth: theme === 'dark' ? 1 : 0,
-        borderBottomColor: theme === 'dark' ? '#fff' : ERP_COLOR_CODE.ERP_APP_COLOR,
+
       },
       headerBackTitle: '',
       headerTintColor: '#fff',
@@ -712,16 +711,31 @@ const HomeScreen = () => {
         {showDatePicker?.show && Platform.OS === 'ios' && (
           <Modal transparent animationType="slide" statusBarTranslucent>
             <View style={styles.overlay}>
-              <View style={styles.sheet}>
+              <View style={[styles.sheet,
+              theme === 'dark' && {
+                borderWidth: 1,
+                borderColor: 'white'
+              }
+              ]}>
                 {/* Divider */}
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12, alignContent: "center", alignItems: 'center' }}>
-                  <Text>Select date</Text>
+                <View style={[
+                  theme === 'dark' && {
+                    overflow: 'hidden',
+                    borderColor: 'white',
+                  },
+                  {
+
+                    flexDirection: 'row', justifyContent: 'space-between', padding: 12, alignContent: "center", alignItems: 'center'
+                  }]}>
+                  <Text style={{
+                    color: theme === 'dark' ? 'white' : 'black'
+                  }}>Select date</Text>
                   <TouchableOpacity onPress={() => {
                     setShowDatePicker(null);
 
 
                   }}>
-                    <MaterialIcons name='close' size={24} />
+                    <MaterialIcons name='close' color={ 'black'} size={24} />
                   </TouchableOpacity>
                 </View>
                 <View style={styles.divider} />
@@ -735,6 +749,7 @@ const HomeScreen = () => {
                         ? parseCustomDate(toDate)
                         : new Date()
                   }
+                  themeVariant="light"
                   mode="date"
                   display='spinner'
                   onChange={handleDateChange}
@@ -888,15 +903,31 @@ const HomeScreen = () => {
         {showDatePicker?.show && Platform.OS === 'ios' && (
           <Modal transparent animationType="slide" statusBarTranslucent>
             <View style={styles.overlay}>
-              <View style={styles.sheet}>
+              <View style={[styles.sheet,
+              theme === 'dark' && {
+                borderWidth: 1,
+                borderColor: 'white'
+              }
+              ]}>
                 {/* Divider */}
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 12, alignContent: "center", alignItems: 'center' }}>
-                  <Text>Select date</Text>
+                <View style={[
+                  theme === 'dark' && {
+                    overflow: 'hidden',
+                    borderColor: 'white',
+                  },
+                  {
+
+                    flexDirection: 'row', justifyContent: 'space-between', padding: 12, alignContent: "center", alignItems: 'center'
+                  }]}>
+                  <Text style={{
+                    color: theme === 'dark' ? 'white' : 'black'
+                  }}>Select date</Text>
                   <TouchableOpacity onPress={() => {
                     setShowDatePicker(null);
 
+
                   }}>
-                    <MaterialIcons name='close' size={24} />
+                    <MaterialIcons name='close' color={ 'black'} size={24} />
                   </TouchableOpacity>
                 </View>
                 <View style={styles.divider} />
@@ -914,7 +945,9 @@ const HomeScreen = () => {
                   display="spinner"
                   is24Hour={false}
                   onChange={handleDateChange}
-                  style={styles.picker}
+                  style={[styles.picker, {
+                    backgroundColor: 'white',
+                  }]}
                 />
               </View>
             </View>

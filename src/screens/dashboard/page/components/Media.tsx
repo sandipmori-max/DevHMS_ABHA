@@ -295,7 +295,8 @@ const Media = ({ isValidate, item, handleAttachment, infoData, baseLink, isFromN
 
         <TouchableOpacity onPress={handleChooseImage} style={[styles.editBtn, theme === 'dark' && {
           borderWidth: 1,
-          borderColor: 'white'
+          borderColor: 'white',
+          backgroundColor: 'black'
         },]}>
           <MaterialIcons name={'edit'} color={theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK} size={20} />
         </TouchableOpacity>
@@ -374,7 +375,8 @@ const Media = ({ isValidate, item, handleAttachment, infoData, baseLink, isFromN
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, theme === 'dark' && {
             borderWidth: 1,
-            borderColor: 'white'
+            borderColor: 'white',
+            backgroundColor: 'black'
           }]}>
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, theme === 'dark' && {

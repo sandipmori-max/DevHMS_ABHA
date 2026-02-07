@@ -187,7 +187,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
       <TouchableOpacity
         style={[
           styles.card,
-          theme === 'dark' && { borderColor: 'white', borderWidth: 1 },
+          theme === 'dark' && { borderColor: backgroundColor , borderWidth: 2 },
           {
             backgroundColor: theme === 'dark' ? 'black' : backgroundColor,
             flexDirection: isHorizontal ? 'row' : 'column',

@@ -60,7 +60,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
 
   return (
     <View style={[styles.container, theme === 'dark' && {
-      backgroundColor: DARK_COLOR
+      backgroundColor: '#000'
     }]}>
       <StatusBar hidden />
       <Animated.View
@@ -71,7 +71,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
             transform: [{ scale: scaleAnim }],
           },
           theme === 'dark' && {
-            backgroundColor: DARK_COLOR
+            backgroundColor: '#000'
           }
         ]}
       >

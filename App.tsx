@@ -19,22 +19,61 @@ import {
   onNotificationOpenedAppListener,
   checkInitialNotification,
 } from './src/firebase/firebaseService';
+
 import { clearAllTempFiles } from './src/utils/helpers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
- import FullViewLoader from './src/components/loader/FullViewLoader';
+import FullViewLoader from './src/components/loader/FullViewLoader';
 import TermsAndConsent from './src/screens/TermsConditions/TermsCondition';
+import { useAppSelector } from './src/store/hooks';
+
+
+
+/* =========================
+   MAIN APP WRAPPER
+========================= */
 
 const App = () => {
+  return (
+    <Provider store={store}>
+      <TranslationProvider>
+        <AppContent />
+      </TranslationProvider>
+    </Provider>
+  );
+};
+
+
+/* =========================
+   ACTUAL APP CONTENT
+========================= */
+
+const AppContent = () => {
   const isConnected = useNetworkStatus();
+  const theme = useAppSelector(state => state?.theme?.mode);
+
+  const statusBarColor =
+    theme === 'dark'
+      ? '#000000'
+      : ERP_COLOR_CODE.ERP_APP_COLOR;
+
+  const barStyle =
+    theme === 'dark'
+      ? 'light-content'
+      : 'dark-content';
 
   const [isSplashVisible, setSplashVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [accepted, setAccepted] = useState(false);
 
+
+  /* =========================
+     CHECK TERMS ACCEPTANCE
+  ========================= */
+
   useEffect(() => {
     const checkAcceptance = async () => {
-      const value = await AsyncStorage.getItem("TERMS_ACCEPTED");
-      if (value === "true") {
+      const value = await AsyncStorage.getItem('TERMS_ACCEPTED');
+      if (value === 'true') {
         setAccepted(true);
       }
       setIsLoading(false);
@@ -42,9 +81,15 @@ const App = () => {
     checkAcceptance();
   }, []);
 
-  const handleAccept = () => {
+  const handleAccept = async () => {
+    await AsyncStorage.setItem('TERMS_ACCEPTED', 'true');
     setAccepted(true);
   };
+
+
+  /* =========================
+     CLEAR TEMP FILES
+  ========================= */
 
   useEffect(() => {
     clearAllTempFiles();
@@ -56,12 +101,19 @@ const App = () => {
         clearAllTempFiles();
       }
     });
+
     return () => subscription.remove();
   }, []);
+
+
+  /* =========================
+     FIREBASE NOTIFICATIONS
+  ========================= */
 
   useEffect(() => {
     requestUserPermission();
     setBackgroundMessageHandler();
+
     const unsubscribeForeground = onMessageListener(remoteMessage => {
       Alert.alert(
         remoteMessage.notification?.title ?? 'New Message',
@@ -83,63 +135,64 @@ const App = () => {
     };
   }, []);
 
+
+  /* =========================
+     CONDITIONAL SCREENS
+  ========================= */
+
   if (isLoading) {
     return (
-      <TranslationProvider>
-        <Provider store={store}>
-          <View style={{ flex: 1 }}>
-            <FullViewLoader />
-          </View>
-        </Provider>
-      </TranslationProvider>
+      <View style={{ flex: 1 }}>
+        <FullViewLoader />
+      </View>
     );
   }
 
-  // If not accepted → show Terms page
   if (!accepted) {
     return <TermsAndConsent onAccept={handleAccept} />;
   }
 
   if (!isConnected) {
     return (
-      <TranslationProvider>
-        <StatusBar backgroundColor={ERP_COLOR_CODE.ERP_APP_COLOR} barStyle="light-content" />
-        <SafeAreaView edges={['top']} style={{ backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR }} />
-        <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={styles.safeArea}>
-          <NoInternetScreen onRetry={() => { }} />
+      <>
+        <StatusBar backgroundColor={statusBarColor} barStyle={barStyle} />
+        <SafeAreaView edges={['top']} style={{ backgroundColor: statusBarColor }} />
+        <SafeAreaView style={styles.safeArea}>
+          <NoInternetScreen onRetry={() => {}} />
         </SafeAreaView>
-      </TranslationProvider>
+      </>
     );
   }
 
   if (isSplashVisible) {
     return (
-      <TranslationProvider>
-        <Provider store={store}>
-          <StatusBar backgroundColor={ERP_COLOR_CODE.ERP_APP_COLOR} barStyle="light-content" />
-          <SafeAreaView edges={['top']} style={{ backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR }} />
-          <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={styles.safeArea}>
-            <CustomSplashScreen onFinish={() => setSplashVisible(false)} />
-          </SafeAreaView>
-        </Provider>
-      </TranslationProvider>
+      <>
+        <StatusBar backgroundColor={statusBarColor} barStyle={barStyle} />
+        <SafeAreaView edges={['top']} style={{ backgroundColor: statusBarColor }} />
+        <SafeAreaView style={styles.safeArea}>
+          <CustomSplashScreen onFinish={() => setSplashVisible(false)} />
+        </SafeAreaView>
+      </>
     );
   }
 
   return (
-    <TranslationProvider>
-      <Provider store={store}>
-        <StatusBar backgroundColor={ERP_COLOR_CODE.ERP_APP_COLOR} barStyle="light-content" />
-        <SafeAreaView edges={['top']} style={{ backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR }} />
-        <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
-          <NavigationContainer>
-            <RootNavigator />
-          </NavigationContainer>
-        </SafeAreaView>
-      </Provider>
-    </TranslationProvider>
+    <>
+      <StatusBar backgroundColor={statusBarColor} barStyle={barStyle} />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: statusBarColor }} />
+      <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
+        <NavigationContainer>
+          <RootNavigator />
+        </NavigationContainer>
+      </SafeAreaView>
+    </>
   );
 };
+
+
+/* =========================
+   STYLES
+========================= */
 
 const styles = StyleSheet.create({
   safeArea: {

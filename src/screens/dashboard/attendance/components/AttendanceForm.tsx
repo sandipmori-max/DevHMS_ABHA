@@ -390,7 +390,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
                     style={[styles.input, styles.inputReadonly, theme === 'dark' && {
                       borderWidth: 1,
                       borderColor: 'white',
-                      color: 'white',
+                      color: 'black',
                       backgroundColor: 'black'
                     },
                     { backgroundColor: ERP_COLOR_CODE.ERP_BORDER_LINE }
@@ -415,6 +415,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
                       color: 'white',
                       backgroundColor: 'black'
                     }]}
+                    placeholderTextColor={theme === 'dark' ? 'white' : 'black'}
                     value={values?.remark}
                     onChangeText={text => setFieldValue('remark', text)}
                     placeholder={t('attendance.enterRemark')}
