@@ -392,7 +392,6 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
                 tapLoader ? t('text96') : t('text97')
               }
             </Text>
-
           </TouchableOpacity>
         </Animated.View>
 
@@ -406,8 +405,10 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
           onCancel={() => setAlertVisible(false)}
           onDone={() => handleRemovedAccount(selectedAccount)}
           doneText={t('text98')}
+          cancelText={t('auth.cancel')}
           color={ERP_COLOR_CODE.ERP_ERROR}
-          actionLoader={undefined} closeHide={undefined} />
+          actionLoader={undefined} 
+          closeHide={undefined} />
 
         <ImageBottomSheetModal
           visible={showModal}

@@ -217,7 +217,7 @@ const TableView = ({
             backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
           }}
         >
-          <NoData />
+          <NoData isShowTop = {false}/>
         </View>
       </>
     );

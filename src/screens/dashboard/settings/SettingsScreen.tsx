@@ -654,7 +654,8 @@ const translateY = useRef(new Animated.Value(HIDDEN_POSITION)).current;
             }
           }
         } }
-        doneText="Logout"
+        cancelText={t('auth.cancel')}
+        doneText={t('auth.logout')}
         color={ERP_COLOR_CODE.ERP_ERROR}
         actionLoader={undefined} closeHide={undefined}      />
     </View>

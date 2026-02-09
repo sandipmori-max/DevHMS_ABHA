@@ -279,6 +279,8 @@ const ListScreen = () => {
 
   const onRefresh = async () => {
     try {
+      setSearchQuery('');
+      getCurrentMonthRange();
       await fetchListData(fromDate, toDate);
     } catch (e) {
     }
@@ -469,7 +471,11 @@ const ListScreen = () => {
 
   return (
     <View style={[styles.container, theme === 'dark' && { backgroundColor: 'black' }]}>
-       <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
+       
+       {
+       !isFilterVisible &&  <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
+       
+       }
            
       {isFilterVisible && (
         <View style={{
@@ -574,7 +580,7 @@ const ListScreen = () => {
                                  }]}>
                                  <Text style={{
                                    color: theme === 'dark' ? 'white' : 'black'
-                                 }}>{t('test27')}</Text>
+                                 }}>{t('text27')}</Text>
                                  <TouchableOpacity onPress={() => {
                                    setShowDatePicker(null);
                
@@ -754,7 +760,8 @@ const ListScreen = () => {
             setApiError(true);
           }
         } }
-        isFromButtonList={true} closeHide={undefined}      />
+        isFromButtonList={true} closeHide={undefined}      
+      />
 
       <CustomAlert
         visible={apiError}
@@ -763,7 +770,9 @@ const ListScreen = () => {
         type={alertConfig.type}
         onClose={() => setApiError(false)}
         onCancel={() => setApiError(false)}
-        actionLoader={actionLoader} closeHide={undefined}      />
+        actionLoader={actionLoader}
+        closeHide={undefined}      
+      />
     </View>
   );
 };

@@ -156,7 +156,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
 
   useFocusEffect(
     useCallback(() => {
-      NativeModules.OrientationModule.enableLandscape();
+      // NativeModules.OrientationModule.enableLandscape();
       setIsHorizontal(false)
       setShowSearch(false);
       setIsRefresh(false);
@@ -174,7 +174,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
           });
     }
       return () => {
-        NativeModules.OrientationModule.disableLandscape();
+        // NativeModules.OrientationModule.disableLandscape();
       };
     }, [isAuthenticated, activeToken, isRefresh])
   );
@@ -263,7 +263,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
 
   if (isMenuLoading) return <FullViewLoader isShowTop={theme === 'dark' ? false : true}/>;
   if (error) return <ErrorMessage message={error} />;
-  if (list.length === 0) return <NoData />;
+  if (list.length === 0) return <NoData isShowTop = {false}/>;
 
   return (
     <View style={{ flex: 1, backgroundColor: theme === 'dark' ? 'black' : 'white' }}>

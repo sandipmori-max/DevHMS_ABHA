@@ -119,7 +119,7 @@ const WebScreen = () => {
   if ((!isFromChart && !targetUrl) || (isFromChart && !url)) {
     return (
       <SafeAreaView style={styles.container}>
-        <FullViewLoader />
+        <FullViewLoader isShowTop={false}/>
       </SafeAreaView>
     );
   }

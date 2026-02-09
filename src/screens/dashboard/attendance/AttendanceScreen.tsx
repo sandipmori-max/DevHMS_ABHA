@@ -147,7 +147,7 @@ const AttendanceScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      NativeModules.OrientationModule.disableLandscape();
+      // NativeModules.OrientationModule.disableLandscape();
       return () => {
       };
     }, [navigation])

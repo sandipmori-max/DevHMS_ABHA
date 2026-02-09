@@ -242,7 +242,7 @@ const CustomPicker = ({
           </View>
 
           {loader ? (
-            <FullViewLoader />
+            <FullViewLoader isShowTop={false}/>
           ) : (
             <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
               {options.length > 0 ? (
@@ -316,7 +316,7 @@ const CustomPicker = ({
                     marginTop: 200,
                   }}
                 >
-                  <NoData />
+                  <NoData isShowTop = {false}/>
                 </View>
               )}
             </ScrollView>

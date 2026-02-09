@@ -1298,7 +1298,7 @@ const PageScreen = () => {
           backgroundColor: 'black',
           width: '100%'
         }]}>
-          <NoData />
+          <NoData isShowTop = {false} />
         </View>
       )}
 

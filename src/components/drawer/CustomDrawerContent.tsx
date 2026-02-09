@@ -249,7 +249,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
                       return;
                     }
                     if (item?.route === "Attendance") {
-                      NativeModules.OrientationModule.enableLandscape();
+                      // NativeModules.OrientationModule.enableLandscape();
                       props?.navigation.closeDrawer();
                       navigation.navigate(item?.route, { isFor: 'Attendance' });
                       return;

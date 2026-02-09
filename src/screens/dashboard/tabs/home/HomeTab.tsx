@@ -34,7 +34,7 @@ import {
   Platform,
 } from 'react-native';
 import { ERP_ICON } from '../../../../assets';
-import { NativeModules } from 'react-native';
+// import { NativeModules } from 'react-native';
 
 const { width } = Dimensions.get('screen');
 
@@ -106,7 +106,7 @@ const HomeScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      NativeModules.OrientationModule.enableLandscape();
+      // NativeModules.OrientationModule.enableLandscape();
       dispatch(setActiveDashboardBranchId(''))
       dispatch(setActiveDashboardBranch(''))
       dispatch(setActiveDashboardType(''))
@@ -114,7 +114,7 @@ const HomeScreen = () => {
       setIsFilterVisible(false)
       setIsHorizontal(false)
       return () => {
-        NativeModules.OrientationModule.disableLandscape();
+        // NativeModules.OrientationModule.disableLandscape();
       };
     }, [isAuthenticated, navigation])
   );
@@ -160,7 +160,7 @@ const HomeScreen = () => {
                 setSearchText('');
               }}
             >
-              <MaterialIcons
+              <MaterialIcons  
                 name="clear"
                 size={24}
                 color={ERP_COLOR_CODE.ERP_WHITE}
@@ -1005,7 +1005,7 @@ const HomeScreen = () => {
                   backgroundColor: theme === 'dark' ? 'black' : 'white',
                 }}
               >
-                <NoData />
+                <NoData isShowTop = {false}/>
               </View>
             ) : (
               <View style={{

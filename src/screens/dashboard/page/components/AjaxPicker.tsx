@@ -198,7 +198,7 @@ const AjaxPicker = ({ isValidate, label, onValueChange, item, errors, dtext, for
 
             {loader ? (
               <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                <FullViewLoader />
+                <FullViewLoader isShowTop={false}/>
               </View>
             ) : (
               <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
@@ -268,7 +268,7 @@ const AjaxPicker = ({ isValidate, label, onValueChange, item, errors, dtext, for
                     marginTop: 200,
                   }}
                 >
-                  <NoData />
+                  <NoData isShowTop = {false}/>
                 </View>
                 )}
               </ScrollView>

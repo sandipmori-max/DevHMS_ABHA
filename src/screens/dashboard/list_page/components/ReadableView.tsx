@@ -547,7 +547,7 @@ const ReadableView = ({
           backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
         }}
       >
-        <NoData />
+        <NoData isShowTop = {false}/>
       </View>
     );
   }

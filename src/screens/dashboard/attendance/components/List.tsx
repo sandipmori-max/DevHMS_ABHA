@@ -490,7 +490,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                     alignItems: 'center',
                   }}
                 >
-                  <NoData />
+                  <NoData isShowTop = {false}/>
                 </View>
               ) : (
                 <View style={{
@@ -786,7 +786,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
             height: Dimensions.get('screen').height * 0.75,
             flex: 1, justifyContent: 'center', alignContent: 'center', alignItems: 'center'
           }}>
-            <NoData />
+            <NoData isShowTop = {false}/>
           </View>
         </>
       }

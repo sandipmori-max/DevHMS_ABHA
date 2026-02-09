@@ -2,7 +2,6 @@ package com.deverp
 
 import android.app.Application
 import com.deverp.location.LocationPackage
-import com.deverp.orientation.OrientationPackage
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
@@ -20,7 +19,6 @@ class MainApplication : Application(), ReactApplication {
       override fun getPackages(): List<ReactPackage> =
         PackageList(this).packages.apply {
           add(LocationPackage())
-          add(OrientationPackage())
         }
 
       override fun getJSMainModuleName(): String = "index"
