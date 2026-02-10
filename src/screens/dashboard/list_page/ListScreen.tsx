@@ -20,6 +20,7 @@ import { ERP_COLOR_CODE } from '../../../utils/constants';
 import useTranslations from '../../../hooks/useTranslations';
 import { tags } from 'react-native-svg/lib/typescript/xmlTags';
 import { JumpingTransition } from 'react-native-reanimated';
+import TranslatedText from '../tabs/home/TranslatedText';
 
 const ListScreen = () => {
   const navigation = useNavigation();
@@ -171,7 +172,7 @@ const ListScreen = () => {
       headerBackTitle: '',
       headerTintColor: '#fff',
       headerTitle: () => (
-        <Text
+        <TranslatedText
           numberOfLines={1}
           style={{
             maxWidth: 180,
@@ -179,9 +180,10 @@ const ListScreen = () => {
             fontWeight: '700',
             color: theme === 'dark' ? "white" : ERP_COLOR_CODE.ERP_WHITE,
           }}
+          text= {pageTitle || 'List Data'}
         >
-          {pageTitle || 'List Data'}
-        </Text>
+         
+        </TranslatedText>
       ),
       headerRight: () => (
         <>
@@ -531,7 +533,10 @@ const ListScreen = () => {
                       color="#000"
                       style={{ marginRight: 8 }}
                     />
-                    <Text style={styles.dateButtonText}>{fromDate || t("msg.msg9")}</Text>
+                    <TranslatedText 
+                    numberOfLines={1}
+                    text={fromDate || t("msg.msg9")}
+                    style={styles.dateButtonText}></TranslatedText>
                   </View>
                 </TouchableOpacity>
               </View>

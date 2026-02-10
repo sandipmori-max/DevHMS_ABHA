@@ -34,6 +34,8 @@ import {
   Platform,
 } from 'react-native';
 import { ERP_ICON } from '../../../../assets';
+import { translateSingle } from '../../../../services/api/utils';
+import TranslatedText from './TranslatedText';
 // import { NativeModules } from 'react-native';
 
 const { width } = Dimensions.get('screen');
@@ -88,6 +90,7 @@ const HomeScreen = () => {
 
   const textItems = filteredDashboard.filter(item => item.data && !hasHtmlContent(item.data));
 
+  console.log("filteredDashboard", filteredDashboard)
   useEffect(() => {
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
 
@@ -364,7 +367,7 @@ const HomeScreen = () => {
                   {/* <Text style={styles.iconText}>{getInitials(item?.name)}</Text> */}
                 </View>
                 <View style={styles.headerTextWrap}>
-                  <Text
+                  {/* <Text
                     style={[
                       styles.dashboardItemText,
                       {
@@ -379,11 +382,24 @@ const HomeScreen = () => {
                     ellipsizeMode="tail"
                   >
                     {isFromMenu
-                      ? item?.title
+                      ?  translateSingle(item?.title) 
                       : !isHorizontal
                         ? item?.title.replace(' ', '\n')
-                        : item?.title}
-                  </Text>
+                        : translateSingle(item?.title)}
+                  </Text> */}
+                  <TranslatedText
+                    text={item?.title}
+                    style={[
+                      styles.dashboardItemText,
+                      {
+                        color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK,
+                        flexShrink: 1,
+                        includeFontPadding: false,
+                        textAlignVertical: 'top',
+                      },
+                    ]}
+                    numberOfLines={2}
+                  />
                 </View>
               </View>
             </View>
@@ -808,7 +824,7 @@ const HomeScreen = () => {
           }}
         >
           <MaterialIcons name="business" size={24} color={"#FFF"} />
-          <Text
+          <TranslatedText
             numberOfLines={1}
             style={{
               color: "#FFF",
@@ -816,9 +832,9 @@ const HomeScreen = () => {
               fontSize: 16,
               maxWidth: 280,
             }}
-          >
-            {user?.companyName || ''}
-          </Text>
+            text={user?.companyName || ''}
+          > 
+          </TranslatedText>
 
         </Animated.View>
 
@@ -848,11 +864,14 @@ const HomeScreen = () => {
                           color="#fff"
                           style={{ marginRight: 8 }}
                         />
-                        <Text style={[styles.dateButtonText, { color: "#FFF" }]}>
-                          {item.field === "fromdate"
+                        <TranslatedText
+                        numberOfLines={1}
+                        text={item.field === "fromdate"
                             ? fromDate || "Select From Date"
                             : toDate || "Select To Date"}
-                        </Text>
+                        style={[styles.dateButtonText, { color: "#FFF" }]}>
+                          
+                        </TranslatedText>
                       </View>
                     </TouchableOpacity>
                     {index === 0 && <View style={{ height: 1, width: 8 }} />}

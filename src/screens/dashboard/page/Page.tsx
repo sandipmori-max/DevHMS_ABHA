@@ -55,6 +55,7 @@ import ScanScreen from './components/ScanScreen';
 import BarCodeScan from './components/BarCodeScan';
 import { styles } from './page_style';
 import { openSettings } from 'react-native-permissions';
+import TranslatedText from '../tabs/home/TranslatedText';
 
 type PageRouteParams = { PageScreen: { item: any } };
 
@@ -512,7 +513,7 @@ const PageScreen = () => {
       headerTintColor: '#fff',
       headerTitle: () => (
         <View style={{ flexDirection: 'row', alignItems: 'center', maxWidth: 210 }}>
-          <Text
+          <TranslatedText
             numberOfLines={1}
             style={{
               flexShrink: 1,
@@ -520,20 +521,23 @@ const PageScreen = () => {
               fontWeight: '700',
               color: theme === 'dark' ? "white" : ERP_COLOR_CODE.ERP_WHITE,
             }}
+            text={title || pageTitle || 'Details'}
           >
-            {title || pageTitle || 'Details'}
-          </Text>
+            
+          </TranslatedText>
           {
-             isFromProfile === false &&  <Text
+             isFromProfile === false &&  <TranslatedText
+             numberOfLines={1}
             style={{
               fontSize: 18,
               fontWeight: '700',
               color: ERP_COLOR_CODE.ERP_WHITE,
               marginLeft: 4,
             }}
+            text= {isFromNew ? `( ${t("text.text44")} )` : `( ${t('text.text45')} )`}
           >
-            {isFromNew ? `( ${t("text.text44")} )` : `( ${t('text.text45')} )`}
-          </Text>
+           
+          </TranslatedText>
           }
          
         </View>

@@ -21,6 +21,7 @@ import { NativeModules } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { setMenuLoading } from '../../../../store/slices/auth/authSlice';
+import TranslatedText from '../home/TranslatedText';
 const accentColors = ['#dbe0f5ff', '#c8f3edff', '#faf1e0ff', '#f0e1e1ff', '#f2e3f8ff', '#e0f3edff',];
 const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
   const navigation = useNavigation();
@@ -135,7 +136,10 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
             </TouchableOpacity>
           </View>
         ) : (
-          <Text style={{ color: 'white', fontSize: 18, fontWeight: '600' }}>{headerText}</Text>
+          <TranslatedText 
+          text={headerText}
+          numberOfLines={1}
+          style={{ color: 'white', fontSize: 18, fontWeight: '600' }}></TranslatedText>
         ),
       headerRight: () =>
         !showSearch && (
@@ -230,32 +234,39 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
             { backgroundColor: theme === 'dark' ? backgroundColor : ERP_COLOR_CODE.ERP_WHITE },
           ]}
         >
-          <Text style={[styles.iconText, 
-            
-            theme === 'dark' && { color: 'black' }]}>
-            {item.icon ||
+          <TranslatedText 
+          numberOfLines={1}
+          text= {item.icon ||
               getInitials(item?.name)
             }
-          </Text>
+          style={[styles.iconText, 
+            
+            theme === 'dark' && { color: 'black' }]}>
+           
+          </TranslatedText>
         </View>
 
         <View style={{ marginLeft: isHorizontal ? 16 : 0, marginTop: isHorizontal ? 0 : 12 }}>
-          <Text 
-          numberOfLines={2} style={[styles.title, 
+          <TranslatedText
+          numberOfLines={2} 
+          text={item.name}
+          style={[styles.title, 
             {
               maxWidth: isHorizontal ? 220 : 'auto',
               textAlign: isHorizontal ? 'left' : 'center',
             },
             theme === 'dark' && { color: 'white' }]}>
-            {item.name}
-          </Text>
-          <Text numberOfLines={2} style={[styles.subtitle, theme === 'dark' && { color: 'white' },
+            
+          </TranslatedText>
+          <TranslatedText 
+          text= {item.title}
+          numberOfLines={2} style={[styles.subtitle, theme === 'dark' && { color: 'white' },
           !isHorizontal && {
             textAlign:'center'
           }
           ]}>
-            {item.title}
-          </Text>
+           
+          </TranslatedText>
         </View>
       </TouchableOpacity>
     );

@@ -29,6 +29,7 @@ import useTranslations from '../../../hooks/useTranslations';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { ERP_GIF } from '../../../assets';
 import { NativeModules } from 'react-native';
+import TranslatedText from '../tabs/home/TranslatedText';
 
 const AttendanceScreen = () => {
   const route = useRoute();
@@ -279,12 +280,15 @@ const AttendanceScreen = () => {
                     color={theme === 'dark' ? '#fff' : "#000"}
                     style={{ marginRight: 8 }}
                   />
-                  <Text style={[styles.dateButtonText,
+                  <TranslatedText 
+                  text={fromDate || t("text.text27")}
+                  numberOfLines={1}
+                  style={[styles.dateButtonText,
                   {
                     color: theme === 'dark' ? '#fff' : "#000"
 
                   }
-                  ]}>{fromDate || t("text.text27")}</Text>
+                  ]}></TranslatedText>
                 </View>
 
 
@@ -307,10 +311,13 @@ const AttendanceScreen = () => {
                     color={theme === 'dark' ? '#fff' : "#000"}
                     style={{ marginRight: 8 }}
                   />
-                  <Text style={[styles.dateButtonText, {
+                  <TranslatedText 
+                  numberOfLines={1}
+                  text={toDate || ''}
+                  style={[styles.dateButtonText, {
                     color: theme === 'dark' ? '#fff' : "#000"
 
-                  }]}>{toDate || ''}</Text>
+                  }]}></TranslatedText>
                 </View>
 
               </TouchableOpacity>

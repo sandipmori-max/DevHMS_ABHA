@@ -13,6 +13,7 @@ import { useBaseLink } from '../../../../hooks/useBaseLink';
 import { useTranslation } from 'react-i18next';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import ProfileSection from './ProfileSection';
+import TranslatedText from '../home/TranslatedText';
 
 const ProfileTab = () => {
   const { t } = useTranslation();
@@ -251,9 +252,12 @@ const ProfileTab = () => {
                     >
                       {t('profile.lastLogin')}
                     </Text>
-                    <Text style={styles.settingSubtitle}>
-                      {formatDateHr(activeAccount?.lastLoginAt, false)}
-                    </Text>
+                    <TranslatedText
+                    numberOfLines={1}
+                    text={formatDateHr(activeAccount?.lastLoginAt, false)}
+                    style={styles.settingSubtitle}>
+                     
+                    </TranslatedText>
                   </View>
                 </View>
               </View>
