@@ -224,7 +224,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
           alignItems: 'center',
         }}
       >
-        <ErrorMessage message={JSON.stringify(parsedError)} />
+        <ErrorMessage message={JSON.stringify(parsedError)} isShowTop ={false} />
       </View>
     );
   }

@@ -1244,7 +1244,7 @@ const PageScreen = () => {
             backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
           }}
         >
-          <ErrorMessage message={error} />
+          <ErrorMessage message={error} isShowTop ={false} />
         </View>
       ) : controls?.length > 0 ? (
         <>

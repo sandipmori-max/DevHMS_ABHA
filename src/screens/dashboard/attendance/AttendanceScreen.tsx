@@ -33,6 +33,7 @@ import { NativeModules } from 'react-native';
 const AttendanceScreen = () => {
   const route = useRoute();
   const { isFor } = route?.params || '';
+  console.log('route', route)
   const navigation = useNavigation<any>();
   const [isListVisible, setIsListVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -166,7 +167,6 @@ const AttendanceScreen = () => {
 
       })
       .catch(err => {
-
         setActionLoader(false);
         setError(err);
         setIsLoading(false);
@@ -180,7 +180,7 @@ const AttendanceScreen = () => {
   }, [refresh, theme]);
 
   if (error && error !== '') {
-    <ErrorMessage message={error} />;
+    <ErrorMessage message={error} isShowTop ={false}/>;
   }
 
   const handleDateChange = (event: any, selectedDate?: Date) => {

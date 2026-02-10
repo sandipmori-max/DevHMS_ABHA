@@ -8,7 +8,7 @@ import { ErrorMessageProps } from '../types';
 import { useAppSelector } from '../../store/hooks';
 import { ERP_COLOR_CODE } from '../../utils/constants';
 
-const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, visible = true }) => {
+const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, visible = true , isShowTop = true}) => {
   const theme = useAppSelector(state => state?.theme.mode);
 
   const opacity = useRef(new Animated.Value(0)).current;
@@ -77,7 +77,10 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, visible = true }) 
 
   return (
   <>
-    <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
+  {
+    isShowTop && <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
+    
+  }
   
     <Animated.View
       style={[

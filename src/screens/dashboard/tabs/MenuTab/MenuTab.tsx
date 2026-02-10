@@ -262,8 +262,8 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
   };
 
   if (isMenuLoading) return <FullViewLoader isShowTop={theme === 'dark' ? false : true}/>;
-  if (error) return <ErrorMessage message={error} />;
-  if (list.length === 0) return <NoData isShowTop = {false}/>;
+  if (error) return <ErrorMessage message={error} isShowTop={false} />;
+  if (list.length === 0) return <NoData />;
 
   return (
     <View style={{ flex: 1, backgroundColor: theme === 'dark' ? 'black' : 'white' }}>

@@ -994,7 +994,7 @@ const HomeScreen = () => {
                   backgroundColor: theme === 'dark' ? 'black' : 'white',
                 }}
               >
-                <ErrorMessage message={error} />{' '}
+                <ErrorMessage message={error} isShowTop ={false} />{' '}
               </View>
             ) : controls?.length === 0 && !isDashboardLoading ? (
               <View

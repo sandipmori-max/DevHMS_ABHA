@@ -72,6 +72,7 @@ const ListScreen = () => {
 
   const route = useRoute<RouteProp<ListRouteParams, 'List'>>();
   const { item } = route?.params;
+  console.log("-----------------------------------")
   const theme = useAppSelector(state => state?.theme.mode);
 
   const pageTitle = item?.title || item?.name || 'List Data';
@@ -460,7 +461,7 @@ const ListScreen = () => {
   if (parsedError) {
     return (
       <View style={{ flex: 1, backgroundColor: theme == 'dark' ? 'black' :  ERP_COLOR_CODE.ERP_WHITE }}>
-        <ErrorMessage message={parsedError} />
+        <ErrorMessage message={parsedError} isShowTop ={false} />
       </View>
     );
   }
@@ -634,7 +635,7 @@ const ListScreen = () => {
 
       {!!error ? (
        <View style={{flex: 1, backgroundColor:theme === 'dark' ? 'black' : 'white'}}>
-         <ErrorMessage message={error} />
+         <ErrorMessage message={error} isShowTop ={false} />
         </View>
       ) : (
         <>
