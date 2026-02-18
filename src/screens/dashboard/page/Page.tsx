@@ -551,8 +551,7 @@ const PageScreen = () => {
               name="save-as"
               isLoading={actionSaveLoader || tapLoader}
               onPress={async () => {
-
-                  console.log("myScript", myScript)
+                console.log("myScript", myScript)
                 try {
                   setTapLoader(true)
                   if (myScript) {
