@@ -156,6 +156,8 @@ const PageScreen = () => {
   const locationSyncInterval = useRef<NodeJS.Timeout | null>(null);
   const lastLocationEnabled = useRef<boolean | null>(null);
   const appState = useRef(AppState.currentState);
+  const [scriptErrorMessage, setScriptErrorMessage] = useState<any>()
+  const [isVisibleScriptError, setIsVisibleScriptError] = useState(false);
 
   const hasLocationField = controls.some(
     item => item?.defaultvalue && item?.defaultvalue === '#location' && item?.visible === '0',
@@ -549,6 +551,8 @@ const PageScreen = () => {
               name="save-as"
               isLoading={actionSaveLoader || tapLoader}
               onPress={async () => {
+
+                  console.log("myScript", myScript)
                 try {
                   setTapLoader(true)
                   if (myScript) {
@@ -566,7 +570,12 @@ const PageScreen = () => {
                       rules = myScript;
                     }
 
-                    const { actions } = evaluateRulesWithActions(rules, formValues);
+                    const { actions, messages } = evaluateRulesWithActions(rules, formValues);
+                    console.log("myScript-------------------------------------------", myScript)
+                    console.log("rules-------------------------------------------", rules)
+                    console.log("actions-------------------------------------------", actions)
+                    console.log("formValues-------------------------------------------", formValues)
+
                     const hasButtonSaveEnable = actions.some(
                       item => item?.field === "buttonSave"
                     );
@@ -578,14 +587,15 @@ const PageScreen = () => {
                       setControls(updatedControls)
                       setButtonSave(hasButtonSaveEnable)
                       if (!hasButtonSaveEnable) {
-                        setTapLoader(false);
-                        Alert.alert("Error", myScript?.message)
+                              setTapLoader(false);
+                              setScriptErrorMessage(messages)
+                              setIsVisibleScriptError(true)
                         return;
                       }
                     }
                     const updatedControls = applyActionsToControls(controls, actions);
                     setControls(updatedControls)
-                  }
+                  } 
                   console.log("hasButtonSaveEnable-------------------")
 
                   const locationEnabled = hasLocationField ? await DeviceInfo.isLocationEnabled() : true;
@@ -716,6 +726,7 @@ const PageScreen = () => {
         getERPPageThunk({ page: url, id: isFromNew ? 0 : id }),
       ).unwrap();
      
+      console.log("parsed?.script", parsed?.script)
       if (parsed?.script && typeof parsed.script === "object" && !Array.isArray(parsed.script)) {
 
         setMyScript(parsed.script);
@@ -895,7 +906,7 @@ const PageScreen = () => {
             return;
           }
 
-          console.log('✅ Rule Found → Evaluating...');
+          console.log('✅ Rule Found → Evaluating...', updatedValues);
 
           const { actions } = evaluateRulesWithActions(rule, updatedValues);
           console.log('Rule Actions:', actions);
@@ -914,7 +925,6 @@ const PageScreen = () => {
             if (action?.action === 'setValue' && action?.field) {
               newFormValues[action.field] = action.text ?? '';
               isFormValueChanged = true;
-
               console.log(`📝 setValue → ${action.field} = ${action.text}`);
             }
           });
@@ -931,7 +941,6 @@ const PageScreen = () => {
 
           setControls(updatedControls);
 
-          console.log('================ SET VALUE END ==================');
         } else {
           if (typeof val === 'object' && val !== null) {
             setFormValues(prev => ({ ...prev, ...val }));
@@ -946,7 +955,6 @@ const PageScreen = () => {
         formValues[item?.field] === '#location'
           ? ''
           : formValues[item?.field] || formValues[item?.text] || '';
-      console.log('value=================-------', item?.field, '------', value);
 
       if (item?.visible === '1') return null;
 
@@ -1306,6 +1314,14 @@ const PageScreen = () => {
           </View>
         )}
 
+        <ErrorModal
+          visible={isVisibleScriptError}
+          errors={scriptErrorMessage}
+          onClose={() => {
+            setTapLoader(false);
+            setIsVisibleScriptError(false);
+          }}
+        />
         <ErrorModal
           visible={showErrorModal}
           errors={errorsList}

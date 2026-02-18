@@ -67,8 +67,7 @@ class DevERPService {
 
       return response.data;
     } catch (error) {
-      console.log("error",error)
-      throw error;
+       throw error;
     }
   }
 
