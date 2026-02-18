@@ -30,6 +30,7 @@ import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { ERP_GIF } from '../../../assets';
 import { NativeModules } from 'react-native';
 import TranslatedText from '../tabs/home/TranslatedText';
+import { BackHandler } from 'react-native';
 
 const AttendanceScreen = () => {
   const route = useRoute();

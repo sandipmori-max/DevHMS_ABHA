@@ -52,7 +52,7 @@ const HomeScreen = () => {
   const [controls, setControls] = useState<any[]>([]);
   const [controlsLoader, setControlsLoader] = useState<any>(false);
 
-  const { dashboard, isDashboardLoading, isAuthenticated, error, user } = useAppSelector(
+  const { dashboard, isDashboardLoading, isAuthenticated, error, user, attendanceDone } = useAppSelector(
     state => state.auth,
   );
 
@@ -208,6 +208,17 @@ const HomeScreen = () => {
                 name={isFilterVisible ? 'close' : 'filter-alt'}
                 onPress={() => setIsFilterVisible(prev => !prev)}
               />
+              {
+                attendanceDone &&   
+                <ERPIcon
+                  color={attendanceDone ? 'green' : 'red'}
+                  name={'location-on'}
+                  onPress={() => {
+                    navigation.navigate("LocationTrack")
+                  }}
+              />
+              }
+            
             </>
           )}
         </>
