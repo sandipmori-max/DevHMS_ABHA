@@ -1,85 +1,58 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { PermissionsAndroid, Platform } from "react-native";
-import Geolocation from "@react-native-community/geolocation";
+import * as Geolocation from "react-native-geolocation-service";
 
-type Coords = {
-  latitude: number;
-  longitude: number;
-  accuracy?: number;
-};
-
-export const useCurrentAddress = () => {
+export const useCurrentLocation = () => {
   const [address, setAddress] = useState<string | null>(null);
-  const [coords, setCoords] = useState<Coords | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [coords, setCoords] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // ---------- ANDROID PERMISSION ----------
-  const requestLocationPermission = async (): Promise<boolean> => {
+  const requestPermission = async () => {
     if (Platform.OS !== "android") return true;
-
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: "Location Permission",
-          message: "App needs access to your location",
-          buttonPositive: "OK",
-        },
-      );
-
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
-    } catch (err) {
-      return false;
-    }
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+    );
+    return granted === PermissionsAndroid.RESULTS.GRANTED;
   };
 
-  // ---------- GET STABLE LOCATION ----------
   const getLocation = useCallback(async () => {
     setLoading(true);
     setError(null);
 
-    const hasPermission = await requestLocationPermission();
-    if (!hasPermission) {
-      setError("Location permission denied");
-      setLoading(false);
-      return;
-    }
+    const ok = await requestPermission();
+    if (!ok) return;
 
-    Geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position?.coords;
-        setCoords({
-          latitude: latitude,
-          longitude: longitude,
-        });
+    Geolocation.watchPosition(()=>{},()=>{},{
+  enableHighAccuracy:true,
+  distanceFilter:0,
+  interval:1000,
+});
 
+setTimeout(()=>{
+   Geolocation.getCurrentPosition(
+      (pos) => {
+        const latitude = pos?.coords.latitude ?? 0;
+        const longitude = pos?.coords.longitude ?? 0;
+
+        setCoords({ latitude, longitude });
         setAddress(`${latitude},${longitude}`);
-
         setLoading(false);
       },
-      (error) => {
-        setError(error.message || "Unable to fetch location");
+      (err) => {
+        setError(err.message);
         setLoading(false);
       },
       {
-        enableHighAccuracy: false,
-        timeout: 15000,
-        maximumAge: 10000,
-      },
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 0,
+        forceRequestLocation: true,
+      }
     );
+},1000)
+    // ⭐ STEP 2 ACCURATE (fresh GPS)
+   
   }, []);
 
-  // ---------- INITIAL LOAD ----------
-  useEffect(() => {
-    getLocation();
-  }, [getLocation]);
-
-  return {
-    address,
-    coords,
-    loading,
-    error,
-    refetch: getLocation,
-  };
-};
+return { address, coords, loading, error, refetch: getLocation, };};
