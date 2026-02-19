@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from 'react';
-import { PermissionsAndroid, Platform } from 'react-native';
-import Geolocation from '@react-native-community/geolocation';
+import { useEffect, useState, useCallback } from "react";
+import { PermissionsAndroid, Platform } from "react-native";
+import Geolocation from "@react-native-community/geolocation";
 
 type Coords = {
   latitude: number;
@@ -16,16 +16,16 @@ export const useCurrentAddress = () => {
 
   // ---------- ANDROID PERMISSION ----------
   const requestLocationPermission = async (): Promise<boolean> => {
-    if (Platform.OS !== 'android') return true;
+    if (Platform.OS !== "android") return true;
 
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
-          title: 'Location Permission',
-          message: 'App needs access to your location',
-          buttonPositive: 'OK',
-        }
+          title: "Location Permission",
+          message: "App needs access to your location",
+          buttonPositive: "OK",
+        },
       );
 
       return granted === PermissionsAndroid.RESULTS.GRANTED;
@@ -41,65 +41,32 @@ export const useCurrentAddress = () => {
 
     const hasPermission = await requestLocationPermission();
     if (!hasPermission) {
-      setError('Location permission denied');
+      setError("Location permission denied");
       setLoading(false);
       return;
     }
 
-    let bestLocation: any = null;
-    let readings = 0;
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position?.coords;
+        setCoords({
+          latitude: latitude,
+          longitude: longitude,
+        });
 
-    const watchId = Geolocation.watchPosition(
-      (pos) => {
-        const { latitude, longitude, accuracy } = pos.coords;
+        setAddress(`${latitude},${longitude}`);
 
-        console.log('Lat:', latitude);
-        console.log('Lng:', longitude);
-        console.log('Accuracy:', accuracy);
-
-        readings++;
-
-        // Pick best accuracy
-        if (!bestLocation || accuracy < bestLocation.coords.accuracy) {
-          bestLocation = pos;
-        }
-
-        // Stop conditions:
-        // 1. Good accuracy achieved (<= 20m)
-        // 2. 3 readings taken
-        if (accuracy <= 20 || readings >= 3) {
-          Geolocation.clearWatch(watchId);
-
-          if (bestLocation.coords.accuracy > 50) {
-            setError('Weak GPS signal. Try open area.');
-            setLoading(false);
-            return;
-          }
-
-          setCoords({
-            latitude: bestLocation.coords.latitude,
-            longitude: bestLocation.coords.longitude,
-            accuracy: bestLocation.coords.accuracy,
-          });
-
-          setAddress(
-            `${bestLocation.coords.latitude},${bestLocation.coords.longitude}`
-          );
-
-          setLoading(false);
-        }
+        setLoading(false);
       },
-      (err) => {
-        Geolocation.clearWatch(watchId);
-        setError(err.message || 'Unable to fetch location');
+      (error) => {
+        setError(error.message || "Unable to fetch location");
         setLoading(false);
       },
       {
-        enableHighAccuracy: true,   // ✅ Always GPS
-        timeout: 25000,
-        maximumAge: 0,              // ✅ No cached location
-        distanceFilter: 0,
-      }
+        enableHighAccuracy: false,
+        timeout: 15000,
+        maximumAge: 10000,
+      },
     );
   }, []);
 
