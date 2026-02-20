@@ -52,13 +52,13 @@
 
 	<!-- Location -->
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app requires location access for employee attendance and tracking purposes.</string>
+<string>Location is used during working hours after check-in to verify attendance and work activity.</string>
 
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app requires location access for employee attendance and tracking purposes.</string>
+<string>Location is used during working hours after check-in to verify attendance and work activity.</string>
+	 <key>NSLocationWhenInUseUsageDescription</key>
+<string>Location is used to mark attendance and verify work presence.</string>
 
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app requires location access for employee attendance and tracking purposes.</string>
 
 	<!-- Microphone -->
 	<key>NSMicrophoneUsageDescription</key>
@@ -88,8 +88,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
-		<string>fetch</string>
-	</array>
+ 	</array>
 
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

@@ -264,7 +264,7 @@ const WebScreen = () => {
     return () => {
       try {
         webviewRef.current?.clearCache(true);
-        webviewRef.current?.clearHistory();
+        // webviewRef.current?.clearHistory();
       } catch (e) {
       }
     };
@@ -299,7 +299,7 @@ const WebScreen = () => {
     setIsReloading(true);
     try {
       webviewRef.current?.clearCache(true);
-      webviewRef.current?.clearHistory();
+      // webviewRef.current?.clearHistory();
     } catch (e) {
     }
     webviewRef.current?.reload();
@@ -386,7 +386,7 @@ const WebScreen = () => {
             }}
             onLoadStart={() => {
               webviewRef.current?.clearCache(true);
-              webviewRef.current?.clearHistory();
+              // webviewRef.current?.clearHistory();
               setIsReloading(true);
             }}
             onLoadEnd={() => {
