@@ -463,7 +463,7 @@ const ListScreen = () => {
   if (parsedError) {
     return (
       <View style={{ flex: 1, backgroundColor: theme == 'dark' ? 'black' :  ERP_COLOR_CODE.ERP_WHITE }}>
-        <ErrorMessage message={parsedError} isShowTop ={false} />
+        <ErrorMessage message={parsedError} isShowTop ={true} />
       </View>
     );
   }
@@ -477,7 +477,6 @@ const ListScreen = () => {
        
        {
        !isFilterVisible &&  <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
-       
        }
            
       {isFilterVisible && (

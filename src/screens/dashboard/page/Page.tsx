@@ -1062,6 +1062,7 @@ const PageScreen = () => {
                 item={item}
                 isFromNew={isFromNew}
                 handleAttachment={handleAttachment}
+                errors={errors}
               />
             )}
           </>

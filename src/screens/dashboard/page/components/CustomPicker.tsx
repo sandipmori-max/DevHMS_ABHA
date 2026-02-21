@@ -127,7 +127,7 @@ const CustomPicker = ({
           {item?.tooltip !== label && (
             <TranslatedText
             numberOfLines={1}
-            text={`{' '} - ( ${item?.tooltip} )`}
+            text={`- ( ${item?.tooltip} )`}
             style={[
               styles.label,
               theme === 'dark' && { color: 'white' },
@@ -342,7 +342,6 @@ const CustomPicker = ({
       {/* Error */}
       {isForceOpen && errors[item?.field] && (
         <InputError error={errors[item?.field]} />
-
       )}
     </View>
   );
