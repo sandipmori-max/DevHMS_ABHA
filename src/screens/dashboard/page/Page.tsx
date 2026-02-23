@@ -538,6 +538,8 @@ const PageScreen = () => {
               name="refresh"
               isLoading={actionLoader}
               onPress={() => {
+                setControls([])
+                setFormValues(null)
                 setButtonSave(true)
                 setActionLoader(true);
                 fetchPageData();

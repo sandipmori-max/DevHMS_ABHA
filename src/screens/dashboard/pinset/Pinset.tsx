@@ -1,4 +1,3 @@
-import MaterialIcons from '@react-native-vector-icons/material-icons';
 import React, { useEffect, useLayoutEffect, useState, useRef, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Alert, Animated, Easing } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,11 +11,13 @@ import {
   removePinCode,
   resetPin,
 } from '../../../utils/sqlite';
+import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import CustomAlert from '../../../components/alert/CustomAlert';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setIsPinLoaded } from '../../../store/slices/auth/authSlice';
 import { useTranslation } from 'react-i18next';
+import ERPIcon from '../../../components/icon/ERPIcon';
 
 const { width } = Dimensions.get('screen');
 
@@ -133,18 +134,17 @@ const PinSetupScreen = () => {
         </Text>
       ),
 
-      // ⭐ NEW — 3-dot menu icon
       headerRight: () => (
         <>
-          {
-            screen !== 'blocked' && <TouchableOpacity
-              style={{ paddingHorizontal: 12 }}
-              onPress={() => setMenuVisible(!menuVisible)}
-            >
-              <MaterialIcons name={menuVisible ? 'close' : "more-vert"} size={28} color="white" />
-            </TouchableOpacity>
+           {
+            screen !== 'blocked' && 
+            <ERPIcon
+             name={menuVisible ? 'close' : "more-vert"}
+              onPress={() => {
+                setMenuVisible(!menuVisible)
+              }}
+            />
           }
-
         </>
       ),
     });

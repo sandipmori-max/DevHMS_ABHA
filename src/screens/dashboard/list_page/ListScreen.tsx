@@ -207,7 +207,7 @@ const ListScreen = () => {
           } */}
           {
             !error && <ERPIcon
-              name={!hasDateField ? 'search' : isFilterVisible ? 'close' : 'filter-alt'}
+              name={isFilterVisible ? 'close' :  !hasDateField ? 'search' : isFilterVisible ? 'close' : 'filter-alt'}
               onPress={() => {
                 setIsFilterVisible(!isFilterVisible);
               }}

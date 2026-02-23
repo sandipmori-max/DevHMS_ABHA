@@ -34,7 +34,7 @@ setup_permissions([
 target 'DevERP' do
   config = use_native_modules!
 
-  use_react_native!(
+   use_react_native!(
     :path => config[:reactNativePath],
     :hermes_enabled => true,
     :fabric_enabled => false,
