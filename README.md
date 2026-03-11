@@ -418,22 +418,22 @@ versionCode conflict → increase versionCode.
 
 14) Quick publish checklist (before pressing Release)
 
- Google Play Developer account active (paid + verified). 
+Google Play Developer account active (paid + verified). 
 Google Support
 
- App bundle .aab built and signed with your upload key. 
+App bundle .aab built and signed with your upload key. 
 React Native
 
- VersionCode incremented. 
+VersionCode incremented. 
 Android Developers
 
- Store listing: title, short description, full description. 
+Store listing: title, short description, full description. 
 Google Support
 
- Graphics: 512×512 icon, screenshots (2+), feature graphic if used. 
+Graphics: 512×512 icon, screenshots (2+), feature graphic if used. 
 Google Support
 
- App content filled: privacy policy URL, data safety, content rating, target audience. 
+App content filled: privacy policy URL, data safety, content rating, target audience. 
 Google Support
 +1
 

@@ -38,6 +38,8 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
   const [isHorizontal, setIsHorizontal] = useState(false);
   const [bookmarks, setBookmarks] = useState({});
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
+  const [showStarsOnly, setShowStarsOnly] = useState(false);
+
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [filteredList, setFilteredList] = useState(allList);
@@ -150,13 +152,14 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
             name="refresh" onPress={() => {setIsRefresh(!isRefresh)}} />
             <ERPIcon name={isHorizontal ? 'dashboard' : 'list'} onPress={() => setIsHorizontal(p => !p)} />
             <ERPIcon name={!showBookmarksOnly ? 'bookmark-outline' : 'bookmark'} onPress={() => setShowBookmarksOnly(p => !p)} />
+            <ERPIcon name={!showStarsOnly ? 'star-outline' : 'star'} onPress={() => setShowStarsOnly(p => !p)} />
           </>
         ),
       headerLeft: () => (
         <ERPIcon extSize={24} isMenu name="menu" onPress={() => navigation.openDrawer()} />
       ),
     });
-  }, [showSearch, showBookmarksOnly, isHorizontal, searchText, allList, isMenuLoading]);
+  }, [showSearch, showBookmarksOnly, isHorizontal, searchText, allList, isMenuLoading, showStarsOnly]);
 
   useFocusEffect(
     useCallback(() => {
@@ -205,7 +208,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
     return (
       <TouchableOpacity
         style={[
-          styles.card,
+         list.length > 8  ?  styles.cardV2 : styles.card,
           theme === 'dark' && { borderColor: backgroundColor , borderWidth: 2 },
           {
             backgroundColor: theme === 'dark' ? 'black' : backgroundColor,
@@ -224,12 +227,12 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
         <TouchableOpacity onPress={() => toggleBookmark(getInitials(item?.name) ,item.id, backgroundColor)} style={{ position: 'absolute', top: 0, right: 0 }}>
           <MaterialIcons 
           color={theme === 'dark' ? 'white' : 'black'}
-          name={bookmarks[item.id] ? 'bookmark' : 'bookmark-outline'} size={24} />
+          name={bookmarks[item.id] ? 'bookmark' : 'bookmark-outline'} size={list.length > 8 ? 20 : 24} />
         </TouchableOpacity>
-
+ 
         <View 
           style={[
-            styles.iconContainer,
+            list.length > 8 ? styles.iconContainerV2 : styles.iconContainer,
             theme === 'dark' && { borderColor: 'white', },
             { backgroundColor: theme === 'dark' ? backgroundColor : ERP_COLOR_CODE.ERP_WHITE },
           ]}
@@ -239,8 +242,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
           text= {item.icon ||
               getInitials(item?.name)
             }
-          style={[styles.iconText, 
-            
+          style={[ list.length > 8 ?  styles.iconTextV2 : styles.iconText , 
             theme === 'dark' && { color: 'black' }]}>
            
           </TranslatedText>
@@ -250,7 +252,9 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
           <TranslatedText
           numberOfLines={2} 
           text={item.name}
-          style={[styles.title, 
+          style={[
+            list.length > 8 ? styles.titleV2 :
+            styles.title, 
             {
               maxWidth: isHorizontal ? 220 : 'auto',
               textAlign: isHorizontal ? 'left' : 'center',
@@ -260,7 +264,9 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
           </TranslatedText>
           <TranslatedText 
           text= {item.title}
-          numberOfLines={2} style={[styles.subtitle, theme === 'dark' && { color: 'white' },
+          numberOfLines={2} style={[
+            
+           list.length > 8 ? styles.subtitleV2  : styles.subtitle, theme === 'dark' && { color: 'white' },
           !isHorizontal && {
             textAlign:'center'
           }
@@ -283,7 +289,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
         key={`${isHorizontal}-${showBookmarksOnly}-${searchText}`}
         data={list}
         renderItem={renderItem}
-        numColumns={isHorizontal ? 1 : 2}
+        numColumns={isHorizontal ? 1 : list.length > 8 ? 3  : isHorizontal ? 1 : 2}
         columnWrapperStyle={!isHorizontal ? styles.columnWrapper : undefined}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
@@ -302,7 +308,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   listContent: {
-    paddingVertical: 16,
+    paddingVertical: 8,
     paddingHorizontal: 4,
   },
   columnWrapper: {
@@ -318,15 +324,33 @@ export const styles = StyleSheet.create({
   card: {
     flex: 1,
     borderRadius: 6,
-    paddingVertical: 20,
+    paddingVertical: 1,
     paddingHorizontal: 12,
-    marginBottom: 10,
+    marginBottom: 1,
     alignItems: 'center',
     marginHorizontal: 6,
+  },
+  cardV2: {
+    flex: 1,
+    borderRadius: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    marginBottom: 6,
+    alignItems: 'center',
+    marginHorizontal: 4,
   },
   iconContainer: {
     width: 56,
     height: 56,
+    borderRadius: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(107, 104, 104, 0.3)',
+  },
+  iconContainerV2: {
+    width: 36,
+    height: 36,
     borderRadius: 35,
     justifyContent: 'center',
     alignItems: 'center',
@@ -338,14 +362,29 @@ export const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
   },
+    iconTextV2: {
+    opacity: 0.5,
+    fontSize: 18,
+    fontWeight: '400',
+  },
   title: {
     fontSize: 18,
     fontWeight: '700',
     marginBottom: 4,
     textAlign: 'center',
   },
+   titleV2: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 2,
+    textAlign: 'center',
+  },
   subtitle: {
     fontSize: 14,
+    color: 'rgba(75, 73, 73, 0.85)',
+  },
+  subtitleV2: {
+    fontSize: 12,
     color: 'rgba(75, 73, 73, 0.85)',
   },
 });

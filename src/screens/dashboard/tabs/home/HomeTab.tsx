@@ -344,7 +344,7 @@ const HomeScreen = () => {
             borderLeftColor: accentColors[index % accentColors.length],
             borderWidth: 1,
             borderLeftWidth: 3,
-            backgroundColor: theme === 'dark' ? 'black' : 'white'
+            backgroundColor: theme === 'dark' ? 'black' : 'white',
 
           },
         ]}

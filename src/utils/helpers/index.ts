@@ -1044,3 +1044,32 @@ export const evaluateRulesWithActions = (rules, formValues, logic = "AND") => {
 
   return { isValid: finalResult, actions, messages };
 };
+
+ export const evaluateFormula = (formula, values) => {
+  let expression = formula;
+
+  Object.keys(values).forEach((key) => {
+    const val = Number(values[key]) || 0;
+    const regex = new RegExp(`\\b${key}\\b`, "g");
+    expression = expression.replace(regex, val);
+  });
+
+  try {
+    return Function(`"use strict"; return (${expression})`)();
+  } catch {
+    return 0;
+  }
+};
+
+export const applyFormula = (config, values) => {
+  const total = evaluateFormula(config.formula, values);
+
+  const minusVal = Number(values[config.minusField]) || 0;
+
+  const finalValue = total - minusVal;
+
+  return {
+    ...values,
+    [config.fieldName]: finalValue
+  };
+};

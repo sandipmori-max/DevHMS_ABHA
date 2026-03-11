@@ -152,6 +152,8 @@ const Media = ({
                 includeBase64: true,
                 maxWidth: 1024,
                 maxHeight: 1024,
+                saveToPhotos: false,
+
               },
               (response) => {
                 try {
@@ -204,6 +206,8 @@ const Media = ({
                 includeBase64: true,
                 maxWidth: 1024,
                 maxHeight: 1024,
+        saveToPhotos: false,
+
               },
               (response) => {
                 try {
@@ -245,6 +249,8 @@ const Media = ({
                 includeBase64: true,
                 maxWidth: 1024,
                 maxHeight: 1024,
+        saveToPhotos: false,
+
               },
               (response) => {
                 try {

@@ -109,7 +109,10 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
         mediaType: "photo",
         cameraType: "back",
         quality: 0.5,
+        maxWidth: 1024,
+        maxHeight: 1024,
         includeBase64: true,
+        saveToPhotos: false,
       },
       (response) => {
     console.log("---------------------10")

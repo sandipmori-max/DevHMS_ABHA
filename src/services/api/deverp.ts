@@ -231,6 +231,7 @@ class DevERPService {
   }
 
   markAttendance(rawData: any, isPunchIn: boolean, user: any, id: any) {
+    console.log("user.id" , user.id)
     const pageType = isPunchIn ? 'punchin' : 'punchout';
     const punchOutData = {
       id: id,
