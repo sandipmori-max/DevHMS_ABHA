@@ -459,3 +459,10 @@ Google Support
 
 =
 jarsigner -verify -verbose -certs app/build/outputs/bundle/release/app-release.aab
+
+----
+curl --location 'https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=AIzaSyBq-mlSjaQUB5bCbIcBUh8lEhQc5ClesgU' \
+--header 'Content-Type: application/json' \
+--data '{
+  "contents":[{"parts":[{"text":"sale : 300, last month : 800 , current month : 100 check data and write short gretting message, maximum 1 or 2 line"}]}]
+}'
