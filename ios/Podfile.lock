@@ -1964,7 +1964,7 @@ PODS:
     - React-Core
   - react-native-render-html (6.3.4):
     - React-Core
-  - react-native-safe-area-context (5.6.2):
+  - react-native-safe-area-context (5.7.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -1983,8 +1983,8 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - react-native-safe-area-context/common (= 5.6.2)
-    - react-native-safe-area-context/fabric (= 5.6.2)
+    - react-native-safe-area-context/common (= 5.7.0)
+    - react-native-safe-area-context/fabric (= 5.7.0)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -1995,7 +1995,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/common (5.6.2):
+  - react-native-safe-area-context/common (5.7.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2024,7 +2024,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/fabric (5.6.2):
+  - react-native-safe-area-context/fabric (5.7.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2056,8 +2056,8 @@ PODS:
     - Yoga
   - react-native-sqlite-storage (6.0.1):
     - React-Core
-  - react-native-vector-icons-material-icons (12.4.0)
-  - react-native-webview (13.16.0):
+  - react-native-vector-icons-material-icons (12.4.2)
+  - react-native-webview (13.16.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2754,7 +2754,7 @@ PODS:
     - GoogleMLKit/TextRecognitionJapanese (= 8.0.0)
     - GoogleMLKit/TextRecognitionKorean (= 8.0.0)
     - React
-  - RNPermissions (5.4.4):
+  - RNPermissions (5.5.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2875,7 +2875,7 @@ PODS:
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNScreens (4.23.0):
+  - RNScreens (4.24.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2903,10 +2903,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.23.0)
+    - RNScreens/common (= 4.24.0)
     - SocketRocket
     - Yoga
-  - RNScreens/common (4.23.0):
+  - RNScreens/common (4.24.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3554,10 +3554,10 @@ SPEC CHECKSUMS:
   react-native-netinfo: 75f720ddf3f559f152ef7a232ce09b3b70490ea9
   react-native-orientation-locker: cc6f357b289a2e0dd2210fea0c52cb8e0727fdaa
   react-native-render-html: 5afc4751f1a98621b3009432ef84c47019dcb2bd
-  react-native-safe-area-context: 849813645d0fd16fd899a02ed6e03320284ec2ae
+  react-native-safe-area-context: 4cd26e0865366ae470c15ed17d86f043a495cb37
   react-native-sqlite-storage: 0c84826214baaa498796c7e46a5ccc9a82e114ed
-  react-native-vector-icons-material-icons: d67e485a05560416ff6b5977d5fa7e0eb6af6870
-  react-native-webview: 6a11548e3714dbf97a93003f5c95dd6fcc10234b
+  react-native-vector-icons-material-icons: 433cb95ee9de1246934b2ae8414f9c02b520b628
+  react-native-webview: e26595a2381074569a53bd389ae3350cdc9f2f29
   react-native-worklets-core: ec4ec38ec0df91d5f2b2319a9021d67941a4875e
   React-NativeModulesApple: 342e280bb9fc2aa5f61f6c257b309a86b995e12d
   React-oscompat: 56d6de59f9ae95cd006a1c40be2cde83bc06a4e1
@@ -3599,9 +3599,9 @@ SPEC CHECKSUMS:
   RNFS: 89de7d7f4c0f6bafa05343c578f61118c8282ed8
   RNGestureHandler: 0c0d36c0f3c17fc755543fad1c182e1cd541f898
   RNMLKitTextRecognition: 2d7c3481b9dabc72f7e31c67025c28b2c8d653b0
-  RNPermissions: 63f75819473c1c53d19aa214dd9c503f2e699df5
+  RNPermissions: 33af1745a026bc48e11937eabd3d41c82ebd6499
   RNReanimated: bb49c9d1d3d7355d24397d0183e68f99350951c3
-  RNScreens: f27ac97d3b39613e742ae2fbb6245f744529d4d5
+  RNScreens: aa7027602ee7ae8637f28db534be40213abcf36d
   RNSVG: ed7e97202af4dc3b0cf80f62f40dfc6307b12b26
   RNVectorIcons: 0567525e0a344458329daa09068cf9e8090ec791
   RNWorklets: 927b3913d8527d86dfef6cce2edc42febf0c9124

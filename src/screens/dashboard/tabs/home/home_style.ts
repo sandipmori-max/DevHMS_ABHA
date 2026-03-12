@@ -182,7 +182,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingBottom: 20,
   },
-
   dashboardItem: {
     width: itemWidth,
     marginBottom: 16,
@@ -193,7 +192,7 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   dashboardItemContent: {
-    padding: 10,
+    padding: 6,
   },
   dashboardItemHeader: {
     marginBottom: 2,

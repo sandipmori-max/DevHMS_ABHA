@@ -34,6 +34,7 @@ import AjaxPicker from './components/AjaxPicker';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import {
   applyActionsToControls,
+  applyFormula,
   evaluateRulesWithActions,
   parseCustomDatePage,
   requestCameraPermission,
@@ -880,8 +881,8 @@ const PageScreen = () => {
             console.log('Merged object value:', updatedValues);
           } else {
             updatedValues = { ...formValues, [item.field]: val };
-            console.log('Single field update:', updatedValues);
           }
+
 
           // 🔹 Update form values
           setFormValues(updatedValues);
@@ -950,6 +951,36 @@ const PageScreen = () => {
           }
           setErrors(prev => ({ ...prev, [item?.field]: '' }));
         }
+        
+         if (formulaRules) {
+  setFormValues(prev => {
+    console.log('================ ELSE ================');
+
+    let updatedValues;
+
+    if (typeof val === 'object' && val !== null) {
+      updatedValues = { ...prev, ...val };
+    } else {
+      updatedValues = { ...prev, [item?.field]: val };
+    }
+
+    // 🔥 Apply formula
+    updatedValues = applyFormulaRules(updatedValues, item?.field);
+
+    console.log(
+      '================ updatedValues ------------- ',
+      updatedValues
+    );
+
+    return updatedValues;
+  });
+
+  // 🔹 clear error
+  setErrors(prev => ({ ...prev, [item?.field]: '' }));
+}
+         
+
+        
       };
 
       const value =
@@ -1158,6 +1189,32 @@ const PageScreen = () => {
     [formValues, errors, controls, locationEnabled],
   );
 
+  const formulaRules = [
+  {
+    fieldName: "totalexpense",
+    formula: "servicecharge + travelexpense + localexpense + accexpense",
+    minusField: "cashreceived",
+    triggerFields: [
+      "servicecharge",
+      "travelexpense",
+      "localexpense",
+      "accexpense",
+      "cashreceived"
+    ]
+  }
+];
+ const applyFormulaRules = (values, changedField) => {
+  let updatedValues = { ...values };
+
+  formulaRules.forEach(rule => {
+    if (rule.triggerFields.includes(changedField)) {
+      updatedValues = applyFormula(rule, updatedValues);
+      console.log("+++++++++++++++++++++++++++++++++++++++ ", updatedValues)
+    }
+  });
+
+  return updatedValues;
+};
   const getEventByControl = item => {
     if (item?.ctltype === 'BOOL') return 'onBoolChange';
     if (item?.ctltype === 'IMAGE') return 'onImageChange';

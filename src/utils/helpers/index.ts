@@ -1067,9 +1067,10 @@ export const applyFormula = (config, values) => {
   const minusVal = Number(values[config.minusField]) || 0;
 
   const finalValue = total - minusVal;
-
+  console.log("finalValue----------------------------", finalValue)
   return {
     ...values,
     [config.fieldName]: finalValue
   };
 };
+
