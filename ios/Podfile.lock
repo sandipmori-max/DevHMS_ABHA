@@ -37,6 +37,9 @@ PODS:
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
     - PromisesObjC (~> 2.4)
+  - GoogleMLKit/FaceDetection (8.0.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitFaceDetection (~> 7.0.0)
   - GoogleMLKit/MLKitCore (8.0.0):
     - MLKitCommon (~> 13.0.0)
   - GoogleMLKit/TextRecognition (8.0.0):
@@ -107,6 +110,9 @@ PODS:
     - GoogleUtilities/Logger (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - GTMSessionFetcher/Core (< 4.0, >= 3.3.2)
+  - MLKitFaceDetection (7.0.0):
+    - MLKitCommon (~> 13.0)
+    - MLKitVision (~> 9.0)
   - MLKitTextRecognition (6.0.0):
     - MLKitCommon (~> 13.0)
     - MLKitTextRecognitionCommon (= 5.0.0)
@@ -3132,6 +3138,10 @@ PODS:
   - VisionCamera/React (4.7.3):
     - React-Core
     - VisionCamera/FrameProcessors
+  - VisionCameraFaceDetector (1.10.1):
+    - GoogleMLKit/FaceDetection (= 8.0.0)
+    - React-Core
+    - VisionCamera
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -3240,6 +3250,7 @@ DEPENDENCIES:
   - RNWorklets (from `../node_modules/react-native-worklets`)
   - SocketRocket (~> 0.7.1)
   - VisionCamera (from `../node_modules/react-native-vision-camera`)
+  - VisionCameraFaceDetector (from `../node_modules/react-native-vision-camera-face-detector`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -3258,6 +3269,7 @@ SPEC REPOS:
     - libwebp
     - MLImage
     - MLKitCommon
+    - MLKitFaceDetection
     - MLKitTextRecognition
     - MLKitTextRecognitionChinese
     - MLKitTextRecognitionCommon
@@ -3477,6 +3489,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-worklets"
   VisionCamera:
     :path: "../node_modules/react-native-vision-camera"
+  VisionCameraFaceDetector:
+    :path: "../node_modules/react-native-vision-camera-face-detector"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -3503,6 +3517,7 @@ SPEC CHECKSUMS:
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   MLImage: 2ab9c968e75f57911c16f4c9d9e8a8e9604a86a1
   MLKitCommon: 26b779f072a182c1603d4c88a101c350cac837b1
+  MLKitFaceDetection: d50aff1a44aa9a4e95f7e208298a3ce40b68f9f8
   MLKitTextRecognition: 072488cfd29f1726733378661881f88db74ba3dc
   MLKitTextRecognitionChinese: 0e5335ca53ad9a36773fed1ef8b4abb177630fcd
   MLKitTextRecognitionCommon: 228502b9dc61ea9cfb6199ebafef3baa842e2043
@@ -3609,6 +3624,7 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   VisionCamera: 0044a94f7489f19e19d5938e97dfc36f4784af3c
+  VisionCameraFaceDetector: 5f07fc072dedbe36da9ec1b26640cdec1b0964d6
   Yoga: ce248fb32065c9b00451491b06607f1c25b2f1ed
 
 PODFILE CHECKSUM: 6dfb1bfce9b6351a06dbd42b82791be58d04abc9

@@ -19,6 +19,7 @@ import PinVerifyScreen from '../screens/dashboard/pinset/PinVerify';
 import { useAppSelector } from '../store/hooks';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import LocationTrackScreen from '../screens/dashboard/tabs/home/LocationTrack';
+import FaceCameraScreen from '../screens/dashboard/attendance/components/FaceCameraScreen';
 
 const Stack = createStackNavigator<any>();
 
@@ -154,7 +155,10 @@ const StackNavigator = () => {
       <Stack.Screen options={screenOptions} name="Page" component={PageScreen} />
       <Stack.Screen options={screenOptions} name="List" component={ListScreen} />
       <Stack.Screen options={screenOptions} name="LocationTrack" component={LocationTrackScreen} />
-
+<Stack.Screen
+ name="FaceCameraScreen"
+ component={FaceCameraScreen}
+/>
       <Stack.Screen name="Tasks" component={DisplayScreen} options={screenOptions} />
     </Stack.Navigator>
   );
