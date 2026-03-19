@@ -664,44 +664,47 @@ export const handleLocationPress = (location: string) => {
 const operators = {
   // Equality
   equals: (a, b) => {
-  if (a === null || a === undefined) a = "";
-  if (b === null || b === undefined) b = "";
+    if (a === null || a === undefined) a = "";
+    if (b === null || b === undefined) b = "";
 
-  if (typeof a === "string") a = a.trim();
-  if (typeof b === "string") b = b.trim();
+    if (typeof a === "string") a = a.trim();
+    if (typeof b === "string") b = b.trim();
 
-  return a === b;
-},
+    return a === b;
+  },
 
   notEquals: (a, b) => {
-  if (a === null || a === undefined) a = "";
-  if (b === null || b === undefined) b = "";
+    if (a === null || a === undefined) a = "";
+    if (b === null || b === undefined) b = "";
 
-  if (typeof a === "string") a = a.trim();
-  if (typeof b === "string") b = b.trim();
+    if (typeof a === "string") a = a.trim();
+    if (typeof b === "string") b = b.trim();
 
-  return a !== b;
-},
-
+    return a !== b;
+  },
 
   // Numeric
- greaterThan: (a, b) => {
-  if (
-    a === "" || a === null || a === undefined ||
-    b === "" || b === null || b === undefined
-  ) {
-    return false;
-  }
+  greaterThan: (a, b) => {
+    if (
+      a === "" ||
+      a === null ||
+      a === undefined ||
+      b === "" ||
+      b === null ||
+      b === undefined
+    ) {
+      return false;
+    }
 
-  const numA = Number(a);
-  const numB = Number(b);
+    const numA = Number(a);
+    const numB = Number(b);
 
-  if (isNaN(numA) || isNaN(numB)) {
-    return false;
-  }
+    if (isNaN(numA) || isNaN(numB)) {
+      return false;
+    }
 
-  return numA > numB;
-},
+    return numA > numB;
+  },
 
   greaterThanOrEqual: (a, b) => {
     if (a === "" || a === null || a === undefined) return false;
@@ -715,23 +718,27 @@ const operators = {
     return numA >= numB;
   },
 
- lessThan: (a, b) => {
-  if (
-    a === "" || a === null || a === undefined ||
-    b === "" || b === null || b === undefined
-  ) {
-    return false;
-  }
+  lessThan: (a, b) => {
+    if (
+      a === "" ||
+      a === null ||
+      a === undefined ||
+      b === "" ||
+      b === null ||
+      b === undefined
+    ) {
+      return false;
+    }
 
-  const numA = Number(a);
-  const numB = Number(b);
+    const numA = Number(a);
+    const numB = Number(b);
 
-  if (isNaN(numA) || isNaN(numB)) {
-    return false;
-  }
+    if (isNaN(numA) || isNaN(numB)) {
+      return false;
+    }
 
-  return numA < numB;
-},
+    return numA < numB;
+  },
 
   lessThanOrEqual: (a, b) => {
     if (
@@ -1045,7 +1052,7 @@ export const evaluateRulesWithActions = (rules, formValues, logic = "AND") => {
   return { isValid: finalResult, actions, messages };
 };
 
- export const evaluateFormula = (formula, values) => {
+export const evaluateFormula = (formula, values) => {
   let expression = formula;
 
   Object.keys(values).forEach((key) => {
@@ -1067,15 +1074,13 @@ export const applyFormula = (config, values) => {
   const minusVal = Number(values[config.minusField]) || 0;
 
   const finalValue = total - minusVal;
-  console.log("finalValue----------------------------", finalValue)
   return {
     ...values,
-    [config.fieldName]: finalValue
+    [config.fieldName]: finalValue,
   };
 };
 
 export const createPrompt = (dataText) => {
-
   const hour = new Date().getHours();
 
   let timeOfDay = "";
@@ -1107,12 +1112,10 @@ export const createPrompt = (dataText) => {
 };
 
 const prepareDashboardForAI = (dashboard) => {
-
   if (!Array.isArray(dashboard)) return "";
 
   return dashboard
     .map((item) => {
-
       let value = item?.data || "";
 
       if (!value) return null;
@@ -1121,61 +1124,51 @@ const prepareDashboardForAI = (dashboard) => {
       value = value.replace(/<[^>]*>/g, "").trim();
 
       return `${item.title}: ${value}`;
-
     })
     .filter(Boolean)
     .join("\n");
-
 };
 export const getDashboardAI = async (dashboardData) => {
   try {
-
     const dataText = prepareDashboardForAI(dashboardData);
-    console.log("dataText", dataText)
     if (!dataText) return null;
 
     const prompt = createPrompt(dataText);
 
-    const res = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer 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",
-        },
-        body: JSON.stringify({
-          model: "llama-3.1-8b-instant",
-          messages: [
-            {
-              role: "system",
-              content: "You are an ERP dashboard assistant."
-            },
-            {
-              role: "user",
-              content: prompt
-            }
-          ],
-          temperature: 0.7,
-          max_tokens: 40
-        })
-      }
-    );
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:
+          "Bearer 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",
+      },
+      body: JSON.stringify({
+        model: "llama-3.1-8b-instant",
+        messages: [
+          {
+            role: "system",
+            content: "You are an ERP dashboard assistant.",
+          },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 40,
+      }),
+    });
 
     const json = await res.json();
 
-    console.log("AI RESPONSE", json);
 
     const message =
       json?.choices?.[0]?.message?.content?.replace(/"/g, "") || "";
 
     return message;
-
   } catch (error) {
-
-    console.log("AI ERROR", error);
+    console.log("AI ERROR+++++++++", error);
 
     return null;
-
   }
 };

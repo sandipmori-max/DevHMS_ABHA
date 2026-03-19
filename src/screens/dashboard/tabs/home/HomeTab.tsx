@@ -89,7 +89,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       const message = await getDashboardAI(dashboard);
 
       if (!message) return;
-      console.log("message", message);
       setAiMessage(message);
       setVisibleAI(true);
     } catch (e) {
@@ -150,18 +149,16 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
   useEffect(() => {
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
-  console.log("filteredDashboard", dashboard);
 
     searchTimeout.current = setTimeout(() => {
       const filtered = dashboard.filter((item) => {
-      const text = searchText?.toLowerCase();
-      return (
-        (item?.name || "").toLowerCase().includes(text) ||
-        (item?.title || "").toLowerCase().includes(text) ||
-        (item?.data || "").toLowerCase().includes(text)
-      );
-    });
-  console.log("--------------------------", filtered);
+        const text = searchText?.toLowerCase();
+        return (
+          (item?.name || "").toLowerCase().includes(text) ||
+          (item?.title || "").toLowerCase().includes(text) ||
+          (item?.data || "").toLowerCase().includes(text)
+        );
+      });
 
       setFilteredDashboard(filtered);
     }, 300);
@@ -1307,10 +1304,15 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                             />
                           </View>
 
-                          <View style={[styles.dashboardSection, {
-                            marginLeft: 2,
-                            marginRight: 8
-                          }]}>
+                          <View
+                            style={[
+                              styles.dashboardSection,
+                              {
+                                marginLeft: 2,
+                                marginRight: 8,
+                              },
+                            ]}
+                          >
                             <FlatList
                               key={`${isHorizontal}`}
                               keyboardShouldPersistTaps="handled"

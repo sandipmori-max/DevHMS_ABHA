@@ -1,55 +1,50 @@
-import React, { useEffect, useLayoutEffect } from 'react';
-import {
-  Platform,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import { WebView } from 'react-native-webview';
-import FullViewLoader from '../../../components/loader/FullViewLoader';
-import { ERP_COLOR_CODE } from '../../../utils/constants';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { useAppSelector } from '../../../store/hooks';
-import useTranslations from '../../../hooks/useTranslations';
+import React, { useEffect, useLayoutEffect } from "react";
+import { Platform, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { WebView } from "react-native-webview";
+import FullViewLoader from "../../../components/loader/FullViewLoader";
+import { ERP_COLOR_CODE } from "../../../utils/constants";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useAppSelector } from "../../../store/hooks";
+import useTranslations from "../../../hooks/useTranslations";
 
 const PrivacyPolicyScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
-  const theme = useAppSelector(state => state.theme.mode);
+  const theme = useAppSelector((state) => state.theme.mode);
   const { t } = useTranslations();
 
   // Get URL from navigation params
   const passedUrl = route?.params?.url;
-  const title = route?.params?.titlePage || ""
+  const title = route?.params?.titlePage || "";
 
   // Default URL (same as existing)
   const defaultUrl =
-    Platform.OS === 'ios'
-      ? 'https://www.deverp.com/index.aspx?q=deverp_privacy_policy'
-      : 'http://www.deverp.com/index.aspx?q=deverp_privacy_policy';
+    Platform.OS === "ios"
+      ? "https://www.deverp.com/index.aspx?q=deverp_privacy_policy"
+      : "http://www.deverp.com/index.aspx?q=deverp_privacy_policy";
 
   const finalUrl = passedUrl ?? defaultUrl;
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: {
-        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
+        backgroundColor:
+          theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
       },
-      headerBackTitle: '',
-      headerTintColor: '#fff',
+      headerBackTitle: "",
+      headerTintColor: "#fff",
       headerTitle: () => (
         <Text
           numberOfLines={1}
           style={{
             maxWidth: 180,
             fontSize: 18,
-            fontWeight: '700',
-            color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_WHITE,
+            fontWeight: "700",
+            color: theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_WHITE,
           }}
         >
-          {title || t('title.title19')}
+          {title || t("title.title19")}
         </Text>
       ),
     });
@@ -57,8 +52,17 @@ const PrivacyPolicyScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-    <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
-      
+      <View
+        style={{
+          height: 16,
+          width: "100%",
+          backgroundColor:
+            theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+          borderBottomLeftRadius: 12,
+          borderBottomRightRadius: 12,
+        }}
+      ></View>
+
       <WebView
         source={{ uri: finalUrl }}
         startInLoadingState={true}
@@ -84,8 +88,8 @@ const styles = StyleSheet.create({
   },
   loaderContainer: {
     ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
   },
 });

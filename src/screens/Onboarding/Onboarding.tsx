@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,54 +9,53 @@ import {
   Animated,
   Pressable,
   Platform,
-} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ERP_COLOR_CODE } from '../../utils/constants';
-import FullViewLoader from '../../components/loader/FullViewLoader';
-import MaterialIcons from '@react-native-vector-icons/material-icons';
-import FastImage from 'react-native-fast-image';
-import { ERP_GIF } from '../../assets';
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ERP_COLOR_CODE } from "../../utils/constants";
+import FullViewLoader from "../../components/loader/FullViewLoader";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
+import FastImage from "react-native-fast-image";
+import { ERP_GIF } from "../../assets";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 const slides = [
   {
-    id: '1',
-    title: 'Welcome to DevERP Connect',
-    desc: 'Experience the power of integrated ERP software to manage entire business processes with real-time control and efficiency.',
+    id: "1",
+    title: "Welcome to DevERP Connect",
+    desc: "Experience the power of integrated ERP software to manage entire business processes with real-time control and efficiency.",
     image: ERP_GIF.Dashboards,
-    bgColor: ['#f8b6c1', '#FAD4D8'],
-    statusBar: '#f8b6c1',
-    layout: { titleY: -40, descY: 0, align: 'center' },
+    bgColor: ["#f8b6c1", "#FAD4D8"],
+    statusBar: "#f8b6c1",
+    layout: { titleY: -40, descY: 0, align: "center" },
   },
   {
-    id: '2',
-    title: 'End-to-End Business Control',
-    desc: 'From customer orders to invoicing, DevERP Connect unifies sales, finance, inventory, HR, and plant operations in one seamless platform.',
+    id: "2",
+    title: "End-to-End Business Control",
+    desc: "From customer orders to invoicing, DevERP Connect unifies sales, finance, inventory, HR, and plant operations in one seamless platform.",
     image: ERP_GIF.Analytics,
-    bgColor: ['#b2cffa', '#D4E6F1'],
-    statusBar: '#b2cffa',
-    layout: { titleY: -20, descY: 10, align: 'left' },
+    bgColor: ["#b2cffa", "#D4E6F1"],
+    statusBar: "#b2cffa",
+    layout: { titleY: -20, descY: 10, align: "left" },
   },
   {
-    id: '3',
-    title: 'Smart Production Operations',
-    desc: 'Monitor plc scada and manual procedure to track raw materials, semi finished goods and finish goods with packing and dispatch in real time. Ensure accuracy and efficiency across every production process.',
+    id: "3",
+    title: "Smart Production Operations",
+    desc: "Monitor plc scada and manual procedure to track raw materials, semi finished goods and finish goods with packing and dispatch in real time. Ensure accuracy and efficiency across every production process.",
     image: ERP_GIF.money,
-    bgColor: ['#8de0d2', '#D1F2EB'],
-    statusBar: '#8de0d2',
-    layout: { titleY: -30, descY: 10, align: 'right' },
-  }, 
+    bgColor: ["#8de0d2", "#D1F2EB"],
+    statusBar: "#8de0d2",
+    layout: { titleY: -30, descY: 10, align: "right" },
+  },
   {
-    id: '4',
-    title: 'Grow with Confidence',
-    desc: 'Use built-in reports and dashboards to reduce waste, optimize costs, and scale business operations efficiently with DevERP.',
+    id: "4",
+    title: "Grow with Confidence",
+    desc: "Use built-in reports and dashboards to reduce waste, optimize costs, and scale business operations efficiently with DevERP.",
     image: ERP_GIF.RemoteMonitoring,
-    bgColor: ['#c6b6f8', '#E8DAEF'],
-    statusBar: '#c6b6f8',
-    layout: { titleY: -20, descY: 10, align: 'center' },
+    bgColor: ["#c6b6f8", "#E8DAEF"],
+    statusBar: "#c6b6f8",
+    layout: { titleY: -20, descY: 10, align: "center" },
   },
 ];
-
 
 const Onboarding = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -84,9 +83,9 @@ const Onboarding = ({ navigation }) => {
 
   const checkOnboardStatus = async () => {
     try {
-      const seen = await AsyncStorage.getItem('onboardSeen'); 
+      const seen = await AsyncStorage.getItem("onboardSeen");
       if (seen) {
-        navigation.replace('Login');
+        navigation.replace("Login");
       } else {
         setLoading(false);
       }
@@ -95,23 +94,42 @@ const Onboarding = ({ navigation }) => {
     }
   };
 
-  if (loading) return <>
-    <FullViewLoader isShowTop={false}/>
-  </>;
+  if (loading)
+    return (
+      <>
+        <FullViewLoader isShowTop={false} />
+      </>
+    );
 
   const startWaveAnimation = () => {
     Animated.loop(
       Animated.sequence([
-        Animated.timing(waveAnim, { toValue: 15, duration: 1800, useNativeDriver: true }),
-        Animated.timing(waveAnim, { toValue: -15, duration: 1800, useNativeDriver: true }),
-      ])
+        Animated.timing(waveAnim, {
+          toValue: 15,
+          duration: 1800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(waveAnim, {
+          toValue: -15,
+          duration: 1800,
+          useNativeDriver: true,
+        }),
+      ]),
     ).start();
   };
 
   const animatePress = () => {
     Animated.sequence([
-      Animated.timing(scaleAnim, { toValue: 0.95, duration: 100, useNativeDriver: true }),
-      Animated.timing(scaleAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
+      Animated.timing(scaleAnim, {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
     ]).start();
   };
 
@@ -129,37 +147,47 @@ const Onboarding = ({ navigation }) => {
 
   const handleSkip = async () => {
     animatePress();
-    await AsyncStorage.setItem('onboardSeen', 'true');
-    navigation.replace('Login');
+    await AsyncStorage.setItem("onboardSeen", "true");
+    navigation.replace("Login");
   };
 
   const handleScroll = (event) => {
     const x = event.nativeEvent.contentOffset.x;
     setCurrentIndex(Math.round(x / width));
   };
- 
-
 
   const renderItem = ({ item, index }) => {
-    const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
+    const inputRange = [
+      (index - 1) * width,
+      index * width,
+      (index + 1) * width,
+    ];
     const opacity = scrollX.interpolate({ inputRange, outputRange: [0, 1, 0] });
 
     const translateYTitle = scrollX.interpolate({
       inputRange,
-      outputRange: [item.layout.titleY + 30, item.layout.titleY, item.layout.titleY + 30],
+      outputRange: [
+        item.layout.titleY + 30,
+        item.layout.titleY,
+        item.layout.titleY + 30,
+      ],
     });
 
     const translateYDesc = scrollX.interpolate({
       inputRange,
-      outputRange: [item.layout.descY + 30, item.layout.descY, item.layout.descY + 30],
+      outputRange: [
+        item.layout.descY + 30,
+        item.layout.descY,
+        item.layout.descY + 30,
+      ],
     });
 
     const alignStyle =
-      item.layout.align === 'left'
-        ? { alignSelf: 'flex-start', textAlign: 'left' }
-        : item.layout.align === 'right'
-          ? { alignSelf: 'flex-end', textAlign: 'right' }
-          : { alignSelf: 'center', textAlign: 'center' };
+      item.layout.align === "left"
+        ? { alignSelf: "flex-start", textAlign: "left" }
+        : item.layout.align === "right"
+        ? { alignSelf: "flex-end", textAlign: "right" }
+        : { alignSelf: "center", textAlign: "center" };
 
     return (
       <View style={[styles.slide, { width }]}>
@@ -168,7 +196,7 @@ const Onboarding = ({ navigation }) => {
           style={{
             height: 190,
             width: 180,
-            marginBottom: 20
+            marginBottom: 20,
           }}
           resizeMode={FastImage.resizeMode.contain}
         />
@@ -212,13 +240,16 @@ const Onboarding = ({ navigation }) => {
     outputRange: slides.map((s) => s.bgColor[1]),
   });
 
- 
-
   return (
     <SafeAreaView style={styles.container}>
-      <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: bgColor }]} />
       <Animated.View
-        style={[StyleSheet.absoluteFill, { opacity: 0.6, backgroundColor: bgColor2 }]}
+        style={[StyleSheet.absoluteFill, { backgroundColor: bgColor }]}
+      />
+      <Animated.View
+        style={[
+          StyleSheet.absoluteFill,
+          { opacity: 0.6, backgroundColor: bgColor2 },
+        ]}
       />
 
       <TouchableOpacity style={styles.skipBtn} onPress={handleSkip}>
@@ -230,7 +261,7 @@ const Onboarding = ({ navigation }) => {
           styles.wave,
           {
             transform: [{ translateY: waveAnim }],
-            backgroundColor: 'rgba(255,255,255,0.35)',
+            backgroundColor: "rgba(255,255,255,0.35)",
           },
         ]}
       />
@@ -246,7 +277,7 @@ const Onboarding = ({ navigation }) => {
         onMomentumScrollEnd={handleScroll}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: false }
+          { useNativeDriver: false },
         )}
       />
 
@@ -256,7 +287,10 @@ const Onboarding = ({ navigation }) => {
           return (
             <View
               key={index}
-              style={[styles.dot, isActive ? styles.activeDot : styles.inactiveDot]}
+              style={[
+                styles.dot,
+                isActive ? styles.activeDot : styles.inactiveDot,
+              ]}
             />
           );
         })}
@@ -281,11 +315,16 @@ const Onboarding = ({ navigation }) => {
           </Animated.View>
         ) : (
           <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-            <Pressable style={[styles.circleBtn,
-             {
-              backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
-            }]} onPress={handleSkip}>
-              <MaterialIcons name='done-all' size={26} color="#fff" />
+            <Pressable
+              style={[
+                styles.circleBtn,
+                {
+                  backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                },
+              ]}
+              onPress={handleSkip}
+            >
+              <MaterialIcons name="done-all" size={26} color="#fff" />
             </Pressable>
           </Animated.View>
         )}
@@ -297,57 +336,61 @@ const Onboarding = ({ navigation }) => {
 export default Onboarding;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: "#fff" },
   wave: {
-    position: 'absolute',
+    position: "absolute",
     bottom: -height * 0.15,
     width: width * 2,
     height: height * 0.45,
     borderTopLeftRadius: width,
     borderTopRightRadius: width,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
 
   slide: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: 35,
   },
 
   title: {
     fontSize: 34,
-    fontWeight: '600',
-    color: '#1e1e1e',
+    fontWeight: "600",
+    color: "#1e1e1e",
   },
 
   desc: {
     fontSize: 17,
-    color: '#333',
+    color: "#333",
   },
 
   dotsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 10,
     marginBottom: 20,
   },
 
   dot: { width: 10, height: 10, borderRadius: 5, marginHorizontal: 6 },
   activeDot: { backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR, width: 22 },
-  inactiveDot: { backgroundColor: '#bbb' },
+  inactiveDot: { backgroundColor: "#bbb" },
 
   skipBtn: {
-    marginTop: Platform.OS === 'ios' ? 0 : 45,
-    alignSelf: 'flex-end',
+    marginTop: Platform.OS === "ios" ? 0 : 45,
+    alignSelf: "flex-end",
     padding: 15,
     zIndex: 10,
   },
-  skipText: { color: ERP_COLOR_CODE.ERP_APP_COLOR, fontWeight: '700', fontSize: 16 },
+  skipText: {
+    color: ERP_COLOR_CODE.ERP_APP_COLOR,
+    fontWeight: "700",
+    fontSize: 16,
+  },
 
   bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 35,
     paddingBottom: 30,
   },
@@ -355,8 +398,8 @@ const styles = StyleSheet.create({
     width: 46,
     height: 46,
     borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
   },
 });

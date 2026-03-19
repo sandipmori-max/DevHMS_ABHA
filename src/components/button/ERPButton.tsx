@@ -66,7 +66,6 @@ const ERPButton: React.FC<ERPButtonProps> = ({
         style={[styles.buttonText, textStyle]}></TranslatedText>
       </TouchableOpacity>
     </Animated.View>
-
   )
 };
 

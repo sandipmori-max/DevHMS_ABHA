@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 import {
   FlatList,
   Modal,
@@ -8,20 +8,19 @@ import {
   Animated,
   Easing,
   PanResponder,
-} from 'react-native';
-import { styles } from '../page_style';
-import MaterialIcons from '@react-native-vector-icons/material-icons';
-import { ERP_COLOR_CODE } from '../../../../utils/constants';
-import { useAppSelector } from '../../../../store/hooks';
-import useTranslations from '../../../../hooks/useTranslations';
-import FastImage from 'react-native-fast-image';
-import { ERP_ICON } from '../../../../assets';
+} from "react-native";
+import { styles } from "../page_style";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
+import { useAppSelector } from "../../../../store/hooks";
+import useTranslations from "../../../../hooks/useTranslations";
+import FastImage from "react-native-fast-image";
+import { ERP_ICON } from "../../../../assets";
 
 const CLOSE_THRESHOLD = 120;
 const HIDDEN_POSITION = 300;
 
 const ErrorModal = ({ visible, errors, onClose }: any) => {
-  const theme = useAppSelector(state => state?.theme.mode);
+  const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
 
   const translateY = useRef(new Animated.Value(HIDDEN_POSITION)).current;
@@ -64,7 +63,7 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
           }).start();
         }
       },
-    })
+    }),
   ).current;
 
   useEffect(() => {
@@ -86,20 +85,17 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
 
   return (
     <Modal visible={visible} transparent animationType="none">
-      <View {...panResponder.panHandlers}>
-
-
-      </View>
+      <View {...panResponder.panHandlers}></View>
       <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
         <Animated.View
           style={[
             styles.bottomSheet,
             { transform: [{ translateY }] },
-            theme === 'dark' && {
-              backgroundColor: 'black',
+            theme === "dark" && {
+              backgroundColor: "black",
               borderWidth: 1,
-              borderColor: 'white'
-            }
+              borderColor: "white",
+            },
           ]}
         >
           {/* 👇 ONLY THIS PART IS DRAGGABLE */}
@@ -109,24 +105,32 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
                 width: 40,
                 height: 4,
                 borderRadius: 2,
-                backgroundColor: '#ccc',
-                alignSelf: 'center',
+                backgroundColor: "#ccc",
+                alignSelf: "center",
                 marginBottom: 10,
               }}
             />
 
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
-              <Text style={[styles.title, theme === 'dark'  && {
-                color: 'white'
-              }]}>{t('text.text35')}</Text>
-              <TouchableOpacity onPress={()=>{
-                 Animated.parallel([
+              <Text
+                style={[
+                  styles.title,
+                  theme === "dark" && {
+                    color: "white",
+                  },
+                ]}
+              >
+                {t("text.text35")}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  Animated.parallel([
                     Animated.timing(translateY, {
                       toValue: HIDDEN_POSITION,
                       duration: 360,
@@ -141,14 +145,19 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
                   ]).start(() => {
                     onClose();
                   });
-              }}>
-                <MaterialIcons name="close" color={theme === 'dark'  ? 'white' : 'black'} size={22} />
+                }}
+              >
+                <MaterialIcons
+                  name="close"
+                  color={theme === "dark" ? "white" : "black"}
+                  size={22}
+                />
               </TouchableOpacity>
             </View>
           </View>
 
           {/* CONTENT – NOT DRAGGABLE */}
-          <View style={{ alignItems: 'center' }}>
+          <View style={{ alignItems: "center" }}>
             <FastImage
               source={ERP_ICON.VALIDATON}
               style={{ height: 160, width: 120 }}

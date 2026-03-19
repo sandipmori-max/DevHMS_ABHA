@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, Animated } from 'react-native';
+import React, { useEffect, useRef } from "react";
+import { View, Text, TouchableOpacity, Animated } from "react-native";
 
-import { styles } from './nointernet_style';
-import useTranslations from '../../hooks/useTranslations';
-import { ERP_GIF } from '../../assets';
-import FastImage from 'react-native-fast-image';
-import { NoInterNetProps } from './types';
+import { styles } from "./nointernet_style";
+import useTranslations from "../../hooks/useTranslations";
+import { ERP_GIF } from "../../assets";
+import FastImage from "react-native-fast-image";
+import { NoInterNetProps } from "./types";
 
 const NoInternetScreen: React.FC<NoInterNetProps> = ({ onRetry }) => {
   const { t } = useTranslations();
@@ -20,23 +20,23 @@ const NoInternetScreen: React.FC<NoInterNetProps> = ({ onRetry }) => {
   const titleOpacity = useRef(new Animated.Value(0)).current;
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
   const buttonOpacity = useRef(new Animated.Value(0)).current;
- const scaleAnim = useRef(new Animated.Value(1)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
-const onPressIn = () => {
-  Animated.spring(scaleAnim, {
-    toValue: 0.95,
-    useNativeDriver: true,
-  }).start();
-};
+  const onPressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.95,
+      useNativeDriver: true,
+    }).start();
+  };
 
-const onPressOut = () => {
-  Animated.spring(scaleAnim, {
-    toValue: 1,
-    friction: 4,
-    tension: 220,
-    useNativeDriver: true,
-  }).start();
-};
+  const onPressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      friction: 4,
+      tension: 220,
+      useNativeDriver: true,
+    }).start();
+  };
   useEffect(() => {
     Animated.sequence([
       Animated.parallel([
@@ -119,7 +119,7 @@ const onPressOut = () => {
           },
         ]}
       >
-        {t('errors.noInternet')}
+        {t("errors.noInternet")}
       </Animated.Text>
 
       {/* Subtitle */}
@@ -132,21 +132,21 @@ const onPressOut = () => {
           },
         ]}
       >
-        {t('errors.somethingWentWrong')}
+        {t("errors.somethingWentWrong")}
       </Animated.Text>
 
       {/* Button */}
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-  <TouchableOpacity
-    activeOpacity={0.85}
-    style={styles.button}
-    onPress={onRetry}
-    onPressIn={onPressIn}
-    onPressOut={onPressOut}
-  >
-    <Text style={styles.buttonText}>{t('errors.tryAgain')}</Text>
-  </TouchableOpacity>
-</Animated.View>
+        <TouchableOpacity
+          activeOpacity={0.85}
+          style={styles.button}
+          onPress={onRetry}
+          onPressIn={onPressIn}
+          onPressOut={onPressOut}
+        >
+          <Text style={styles.buttonText}>{t("errors.tryAgain")}</Text>
+        </TouchableOpacity>
+      </Animated.View>
     </View>
   );
 };

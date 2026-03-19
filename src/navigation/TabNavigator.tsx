@@ -14,16 +14,16 @@ const Tab = createBottomTabNavigator();
 const TabNavigator = () => {
   const theme = useAppSelector((state) => state.theme.mode);
   const { t } = useTranslations();
-  const { appBottomMenuList } = useAppSelector(state => state?.auth);
+  const { appBottomMenuList } = useAppSelector((state) => state?.auth);
 
   const [hidden, setHidden] = useState(false);
 
-  const navigationItems = (appBottomMenuList || []).map(item => ({
-      name:  item?.name,
-      type: item?.type,
-      icon: item?.icon,
-      label: item?.name,
-      search: item?.name,
+  const navigationItems = (appBottomMenuList || []).map((item) => ({
+    name: item?.name,
+    type: item?.type,
+    icon: item?.icon,
+    label: item?.name,
+    search: item?.name,
   }));
 
   const tabConfig = [
@@ -68,20 +68,20 @@ const TabNavigator = () => {
         headerShown: true,
         headerTitleAlign: "left",
         tabBarActiveTintColor:
-
           theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR,
         tabBarInactiveTintColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
         tabBarStyle: {
           display: hidden ? "none" : "flex",
-
-          backgroundColor: theme === "dark" ? DARK_COLOR : ERP_COLOR_CODE.ERP_WHITE,
-          height: 60,
+          backgroundColor:
+            theme === "dark" ? DARK_COLOR : ERP_COLOR_CODE.ERP_WHITE,
+          height: 80,
           paddingBottom: 5,
           paddingTop: 5,
         },
         headerStyle: {
-          backgroundColor: theme === "dark" ? DARK_COLOR : ERP_COLOR_CODE.ERP_APP_COLOR,
+          backgroundColor:
+            theme === "dark" ? DARK_COLOR : ERP_COLOR_CODE.ERP_APP_COLOR,
         },
         headerTintColor: "white",
       }}
@@ -92,13 +92,11 @@ const TabNavigator = () => {
           name={tab.name}
           children={
             tab.component
-              ? () => <tab.component hideTab={hidden}
-          setHideTab={setHidden}
- />
+              ? () => <tab.component hideTab={hidden} setHideTab={setHidden} />
               : () => (
                   <MenuTab
-                  hideTab={hidden}
-          setHideTab={setHidden}
+                    hideTab={hidden}
+                    setHideTab={setHidden}
                     type={tab.type}
                     headerText={tab.label}
                     searchPlaceholder={tab.search}

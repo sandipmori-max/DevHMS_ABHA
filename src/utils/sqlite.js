@@ -451,7 +451,6 @@ export const increaseTapCount = async (db, id, userId) => {
        DO UPDATE SET tapCount = tapCount + 1`,
       [id, userId]
     );
-    console.log(" --------  ",)
 
   } catch (error) {
     console.log("error --------  ", error)

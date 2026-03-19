@@ -466,3 +466,96 @@ curl --location 'https://generativelanguage.googleapis.com/v1/models/gemini-2.5-
 --data '{
   "contents":[{"parts":[{"text":"sale : 300, last month : 800 , current month : 100 check data and write short gretting message, maximum 1 or 2 line"}]}]
 }'
+
+base_url : "https://support.deverp.net/devws"
+
+getLink : 
+
+curl --location 'https://support.deverp.net/devws/appcode.aspx/getLink' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: ASP.NET_SessionId=jd30rho5n0cvlhmikafnk2ai' \
+--data '{
+  "code": "relinquo1"
+}'
+response d string : 
+{
+    "d": "{\"success\":1,\"name\":\"Relinquo Cloud ERP\",\"link\":\"https://relinquo.deverp.net/devws/\"}"
+}
+
+response : 
+{
+  "success": 1,
+  "name": "Relinquo Cloud ERP",
+  "link": "https://relinquo.deverp.net/devws/"
+}
+
+setAppId : "/setAppID"
+
+curl --location 'https://support.deverp.net/devws/msp_api.aspx/setAppID' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: ASP.NET_SessionId=jd30rho5n0cvlhmikafnk2ai' \
+--data '{
+  "user": "sandip mori",
+  "pass": "adgop8y",
+  "appid": "appid",
+  "firebaseid": "firebaseid",
+  "device": "device"
+}'
+
+response d : 
+{
+    "d": "{\"userid\":\"113\",\"username\":\"Sandip Mori\",\"roleid\":\"6\",\"rolename\":\"HR-ADMIN\",\"mobileno\":\"8154877969\",\"emailid\":\"morisandip383@gmail.com\",\"fullname\":\"\",\"success\":\"1\",\"token\":\"87b2be6ba1b142c38593b3390c51e778\",\"validtill\":\"2026-03-20 15:52:40\"}"
+}
+
+response : 
+{
+  "userid": "113",
+  "username": "Sandip Mori",
+  "roleid": "6",
+  "rolename": "HR-ADMIN",
+  "mobileno": "8154877969",
+  "emailid": "morisandip383@gmail.com",
+  "fullname": "",
+  "success": "1",
+  "token": "dfab06677aee4c67930af61847cddff2",
+  "validtill": "2026-03-20 15:53:39"
+}
+
+getAuth : "/getAuth"
+
+curl --location 'https://support.deverp.net/devws/msp_api.aspx/getAuth' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: ASP.NET_SessionId=jd30rho5n0cvlhmikafnk2ai' \
+--data '{
+  "appid": "appid",
+  "device": "device"
+}'
+
+
+response d : 
+{
+    "d": "{\"success\":1,\"token\":\"dfab06677aee4c67930af61847cddff2\",\"validTill\":\"2026-03-20 15:53:39\"}"
+}
+
+response : 
+{
+  "success": 1,
+  "token": "dfab06677aee4c67930af61847cddff2",
+  "validTill": "2026-03-20 15:53:39"
+}
+
+getMenu : "/getMenu"
+
+curl --location 'https://support.deverp.net/devws/msp_api.aspx/getMenu' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: ASP.NET_SessionId=jd30rho5n0cvlhmikafnk2ai' \
+--data '{
+  "token": "dfab06677aee4c67930af61847cddff2"
+}'
+
+response d : 
+{
+    "d": "{\"success\":1,\"menus\":[{\"Name\":\"Allocate Team\",\"Data\":\"Menu\",\"Datas\":[],\"Title\":\"Allocate Team\",\"Link\":\"AllocateTeam\",\"IsReport\":\"E\",\"Image\":\"\"},{\"Name\":\"App OTP\",\"Data\":\"Menu\",\"Datas\":[],\"Title\":\"App OTP\",\"Link\":\"app/indexlist.html?APPRGLOG/\",\"IsReport\":\"A\",\"Image\":\"\"},{\"Name\":\"AppOTP Dev\",\"Data\":\"Menu\",\"Datas\":[],\"Title\":\"AppOTP Dev\",\"Link\":\"app/indexlist.html?AppCode_Dev/\",\"IsReport\":\"A\",\"Image\":\"\"},{\"Name\":\"Attedance Report\",\"Data\":\"Menu\",\"Datas\":[],\"Title\":\"Attedance Report\",\"Link\":\"app/indexlist.html?Attendance/\",\"IsReport\":\"R\",\"Image\":\"\"},{\"Name\":\"Exp Entry\",\"Data\":\"Menu\",\"Datas\":[],\"Title\":\"Exp Entry\",\"Link\":\"userexp_app\",\"IsReport\":\"E\",\"Image\":\"\"},{\"Name\":\"Expense Report\",\"Data\":\"Menu\",\"Datas\":[],\"Title\":\"Expense Report\",\"Link\":\"app/indexlist.html?EXPENSEREPORT/\",\"IsReport\":\"R\",\"Image\":\"\"},{\"Name\":\"Leave Apply\",\"Data\":\"Menu\",\"Datas\":[],\"Title\":\"Leave Apply\",\"Link\":\"LeaveApp\",\"IsReport\":\"E\",\"Image\":\"\"},{\"Name\":\"Leave Auth\",\"Data\":\"Menu\",\"Datas\":[],\"Title\":\"Leave Auth\",\"Link\":\"LeaveAprv\",\"IsReport\":\"A\",\"Image\":\"\"},{\"Name\":\"Leave Report\",\"Data\":\"Menu\",\"Datas\":[],\"Title\":\"Leave Report\",\"Link\":\"app/indexlist.html?LeaveReport/\",\"IsReport\":\"R\",\"Image\":\"\"},{\"Name\":\"Temp IPS Approve\",\"Data\":\"Menu\",\"Datas\":[],\"Title\":\"Temp IPS Approve\",\"Link\":\"app/indexlist.html?TempIPS_Admin/\",\"IsReport\":\"A\",\"Image\":\"\"},{\"Name\":\"User Expense\",\"Data\":\"Menu\",\"Datas\":[],\"Title\":\"User Expense\",\"Link\":\"app/indexlist.html?userexp/\",\"IsReport\":\"R\",\"Image\":\"\"},{\"Name\":\"White List IP\",\"Data\":\"Menu\",\"Datas\":[],\"Title\":\"White List IP\",\"Link\":\"app/indexlist.html?TempIPS/\",\"IsReport\":\"E\",\"Image\":\"\"},{\"Name\":\"WORKS REPORT\",\"Data\":\"Menu\",\"Datas\":[],\"Title\":\"WORKS REPORT\",\"Link\":\"app/indexlist.html?Works/\",\"IsReport\":\"R\",\"Image\":\"\"}]}"
+}
+
+getDB : "/getDB" 

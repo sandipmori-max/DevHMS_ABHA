@@ -12,52 +12,47 @@ import {
 
 const { height } = Dimensions.get("screen");
 
-export default function DashboardListSheet({ visible, onClose, data = [] }: any) {
-
+export default function DashboardListSheet({
+  visible,
+  onClose,
+  data = [],
+}: any) {
   const sheetTranslateY = useRef(new Animated.Value(height)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const contentOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-
     if (visible) {
-
       Animated.sequence([
         Animated.parallel([
           Animated.timing(backdropOpacity, {
             toValue: 1,
             duration: 290,
-            useNativeDriver: true
+            useNativeDriver: true,
           }),
           Animated.timing(sheetTranslateY, {
             toValue: 0,
             duration: 400,
             easing: Easing.out(Easing.cubic),
-            useNativeDriver: true
-          })
+            useNativeDriver: true,
+          }),
         ]),
 
         Animated.timing(contentOpacity, {
           toValue: 1,
           duration: 260,
           delay: 60,
-          useNativeDriver: true
-        })
-
+          useNativeDriver: true,
+        }),
       ]).start();
-
     } else {
-
       sheetTranslateY.setValue(height);
       backdropOpacity.setValue(0);
       contentOpacity.setValue(0);
-
     }
-
   }, [visible]);
 
   const renderItem = ({ item }) => {
-
     return (
       <Animated.View
         style={{
@@ -68,23 +63,26 @@ export default function DashboardListSheet({ visible, onClose, data = [] }: any)
           borderBottomWidth: 0.5,
           borderColor: "#eee",
           opacity: contentOpacity,
-          transform: [{
-            translateY: contentOpacity.interpolate({
-              inputRange: [0, 1],
-              outputRange: [30, 0]
-            })
-          }]
+          transform: [
+            {
+              translateY: contentOpacity.interpolate({
+                inputRange: [0, 1],
+                outputRange: [30, 0],
+              }),
+            },
+          ],
         }}
       >
-
-        <View style={{ flexDirection: "row", alignItems: "center", width: "70%" }}>
+        <View
+          style={{ flexDirection: "row", alignItems: "center", width: "70%" }}
+        >
           <View
             style={{
               width: 12,
               height: 12,
               borderRadius: 6,
               marginRight: 10,
-              backgroundColor: item.color
+              backgroundColor: item.color,
             }}
           />
 
@@ -94,7 +92,6 @@ export default function DashboardListSheet({ visible, onClose, data = [] }: any)
         <Text style={{ fontWeight: "600", color: item.color }}>
           {item.value}
         </Text>
-
       </Animated.View>
     );
   };
@@ -106,7 +103,7 @@ export default function DashboardListSheet({ visible, onClose, data = [] }: any)
           flex: 1,
           backgroundColor: "rgba(0,0,0,0.6)",
           justifyContent: "flex-end",
-          opacity: backdropOpacity
+          opacity: backdropOpacity,
         }}
       >
         <Animated.View
@@ -116,7 +113,7 @@ export default function DashboardListSheet({ visible, onClose, data = [] }: any)
             borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
             padding: 16,
-            transform: [{ translateY: sheetTranslateY }]
+            transform: [{ translateY: sheetTranslateY }],
           }}
         >
           {/* Header */}
@@ -126,7 +123,7 @@ export default function DashboardListSheet({ visible, onClose, data = [] }: any)
                 flexDirection: "row",
                 justifyContent: "space-between",
                 alignItems: "center",
-                marginBottom: 10
+                marginBottom: 10,
               }}
             >
               <Text style={{ fontSize: 18, fontWeight: "600" }}>
@@ -145,7 +142,6 @@ export default function DashboardListSheet({ visible, onClose, data = [] }: any)
             keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}
           />
-
         </Animated.View>
       </Animated.View>
     </Modal>

@@ -20,13 +20,16 @@ const TypingLoading = ({ text = "...", speed = 400, visible = true }) => {
   if (!visible) return null;
 
   return (
-     <View style={{flexDirection:'row', 
-        alignContent:'center',
-        alignItems:'center'
-      }}>
-        <Text style={styles.text}>Loading</Text>
-        <Text style={styles.text}>{displayed}</Text>
-      </View>
+    <View
+      style={{
+        flexDirection: "row",
+        alignContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Text style={styles.text}>Loading</Text>
+      <Text style={styles.text}>{displayed}</Text>
+    </View>
   );
 };
 
@@ -36,7 +39,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: "800",
     color: "black",
     fontStyle: "italic",
     letterSpacing: 6, // optional, spacing for effect

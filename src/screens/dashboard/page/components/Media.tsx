@@ -68,7 +68,6 @@ const Media = ({
       `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${
         type === "small" ? `d_${item?.text}` : item?.text
       }`;
-    console.log("--------=================", base);
     return `${base}?cb=${cacheBuster}`;
   };
 

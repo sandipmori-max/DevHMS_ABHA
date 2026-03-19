@@ -157,7 +157,7 @@ const RootNavigator = () => {
       } catch (error) {
         dispatch(updateAttendanceState(false));
 
-        console.log(error);
+        console.log("error======", error);
       }
     }, 1000);
 
@@ -215,7 +215,7 @@ const RootNavigator = () => {
         } catch (error) {
           dispatch(updateAttendanceState(false));
 
-          console.log(error);
+          console.log("error*******", error);
         }
       }
       appState.current = nextAppState;
@@ -353,7 +353,7 @@ const RootNavigator = () => {
         } catch (error) {
           dispatch(updateAttendanceState(false));
 
-          console.log(error);
+          console.log("error//////", error);
         }
       }, 2500);
       // Cleanup to avoid memory leaks

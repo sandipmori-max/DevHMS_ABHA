@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   centered: {
@@ -24,8 +24,8 @@ export const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 6,
     paddingVertical: 1,
-    paddingHorizontal: 12,
-    marginBottom: 10,
+    paddingHorizontal: 2,
+    marginBottom: 8,
     alignItems: "center",
     marginHorizontal: 6,
   },
@@ -69,7 +69,7 @@ export const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: "600",
     marginBottom: 6,
     textAlign: "center",
   },

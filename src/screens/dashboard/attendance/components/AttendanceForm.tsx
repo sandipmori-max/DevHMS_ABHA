@@ -8,11 +8,10 @@ import {
   TouchableOpacity,
   Platform,
 } from "react-native";
-import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import Geolocation from "@react-native-community/geolocation";
-import { launchCamera } from "react-native-image-picker";
 
 import { AttendanceFormValues, UserLocation } from "../types";
 import {
@@ -103,7 +102,6 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
     setBlockAction(false);
     navigation.navigate("FaceCameraScreen", {
       onCapture: async (photoPath) => {
-        console.log("photoPath", photoPath);
 
         setTimeout(async () => {
           try {
@@ -117,7 +115,6 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
 
             const photoUri = "file://" + photoPath;
 
-            console.log("---------------------12", photoUri);
 
             const base64 = await RNFS.readFile(photoPath, "base64");
 
@@ -147,65 +144,11 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
       },
     });
   };
-  // const openCamera = (
-  //   setFieldValue: (field: keyof AttendanceFormValues, value: any) => void,
-  //   handleSubmit: () => void,
-  // ) => {
-  //   console.log("---------------------9")
-
-  //   launchCamera(
-  //     {
-  //       mediaType: "photo",
-  //       cameraType: "back",
-  //       quality: 0.5,
-  //       maxWidth: 1024,
-  //       maxHeight: 1024,
-  //       includeBase64: true,
-  //       saveToPhotos: false,
-  //     },
-  //     (response) => {
-  //   console.log("---------------------10")
-
-  //       try {
-  //         if (response?.didCancel || response?.errorCode) {
-  //   console.log("---------------------11", response)
-
-  //         setLocationLoading(false);
-  //         setBlockAction(false);
-  //         return;
-  //       }
-  //       const photoUri = response?.assets?.[0]?.uri;
-  //   console.log("---------------------12", photoUri)
-
-  //       const asset = response?.assets?.[0];
-  //       if (!photoUri) return;
-  //       if (asset?.base64) {
-  //         setFieldValue(
-  //           "imageBase64",
-  //           `${
-  //             resData?.success === 1 || resData?.success === "1"
-  //               ? "punchOut.jpeg"
-  //               : "punchIn.jpeg"
-  //           }; data:${asset?.type};base64,${asset?.base64}`,
-  //         );
-  //       }
-  //       setStatusImage(photoUri);
-  //       setTimeout(() => {
-  //         // handleSubmit();
-  //       }, 1000);
-  //       } catch (error) {
-  //   console.log("---------------------11", error)
-
-  //       }
-  //     },
-  //   );
-  // };
-
+  
   const handleStatusToggle = async (
     setFieldValue: (field: keyof AttendanceFormValues, value: any) => void,
     handleSubmit: () => void,
   ) => {
-    console.log("---------------------1");
     const enabled = await DeviceInfo.isLocationEnabled();
     if (!enabled) {
       setBlocked(false);
@@ -217,16 +160,12 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
       setLocationAlertVisible(false);
     }
     setBlockAction(true);
-    console.log("---------------------2");
 
     if (locationLoading) return;
-    console.log("---------------------3");
 
     const hasPermission = await requestCameraAndLocationPermission();
-    console.log("---------------------4");
 
     if (!hasPermission) {
-      console.log("---------------------5");
 
       pendingCameraAction.current = { setFieldValue, handleSubmit };
       setAlertConfig({
@@ -248,10 +187,8 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
     const getLocationWithRetry = () => {
       Geolocation.getCurrentPosition(
         (position) => {
-          console.log("---------------------6");
 
           const { latitude, longitude } = position?.coords;
-          console.log("---------------------7", position);
 
           setUserLocation({ latitude, longitude });
           setFieldValue("latitude", String(latitude));
@@ -259,7 +196,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
           openCamera(setFieldValue, handleSubmit);
         },
         (error) => {
-          console.log("-----------------------******");
+          console.log("-----------------------******", error);
 
           setAlertConfig({
             title: t("errors.locationError"),
@@ -374,7 +311,6 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
       style={{
         width: "100%",
         padding: 16,
-        // backgroundColor: theme === 'dark' ? 'black' : 'white'
       }}
     >
       <Formik

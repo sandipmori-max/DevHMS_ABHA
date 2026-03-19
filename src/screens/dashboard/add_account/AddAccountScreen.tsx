@@ -383,7 +383,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
                         alignContent:'center',
                         alignSelf:'center',
                         borderRadius: 20,
-                        height: 120,
+                        height: 100,
                         width: 140,
                         marginBottom: 12,
                         backgroundColor:'white'}}>
@@ -392,7 +392,9 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
                           uri:  `${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`
                         }}
                         // source={ERP_ICON.APP_LOGO}
-                        style={styles.logo} 
+                        style={[styles.logo, {
+                          marginTop: 0
+                        }]} 
                         resizeMode="contain"
                          />
                       </View>

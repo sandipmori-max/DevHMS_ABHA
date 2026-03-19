@@ -73,7 +73,6 @@ const ListScreen = () => {
 
   const route = useRoute<RouteProp<ListRouteParams, 'List'>>();
   const { item } = route?.params;
-  console.log("-----------------------------------")
   const theme = useAppSelector(state => state?.theme.mode);
 
   const pageTitle = item?.title || item?.name || 'List Data';

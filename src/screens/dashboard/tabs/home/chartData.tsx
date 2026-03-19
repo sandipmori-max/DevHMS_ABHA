@@ -23,21 +23,21 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
   }, [pieChartData]);
   const theme = useAppSelector((state) => state?.theme.mode);
 
-  console.log("pieChartData", pieChartData);
   const [isVisibleFullMode, setIsVisibleFullMode] = useState(false);
 
   return (
     pieChartData?.length > 0 && (
-      <View style={{
-        margin: 8,
-            borderRadius: 6,
-            borderWidth: 0.5,
-            borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-            marginBottom:8, 
-      }}>
+      <View
+        style={{
+          margin: 8,
+          borderRadius: 6,
+          borderWidth: 0.5,
+          borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+          marginBottom: 8,
+        }}
+      >
         <View
           style={{
-            
             flexDirection: "row",
             height: Dimensions.get("screen").height * 0.22,
           }}

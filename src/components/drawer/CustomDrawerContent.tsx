@@ -27,7 +27,6 @@ import { useBaseLink } from '../../hooks/useBaseLink';
 import { DARK_COLOR, ERP_COLOR_CODE } from '../../utils/constants';
 import ContactRow from './ContactRow';
 import ImageBottomSheetModal from '../bottomsheet/ImageBottomSheetModal';
-import { NativeModules } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import TranslatedText from '../../screens/dashboard/tabs/home/TranslatedText';
 
@@ -41,7 +40,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
   const { user } = useAppSelector(state => state.auth);
   const theme = useAppSelector(state => state.theme.mode);
   const baseLink = useBaseLink();
-
   /* ================= SAFE CURRENT ROUTE ================= */
   const currentRoute = useNavigationState(state => {
     const route = state.routes[state.index];
@@ -184,12 +182,12 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
             {user?.mobileno && (
               <TouchableOpacity
                 onPress={() => {
-                  handlePhonePress(user.mobileno)
+                  handlePhonePress(user?.mobileno)
                 }}
                 style={{ flexDirection: 'row', alignItems: 'center', padding: 6 }}>
                 <MaterialIcons name="call" color="white" size={14} />
                 <TranslatedText 
-                text={user.mobileno}
+                text={user?.mobileno}
                 numberOfLines={1}
                 style={styles.userPhone}></TranslatedText>
               </TouchableOpacity>
@@ -198,12 +196,12 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
             {user?.emailid && (
               <TouchableOpacity
                 onPress={() => {
-                  handleEmailPress(user.emailid)
+                  handleEmailPress(user?.emailid)
                 }}
                 style={{ flexDirection: 'row', alignItems: 'center', padding: 6 }}>
                 <MaterialIcons name="mail-outline" color="white" size={14} />
                 <TranslatedText
-                text= {user.emailid}
+                text= {user?.emailid}
                 numberOfLines={1} style={styles.userPhone}>
                 </TranslatedText>
               </TouchableOpacity>
@@ -214,7 +212,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
                 <MaterialIcons name="person" color="white" size={14} />
                 <TranslatedText 
                 numberOfLines={1}
-                text={user.rolename}
+                text={user?.rolename}
                 style={styles.userPhone}></TranslatedText>
               </View>
             )}

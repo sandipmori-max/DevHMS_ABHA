@@ -1,22 +1,21 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Image, StatusBar, Animated, Easing } from 'react-native';
+import React, { useEffect, useRef } from "react";
+import { View, Image, StatusBar, Animated, Easing } from "react-native";
 
-import { ERP_ICON } from '../../assets';
-import { styles } from './splash_style';
-import { SplashProps } from './types';
-import { useAppSelector } from '../../store/hooks';
-import { DARK_COLOR } from '../../utils/constants';
-import useTranslations from '../../hooks/useTranslations';
-import { firstLetterUpperCase } from '../../utils/helpers';
+import { ERP_ICON } from "../../assets";
+import { styles } from "./splash_style";
+import { SplashProps } from "./types";
+import { useAppSelector } from "../../store/hooks";
+import useTranslations from "../../hooks/useTranslations";
+import { firstLetterUpperCase } from "../../utils/helpers";
 
 const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.5)).current;
   const textTranslateY = useRef(new Animated.Value(20)).current;
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
-  const theme = useAppSelector(state => state?.theme.mode);
+  const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
-  const { user } = useAppSelector(state => state.auth);
+  const { user } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     Animated.parallel([
@@ -59,9 +58,14 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   }, [fadeAnim, scaleAnim, textTranslateY, subtitleOpacity, onFinish]);
 
   return (
-    <View style={[styles.container, theme === 'dark' && {
-      backgroundColor: '#000'
-    }]}>
+    <View
+      style={[
+        styles.container,
+        theme === "dark" && {
+          backgroundColor: "#000",
+        },
+      ]}
+    >
       <StatusBar hidden />
       <Animated.View
         style={[
@@ -70,38 +74,42 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
             opacity: fadeAnim,
             transform: [{ scale: scaleAnim }],
           },
-          theme === 'dark' && {
-            backgroundColor: '#000'
-          }
-        ]}
-      >
-        <Image source={ERP_ICON.APP_LOGO} style={styles.logo} resizeMode="contain" />
-      </Animated.View>
-      {
-        user?.name &&  <Animated.Text
-        style={[
-          styles.helloTitle,
-          {
-            transform: [{ translateY: textTranslateY }],
+          theme === "dark" && {
+            backgroundColor: "#000",
           },
-          theme === 'dark' && {
-            color: 'white'
-          }
         ]}
       >
-        {t('text99')}, {firstLetterUpperCase(user?.name || '')} 
-      </Animated.Text>
-      }
-     
+        <Image
+          source={ERP_ICON.APP_LOGO}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+      </Animated.View>
+      {user?.name && (
+        <Animated.Text
+          style={[
+            styles.helloTitle,
+            {
+              transform: [{ translateY: textTranslateY }],
+            },
+            theme === "dark" && {
+              color: "white",
+            },
+          ]}
+        >
+          {t("text99")}, {firstLetterUpperCase(user?.name || "")}
+        </Animated.Text>
+      )}
+
       <Animated.Text
         style={[
           styles.title,
           {
             transform: [{ translateY: textTranslateY }],
           },
-          theme === 'dark' && {
-            color: 'white'
-          }
+          theme === "dark" && {
+            color: "white",
+          },
         ]}
       >
         {t("text.text53")}
@@ -112,12 +120,12 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
           {
             opacity: subtitleOpacity,
           },
-          theme === 'dark' && {
-            color: 'white'
-          }
+          theme === "dark" && {
+            color: "white",
+          },
         ]}
       >
-        {t('text.text54')}
+        {t("text.text54")}
       </Animated.Text>
     </View>
   );

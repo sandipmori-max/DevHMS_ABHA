@@ -23,7 +23,6 @@ import FastImage from 'react-native-fast-image';
 import {
   formatTo12Hour,
   getWorkedHours,
-  getWorkedHours2,
   isAfter830,
   isBefore830,
   isLatePunchIn,

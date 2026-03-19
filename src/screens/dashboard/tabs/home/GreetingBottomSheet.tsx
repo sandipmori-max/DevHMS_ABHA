@@ -1,24 +1,16 @@
 import React, { useEffect, useState } from "react";
-import {
-  Modal,
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity
-} from "react-native";
+import { Modal, View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import TypingDots from "./TypingDots";
 
 const GreetingBottomSheet = ({
   visible,
   message,
   title = "DevERP AI alert",
-  onClose
-}) => {
-
+  onClose,
+}: any) => {
   const [displayText, setDisplayText] = useState("");
 
   useEffect(() => {
-
     if (!visible) {
       setDisplayText("");
       return;
@@ -27,29 +19,23 @@ const GreetingBottomSheet = ({
     let i = 0;
 
     const interval = setInterval(() => {
-
       setDisplayText(message.slice(0, i + 1));
       i++;
 
       if (i >= message.length) {
         clearInterval(interval);
       }
-
     }, 25);
 
     return () => clearInterval(interval);
-
   }, [visible, message]);
 
   return (
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.overlay}>
-
         <View style={styles.sheet}>
-
           {/* Header */}
           <View style={styles.header}>
-
             <View style={styles.aiRow}>
               <Text style={styles.botIcon}>🤖</Text>
               <Text style={styles.title}>{title}</Text>
@@ -58,20 +44,15 @@ const GreetingBottomSheet = ({
             <TouchableOpacity onPress={onClose}>
               <Text style={styles.close}>✕</Text>
             </TouchableOpacity>
-
           </View>
 
           {/* AI Message Bubble */}
           <View style={styles.messageBubble}>
-              {!displayText && <TypingDots visible={visible} />}
+            {!displayText && <TypingDots visible={visible} />}
 
-            <Text style={styles.message}>
-              {displayText}
-            </Text>
+            <Text style={styles.message}>{displayText}</Text>
           </View>
-
         </View>
-
       </View>
     </Modal>
   );
@@ -79,11 +60,10 @@ const GreetingBottomSheet = ({
 
 export default GreetingBottomSheet;
 const styles = StyleSheet.create({
-
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.35)",
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
   },
 
   sheet: {
@@ -95,41 +75,41 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    elevation: 6
+    elevation: 6,
   },
 
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 18
+    marginBottom: 18,
   },
 
   aiRow: {
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
   },
 
   botIcon: {
     fontSize: 22,
-    marginRight: 8
+    marginRight: 8,
   },
 
   title: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#111"
+    color: "#111",
   },
 
   close: {
     fontSize: 22,
-    color: "#999"
+    color: "#999",
   },
 
   messageBubble: {
     backgroundColor: "#F3F6FF",
     padding: 16,
-    borderRadius: 14
+    borderRadius: 14,
   },
 
   message: {
@@ -137,6 +117,5 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: "#333",
     // fontFamily: "Handlee-Regular",
-  }
-
+  },
 });

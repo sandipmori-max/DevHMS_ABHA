@@ -1,7 +1,6 @@
 import {
   Dimensions,
   FlatList,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
@@ -30,7 +29,7 @@ import {
 } from "../../../../utils/sqlite";
 import ErrorMessage from "../../../../components/error/Error";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
-import { DARK_COLOR, ERP_COLOR_CODE } from "../../../../utils/constants";
+import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import Toast from "../../../../components/Toast/Toast";
 
 import { useTranslation } from "react-i18next";
@@ -44,6 +43,15 @@ const accentColors = [
   "#f0e1e1ff",
   "#f2e3f8ff",
   "#e0f3edff",
+  "#e3ecfaff",
+  "#dff7f2ff",
+  "#fff4e6ff",
+  "#fce8e8ff",
+  "#f3e8fdff",
+  "#e6f7f1ff",
+  "#edf2fbff",
+  "#f9f5ecff",
+  "#eaf4f4ff",
 ];
 const MenuTab = ({
   type,
@@ -60,7 +68,6 @@ const MenuTab = ({
   const { t } = useTranslation();
 
   const allList = menu?.filter((item) => item?.isReport === type) ?? [];
-  const [entryLoader, setEntryLoader] = useState(false);
   const [isRefresh, setIsRefresh] = useState(false);
   const [isHorizontal, setIsHorizontal] = useState(false);
   const [bookmarks, setBookmarks] = useState({});
@@ -83,7 +90,6 @@ const MenuTab = ({
     return countB - countA;
   });
   const searchTimeout = useRef(null);
-  // const list = showBookmarksOnly ? filteredList.filter(i => bookmarks[i.id]) : filteredList;
   const list = showStarsOnly
     ? sortedList
     : showBookmarksOnly
@@ -170,8 +176,6 @@ const MenuTab = ({
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-        // borderBottomWidth: 1,
-        // borderBottomColor: '#fff',
       },
       headerBackTitle: "",
       headerTintColor: "white",
@@ -307,7 +311,6 @@ const MenuTab = ({
 
   useFocusEffect(
     useCallback(() => {
-      // NativeModules.OrientationModule.enableLandscape();
       setIsHorizontal(false);
       setShowFull(false);
       setShowSearch(false);
@@ -315,33 +318,27 @@ const MenuTab = ({
       setShowBookmarksOnly(false);
       setShowStarsOnly(false);
       if (isAuthenticated) {
-        setEntryLoader(true);
         dispatch(getERPMenuThunk())
           .unwrap()
           .finally(() => {
             const timer = setTimeout(() => {
               dispatch(setMenuLoading(false));
-              setEntryLoader(false);
             }, 850);
             return () => clearTimeout(timer);
           });
       }
-      return () => {
-        // NativeModules.OrientationModule.disableLandscape();
-      };
+      return () => {};
     }, [isAuthenticated, activeToken, isRefresh]),
   );
 
   // Menu loading
   useEffect(() => {
     if (isAuthenticated) {
-      setEntryLoader(true);
       dispatch(getERPMenuThunk())
         .unwrap()
         .finally(() => {
           const timer = setTimeout(() => {
             dispatch(setMenuLoading(false));
-            setEntryLoader(false);
           }, 850);
           return () => clearTimeout(timer);
         });
@@ -384,9 +381,6 @@ const MenuTab = ({
             navigation.navigate("List", { item });
           }
         }}
-        // onPress={() =>
-        //   item.url.includes('.') ? navigation.navigate('Web', { item }) : navigation.navigate('List', { item })
-        // }
       >
         <TouchableOpacity
           onPress={() =>
@@ -397,7 +391,7 @@ const MenuTab = ({
           <MaterialIcons
             color={theme === "dark" ? "white" : "black"}
             name={bookmarks[item.id] ? "bookmark" : "bookmark-outline"}
-            size={list.length > 8 ? 20 : 24}
+            size={20}
           />
         </TouchableOpacity>
 
@@ -411,14 +405,19 @@ const MenuTab = ({
             },
           ]}
         >
-          <TranslatedText
+          <MaterialIcons
+            name={item?.app_menu_icon || "widgets"}
+            color={"gray"}
+            size={18}
+          />
+          {/* <TranslatedText
             numberOfLines={1}
             text={item.icon || getInitials(item?.name)}
             style={[
-              list.length > 8 ? styles.iconTextV2 : styles.iconText,
+                styles.iconTextV2  ,
               theme === "dark" && { color: "black" },
             ]}
-          ></TranslatedText>
+          ></TranslatedText> */}
         </View>
 
         <View
@@ -439,17 +438,19 @@ const MenuTab = ({
               theme === "dark" && { color: "white" },
             ]}
           ></TranslatedText>
-          <TranslatedText
-            text={item.title}
-            numberOfLines={2}
-            style={[
-              list.length > 8 ? styles.subtitleV2 : styles.subtitle,
-              theme === "dark" && { color: "white" },
-              !isHorizontal && {
-                textAlign: "center",
-              },
-            ]}
-          ></TranslatedText>
+          {item.title !== item.name && (
+            <TranslatedText
+              text={item.title}
+              numberOfLines={2}
+              style={[
+                list.length > 8 ? styles.subtitleV2 : styles.subtitle,
+                theme === "dark" && { color: "white" },
+                !isHorizontal && {
+                  textAlign: "center",
+                },
+              ]}
+            ></TranslatedText>
+          )}
         </View>
       </TouchableOpacity>
     );

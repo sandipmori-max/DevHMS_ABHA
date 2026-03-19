@@ -5,7 +5,6 @@ export const styles = StyleSheet.create({
   container: {
     marginTop: Platform.OS === 'ios' ? 40 : 10,
     flex: 1,
-    // backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
   },
   iconWrapper: {
     flexDirection: 'row',
@@ -113,7 +112,6 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     padding: 14,
     borderRadius: 10,
-    // backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
   },
   input1: {
     marginLeft: 10,
@@ -122,7 +120,6 @@ export const styles = StyleSheet.create({
     paddingVertical: 14,
     flex: 1,
     borderRadius: 10,
-    // backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
   },
   toggleButton: {
     padding: 14,
