@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		72D5339640E44AA1BB547FC4 /* Handlee-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C7899459CCB842D0AD5CF70D /* Handlee-Regular.ttf */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		912375A56024BBE1C8CE599E /* Pods_DevERP.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7627ABE4D9107A5A0D7EC559 /* Pods_DevERP.framework */; };
@@ -30,6 +31,7 @@
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = DevERP/AppDelegate.swift; sourceTree = "<group>"; };
 		7627ABE4D9107A5A0D7EC559 /* Pods_DevERP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DevERP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = DevERP/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		C7899459CCB842D0AD5CF70D /* Handlee-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Handlee-Regular.ttf"; path = "../assets/fonts/Handlee-Regular.ttf"; sourceTree = "<group>"; };
 		DA73448C2EB886B1002F7399 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		DAAFE8E92F1BACF200F00D76 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		DAAFE8EB2F1BAD0500F00D76 /* LocationModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LocationModule.m; sourceTree = "<group>"; };
@@ -79,6 +81,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		4DAB1373442C48D8B3C10C30 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				C7899459CCB842D0AD5CF70D /* Handlee-Regular.ttf */,
+			);
+			name = Resources;
+			path = "";
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -95,6 +106,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				4DAB1373442C48D8B3C10C30 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -183,6 +195,7 @@
 				DA73448D2EB886B1002F7399 /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				B35EAE6E6BBA861CA651C21A /* PrivacyInfo.xcprivacy in Resources */,
+				72D5339640E44AA1BB547FC4 /* Handlee-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

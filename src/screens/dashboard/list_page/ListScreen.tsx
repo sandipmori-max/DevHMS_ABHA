@@ -476,7 +476,7 @@ const ListScreen = () => {
     <View style={[styles.container, theme === 'dark' && { backgroundColor: 'black' }]}>
        
        {
-       !isFilterVisible &&  <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
+       !isFilterVisible &&  <View style={{height: 4, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
        }
            
       {isFilterVisible && (

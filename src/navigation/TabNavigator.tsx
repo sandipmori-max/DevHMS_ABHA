@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { DARK_COLOR, ERP_COLOR_CODE } from "../utils/constants";
 import MenuTab from "../screens/dashboard/tabs/MenuTab/MenuTab";
@@ -7,6 +7,7 @@ import ProfileTab from "../screens/dashboard/tabs/profile/ProfileTab";
 import useTranslations from "../hooks/useTranslations";
 import { useAppSelector } from "../store/hooks";
 import AnimatedTabIcon from "../components/tab_icon/AnimatedTabIcon";
+import { Platform } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
@@ -14,6 +15,8 @@ const TabNavigator = () => {
   const theme = useAppSelector((state) => state.theme.mode);
   const { t } = useTranslations();
   const { appBottomMenuList } = useAppSelector(state => state?.auth);
+
+  const [hidden, setHidden] = useState(false);
 
   const navigationItems = (appBottomMenuList || []).map(item => ({
       name:  item?.name,
@@ -65,12 +68,15 @@ const TabNavigator = () => {
         headerShown: true,
         headerTitleAlign: "left",
         tabBarActiveTintColor:
+
           theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR,
         tabBarInactiveTintColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
         tabBarStyle: {
+          display: hidden ? "none" : "flex",
+
           backgroundColor: theme === "dark" ? DARK_COLOR : ERP_COLOR_CODE.ERP_WHITE,
-          height: 80,
+          height: 60,
           paddingBottom: 5,
           paddingTop: 5,
         },
@@ -86,9 +92,13 @@ const TabNavigator = () => {
           name={tab.name}
           children={
             tab.component
-              ? () => <tab.component />
+              ? () => <tab.component hideTab={hidden}
+          setHideTab={setHidden}
+ />
               : () => (
                   <MenuTab
+                  hideTab={hidden}
+          setHideTab={setHidden}
                     type={tab.type}
                     headerText={tab.label}
                     searchPlaceholder={tab.search}

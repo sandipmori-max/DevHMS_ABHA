@@ -379,12 +379,23 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({ visible, onClose, i
                     }}
                   >
                     <View style={styles.formContainer}>
-                      <Image
-                        //            source={{
-                        //   uri:  `${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`
-                        // }}
-                        source={ERP_ICON.APP_LOGO}
-                        style={styles.logo} resizeMode="contain" />
+                      <View style={{
+                        alignContent:'center',
+                        alignSelf:'center',
+                        borderRadius: 20,
+                        height: 120,
+                        width: 140,
+                        marginBottom: 12,
+                        backgroundColor:'white'}}>
+                        <Image
+                        source={{
+                          uri:  `${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`
+                        }}
+                        // source={ERP_ICON.APP_LOGO}
+                        style={styles.logo} 
+                        resizeMode="contain"
+                         />
+                      </View>
 
                       <Text style={[styles.subtitle, theme === 'dark' && { color: 'white' }]}>{t('account.msg')}</Text>
 

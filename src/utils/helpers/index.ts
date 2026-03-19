@@ -1074,3 +1074,108 @@ export const applyFormula = (config, values) => {
   };
 };
 
+export const createPrompt = (dataText) => {
+
+  const hour = new Date().getHours();
+
+  let timeOfDay = "";
+  if (hour < 12) timeOfDay = "morning";
+  else if (hour < 17) timeOfDay = "afternoon";
+  else timeOfDay = "evening";
+
+  return `
+  You are an intelligent ERP dashboard assistant.
+
+  Your job is to quickly analyze dashboard data and greet the user with a short insight.
+
+  Instructions:
+  - Write only ONE short sentence.
+  - Friendly and professional tone.
+  - Start the sentence with "Good ${timeOfDay}".
+  - Do NOT use any other greeting like "Good morning" randomly.
+  - If workload is low, mention the team is free or relaxed.
+  - If numbers are high, mention workload or activity is high.
+  - If everything looks normal, give a positive greeting.
+  - Do NOT repeat the dashboard numbers.
+  - Keep the message simple and natural.
+
+  Dashboard Data:
+  ${dataText}
+
+  Write the greeting insight.
+  `;
+};
+
+const prepareDashboardForAI = (dashboard) => {
+
+  if (!Array.isArray(dashboard)) return "";
+
+  return dashboard
+    .map((item) => {
+
+      let value = item?.data || "";
+
+      if (!value) return null;
+
+      // HTML remove (future safety)
+      value = value.replace(/<[^>]*>/g, "").trim();
+
+      return `${item.title}: ${value}`;
+
+    })
+    .filter(Boolean)
+    .join("\n");
+
+};
+export const getDashboardAI = async (dashboardData) => {
+  try {
+
+    const dataText = prepareDashboardForAI(dashboardData);
+    console.log("dataText", dataText)
+    if (!dataText) return null;
+
+    const prompt = createPrompt(dataText);
+
+    const res = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer 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",
+        },
+        body: JSON.stringify({
+          model: "llama-3.1-8b-instant",
+          messages: [
+            {
+              role: "system",
+              content: "You are an ERP dashboard assistant."
+            },
+            {
+              role: "user",
+              content: prompt
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 40
+        })
+      }
+    );
+
+    const json = await res.json();
+
+    console.log("AI RESPONSE", json);
+
+    const message =
+      json?.choices?.[0]?.message?.content?.replace(/"/g, "") || "";
+
+    return message;
+
+  } catch (error) {
+
+    console.log("AI ERROR", error);
+
+    return null;
+
+  }
+};

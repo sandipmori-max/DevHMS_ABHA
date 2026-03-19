@@ -66,6 +66,7 @@ export const styles = StyleSheet.create({
     paddingRight: 12,
   },
   accountName: {
+    width:'90%',
     fontSize: 16,
     fontWeight: '600',
     color: ERP_COLOR_CODE.ERP_333,

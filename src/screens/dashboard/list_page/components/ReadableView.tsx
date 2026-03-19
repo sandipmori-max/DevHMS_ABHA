@@ -246,7 +246,7 @@ const ReadableView = ({
               justifyContent: 'center',
               alignItems: 'center',
               marginRight: 12,
-              borderWidth: 1,
+              borderWidth: 0.4,
               borderColor: ERP_COLOR_CODE.ERP_999
             }}
           >

@@ -97,54 +97,53 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
     );
     return () => subscription.remove();
   }, []);
-  
+
   const openCamera = (setFieldValue, handleSubmit) => {
     setLocationLoading(false);
-          setBlockAction(false);
+    setBlockAction(false);
     navigation.navigate("FaceCameraScreen", {
       onCapture: async (photoPath) => {
         console.log("photoPath", photoPath);
-          
+
         setTimeout(async () => {
-  try {
-        setLocationLoading(true);
-          setBlockAction(true);
-          if (!photoPath) {
+          try {
+            setLocationLoading(true);
+            setBlockAction(true);
+            if (!photoPath) {
+              setLocationLoading(false);
+              setBlockAction(false);
+              return;
+            }
+
+            const photoUri = "file://" + photoPath;
+
+            console.log("---------------------12", photoUri);
+
+            const base64 = await RNFS.readFile(photoPath, "base64");
+
+            if (base64) {
+              setFieldValue(
+                "imageBase64",
+                `${
+                  resData?.success === 1 || resData?.success === "1"
+                    ? "punchOut.jpeg"
+                    : "punchIn.jpeg"
+                }; data:image/jpeg;base64,${base64}`,
+              );
+            }
+
+            setStatusImage(photoUri);
+
+            setTimeout(() => {
+              handleSubmit();
+            }, 1000);
+          } catch (error) {
+            console.log("---------------------11", error);
+
             setLocationLoading(false);
             setBlockAction(false);
-            return;
           }
-        
-          const photoUri = "file://" + photoPath;
-
-          console.log("---------------------12", photoUri);
-
-          const base64 = await RNFS.readFile(photoPath, "base64");
-
-          if (base64) {
-            setFieldValue(
-              "imageBase64",
-              `${
-                resData?.success === 1 || resData?.success === "1"
-                  ? "punchOut.jpeg"
-                  : "punchIn.jpeg"
-              }; data:image/jpeg;base64,${base64}`,
-            );
-          }
-
-          setStatusImage(photoUri);
-
-          setTimeout(() => {
-            handleSubmit();
-          }, 1000);
-        } catch (error) {
-          console.log("---------------------11", error);
-
-          setLocationLoading(false);
-          setBlockAction(false);
-        }
-        }, 300)
-      
+        }, 300);
       },
     });
   };

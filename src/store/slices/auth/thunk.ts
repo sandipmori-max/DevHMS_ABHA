@@ -99,7 +99,7 @@ export const loginUserThunk = createAsyncThunk(
           user_credentials?.user ||
           company_code
         ).toUpperCase()}&background=007AFF&color=fff` || "",
-        accountType: 'erp',
+        accountType: '',
         token: token || "",
         tokenValidTill: tokenValidTill || "",
         emailid: response?.emailid || '',

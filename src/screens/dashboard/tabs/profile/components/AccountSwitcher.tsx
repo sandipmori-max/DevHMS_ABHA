@@ -40,6 +40,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
   const [showModal, setShowModal] = useState(false);
   const [img, setImg] = useState('')
   const { accounts, activeAccountId, user } = useAppSelector(state => state?.auth);
+  console.log("user", user);
   const [alertVisible, setAlertVisible] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<any>(null);
   const [alertConfig, setAlertConfig] = useState({
@@ -243,19 +244,20 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({ visible, onClose, onA
                   priority: FastImage.priority.normal,
                   cache: FastImage.cacheControl.web,
                 }}
+                  
               />
             </TouchableOpacity>
 
             <View style={styles.accountInfo}>
               <TranslatedText 
-              text={firstLetterUpperCase(item?.user?.name || '')}
+              text={item?.user?.companyName}
               numberOfLines={1}
               style={[styles.accountName, isActive && styles.activeText, theme === 'dark' && { color: 'white' }]}>
               
               </TranslatedText>
               <TranslatedText
                numberOfLines={1}
-               text={item?.user?.companyName}
+               text={firstLetterUpperCase(item?.user?.name || '') }
                 style={[styles.accountEmail, isActive && styles.activeText, theme === 'dark' && { color: 'white' }]}>
                 
               </TranslatedText>

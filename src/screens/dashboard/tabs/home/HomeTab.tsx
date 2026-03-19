@@ -1,24 +1,46 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
-import { styles } from './home_style';
-import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
-import FullViewLoader from '../../../../components/loader/FullViewLoader';
-import NoData from '../../../../components/no_data/NoData';
-import ERPIcon from '../../../../components/icon/ERPIcon';
-import { getERPAppConfigMenuThunk, getERPDashboardThunk, getERPMenuThunk, getERPPageThunk } from '../../../../store/slices/auth/thunk';
-import ErrorMessage from '../../../../components/error/Error';
-import { ERP_COLOR_CODE } from '../../../../utils/constants';
-import MaterialIcons from '@react-native-vector-icons/material-icons';
-import Footer from './Footer';
-import PieChartSection from './chartData';
+import { styles } from "./home_style";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import FullViewLoader from "../../../../components/loader/FullViewLoader";
+import NoData from "../../../../components/no_data/NoData";
+import ERPIcon from "../../../../components/icon/ERPIcon";
+import {
+  getERPDashboardThunk,
+  getERPMenuThunk,
+  getERPPageThunk,
+} from "../../../../store/slices/auth/thunk";
+import ErrorMessage from "../../../../components/error/Error";
+import { ERP_COLOR_CODE } from "../../../../utils/constants";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
+import Footer from "./Footer";
+import PieChartSection from "./chartData";
 
-import { formatDateForAPI, parseCustomDate } from '../../../../utils/helpers';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import {
+  formatDateForAPI,
+  getDashboardAI,
+  parseCustomDate,
+} from "../../../../utils/helpers";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
-import CustomPicker from '../../page/components/CustomPicker';
-import { setActiveDashboardBranch, setActiveDashboardBranchId, setActiveDashboardFromDate, setActiveDashboardToDate, setActiveDashboardType, setActiveDashboardTypeId, setDashboardLoading } from '../../../../store/slices/auth/authSlice';
+import CustomPicker from "../../page/components/CustomPicker";
+import {
+  setActiveDashboardBranch,
+  setActiveDashboardBranchId,
+  setActiveDashboardFromDate,
+  setActiveDashboardToDate,
+  setActiveDashboardType,
+  setActiveDashboardTypeId,
+  setDashboardLoading,
+} from "../../../../store/slices/auth/authSlice";
 import {
   View,
   Text,
@@ -30,96 +52,135 @@ import {
   TextInput,
   Alert,
   Modal,
-  Pressable,
   Platform,
-} from 'react-native';
-import { ERP_ICON } from '../../../../assets';
-import { translateSingle } from '../../../../services/api/utils';
-import TranslatedText from './TranslatedText';
-// import { NativeModules } from 'react-native';
+} from "react-native";
+import TranslatedText from "./TranslatedText";
+import GreetingBottomSheet from "./GreetingBottomSheet";
 
-const { width } = Dimensions.get('screen');
+const { width } = Dimensions.get("screen");
 
 const hasHtmlContent = (str: string) => {
-  if (!str || typeof str !== 'string') return false;
+  if (!str || typeof str !== "string") return false;
   return /<([a-z]+)([^>]*?)>/i.test(str);
 };
 
-const HomeScreen = () => {
+const HomeScreen = ({ setHideTab, hideTab }) => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
   const [controls, setControls] = useState<any[]>([]);
   const [controlsLoader, setControlsLoader] = useState<any>(false);
 
-  const { dashboard, isDashboardLoading, isAuthenticated, error, user, attendanceDone } = useAppSelector(
-    state => state.auth,
-  );
+  const [aiMessage, setAiMessage] = useState("");
+  const [visibleAI, setVisibleAI] = useState(false);
+  const [showFull, setShowFull] = useState(false);
 
+  const {
+    dashboard,
+    isDashboardLoading,
+    isAuthenticated,
+    error,
+    user,
+    attendanceDone,
+  } = useAppSelector((state) => state.auth);
 
+  const runAI = async () => {
+    try {
+      const message = await getDashboardAI(dashboard);
+
+      if (!message) return;
+      console.log("message", message);
+      setAiMessage(message);
+      setVisibleAI(true);
+    } catch (e) {
+      if (e?.message?.includes("Quota")) {
+        setTimeout(() => {
+          runAI();
+        }, 60000);
+      }
+    }
+  };
+
+  const aiCalled = useRef(false);
+
+  useEffect(() => {
+    if (!dashboard || aiCalled.current) return;
+    const timer = setTimeout(() => {
+      runAI();
+      aiCalled.current = true;
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [dashboard]);
   const [loadingPageId, setLoadingPageId] = useState<any>(null);
   const [isRefresh, setIsRefresh] = useState<boolean>(false);
-  const [fromDate, setFromDate] = useState<string>('');
-  const [toDate, setToDate] = useState<string>('');
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
 
-  const auth = useAppSelector(state => state?.auth);
+  const auth = useAppSelector((state) => state?.auth);
 
   const [showDatePicker, setShowDatePicker] = useState<null | {
-    type: 'from' | 'to';
+    type: "from" | "to";
     show: boolean;
   }>(null);
 
   const [visible, setVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const slideAnim = useRef(new Animated.Value(0)).current;
 
-  const theme = useAppSelector(state => state?.theme.mode);
+  const theme = useAppSelector((state) => state?.theme.mode);
   const [actionLoader, setActionLoader] = useState(false);
   const [isHorizontal, setIsHorizontal] = useState(false);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
 
   const [showSearch, setShowSearch] = useState(false);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [filteredDashboard, setFilteredDashboard] = useState(dashboard);
   const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const translateX = useRef(new Animated.Value(width)).current;
 
-  const htmlItems = filteredDashboard.filter(item => hasHtmlContent(item.data));
-  const emptyItems = filteredDashboard.filter(item => item?.data === '');
+  const htmlItems = filteredDashboard.filter((item) =>
+    hasHtmlContent(item.data),
+  );
+  const emptyItems = filteredDashboard.filter((item) => item?.data === "");
 
-  const textItems = filteredDashboard.filter(item => item.data && !hasHtmlContent(item.data));
+  const textItems = filteredDashboard.filter(
+    (item) => item.data && !hasHtmlContent(item.data),
+  );
 
-  console.log("filteredDashboard", filteredDashboard)
   useEffect(() => {
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
+  console.log("filteredDashboard", dashboard);
 
     searchTimeout.current = setTimeout(() => {
-      const filtered = dashboard.filter(item =>
-        (item?.name || '').toLowerCase().includes(searchText?.toLowerCase()),
+      const filtered = dashboard.filter((item) => {
+      const text = searchText?.toLowerCase();
+      return (
+        (item?.name || "").toLowerCase().includes(text) ||
+        (item?.title || "").toLowerCase().includes(text) ||
+        (item?.data || "").toLowerCase().includes(text)
       );
+    });
+  console.log("--------------------------", filtered);
+
       setFilteredDashboard(filtered);
     }, 300);
 
     return () => {
-
       if (searchTimeout.current) clearTimeout(searchTimeout.current);
     };
   }, [searchText, dashboard]);
 
   useFocusEffect(
     useCallback(() => {
-      // NativeModules.OrientationModule.enableLandscape();
-      dispatch(setActiveDashboardBranchId(''))
-      dispatch(setActiveDashboardBranch(''))
-      dispatch(setActiveDashboardType(''))
-      dispatch(setActiveDashboardTypeId(''))
-      setIsFilterVisible(false)
-      setIsHorizontal(false)
-      return () => {
-        // NativeModules.OrientationModule.disableLandscape();
-      };
-    }, [isAuthenticated, navigation])
+      dispatch(setActiveDashboardBranchId(""));
+      dispatch(setActiveDashboardBranch(""));
+      dispatch(setActiveDashboardType(""));
+      dispatch(setActiveDashboardTypeId(""));
+      setIsFilterVisible(false);
+      setIsHorizontal(false);
+      return () => {};
+    }, [isAuthenticated, navigation]),
   );
 
   useEffect(() => {
@@ -132,26 +193,31 @@ const HomeScreen = () => {
     ).start();
   }, []);
 
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: {
-        backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
-
+        backgroundColor:
+          theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
       },
-      headerBackTitle: '',
-      headerTintColor: '#fff',
+      headerBackTitle: "",
+      headerTintColor: "#fff",
       headerTitle: () =>
         showSearch ? (
-          <View style={{ width: width - 70, flexDirection: 'row', alignItems: 'center' }}>
+          <View
+            style={{
+              width: width - 70,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
             <TextInput
               value={searchText}
               onChangeText={setSearchText}
               autoFocus={true}
-              placeholder={t('text83')}
+              placeholder={t("text83")}
               style={{
                 flex: 1,
-                backgroundColor: '#f0f0f0',
+                backgroundColor: "#f0f0f0",
                 borderRadius: 8,
                 paddingHorizontal: 12,
                 height: 36,
@@ -160,10 +226,10 @@ const HomeScreen = () => {
             <TouchableOpacity
               onPress={() => {
                 setShowSearch(false);
-                setSearchText('');
+                setSearchText("");
               }}
             >
-              <MaterialIcons  
+              <MaterialIcons
                 name="clear"
                 size={24}
                 color={ERP_COLOR_CODE.ERP_WHITE}
@@ -172,53 +238,84 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
         ) : (
-          <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>
-            {t('text84')}
+          <Text
+            numberOfLines={1}
+            style={{
+              color: "#fff",
+              fontSize: 18,
+              fontWeight: "600",
+            }}
+          >
+            {showFull ? t("text84") : user?.companyName}
           </Text>
         ),
       headerRight: () => (
         <>
           {!showSearch && (
             <>
-              <ERPIcon
-                name="refresh"
-                onPress={() => {
-                  setControlsLoader(true);
-                  setActionLoader(true);
-                  setIsRefresh(!isRefresh);
-                  dispatch(getERPDashboardThunk({ branch: auth.dashboardBranch.trim(), type: auth.dashboardType.trim(), fd: auth.dashboardFromDate.trim(), td: auth.dashboardToDate.trim() }));
-                  const timer = setTimeout(() => {
-                    setActionLoader(false);
-                    setControlsLoader(false);
-                    dispatch(setDashboardLoading(false));
-                  }, 3000);
-                  return () => clearTimeout(timer);
-
-                }}
-                isLoading={actionLoader}
-              />
-              {dashboard.length > 5 && (
-                <ERPIcon name="search" onPress={() => setShowSearch(true)} />
+              {showFull && (
+                <>
+                  <ERPIcon
+                    name="refresh"
+                    onPress={() => {
+                      setControlsLoader(true);
+                      setActionLoader(true);
+                      setIsRefresh(!isRefresh);
+                      dispatch(
+                        getERPDashboardThunk({
+                          branch: auth.dashboardBranch.trim(),
+                          type: auth.dashboardType.trim(),
+                          fd: auth.dashboardFromDate.trim(),
+                          td: auth.dashboardToDate.trim(),
+                        }),
+                      );
+                      const timer = setTimeout(() => {
+                        setActionLoader(false);
+                        setControlsLoader(false);
+                        dispatch(setDashboardLoading(false));
+                      }, 3000);
+                      return () => clearTimeout(timer);
+                    }}
+                    isLoading={actionLoader}
+                  />
+                  {dashboard.length > 5 && (
+                    <ERPIcon
+                      name="search"
+                      onPress={() => setShowSearch(true)}
+                    />
+                  )}
+                  <ERPIcon
+                    name={!isHorizontal ? "list" : "apps"}
+                    onPress={() => setIsHorizontal((prev) => !prev)}
+                  />
+                  <ERPIcon
+                    name={isFilterVisible ? "close" : "filter-alt"}
+                    onPress={() => setIsFilterVisible((prev) => !prev)}
+                  />
+                  {attendanceDone && (
+                    <ERPIcon
+                      color={"green"}
+                      name={"location-on"}
+                      onPress={() => {
+                        navigation.navigate("LocationTrack");
+                      }}
+                    />
+                  )}
+                  <ERPIcon
+                    name={!hideTab ? "fullscreen" : "fullscreen-exit"}
+                    onPress={() => {
+                      setHideTab(!hideTab);
+                    }}
+                  />
+                </>
               )}
               <ERPIcon
-                name={!isHorizontal ? 'list' : 'apps'}
-                onPress={() => setIsHorizontal(prev => !prev)}
+                name={!showFull ? "more-vert" : "close"}
+                onPress={() => {
+                  setIsFilterVisible(false);
+                  setShowFull(!showFull);
+                }}
               />
-              <ERPIcon
-                name={isFilterVisible ? 'close' : 'filter-alt'}
-                onPress={() => setIsFilterVisible(prev => !prev)}
-              />
-              {
-                attendanceDone &&   
-                <ERPIcon
-                  color={attendanceDone ? 'green' : 'red'}
-                  name={'location-on'}
-                  onPress={() => {
-                    navigation.navigate("LocationTrack")
-                  }}
-              />
-              }
-            
             </>
           )}
         </>
@@ -226,22 +323,46 @@ const HomeScreen = () => {
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => navigation?.openDrawer()}
-          style={{ height: 46, width: 46, justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-          <ERPIcon extSize={24} isMenu={true} name="menu" onPress={() => navigation?.openDrawer()} />
+          style={{
+            height: 46,
+            width: 46,
+            justifyContent: "center",
+            alignContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <ERPIcon
+            extSize={24}
+            isMenu={true}
+            name="menu"
+            onPress={() => navigation?.openDrawer()}
+          />
         </TouchableOpacity>
       ),
     });
-  }, [actionLoader,attendanceDone, navigation, isHorizontal, isRefresh, showSearch, dashboard, searchText, filteredDashboard, isFilterVisible]);
+  }, [
+    showFull,
+    actionLoader,
+    attendanceDone,
+    navigation,
+    isHorizontal,
+    isRefresh,
+    showSearch,
+    dashboard,
+    searchText,
+    filteredDashboard,
+    isFilterVisible,
+    hideTab,
+  ]);
 
   useFocusEffect(
     useCallback(() => {
-
       let timer;
 
       if (isAuthenticated) {
         setLoadingPageId(true);
         // dispatch(getERPAppConfigMenuThunk());
-        const params = { branch: '', type: '', fd: '', td: '' }
+        const params = { branch: "", type: "", fd: "", td: "" };
         dispatch(getERPDashboardThunk(params));
         dispatch(getERPMenuThunk());
         timer = setTimeout(() => {
@@ -254,69 +375,33 @@ const HomeScreen = () => {
           clearTimeout(timer);
         }
       };
-    }, [isAuthenticated, dispatch])
+    }, [isAuthenticated, dispatch]),
   );
 
-  const dummyUpcomingEvents = [];
-
-  const dummyUpcomingBirthdays = [
-    { id: 'b1', name: 'Amit Sharma', date: '28 sep 2025', type: 'Up-coming-Birthday' },
+  const accentColors = [
+    "#4C6FFF",
+    "#00C2A8",
+    "#FFB020",
+    "#FF6B6B",
+    "#9B59B6",
+    "#20C997",
   ];
-
-  const dummyUpcomingAnniversaries = [
-    { id: 'w1', name: 'Rohit & Neha', date: '03 sep 2025', type: 'Up-coming-work-anniversary' },
-  ];
-
-  const todayEvents = [{ id: 't2', date: 'Today', title: 'UX Review', type: 'Event' }];
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const todayBirthdays = [];
-
-  const todayAnniversaries = [];
-
-  const dummyTasks = [
-    {
-      id: '1',
-      title: 'Fix login bug',
-      description: 'Check the API response and fix login issue',
-      assignedTo: 'jr1',
-      createdBy: 'senior1',
-      status: 'pending',
-      updatedAt: '2025-09-10T10:00:00Z',
-    },
-  ];
-  const getInitials = (text?: string) => {
-    if (!text) return '?';
-    const trimmed = text?.trim();
-    if (trimmed?.length === 0) return '?';
-    return trimmed.slice(0, 2).toUpperCase();
-  };
-
-  const accentColors = ['#4C6FFF', '#00C2A8', '#FFB020', '#FF6B6B', '#9B59B6', '#20C997'];
 
   const pieChartData = filteredDashboard
-    .filter(item => {
+    .filter((item) => {
       const num = Number(item?.data);
-      return item?.title !== 'Attendance Code' && item?.data !== '' && !isNaN(num) && num > 0;
+      return (
+        item?.title !== "Attendance Code" &&
+        item?.data !== "" &&
+        !isNaN(num) &&
+        num > 0
+      );
     })
     .map((item, index) => ({
       value: Number(item?.data),
       color: accentColors[index % accentColors.length],
       text: item?.title,
     }));
-
-  const openSheet = () => {
-    setVisible(true);
-  };
-
-  const closeSheet = () => {
-    Animated.timing(slideAnim, {
-      toValue: 0,
-      duration: 250,
-      useNativeDriver: true,
-    }).start(() => setVisible(false));
-  };
 
   useEffect(() => {
     if (visible) {
@@ -328,8 +413,12 @@ const HomeScreen = () => {
     }
   }, [visible]);
 
-
-  const renderDashboardItem = ({ item, index, isFromHtml, isFromMenu }: any) => {
+  const renderDashboardItem = ({
+    item,
+    index,
+    isFromHtml,
+    isFromMenu,
+  }: any) => {
     return (
       <TouchableOpacity
         key={item?.id || index}
@@ -339,27 +428,31 @@ const HomeScreen = () => {
             paddingLeft: 4,
             marginHorizontal: 4,
             borderRadius: 8,
-            width: isFromHtml ? '100%' : isHorizontal ? '100%' : '48%',
+            width: isFromHtml ? "100%" : isHorizontal ? "100%" : "48%",
             flex: 1,
             borderLeftColor: accentColors[index % accentColors.length],
             borderWidth: 1,
             borderLeftWidth: 3,
-            backgroundColor: theme === 'dark' ? 'black' : 'white',
-
+            backgroundColor: theme === "dark" ? "black" : "white",
           },
         ]}
         activeOpacity={0.7}
         onPress={async () => {
-          if (item?.url.includes('.') || item?.url.includes('?') || item?.url.includes('/')) {
-            navigation.navigate('Web', { item });
+          if (
+            item?.url.includes(".") ||
+            item?.url.includes("?") ||
+            item?.url.includes("/")
+          ) {
+            navigation.navigate("Web", { item });
           } else {
-            navigation.navigate('List', { item });
+            navigation.navigate("List", { item });
           }
         }}
       >
         <View
           style={{
-            backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
+            backgroundColor:
+              theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE,
             borderRadius: 8,
           }}
         >
@@ -369,12 +462,17 @@ const HomeScreen = () => {
                 <View
                   style={[
                     styles.iconContainer,
-                    { backgroundColor: accentColors[index % accentColors.length] },
+                    {
+                      backgroundColor:
+                        accentColors[index % accentColors.length],
+                    },
                   ]}
                 >
-                  <MaterialIcons name={item?.image || 'widgets'} color={
-                    'white'
-                  } size={22} />
+                  <MaterialIcons
+                    name={item?.image || "widgets"}
+                    color={"white"}
+                    size={18}
+                  />
                   {/* <Text style={styles.iconText}>{getInitials(item?.name)}</Text> */}
                 </View>
                 <View style={styles.headerTextWrap}>
@@ -403,10 +501,11 @@ const HomeScreen = () => {
                     style={[
                       styles.dashboardItemText,
                       {
-                        color: theme === 'dark' ? 'white' : ERP_COLOR_CODE.ERP_BLACK,
+                        color:
+                          theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_BLACK,
                         flexShrink: 1,
                         includeFontPadding: false,
-                        textAlignVertical: 'top',
+                        textAlignVertical: "top",
                       },
                     ]}
                     numberOfLines={2}
@@ -417,10 +516,21 @@ const HomeScreen = () => {
 
             <View style={{ marginVertical: item.data ? 4 : 0 }}>
               {loadingPageId === (item.id || String(index)) && (
-                <View style={{ marginBottom: 8, flexDirection: 'row', alignItems: 'center' }}>
-                  <ActivityIndicator size="small" color={ERP_COLOR_CODE.ERP_007AFF} />
-                  <Text style={{ marginLeft: 8, color: ERP_COLOR_CODE.ERP_6C757D }}>
-                    {t('text85')}
+                <View
+                  style={{
+                    marginBottom: 8,
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <ActivityIndicator
+                    size="small"
+                    color={ERP_COLOR_CODE.ERP_007AFF}
+                  />
+                  <Text
+                    style={{ marginLeft: 8, color: ERP_COLOR_CODE.ERP_6C757D }}
+                  >
+                    {t("text85")}
                   </Text>
                 </View>
               )}
@@ -433,18 +543,19 @@ const HomeScreen = () => {
                     footer={item?.data}
                     index={index}
                     accentColors={accentColors}
-                    isFromListPage={undefined} />
+                    isFromListPage={undefined}
+                  />
                 </View>
               ) : (
                 <View style={styles.dataContainer}>
                   <Text style={styles.dashboardItemData} numberOfLines={2}>
-                    {'-'}
+                    {"-"}
                   </Text>
                 </View>
               )}
             </View>
             {item?.footer ? (
-              <View style={{ marginTop: 4 }}>
+              <View style={{ marginTop: 1 }}>
                 <Footer
                   textColor={accentColors[index % accentColors.length]}
                   isFromMenu={isFromMenu}
@@ -452,7 +563,8 @@ const HomeScreen = () => {
                   footer={item?.footer}
                   index={index}
                   accentColors={accentColors}
-                  isFromListPage={undefined} />
+                  isFromListPage={undefined}
+                />
               </View>
             ) : (
               <Text
@@ -460,13 +572,15 @@ const HomeScreen = () => {
                   color: accentColors[index % accentColors.length],
                 }}
               >
-                {'-'}
+                {"-"}
               </Text>
             )}
             {item?.footer || item.data ? (
               <> </>
             ) : (
-              <View style={{ height: 12, width: 12, backgroundColor: '' }}></View>
+              <View
+                style={{ height: 12, width: 12, backgroundColor: "" }}
+              ></View>
             )}
           </View>
         </View>
@@ -488,50 +602,39 @@ const HomeScreen = () => {
   }, []);
 
   useEffect(() => {
-    const { fromDate: initialFromDate, toDate: initialToDate } = getCurrentMonthRange();
-
+    const { fromDate: initialFromDate, toDate: initialToDate } =
+      getCurrentMonthRange();
   }, [getCurrentMonthRange]);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const { fromDate: initialFromDate, toDate: initialToDate } = getCurrentMonthRange();
-  //     // fetchListData(initialFromDate, initialToDate);
-  //     return () => { };
-  //   }, [getCurrentMonthRange,]),
-  // );
-
   const handleDateChange = (event: any, selectedDate?: Date) => {
-    if (event?.type === 'dismissed' || !selectedDate) {
+    if (event?.type === "dismissed" || !selectedDate) {
       setShowDatePicker(null);
       return;
     }
     const { type } = showDatePicker!;
     const formattedDate = formatDateForAPI(selectedDate);
 
-    if (type === 'to') {
+    if (type === "to") {
       const today = new Date();
       today.setHours(23, 59, 59, 999);
 
       if (fromDate) {
-        const fromDateObj = new Date(fromDate.split('-').reverse().join('-'));
+        const fromDateObj = new Date(fromDate.split("-").reverse().join("-"));
         if (selectedDate < fromDateObj) {
-          Alert.alert(t('text86'), t('text87'), [
-            { text: t('text88') },
-          ]);
+          Alert.alert(t("text86"), t("text87"), [{ text: t("text88") }]);
           setShowDatePicker(null);
           return;
         }
       }
       setToDate(formattedDate);
-      dispatch(setActiveDashboardToDate(formattedDate))
+      dispatch(setActiveDashboardToDate(formattedDate));
     } else {
-
       setFromDate(formattedDate);
-      dispatch(setActiveDashboardFromDate(formattedDate))
+      dispatch(setActiveDashboardFromDate(formattedDate));
       if (toDate) {
-        const toDateObj = new Date(toDate.split('-').reverse().join('-'));
+        const toDateObj = new Date(toDate.split("-").reverse().join("-"));
         if (selectedDate > toDateObj) {
-          setToDate('');
+          setToDate("");
         }
       }
     }
@@ -542,14 +645,16 @@ const HomeScreen = () => {
     try {
       setControlsLoader(true);
       const parsed = await dispatch(
-        getERPPageThunk({ page: 'Dashboard', id: "" }),
+        getERPPageThunk({ page: "Dashboard", id: "" }),
       ).unwrap();
-      const pageControls = Array.isArray(parsed?.pagectl) ? parsed?.pagectl : [];
-      const normalizedControls = pageControls?.map(c => ({
+      const pageControls = Array.isArray(parsed?.pagectl)
+        ? parsed?.pagectl
+        : [];
+      const normalizedControls = pageControls?.map((c) => ({
         ...c,
-        disabled: String(c?.disabled ?? '0'),
-        visible: String(c?.visible ?? '1'),
-        mandatory: String(c?.mandatory ?? '0'),
+        disabled: String(c?.disabled ?? "0"),
+        visible: String(c?.visible ?? "1"),
+        mandatory: String(c?.mandatory ?? "0"),
       }));
       setControls(normalizedControls);
       setControlsLoader(false);
@@ -566,162 +671,442 @@ const HomeScreen = () => {
     fetchPageData();
   }, []);
 
-
-
   useEffect(() => {
-    dispatch(getERPDashboardThunk({ branch: auth?.dashboardBranch.trim() || "", type: auth?.dashboardType.trim() || "", fd: auth?.dashboardFromDate.trim() || "", td: auth?.dashboardToDate.trim() || "" }));
+    dispatch(
+      getERPDashboardThunk({
+        branch: auth?.dashboardBranch.trim() || "",
+        type: auth?.dashboardType.trim() || "",
+        fd: auth?.dashboardFromDate.trim() || "",
+        td: auth?.dashboardToDate.trim() || "",
+      }),
+    );
     const timer = setTimeout(() => {
       dispatch(setDashboardLoading(false));
     }, 3000);
     return () => clearTimeout(timer);
+  }, [
+    auth.dashboardBranch,
+    auth.dashboardType,
+    auth.dashboardFromDate,
+    auth.dashboardToDate,
+  ]);
 
-  }, [auth.dashboardBranch, auth.dashboardType, auth.dashboardFromDate, auth.dashboardToDate])
-
-  function SmallItem({ left, primary, secondary, type }) {
+  if (isDashboardLoading)
+    return <FullViewLoader isShowTop={theme === "dark" ? false : true} />;
+  if (!actionLoader && filteredDashboard?.length === 0) {
     return (
-      <TouchableOpacity style={[styles.itemRow, theme === 'dark' && {
-        backgroundColor: 'black'
-      }]} activeOpacity={0.8}>
-        <View style={[styles.avatar, {
-          borderWidth: 1,
-          borderColor: 'white'
-        }]}>{left}</View>
-        <View style={styles.itemText}>
-          <Text numberOfLines={1} style={[styles.itemPrimary, theme === 'dark' && {
-            color: 'white'
-          }]}>
-            {primary}
-          </Text>
-          <Text style={[styles.itemType, theme === 'dark' && {
-            color: 'white'
-          }]}>{type}</Text>
+      <View
+        style={{
+          // height: Dimensions.get("screen").height,
+          backgroundColor: theme === "dark" ? "black" : "white",
+        }}
+      >
+        <View
+          style={{
+            height: Dimensions.get("screen").height * 0.75,
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            backgroundColor: theme === "dark" ? "black" : "white",
+          }}
+        >
+          <View
+            style={{
+              backgroundColor:
+                theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+              padding: 12,
+              // width: width,
+              borderBottomRightRadius: 24,
+              borderBottomLeftRadius: 24,
+              borderColor: "white",
+              width: "100%",
+              marginBottom: 10,
+            }}
+          >
+            {showFull && (
+              <Animated.View
+                style={{
+                  justifyContent: "center",
+                  alignContent: "center",
+                  alignItems: "center",
+                  gap: 8,
+                  flexDirection: "row",
+                  // transform: [{ translateX }],
+                }}
+              >
+                <MaterialIcons name="business" size={24} color={"#FFF"} />
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    color: "#FFF",
+                    fontWeight: "600",
+                    fontSize: 16,
+                    maxWidth: 280,
+                  }}
+                >
+                  {user?.companyName || ""}
+                </Text>
+              </Animated.View>
+            )}
+
+            {/* Branch + Type Buttons */}
+            {isFilterVisible && (
+              <>
+                <View
+                  style={[
+                    styles.dateContainer,
+                    {
+                      marginTop: 8,
+                    },
+                  ]}
+                >
+                  {/* Dynamic Render Date Fields */}
+                  {isFilterVisible &&
+                    controls
+                      .filter((x) => x.ctltype === "DATE")
+                      .map((item, index) => (
+                        <View
+                          key={index}
+                          style={[
+                            styles.dateRow,
+                            {
+                              width: "48%",
+                            },
+                          ]}
+                        >
+                          <TouchableOpacity
+                            onPress={() =>
+                              setShowDatePicker({
+                                type: item.field === "fromdate" ? "from" : "to",
+                                show: true,
+                              })
+                            }
+                            style={[
+                              styles.dateButton,
+                              {
+                                width: "98%",
+                              },
+                            ]}
+                          >
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                              }}
+                            >
+                              <MaterialIcons
+                                name="calendar-today"
+                                size={18}
+                                color="#fff"
+                                style={{ marginRight: 8 }}
+                              />
+                              <Text
+                                style={[
+                                  styles.dateButtonText,
+                                  { color: "#FFF" },
+                                ]}
+                              >
+                                {item.field === "fromdate"
+                                  ? fromDate || "Select From Date"
+                                  : toDate || "Select To Date"}
+                              </Text>
+                            </View>
+                          </TouchableOpacity>
+                          {index === 0 && (
+                            <View style={{ height: 1, width: 8 }} />
+                          )}
+                        </View>
+                      ))}
+                </View>
+
+                {isFilterVisible && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: 4,
+                    }}
+                  >
+                    {controls
+                      .filter(
+                        (x) => x.ctltype !== "DATE" && x.field !== "userid",
+                      )
+                      .map((item, index) => (
+                        <>
+                          <View style={{ width: "49.5%" }}>
+                            <CustomPicker
+                              isForceOpen={false}
+                              isValidate={false}
+                              label={item.title}
+                              selectedValue={() => {}}
+                              dtext={
+                                item?.title === "Branch"
+                                  ? auth?.dashboardBranch || item.dtext
+                                  : auth.dashboardType || item?.dtext
+                              }
+                              onValueChange={(i) => {
+                                if (item?.title === "Branch") {
+                                  dispatch(
+                                    setActiveDashboardBranchId(
+                                      i?.value?.toString(),
+                                    ),
+                                  );
+                                  dispatch(setActiveDashboardBranch(i?.name));
+                                } else {
+                                  dispatch(setActiveDashboardType(i?.name));
+                                  dispatch(
+                                    setActiveDashboardTypeId(
+                                      i?.value?.toString(),
+                                    ),
+                                  );
+                                }
+                                setIsFilterVisible(false);
+                              }}
+                              options={[]}
+                              item={item}
+                              errors={null}
+                              formValues={null}
+                            />
+                          </View>
+                        </>
+                      ))}
+                  </View>
+                )}
+              </>
+            )}
+            {showDatePicker?.show && Platform.OS === "ios" && (
+              <Modal transparent animationType="slide" statusBarTranslucent>
+                <View style={styles.overlay}>
+                  <View
+                    style={[
+                      styles.sheet,
+                      theme === "dark" && {
+                        borderWidth: 1,
+                        borderColor: "white",
+                      },
+                    ]}
+                  >
+                    {/* Divider */}
+                    <View
+                      style={[
+                        theme === "dark" && {
+                          overflow: "hidden",
+                          borderColor: "white",
+                        },
+                        {
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          padding: 12,
+                          alignContent: "center",
+                          alignItems: "center",
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={{
+                          color: theme === "dark" ? "white" : "black",
+                        }}
+                      >
+                        {t("text89")}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setShowDatePicker(null);
+                        }}
+                      >
+                        <MaterialIcons name="close" color={"black"} size={24} />
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.divider} />
+
+                    {/* Date Picker */}
+                    <DateTimePicker
+                      value={
+                        showDatePicker.type === "from" && fromDate
+                          ? parseCustomDate(fromDate)
+                          : showDatePicker.type === "to" && toDate
+                          ? parseCustomDate(toDate)
+                          : new Date()
+                      }
+                      themeVariant="light"
+                      mode="date"
+                      display="spinner"
+                      onChange={handleDateChange}
+                    />
+                  </View>
+                </View>
+              </Modal>
+            )}
+
+            {/* Date Picker */}
+            {Platform.OS !== "ios" && showDatePicker?.show && (
+              <DateTimePicker
+                value={
+                  showDatePicker.type === "from" && fromDate
+                    ? parseCustomDate(fromDate)
+                    : showDatePicker.type === "to" && toDate
+                    ? parseCustomDate(toDate)
+                    : new Date()
+                }
+                mode="date"
+                onChange={handleDateChange}
+              />
+            )}
+          </View>
+
+          <NoData isShowTop={false} />
         </View>
-        <View>
-          <Text style={[styles.itemSecondary, theme === 'dark' && {
-            color: 'white'
-          }]}>{secondary}</Text>
-        </View>
-      </TouchableOpacity>
+      </View>
     );
   }
 
-  if (isDashboardLoading) return <FullViewLoader isShowTop={theme === 'dark' ? false : true}/>
-  if (!actionLoader && filteredDashboard?.length === 0) {
-    return <View
+  return (
+    <View
       style={{
-        height: Dimensions.get('screen').height * 0.75,
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%',
-        backgroundColor: theme === 'dark' ? 'black' : 'white',
+        height: Dimensions.get("screen").height,
+        flex: 1,
+        backgroundColor: isDashboardLoading
+          ? "black"
+          : theme === "dark"
+          ? "black"
+          : "white",
       }}
     >
-
       <View
         style={{
-          backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
-          padding: 12,
-          // width: width,
-          borderBottomRightRadius: 24,
-          borderBottomLeftRadius: 24,
-          borderColor: 'white',
-          width: '100%',
-          marginBottom: 10
+          backgroundColor:
+            theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+          padding: !showFull ? 2 : !hideTab ? 12 : 2,
+          borderBottomRightRadius: 8,
+          borderBottomLeftRadius: 8,
         }}
       >
-        <Animated.View
-          style={{
-            justifyContent: 'center',
-            alignContent: 'center',
-            alignItems: 'center',
-            gap: 8,
-            flexDirection: 'row',
-            // transform: [{ translateX }],
-          }}
-        >
-          <MaterialIcons name="business" size={24} color={"#FFF"} />
-          <Text
-            numberOfLines={1}
+        {showFull && !hideTab && (
+          <Animated.View
             style={{
-              color: "#FFF",
-              fontWeight: '600',
-              fontSize: 16,
-              maxWidth: 280,
+              justifyContent: "center",
+              alignContent: "center",
+              alignItems: "center",
+              gap: 8,
+              flexDirection: "row",
+              // transform: [{ translateX }],
             }}
           >
-            {user?.companyName || ''}
-          </Text>
+            <MaterialIcons name="business" size={24} color={"#FFF"} />
+            <TranslatedText
+              numberOfLines={1}
+              style={{
+                color: "#FFF",
+                fontWeight: "600",
+                fontSize: 16,
+                maxWidth: 280,
+              }}
+              text={user?.companyName || ""}
+            ></TranslatedText>
+          </Animated.View>
+        )}
 
-        </Animated.View>
-
-
-        {/* Branch + Type Buttons */}
-        {
-          isFilterVisible && <>
-            <View style={[styles.dateContainer, {
-              marginTop: 8
-            }]}>
-              {/* Dynamic Render Date Fields */}
-              {isFilterVisible && controls
-                .filter((x) => x.ctltype === "DATE")
-                .map((item, index) => (
-                  <View key={index} style={[styles.dateRow, {
-                    width: '48%'
-                  }]}>
-                    <TouchableOpacity
-                      onPress={() =>
-                        setShowDatePicker({ type: item.field === "fromdate" ? "from" : "to", show: true })
-                      }
-                      style={[styles.dateButton, {
-                        width: '98%'
-                      }]}
+        {isFilterVisible && (
+          <>
+            <View
+              style={[
+                styles.dateContainer,
+                {
+                  marginTop: 8,
+                  marginHorizontal: 4,
+                },
+              ]}
+            >
+              {isFilterVisible &&
+                controls
+                  .filter((x) => x.ctltype === "DATE")
+                  .map((item, index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.dateRow,
+                        {
+                          width: "48%",
+                        },
+                      ]}
                     >
-                      <View style={{ flexDirection: "row", alignItems: "center" }}>
-                        <MaterialIcons
-                          name="calendar-today"
-                          size={18}
-                          color="#fff"
-                          style={{ marginRight: 8 }}
-                        />
-                        <Text style={[styles.dateButtonText, { color: "#FFF" }]}>
-                          {item.field === "fromdate"
-                            ? fromDate || "Select From Date"
-                            : toDate || "Select To Date"}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                    {index === 0 && <View style={{ height: 1, width: 8 }} />}
-                  </View>
-                ))}
+                      <TouchableOpacity
+                        onPress={() =>
+                          setShowDatePicker({
+                            type: item.field === "fromdate" ? "from" : "to",
+                            show: true,
+                          })
+                        }
+                        style={[
+                          styles.dateButton,
+                          {
+                            width: "98%",
+                          },
+                        ]}
+                      >
+                        <View
+                          style={{ flexDirection: "row", alignItems: "center" }}
+                        >
+                          <MaterialIcons
+                            name="calendar-today"
+                            size={18}
+                            color="#fff"
+                            style={{ marginRight: 8 }}
+                          />
+                          <TranslatedText
+                            numberOfLines={1}
+                            text={
+                              item.field === "fromdate"
+                                ? fromDate || "Select From Date"
+                                : toDate || "Select To Date"
+                            }
+                            style={[styles.dateButtonText, { color: "#FFF" }]}
+                          ></TranslatedText>
+                        </View>
+                      </TouchableOpacity>
+                      {index === 0 && <View style={{ height: 1, width: 8 }} />}
+                    </View>
+                  ))}
             </View>
 
-            {
-              isFilterVisible &&
-
-
-              <View style={{
-                flexDirection: "row", justifyContent: "space-between", marginTop: 4
-              }}>
-                {
-                  controls
-                    .filter((x) => x.ctltype !== "DATE" && x.field !== 'userid')
-                    .map((item, index) => (<>
-                      <View style={{ width: '49.5%' }}>
+            {isFilterVisible && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginTop: 4,
+                  marginHorizontal: 4,
+                }}
+              >
+                {controls
+                  .filter((x) => x.ctltype !== "DATE" && x.field !== "userid")
+                  .map((item, index) => (
+                    <>
+                      <View style={{ width: "49.5%" }}>
                         <CustomPicker
                           isForceOpen={false}
                           isValidate={false}
                           label={item.title}
-                          selectedValue={() => { }}
-                          dtext={item?.title === 'Branch' ? auth?.dashboardBranch || item.dtext : auth.dashboardType || item?.dtext}
+                          selectedValue={() => {}}
+                          dtext={
+                            item?.title === "Branch"
+                              ? auth?.dashboardBranch || item.dtext
+                              : auth.dashboardType || item?.dtext
+                          }
                           onValueChange={(i) => {
-                            if (item?.title === 'Branch') {
-                              dispatch(setActiveDashboardBranchId(i?.value?.toString()))
-                              dispatch(setActiveDashboardBranch(i?.name))
+                            if (item?.title === "Branch") {
+                              dispatch(
+                                setActiveDashboardBranchId(
+                                  i?.value?.toString(),
+                                ),
+                              );
+                              dispatch(setActiveDashboardBranch(i?.name));
                             } else {
-                              dispatch(setActiveDashboardType(i?.name))
-                              dispatch(setActiveDashboardTypeId(i?.value?.toString()))
+                              dispatch(setActiveDashboardType(i?.name));
+                              dispatch(
+                                setActiveDashboardTypeId(i?.value?.toString()),
+                              );
                             }
-                            setIsFilterVisible(false)
                           }}
                           options={[]}
                           item={item}
@@ -729,38 +1114,54 @@ const HomeScreen = () => {
                           formValues={null}
                         />
                       </View>
-                    </>))
-                }
+                    </>
+                  ))}
               </View>
-            }
+            )}
           </>
-        }
-        {showDatePicker?.show && Platform.OS === 'ios' && (
+        )}
+
+        {showDatePicker?.show && Platform.OS === "ios" && (
           <Modal transparent animationType="slide" statusBarTranslucent>
             <View style={styles.overlay}>
-              <View style={[styles.sheet,
-              theme === 'dark' && {
-                borderWidth: 1,
-                borderColor: 'white'
-              }
-              ]}>
-                {/* Divider */}
-                <View style={[
-                  theme === 'dark' && {
-                    overflow: 'hidden',
-                    borderColor: 'white',
+              <View
+                style={[
+                  styles.sheet,
+                  theme === "dark" && {
+                    borderWidth: 1,
+                    borderColor: "white",
                   },
-                  {
-
-                    flexDirection: 'row', justifyContent: 'space-between', padding: 12, alignContent: "center", alignItems: 'center'
-                  }]}>
-                  <Text style={{
-                    color: theme === 'dark' ? 'white' : 'black'
-                  }}>{t('text89')}</Text>
-                  <TouchableOpacity onPress={() => {
-                    setShowDatePicker(null);
-                  }}>
-                    <MaterialIcons name='close' color={ 'black'} size={24} />
+                ]}
+              >
+                {/* Divider */}
+                <View
+                  style={[
+                    theme === "dark" && {
+                      overflow: "hidden",
+                      borderColor: "white",
+                    },
+                    {
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      padding: 12,
+                      alignContent: "center",
+                      alignItems: "center",
+                    },
+                  ]}
+                >
+                  <Text
+                    style={{
+                      color: theme === "dark" ? "white" : "black",
+                    }}
+                  >
+                    {t("text89")}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setShowDatePicker(null);
+                    }}
+                  >
+                    <MaterialIcons name="close" color={"black"} size={24} />
                   </TouchableOpacity>
                 </View>
                 <View style={styles.divider} />
@@ -771,553 +1172,176 @@ const HomeScreen = () => {
                     showDatePicker.type === "from" && fromDate
                       ? parseCustomDate(fromDate)
                       : showDatePicker.type === "to" && toDate
-                        ? parseCustomDate(toDate)
-                        : new Date()
-                  }
-                  themeVariant="light"
-                  mode="date"
-                  display='spinner'
-                  onChange={handleDateChange}
-
-                />
-              </View>
-            </View>
-          </Modal>
-
-        )}
-
-        {/* Date Picker */}
-        {Platform.OS !== 'ios' && showDatePicker?.show && (
-          <DateTimePicker
-            value={
-              showDatePicker.type === "from" && fromDate
-                ? parseCustomDate(fromDate)
-                : showDatePicker.type === "to" && toDate
-                  ? parseCustomDate(toDate)
-                  : new Date()
-            }
-            mode="date"
-            onChange={handleDateChange}
-          />
-        )}
-      </View>
-
-      <NoData isShowTop = {false} />
-
-    </View>
-  };
-
-  return (
-    <View
-      style={{
-        height: Dimensions.get('screen').height,
-        flex: 1,
-        backgroundColor: isDashboardLoading ? 'black' : theme === 'dark' ? 'black' : 'white'
-      }}
-    >
-
-      <View
-        style={{
-          backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
-          padding: 12,
-          borderBottomRightRadius: 24,
-          borderBottomLeftRadius: 24,
-        }}
-      >
-        <Animated.View
-          style={{
-            justifyContent: 'center',
-            alignContent: 'center',
-            alignItems: 'center',
-            gap: 8,
-            flexDirection: 'row',
-            // transform: [{ translateX }],
-          }}
-        >
-          <MaterialIcons name="business" size={24} color={"#FFF"} />
-          <TranslatedText
-            numberOfLines={1}
-            style={{
-              color: "#FFF",
-              fontWeight: '600',
-              fontSize: 16,
-              maxWidth: 280,
-            }}
-            text={user?.companyName || ''}
-          > 
-          </TranslatedText>
-
-        </Animated.View>
-
-        {
-          isFilterVisible && <>
-            <View style={[styles.dateContainer, {
-              marginTop: 8
-            }]}>
-              {isFilterVisible && controls
-                .filter((x) => x.ctltype === "DATE")
-                .map((item, index) => (
-                  <View key={index} style={[styles.dateRow, {
-                    width: '48%'
-                  }]}>
-                    <TouchableOpacity
-                      onPress={() =>
-                        setShowDatePicker({ type: item.field === "fromdate" ? "from" : "to", show: true })
-                      }
-                      style={[styles.dateButton, {
-                        width: '98%'
-                      }]}
-                    >
-                      <View style={{ flexDirection: "row", alignItems: "center" }}>
-                        <MaterialIcons
-                          name="calendar-today"
-                          size={18}
-                          color="#fff"
-                          style={{ marginRight: 8 }}
-                        />
-                        <TranslatedText
-                        numberOfLines={1}
-                        text={item.field === "fromdate"
-                            ? fromDate || "Select From Date"
-                            : toDate || "Select To Date"}
-                        style={[styles.dateButtonText, { color: "#FFF" }]}>
-                          
-                        </TranslatedText>
-                      </View>
-                    </TouchableOpacity>
-                    {index === 0 && <View style={{ height: 1, width: 8 }} />}
-                  </View>
-                ))}
-            </View>
-
-            {
-              isFilterVisible &&
-              <View style={{
-                flexDirection: "row", justifyContent: "space-between", marginTop: 4
-              }}>
-                {
-                  controls
-                    .filter((x) => x.ctltype !== "DATE" && x.field !== 'userid')
-                    .map((item, index) => (<>
-                      <View style={{ width: '49.5%' }}>
-                        <CustomPicker
-                          isForceOpen={false}
-                          isValidate={false}
-                          label={item.title}
-                          selectedValue={() => { }}
-                          dtext={item?.title === 'Branch' ? auth?.dashboardBranch || item.dtext : auth.dashboardType || item?.dtext}
-                          onValueChange={(i) => {
-                            if (item?.title === 'Branch') {
-                              dispatch(setActiveDashboardBranchId(i?.value?.toString()))
-                              dispatch(setActiveDashboardBranch(i?.name))
-                            } else {
-                              dispatch(setActiveDashboardType(i?.name))
-                              dispatch(setActiveDashboardTypeId(i?.value?.toString()))
-                            }
-                          }}
-                          options={[]}
-                          item={item}
-                          errors={null}
-                          formValues={null}
-                        />
-                      </View>
-                    </>))
-                }
-              </View>
-            }
-          </>
-        }
-
-        {showDatePicker?.show && Platform.OS === 'ios' && (
-          <Modal transparent animationType="slide" statusBarTranslucent>
-            <View style={styles.overlay}>
-              <View style={[styles.sheet,
-              theme === 'dark' && {
-                borderWidth: 1,
-                borderColor: 'white'
-              }
-              ]}>
-                {/* Divider */}
-                <View style={[
-                  theme === 'dark' && {
-                    overflow: 'hidden',
-                    borderColor: 'white',
-                  },
-                  {
-
-                    flexDirection: 'row', justifyContent: 'space-between', padding: 12, alignContent: "center", alignItems: 'center'
-                  }]}>
-                  <Text style={{
-                    color: theme === 'dark' ? 'white' : 'black'
-                  }}>{t('text89')}</Text>
-                  <TouchableOpacity onPress={() => {
-                    setShowDatePicker(null);
-
-
-                  }}>
-                    <MaterialIcons name='close' color={ 'black'} size={24} />
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.divider} />
-
-                {/* Date Picker */}
-                <DateTimePicker
-                  value={
-                    showDatePicker.type === 'from' && fromDate
-                      ? parseCustomDate(fromDate)
-                      : showDatePicker.type === 'to' && toDate
-                        ? parseCustomDate(toDate)
-                        : new Date()
+                      ? parseCustomDate(toDate)
+                      : new Date()
                   }
                   mode="date"
                   display="spinner"
                   is24Hour={false}
                   onChange={handleDateChange}
-                  style={[styles.picker, {
-                    backgroundColor: 'white',
-                  }]}
+                  style={[
+                    styles.picker,
+                    {
+                      backgroundColor: "white",
+                    },
+                  ]}
                 />
               </View>
             </View>
           </Modal>
         )}
 
-        {Platform.OS !== 'ios' && showDatePicker?.show && (
+        {Platform.OS !== "ios" && showDatePicker?.show && (
           <DateTimePicker
             value={
               showDatePicker.type === "from" && fromDate
                 ? parseCustomDate(fromDate)
                 : showDatePicker.type === "to" && toDate
-                  ? parseCustomDate(toDate)
-                  : new Date()
+                ? parseCustomDate(toDate)
+                : new Date()
             }
-            mode='date'
-            display={'spinner'}
+            mode="date"
+            display={"spinner"}
             is24Hour={false}
             onChange={handleDateChange}
-
           />
         )}
       </View>
       <FlatList
-        data={['']}
+        data={[""]}
         showsVerticalScrollIndicator={false}
         renderItem={() => {
-          return (<>
-            {controlsLoader ? (
-              <View
-                style={{
-                  height: Dimensions.get('screen').height * 0.75,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: theme === 'dark' ? 'black' : 'white',
-                }}
-              >
-                <FullViewLoader />
-              </View>
-            ) : error ? (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: theme === 'dark' ? 'black' : 'white',
-                }}
-              >
-                <ErrorMessage message={error} isShowTop ={false} />{' '}
-              </View>
-            ) : controls?.length === 0 && !isDashboardLoading ? (
-              <View
-                style={{
-                  height: Dimensions.get('screen').height,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: theme === 'dark' ? 'black' : 'white',
-                }}
-              >
-                <NoData isShowTop = {false}/>
-              </View>
-            ) : (
-              <View style={{
-                backgroundColor: theme === 'dark' ? 'black' : 'white',
-                flex: 1
-              }}>
-                <>
-                  <Animated.FlatList
-                    showsVerticalScrollIndicator={false}
-                    data={['']}
-                    keyExtractor={(_, i) => i.toString()}
-                    onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
-                      useNativeDriver: true,
-                    })}
-                    scrollEventThrottle={16}
-                    renderItem={() => (
-                      <View
-                        style={{
-                          backgroundColor: theme === 'dark' ? 'black' : 'white',
-                          flex: 1
-                        }}
-                      >
-                        <View>
-                          {pieChartData.length > 0 && (
-                            <PieChartSection pieChartData={pieChartData} navigation={navigation} t={t} />
-                          )}
-                          {pieChartData.length === 0 && <View style={{ marginTop: 12 }} />}
-                        </View>
-                        <View style={styles.dashboardSection}>
-                          <FlatList
-                            key={`${isHorizontal}`}
-                            keyboardShouldPersistTaps="handled"
-                            data={[...textItems, ...emptyItems]}
-                            keyExtractor={(item, index) => index.toString()}
-                            numColumns={isHorizontal ? 1 : 2}
-                            columnWrapperStyle={!isHorizontal ? styles.columnWrapper : undefined}
-                            renderItem={
-                              ({ item, index }) =>
-                                renderDashboardItem({ item, index, isFromHtml: false, isFromMenu: false })
-                            }
-                            showsVerticalScrollIndicator={false}
-                          />
-                        </View>
-
-                        <View style={styles.dashboardSection}>
-                          <FlatList
-                            key={`${isHorizontal}`}
-                            keyboardShouldPersistTaps="handled"
-                            data={htmlItems}
-                            keyExtractor={(item, index) => index.toString()}
-                            renderItem={
-                              ({ item, index }) =>
-                                renderDashboardItem({ item, index, isFromHtml: true, isFromMenu: true })
-                            }
-                            showsVerticalScrollIndicator={false}
-                          />
-                        </View>
-                        {/* <View>
+          return (
+            <>
+              {controlsLoader ? (
+                <View
+                  style={{
+                    height: Dimensions.get("screen").height * 0.75,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: theme === "dark" ? "black" : "white",
+                  }}
+                >
+                  <FullViewLoader />
+                </View>
+              ) : error ? (
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: theme === "dark" ? "black" : "white",
+                  }}
+                >
+                  <ErrorMessage message={error} isShowTop={false} />{" "}
+                </View>
+              ) : controls?.length === 0 && !isDashboardLoading ? (
+                <View
+                  style={{
+                    height: Dimensions.get("screen").height,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: theme === "dark" ? "black" : "white",
+                  }}
+                >
+                  <NoData isShowTop={false} />
+                </View>
+              ) : (
+                <View
+                  style={{
+                    backgroundColor: theme === "dark" ? "black" : "white",
+                    flex: 1,
+                  }}
+                >
+                  <>
                     <Animated.FlatList
                       showsVerticalScrollIndicator={false}
-                      data={['']}
+                      data={[""]}
                       keyExtractor={(_, i) => i.toString()}
-                      onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
-                        useNativeDriver: true,
-                      })}
+                      onScroll={Animated.event(
+                        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                        {
+                          useNativeDriver: true,
+                        },
+                      )}
                       scrollEventThrottle={16}
                       renderItem={() => (
-                        <View>
-
-                          <View style={[styles.grid,
-
-                          ]}>
-                            <View style={[styles.card, {
-
-                              backgroundColor: theme === 'dark' ? 'black' : 'white'
-
-                            }]}>
-                              <View style={{ flexDirection: 'row', marginVertical: 8, gap: 6 }}>
-                                <MaterialIcons
-                                  size={18}
-                                  color={theme === 'dark' ? 'white' : 'black'}
-                                  name="emoji-events"
-                                />
-                                <Text style={[styles.cardTitle, {
-                                  color: theme === 'dark' ? 'white' : 'black'
-                                }]}>Events</Text>
-                              </View>
-                              <FlatList
-                                data={todayEvents}
-                                keyExtractor={i => i.id}
-                                scrollEnabled={false}
-                                renderItem={({ item }) => (
-                                  <SmallItem
-                                    left={<Text style={[styles.avatarText, {
-                                      color: 'white'
-                                    }]}>T</Text>}
-                                    primary={item.title}
-                                    secondary={item.date}
-                                    type={item?.type}
-                                  />
-                                )}
-                              />
-
-                              <FlatList
-                                key={`${isHorizontal}`}
-                                data={dummyUpcomingEvents}
-                                keyExtractor={i => i.id}
-                                scrollEnabled={false}
-                                renderItem={({ item }) => (
-                                  <SmallItem
-                                    left={<Text style={[styles.avatarText, {
-                                      color: 'white'
-                                    }]}>E</Text>}
-                                    primary={item.title}
-                                    secondary={item.date}
-                                    type={item?.type}
-                                  />
-                                )}
-                              />
-                            </View>
-
-                            <View style={[styles.card, {
-                              backgroundColor: theme === 'dark' ? 'black' : 'white'
-
-                            }]}>
-                              <View style={{ flexDirection: 'row', marginVertical: 8, gap: 6 }}>
-                                <MaterialIcons
-                                  size={18}
-                                  color={theme === 'dark' ? 'white' : 'black'}
-                                  name="celebration"
-                                />
-                                <Text style={[styles.cardTitle,
-
-                                {
-                                  color: theme === 'dark' ? 'white' : 'black'
-                                }
-                                ]}>Birthday & Work-anniversary</Text>
-                              </View>
-                              <FlatList
-                                data={todayBirthdays}
-                                keyExtractor={i => i.id}
-                                scrollEnabled={false}
-                                renderItem={({ item }) => (
-                                  <SmallItem
-                                    left={
-                                      <Text style={[styles.avatarText, {
-                                        color: 'white'
-                                      }]}>
-                                        {item.name
-                                          .split(' ')
-                                          .map(n => n[0])
-                                          .slice(0, 2)
-                                          .join('')}
-                                      </Text>
-                                    }
-                                    primary={item.name}
-                                    secondary={item.date}
-                                    type={item?.type}
-                                  />
-                                )}
-                              />
-
-                              <FlatList
-                                data={dummyUpcomingBirthdays}
-                                keyExtractor={i => i.id}
-                                scrollEnabled={false}
-                                renderItem={({ item }) => (
-                                  <SmallItem
-                                    left={
-                                      <Text style={[styles.avatarText, {
-                                        color: 'white'
-                                      }]}>
-                                        {item.name
-                                          .split(' ')
-                                          .map(n => n[0])
-                                          .slice(0, 2)
-                                          .join('')}
-                                      </Text>
-                                    }
-                                    primary={item.name}
-                                    secondary={item.date}
-                                    type={item?.type}
-                                  />
-                                )}
-                              />
-                              <FlatList
-                                data={todayAnniversaries}
-                                keyExtractor={i => i.id}
-                                scrollEnabled={false}
-                                renderItem={({ item }) => (
-                                  <SmallItem
-                                    left={<Text style={[styles.avatarText, {
-                                      color: 'white'
-                                    }]}>A</Text>}
-                                    primary={item.name}
-                                    secondary={item.date}
-                                    type={item?.type}
-                                  />
-                                )}
-                              />
-
-                              <FlatList
-                                data={dummyUpcomingAnniversaries}
-                                keyExtractor={i => i.id}
-                                scrollEnabled={false}
-                                renderItem={({ item }) => (
-                                  <SmallItem
-                                    left={<Text style={[styles.avatarText, {
-                                      color: 'white',
-                                    }]}>W</Text>}
-                                    primary={item.name}
-                                    secondary={item.date}
-                                    type={item?.type}
-                                  />
-                                )}
-                              />
-                            </View>
-                          </View>
+                        <View
+                          style={{
+                            backgroundColor:
+                              theme === "dark" ? "black" : "white",
+                            flex: 1,
+                          }}
+                        >
                           <View>
-                            <View
-                              style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                marginHorizontal: 12,
-                                marginVertical: 8,
-                              }}
-                            >
-                              <View style={{ flexDirection: 'row', gap: 6 }}>
-                                <MaterialIcons
-                                  size={18}
-                                  color={ERP_COLOR_CODE.ERP_APP_COLOR}
-                                  name="pending-actions"
-                                />
-                                <Text style={{ fontSize: 16, fontWeight: '700' }}>My Pending Tasks</Text>
-                              </View>
-
-                              <TouchableOpacity
-                                onPress={() => {
-                                  navigation.navigate('Tasks', { isFromViewAll: true });
-                                }}
-                              >
-                                <Text style={{ color: ERP_COLOR_CODE.ERP_BORDER_LINE, fontSize: 12 }}>
-                                  View all
-                                </Text>
-                              </TouchableOpacity>
-                            </View>
-                            <TaskListScreen
-                              tasks={dummyTasks}
-                              onSelectTask={task => {
-                                setSelectedTask(task);
-                                setModalVisible(true);
-                              }}
-                              showPicker={undefined}
-                              showFilter={undefined}
+                            {pieChartData.length > 0 && (
+                              <PieChartSection
+                                pieChartData={pieChartData}
+                                navigation={navigation}
+                                t={t}
+                              />
+                            )}
+                            {pieChartData.length === 0 && (
+                              <View style={{ marginTop: 12 }} />
+                            )}
+                          </View>
+                          <View style={styles.dashboardSection}>
+                            <FlatList
+                              key={`${isHorizontal}`}
+                              keyboardShouldPersistTaps="handled"
+                              data={[...textItems, ...emptyItems]}
+                              keyExtractor={(item, index) => index.toString()}
+                              numColumns={isHorizontal ? 1 : 2}
+                              columnWrapperStyle={
+                                !isHorizontal ? styles.columnWrapper : undefined
+                              }
+                              renderItem={({ item, index }) =>
+                                renderDashboardItem({
+                                  item,
+                                  index,
+                                  isFromHtml: false,
+                                  isFromMenu: false,
+                                })
+                              }
+                              showsVerticalScrollIndicator={false}
                             />
                           </View>
 
-                          {selectedTask && (
-                            <TaskDetailsBottomSheet
-                              visible={modalVisible}
-                              task={selectedTask}
-                              role="junior"
-                              onClose={() => setModalVisible(false)}
-                              onUpdate={updatedTask => {
-                                setModalVisible(false);
-                              }}
+                          <View style={[styles.dashboardSection, {
+                            marginLeft: 2,
+                            marginRight: 8
+                          }]}>
+                            <FlatList
+                              key={`${isHorizontal}`}
+                              keyboardShouldPersistTaps="handled"
+                              data={htmlItems}
+                              keyExtractor={(item, index) => index.toString()}
+                              renderItem={({ item, index }) =>
+                                renderDashboardItem({
+                                  item,
+                                  index,
+                                  isFromHtml: true,
+                                  isFromMenu: true,
+                                })
+                              }
+                              showsVerticalScrollIndicator={false}
                             />
-                          )}
-                          <View style={{ height: 100, width: 100 }} />
+                          </View>
                         </View>
                       )}
                     />
-                  </View> */}
-                      </View>
-                    )}
-                  />
-                </>
-              </View>
-            )}
-          </>
-          )
+                  </>
+                </View>
+              )}
+            </>
+          );
         }}
+      />
+
+      <GreetingBottomSheet
+        visible={visibleAI}
+        message={aiMessage}
+        onClose={() => setVisibleAI(false)}
       />
     </View>
   );

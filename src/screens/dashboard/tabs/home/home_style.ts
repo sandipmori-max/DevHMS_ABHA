@@ -172,7 +172,7 @@ export const styles = StyleSheet.create({
 
   dashboardSection: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 4,
     paddingTop: 0,
   },
 
@@ -184,7 +184,7 @@ export const styles = StyleSheet.create({
   },
   dashboardItem: {
     width: itemWidth,
-    marginBottom: 16,
+    marginBottom: 6,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     borderRadius: 16,
     borderColor: ERP_COLOR_CODE.ERP_BORDER,
@@ -202,9 +202,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+    width: 32,
+    height: 32,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -219,10 +219,9 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   dashboardItemText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: ERP_COLOR_CODE.ERP_1A1A1A,
-    lineHeight: 22,
   },
   dashboardItemSubtitle: {
     fontSize: 12,

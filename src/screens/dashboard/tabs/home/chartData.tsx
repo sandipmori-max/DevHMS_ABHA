@@ -1,9 +1,16 @@
-import React, { useMemo } from 'react';
-import { View, Text, FlatList, Dimensions, TouchableOpacity } from 'react-native';
-import { PieChart } from 'react-native-gifted-charts';
-import { useAppSelector } from '../../../../store/hooks';
-import { DARK_COLOR } from '../../../../utils/constants';
-import TranslatedText from './TranslatedText';
+import React, { useMemo, useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
+import { PieChart } from "react-native-gifted-charts";
+import { useAppSelector } from "../../../../store/hooks";
+import { ERP_COLOR_CODE } from "../../../../utils/constants";
+import TranslatedText from "./TranslatedText";
+import DashboardListSheet from "./DashboardListSheet";
 
 const MAX_ITEMS_PER_LIST = 5;
 
@@ -14,26 +21,35 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
     const second = pieChartData.slice(MAX_ITEMS_PER_LIST);
     return [first, second];
   }, [pieChartData]);
-  const theme = useAppSelector(state => state?.theme.mode);
+  const theme = useAppSelector((state) => state?.theme.mode);
+
+  console.log("pieChartData", pieChartData);
+  const [isVisibleFullMode, setIsVisibleFullMode] = useState(false);
 
   return (
     pieChartData?.length > 0 && (
-      <View>
+      <View style={{
+        margin: 8,
+            borderRadius: 6,
+            borderWidth: 0.5,
+            borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+            marginBottom:8, 
+      }}>
         <View
           style={{
-            borderColor: 'black',
-            flexDirection: 'row',
-            height: Dimensions.get('screen').height * 0.22,
+            
+            flexDirection: "row",
+            height: Dimensions.get("screen").height * 0.22,
           }}
         >
           {/* Pie Chart */}
           <TouchableOpacity
-            onPress={() => navigation.navigate('Web', { isFromChart: true })}
+            onPress={() => navigation.navigate("Web", { isFromChart: true })}
             style={{
-              width: '30%',
-              alignItems: 'center',
-              justifyContent: 'center',
-              alignContent: 'center',
+              width: "30%",
+              alignItems: "center",
+              justifyContent: "center",
+              alignContent: "center",
               marginLeft: 32,
             }}
           >
@@ -43,19 +59,20 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
               radius={78}
               innerRadius={68}
               textSize={14}
-              textColor={theme === 'dark' ? '#fff' : "#000"}
+              textColor={theme === "dark" ? "#fff" : "#000"}
               showValuesAsLabels
-              innerCircleColor={theme === 'dark' ? 'black' : "#fff"}
+              innerCircleColor={theme === "dark" ? "black" : "#fff"}
               centerLabelComponent={() => (
                 <Text
                   style={{
-                    textAlign: 'center',
-                    fontSize: 16,
-                    fontWeight: 'bold',
-                    color: theme === 'dark' ? '#fff' : "#000",
+                    textAlign: "center",
+                    fontSize: 14,
+                    fontWeight: "bold",
+                    color:
+                      theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR,
                   }}
                 >
-                  {t('home.dashboard')}
+                  {t("home.dashboard")}
                 </Text>
               )}
             />
@@ -64,25 +81,40 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
           {firstList.length > 0 && (
             <View
               style={{
-                justifyContent: 'center',
-                alignContent: 'center',
-                height: Dimensions.get('screen').height * 0.22,
+                justifyContent: "center",
+                alignContent: "center",
+                height: Dimensions.get("screen").height * 0.22,
                 marginLeft: 34,
-                overflow: 'hidden',
+                overflow: "hidden",
               }}
             >
               <View
                 style={{
-                  width: '90%',
+                  width: "90%",
                 }}
               >
+                <View
+                  style={{
+                    width: "50%",
+
+                    marginVertical: 4,
+                    alignContent: "center",
+                    alignItems: "center",
+                  }}
+                ></View>
                 <FlatList
                   data={firstList}
                   showsHorizontalScrollIndicator={false}
                   showsVerticalScrollIndicator={false}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item }) => (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginBottom: 4,
+                      }}
+                    >
                       <View
                         style={{
                           width: 12,
@@ -90,42 +122,70 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                           borderRadius: 8,
                           backgroundColor: item.color,
                           marginRight: 6,
-                          flexDirection: 'row',
+                          flexDirection: "row",
                           gap: 4,
                         }}
                       />
                       <TranslatedText
                         numberOfLines={1}
                         style={{
-                          fontWeight: '500',
+                          width: "26%",
+                          fontWeight: "500",
                           maxWidth: 110,
-                          color: theme === 'dark' ? '#fff' : "#000",
+                          color: theme === "dark" ? "#fff" : "#000",
                         }}
                         text={item.text}
-                      >
-                        
-                      </TranslatedText>
+                      ></TranslatedText>
                       <TranslatedText
                         style={{
                           marginLeft: 8,
+                          width: "80%",
                           fontSize: 14,
                           color: item.color,
-                          fontWeight: '800',
+                          fontWeight: "800",
                         }}
                         numberOfLines={1}
-                        text={`:- ${item.value}` }
-                      >
-                        
-                      </TranslatedText>
+                        text={`:- ${item.value}`}
+                      ></TranslatedText>
                     </View>
                   )}
                 />
+                {firstList.length >= 5 && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setIsVisibleFullMode(true);
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: "50%",
+                        marginVertical: 4,
+                        alignContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "gray",
+                          fontSize: 12,
+                        }}
+                      >
+                        View full mode
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           )}
         </View>
         {secondList.length > 0 && (
-          <View style={{ flexDirection: 'row', paddingHorizontal: 12, marginBottom: 12 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              paddingHorizontal: 12,
+            }}
+          >
             <View>
               <FlatList
                 showsHorizontalScrollIndicator={false}
@@ -137,8 +197,8 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                   <View
                     style={{
                       marginHorizontal: 4,
-                      flexDirection: 'row',
-                      alignItems: 'center',
+                      flexDirection: "row",
+                      alignItems: "center",
                       marginBottom: 4,
                     }}
                   >
@@ -149,28 +209,37 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                         borderRadius: 8,
                         backgroundColor: item.color,
                         marginRight: 6,
-                        flexDirection: 'row',
+                        flexDirection: "row",
                         gap: 4,
                       }}
                     />
-                    <TranslatedText 
-                    text={item.text}
-                    numberOfLines={1} style={{ maxWidth: 80 }}>
-                      
-                    </TranslatedText>
                     <TranslatedText
-                    numberOfLines={1}
-                    text={`:- ${item.value}`}
-                      style={{ marginLeft: 8, fontSize: 14, color: item.color, fontWeight: '800' }}
-                    >
-                      
-                    </TranslatedText>
+                      text={item.text}
+                      numberOfLines={1}
+                      style={{ maxWidth: 80 }}
+                    ></TranslatedText>
+                    <TranslatedText
+                      numberOfLines={1}
+                      text={`:- ${item.value}`}
+                      style={{
+                        marginLeft: 8,
+                        fontSize: 14,
+                        color: item.color,
+                        fontWeight: "800",
+                      }}
+                    ></TranslatedText>
                   </View>
                 )}
               />
             </View>
           </View>
         )}
+
+        <DashboardListSheet
+          visible={isVisibleFullMode}
+          data={pieChartData}
+          onClose={() => setIsVisibleFullMode(false)}
+        />
       </View>
     )
   );

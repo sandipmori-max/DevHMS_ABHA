@@ -9,6 +9,7 @@ import ImageBottomSheetModal from '../../../../components/bottomsheet/ImageBotto
 
 const ProfileSection = ({ baseLink, user, onEditPress }: any) => {
   const theme = useAppSelector(state => state?.theme.mode);
+  const [imageExists, setImageExists] = useState(true);
 
   const [showModal, setShowModal] = useState(false);
   const [img, setImg] = useState('')
@@ -29,6 +30,9 @@ const ProfileSection = ({ baseLink, user, onEditPress }: any) => {
         <View style={styles.profileHeader}>
           <TouchableOpacity
             onPress={() => {
+              if(!imageExists){
+                return;
+              }
               setImg(`${baseLink}/FileUpload/1/UserMaster/${user?.id
                 }/d_profileimage.jpeg?ts=${new Date().getTime()}`)
               setShowModal(true)
@@ -43,6 +47,12 @@ const ProfileSection = ({ baseLink, user, onEditPress }: any) => {
                   cache: FastImage.cacheControl.web,
                 }}
                 style={{ height: 56, width: 56, borderRadius: 46 }}
+              onLoad={() => {
+                setImageExists(true);
+              }}
+              onError={() => {
+                setImageExists(false);
+              }}
               />
             </View>
 

@@ -57,7 +57,7 @@ const Footer = ({
       <TranslatedText
         style={{
           color: accentColors[index % accentColors.length],
-          fontSize: 16,
+          fontSize: 14,
           fontWeight: '600',
         }}
         text={footer}

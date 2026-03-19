@@ -32,12 +32,11 @@ import ErrorMessage from "../../../../components/error/Error";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { DARK_COLOR, ERP_COLOR_CODE } from "../../../../utils/constants";
 import Toast from "../../../../components/Toast/Toast";
-import { NativeModules } from "react-native";
 
-import { StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import { setMenuLoading } from "../../../../store/slices/auth/authSlice";
 import TranslatedText from "../home/TranslatedText";
+import { styles } from "./style";
 const accentColors = [
   "#dbe0f5ff",
   "#c8f3edff",
@@ -46,7 +45,13 @@ const accentColors = [
   "#f2e3f8ff",
   "#e0f3edff",
 ];
-const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
+const MenuTab = ({
+  type,
+  headerText,
+  searchPlaceholder,
+  setHideTab,
+  hideTab,
+}: any) => {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const { menu, error, isMenuLoading, isAuthenticated, activeToken, user } =
@@ -61,6 +66,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
   const [bookmarks, setBookmarks] = useState({});
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
   const [showStarsOnly, setShowStarsOnly] = useState(false);
+  const [showFull, setShowFull] = useState(false);
 
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState("");
@@ -132,7 +138,10 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
     const db = await getDBConnection();
     await insertOrUpdateBookmark(db, id, user?.id, updated);
 
-    showToast(`${name} - ${t("text90")}`, backgroundColor);
+    showToast(
+      updated ? `${name} bookmarked` : `${name} removed`,
+      updated ? backgroundColor : "red",
+    );
   };
 
   // Search effect
@@ -161,7 +170,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-        //  borderBottomWidth: 1,
+        // borderBottomWidth: 1,
         // borderBottomColor: '#fff',
       },
       headerBackTitle: "",
@@ -208,31 +217,68 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
       headerRight: () =>
         !showSearch && (
           <>
-            {allList.length > 5 && (
+            {showFull && !isMenuLoading && allList.length > 5 && (
               <ERPIcon name="search" onPress={() => setShowSearch(true)} />
             )}
-            <ERPIcon
-              isLoading={isMenuLoading}
-              name="refresh"
-              onPress={() => {
-                setIsRefresh(!isRefresh);
-              }}
-            />
-            <ERPIcon
-              name={isHorizontal ? "dashboard" : "list"}
-              onPress={() => setIsHorizontal((p) => !p)}
-            />
-            <ERPIcon
-              name={!showBookmarksOnly ? "bookmark-outline" : "bookmark"}
-              onPress={() => setShowBookmarksOnly((p) => !p)}
-            />
-            <ERPIcon
-              name={!showStarsOnly ? "trending-down" : "trending-up"}
-              onPress={() => {
-                setShowBookmarksOnly(false);
-                setShowStarsOnly((p) => !p);
-              }}
-            />
+            {showFull && (
+              <ERPIcon
+                isLoading={isMenuLoading}
+                name="refresh"
+                onPress={() => {
+                  setIsRefresh(!isRefresh);
+                }}
+              />
+            )}
+
+            {!isMenuLoading ? (
+              <>
+                {showFull && (
+                  <>
+                    <ERPIcon
+                      name={isHorizontal ? "dashboard" : "list"}
+                      onPress={() => setIsHorizontal((p) => !p)}
+                    />
+                    <ERPIcon
+                      name={
+                        !showBookmarksOnly ? "bookmark-outline" : "bookmark"
+                      }
+                      onPress={() => {
+                        setShowStarsOnly(false);
+                        setShowBookmarksOnly((p) => !p);
+                      }}
+                    />
+                    <ERPIcon
+                      name={!showStarsOnly ? "trending-down" : "trending-up"}
+                      onPress={() => {
+                        setShowBookmarksOnly(false);
+                        setShowStarsOnly((p) => !p);
+                      }}
+                    />{" "}
+                    <ERPIcon
+                      name={!hideTab ? "fullscreen" : "fullscreen-exit"}
+                      onPress={() => {
+                        setHideTab(!hideTab);
+                      }}
+                    />
+                  </>
+                )}
+
+                <ERPIcon
+                  name={!showFull ? "more-vert" : "close"}
+                  onPress={() => {
+                    setShowFull(!showFull);
+                  }}
+                />
+              </>
+            ) : (
+              <ERPIcon
+                isLoading={isMenuLoading}
+                name="refresh"
+                onPress={() => {
+                  setIsRefresh(!isRefresh);
+                }}
+              />
+            )}
           </>
         ),
       headerLeft: () => (
@@ -245,6 +291,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
       ),
     });
   }, [
+    showFull,
     showSearch,
     showBookmarksOnly,
     isHorizontal,
@@ -252,12 +299,17 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
     allList,
     isMenuLoading,
     showStarsOnly,
+    showSearch,
+    theme,
+    navigation,
+    hideTab,
   ]);
 
   useFocusEffect(
     useCallback(() => {
       // NativeModules.OrientationModule.enableLandscape();
       setIsHorizontal(false);
+      setShowFull(false);
       setShowSearch(false);
       setIsRefresh(false);
       setShowBookmarksOnly(false);
@@ -295,6 +347,14 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
         });
     }
   }, [isAuthenticated, activeToken, isRefresh]);
+
+  useEffect(() => {
+    return () => {
+      if (searchTimeout.current) {
+        clearTimeout(searchTimeout.current);
+      }
+    };
+  }, []);
 
   const renderItem = ({ item, index }: any) => {
     const backgroundColor = accentColors[index % accentColors.length];
@@ -413,26 +473,28 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
     >
       <View
         style={{
-          height: 16,
+          height: 6,
           width: "100%",
           backgroundColor:
             theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
           borderBottomLeftRadius: 12,
           borderBottomRightRadius: 12,
+          marginBottom: 6,
         }}
       ></View>
+
       {!isHorizontal && list.length > 8 ? (
         <>
           <FlatList
             data={groupedList}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(_, index) => index.toString()}
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => (
               <View>
                 {/* HEADER */}
-                <Text style={{ fontSize: 15, fontWeight: "bold", margin: 2 }}>
+                {/* <Text style={{ fontSize: 15, fontWeight: "bold", margin: 2 }}>
                   {`Header ${index}`}
-                </Text>
+                </Text> */}
 
                 {/* CHILD ITEMS */}
                 <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
@@ -457,9 +519,7 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
             key={`${isHorizontal}-${showBookmarksOnly}-${searchText}`}
             data={list}
             renderItem={renderItem}
-            numColumns={
-              isHorizontal ? 1 : list.length > 8 ? 3 : isHorizontal ? 1 : 2
-            }
+            numColumns={isHorizontal ? 1 : list.length > 8 ? 3 : 2}
             columnWrapperStyle={
               !isHorizontal ? styles.columnWrapper : undefined
             }
@@ -480,93 +540,3 @@ const MenuTab = ({ type, headerText, searchPlaceholder }: any) => {
 };
 
 export default MenuTab;
-
-export const styles = StyleSheet.create({
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  listContent: {
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-  },
-  columnWrapper: {
-    justifyContent: "space-between",
-  },
-  icon: {
-    width: 24,
-    height: 24,
-    resizeMode: "contain",
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  card: {
-    flex: 1,
-    borderRadius: 6,
-    paddingVertical: 1,
-    paddingHorizontal: 12,
-    marginBottom: 10,
-    alignItems: "center",
-    marginHorizontal: 6,
-  },
-  cardV2: {
-    flex: 1,
-    borderRadius: 6,
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    marginBottom: 6,
-    alignItems: "center",
-    marginHorizontal: 4,
-  },
-  iconContainer: {
-    marginTop: 6,
-    width: 56,
-    height: 56,
-    borderRadius: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "rgba(107, 104, 104, 0.3)",
-  },
-  iconContainerV2: {
-    width: 36,
-    height: 36,
-    borderRadius: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "rgba(107, 104, 104, 0.3)",
-  },
-  iconText: {
-    opacity: 0.5,
-    fontSize: 24,
-    fontWeight: "700",
-  },
-  iconTextV2: {
-    opacity: 0.5,
-    fontSize: 18,
-    fontWeight: "400",
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 6,
-    textAlign: "center",
-  },
-  titleV2: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 2,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 14,
-    marginBottom: 4,
-    color: "rgba(75, 73, 73, 0.85)",
-  },
-  subtitleV2: {
-    fontSize: 12,
-    color: "rgba(75, 73, 73, 0.85)",
-  },
-});

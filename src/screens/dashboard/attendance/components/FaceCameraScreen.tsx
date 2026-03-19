@@ -39,9 +39,20 @@ const FaceCameraScreen = ({navigation, route}) => {
   }, [])
 
   const takePhoto = async () => {
-    const photo = await camera.current.takePhoto()
-    onCapture(photo.path)
+   try {
+    //quality | balanced | speed
+   const photo = await camera?.current?.takePhoto({
+      qualityPrioritization: 'speed',
+      flash: 'off',
+      enableAutoRedEyeReduction: true,
+      skipMetadata: true,
+      enableShutterSound: true,
+    })
+    onCapture(photo?.path)
     navigation.goBack()
+   } catch (error) {
+    console.log("error",error)
+   }
   }
 
   if (!hasPermission) {

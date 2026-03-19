@@ -74,12 +74,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: 'center',
-    marginTop: 10,
-    elevation: 2,
-    shadowColor: ERP_COLOR_CODE.ERP_BLACK,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    marginTop: 10, 
   },
   disabledButton: {
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
@@ -98,11 +93,9 @@ export const styles = StyleSheet.create({
     marginTop: 20,
   },
   logo: {
-    width: 100,
+    width: 120,
     height: 100,
     alignSelf: 'center',
-    marginBottom: 25,
-    borderRadius: 20,
   },
   inputWithIcon: {
     flexDirection: 'row',

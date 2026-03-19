@@ -115,6 +115,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
       }),
     ]).start();
   }, [drawerStatus]);
+  const [imageExists, setImageExists] = useState(true);
 
   return (
     <DrawerContentScrollView
@@ -143,6 +144,9 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
           <View>
             <TouchableOpacity
             onPress={() => {
+              if(!imageExists){
+                return;
+              }
               setImg(`${baseLink}/FileUpload/1/UserMaster/${user?.id}/profileimage.jpeg?ts=${new Date().getTime()}`)
               setShowModal(true)
             }}
@@ -154,6 +158,12 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
                 cache: FastImage.cacheControl.web,
               }}
               style={styles.profileImage}
+               onLoad={() => {
+                setImageExists(true);
+              }}
+              onError={() => {
+                setImageExists(false);
+              }}
             />
           </TouchableOpacity>
           </View>

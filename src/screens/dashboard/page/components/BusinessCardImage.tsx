@@ -111,51 +111,71 @@ const BusinessCardView = ({ setValue, controls, item, baseLink, infoData }: any)
   };
 
 
-  const pickFromCamera = async () => {
-    const granted = await checkPermission('camera');
-    if (!granted) return;
+ const pickFromCamera = async () => {
+  const granted = await checkPermission('camera');
+  if (!granted) return;
 
+  setShowPicker(false);
 
-    setShowPicker(false);
-    const res = await launchCamera({ mediaType: 'photo', quality: 0.5, includeBase64: true ,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        saveToPhotos: false,
-
+  setTimeout(async () => {
+    const res = await launchCamera({
+      mediaType: 'photo',
+      quality: 0.5,
+      includeBase64: true,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      saveToPhotos: false,
     });
-    if (res.didCancel) return;
 
+    if (res.didCancel) return;
 
     if (res.assets && res.assets.length > 0) {
       const asset = res.assets[0];
       let uri = asset.uri!;
-      if (Platform.OS === 'android' && !uri.startsWith('file://')) uri = 'file://' + uri;
+      if (Platform.OS === 'android' && !uri.startsWith('file://')) {
+        uri = 'file://' + uri;
+      }
+
       setCacheBuster(Date.now());
       setBase64(`${item?.field}.jpeg; data:${asset.type};base64,${asset.base64}`);
       setImageUri(uri);
     }
-  };
+  }, 400);
+};
 
+const pickFromGallery = async () => {
+  const granted = await checkPermission('gallery');
+  if (!granted) return;
 
-  const pickFromGallery = async () => {
-    const granted = await checkPermission('gallery');
-    if (!granted) return;
+  setShowPicker(false);
 
+  // 👇 IMPORTANT FIX (delay)
+  setTimeout(async () => {
+    try {
+      const res = await launchImageLibrary({
+        mediaType: 'photo',
+        quality: 0.5,
+        includeBase64: true,
+      });
 
-    setShowPicker(false);
-    const res = await launchImageLibrary({ mediaType: 'photo', quality: 0.5, includeBase64: true });
-    if (res.didCancel) return;
+      if (res.didCancel) return;
 
+      if (res.assets && res.assets.length > 0) {
+        const asset = res.assets[0];
+        let uri = asset.uri!;
+        if (Platform.OS === 'android' && !uri.startsWith('file://')) {
+          uri = 'file://' + uri;
+        }
 
-    if (res.assets && res.assets.length > 0) {
-      const asset = res.assets[0];
-      let uri = asset.uri!;
-      if (Platform.OS === 'android' && !uri.startsWith('file://')) uri = 'file://' + uri;
-      setCacheBuster(Date.now());
-      setBase64(`${item?.field}.jpeg; data:${asset.type};base64,${asset.base64}`);
-      setImageUri(uri);
+        setCacheBuster(Date.now());
+        setBase64(`${item?.field}.jpeg; data:${asset.type};base64,${asset.base64}`);
+        setImageUri(uri);
+      }
+    } catch (error) {
+      console.log("error--------------", error);
     }
-  };
+  }, 400); // 👈 300–500ms best
+};
  
   useEffect(() => {
     (async () => {
