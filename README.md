@@ -6,7 +6,6 @@
 // ./gradlew --stop
 // ./gradlew clean
 // ./gradlew generateCodegenArtifactsFromSchema 
-// cc 
 // cmd - gradlew assemble[BRAND_NAME]Release
 
 // How to used - .env.clientA and .env.cientB ??
@@ -559,3 +558,39 @@ response d :
 }
 
 getDB : "/getDB" 
+
+OnBoarding screen
+  3-4 step : static data
+
+App login 
+
+  compny code
+  user name
+  password 
+
+Full screen loader 
+
+  Company logo
+
+Home
+
+  Drawer 
+
+  chart board : numeric number 
+  html 
+  normal text
+
+  menu actions 
+
+  Refresh
+  Search
+  Toggle list
+  Filter 
+    Date : From and To date
+    Branch 
+    Type
+  Full screen
+
+
+
+

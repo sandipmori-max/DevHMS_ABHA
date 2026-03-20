@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, View } from 'react-native';
+import { Animated, Platform, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -65,7 +65,8 @@ const NoData = ({isShowTop = true}: any) => {
 
   return (
     <>
-    {isShowTop &&  <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>}
+    {isShowTop &&  <View style={{                  height: Platform.OS === 'ios' ?  16  : 6,
+     width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>}
      <Animated.View
       style={[
         styles.container,

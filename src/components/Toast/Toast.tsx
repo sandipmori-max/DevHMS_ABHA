@@ -8,7 +8,7 @@ import TranslatedText from '../../screens/dashboard/tabs/home/TranslatedText';
 import { styles } from './style';
 
 
-const Toast = ({ visible, message, onHide , tbackgroundColor}: any) => {
+const Toast = ({ visible, message, onHide , tbackgroundColor, textColor}: any) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const theme = useAppSelector(state => state.theme.mode);
 
@@ -60,7 +60,11 @@ const Toast = ({ visible, message, onHide , tbackgroundColor}: any) => {
       numberOfLines={1}
       style={[
         styles.toastText,
-        theme === 'dark' && { color: 'black' }
+         
+        theme === 'dark' && { color: 'black' },
+        {
+          color: textColor
+        }
       ]}>
         
       </TranslatedText>

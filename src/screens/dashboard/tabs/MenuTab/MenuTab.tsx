@@ -4,6 +4,8 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Animated,
+  Text,
 } from "react-native";
 import React, {
   useEffect,
@@ -66,7 +68,7 @@ const MenuTab = ({
     useAppSelector((state) => state.auth);
   const theme = useAppSelector((state) => state.theme.mode);
   const { t } = useTranslation();
-
+const fadeAnim = useRef(new Animated.Value(0)).current;
   const allList = menu?.filter((item) => item?.isReport === type) ?? [];
   const [isRefresh, setIsRefresh] = useState(false);
   const [isHorizontal, setIsHorizontal] = useState(false);
@@ -82,6 +84,7 @@ const MenuTab = ({
     visible: false,
     message: "",
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+    textColor: 'black'
   });
   const [taps, setTaps] = useState({});
   const sortedList = [...filteredList].sort((a, b) => {
@@ -96,10 +99,16 @@ const MenuTab = ({
     ? filteredList.filter((i) => bookmarks[i.id])
     : filteredList;
 
-  const showToast = (msg, backgroundColor) =>
-    setToast({ visible: true, message: msg, backgroundColor: backgroundColor });
+  const showToast = (msg, backgroundColor, color) =>
+    setToast({ visible: true, message: msg, backgroundColor: backgroundColor , textColor: color});
   const hideToast = () => setToast((t) => ({ ...t, visible: false }));
-
+useEffect(() => {
+  Animated.timing(fadeAnim, {
+    toValue: showFull ? 1 : 0,
+    duration: 300,
+    useNativeDriver: true,
+  }).start();
+}, [showFull]);
   function getInitials(name) {
     if (!name) return "";
 
@@ -146,7 +155,8 @@ const MenuTab = ({
 
     showToast(
       updated ? `${name} bookmarked` : `${name} removed`,
-      updated ? backgroundColor : "red",
+      updated ? ERP_COLOR_CODE.ERP_green : ERP_COLOR_CODE.ERP_ERROR,
+      'white'
     );
   };
 
@@ -172,143 +182,155 @@ const MenuTab = ({
 
   // Header setup
   useLayoutEffect(() => {
-    navigation.setOptions({
-      headerStyle: {
-        backgroundColor:
-          theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-      },
-      headerBackTitle: "",
-      headerTintColor: "white",
-      headerTitle: () =>
-        showSearch ? (
-          <View
+  navigation.setOptions({
+    headerStyle: {
+      backgroundColor:
+        theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+    },
+    headerBackTitle: "",
+    headerTintColor: "white",
+
+    headerTitle: () =>
+      showSearch ? (
+        <View
+          style={{
+            width: Dimensions.get("screen").width - 60,
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <TextInput
+            value={searchText}
+            onChangeText={setSearchText}
+            placeholder={searchPlaceholder}
+            autoFocus={true}
             style={{
-              width: Dimensions.get("screen").width - 60,
-              flexDirection: "row",
-              alignItems: "center",
+              flex: 1,
+              backgroundColor: "#f0f0f0",
+              borderRadius: 8,
+              paddingHorizontal: 12,
+              height: 36,
+            }}
+          />
+          <TouchableOpacity
+            style={{ marginLeft: 12 }}
+            onPress={() => {
+              setShowSearch(false);
+              setSearchText("");
             }}
           >
-            <TextInput
-              value={searchText}
-              onChangeText={setSearchText}
-              placeholder={searchPlaceholder}
-              autoFocus={true}
-              style={{
-                flex: 1,
-                backgroundColor: "#f0f0f0",
-                borderRadius: 8,
-                paddingHorizontal: 12,
-                height: 36,
-              }}
-            />
-            <TouchableOpacity
-              style={{ marginLeft: 12 }}
-              onPress={() => {
-                setShowSearch(false);
-                setSearchText("");
-              }}
-            >
-              <MaterialIcons name="clear" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TranslatedText
-            text={headerText}
-            numberOfLines={1}
-            style={{ color: "white", fontSize: 18, fontWeight: "600" }}
-          ></TranslatedText>
-        ),
-      headerRight: () =>
-        !showSearch && (
-          <>
-            {showFull && !isMenuLoading && allList.length > 5 && (
-              <ERPIcon name="search" onPress={() => setShowSearch(true)} />
-            )}
-            {showFull && (
-              <ERPIcon
-                isLoading={isMenuLoading}
-                name="refresh"
-                onPress={() => {
-                  setIsRefresh(!isRefresh);
-                }}
-              />
-            )}
-
-            {!isMenuLoading ? (
-              <>
-                {showFull && (
-                  <>
-                    <ERPIcon
-                      name={isHorizontal ? "dashboard" : "list"}
-                      onPress={() => setIsHorizontal((p) => !p)}
-                    />
-                    <ERPIcon
-                      name={
-                        !showBookmarksOnly ? "bookmark-outline" : "bookmark"
-                      }
-                      onPress={() => {
-                        setShowStarsOnly(false);
-                        setShowBookmarksOnly((p) => !p);
-                      }}
-                    />
-                    <ERPIcon
-                      name={!showStarsOnly ? "trending-down" : "trending-up"}
-                      onPress={() => {
-                        setShowBookmarksOnly(false);
-                        setShowStarsOnly((p) => !p);
-                      }}
-                    />{" "}
-                    <ERPIcon
-                      name={!hideTab ? "fullscreen" : "fullscreen-exit"}
-                      onPress={() => {
-                        setHideTab(!hideTab);
-                      }}
-                    />
-                  </>
-                )}
-
-                <ERPIcon
-                  name={!showFull ? "more-vert" : "close"}
-                  onPress={() => {
-                    setShowFull(!showFull);
-                  }}
-                />
-              </>
-            ) : (
-              <ERPIcon
-                isLoading={isMenuLoading}
-                name="refresh"
-                onPress={() => {
-                  setIsRefresh(!isRefresh);
-                }}
-              />
-            )}
-          </>
-        ),
-      headerLeft: () => (
-        <ERPIcon
-          extSize={24}
-          isMenu
-          name="menu"
-          onPress={() => navigation.openDrawer()}
+            <MaterialIcons name="clear" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <TranslatedText
+          text={headerText}
+          numberOfLines={1}
+          style={{ color: "white", fontSize: 18, fontWeight: "600" }}
         />
       ),
-    });
-  }, [
-    showFull,
-    showSearch,
-    showBookmarksOnly,
-    isHorizontal,
-    searchText,
-    allList,
-    isMenuLoading,
-    showStarsOnly,
-    showSearch,
-    theme,
-    navigation,
-    hideTab,
-  ]);
 
+   headerRight: () =>
+  !showSearch && (
+    <View style={{ flexDirection: "row", alignItems: "center" }}>
+      
+      {/* ANIMATED ICONS */}
+      <Animated.View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          opacity: fadeAnim,
+          transform: [
+            {
+              translateY: fadeAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [-10, 0],
+              }),
+            },
+            {
+              scale: fadeAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.8, 1],
+              }),
+            },
+          ],
+        }}
+      >
+        {showFull && !isMenuLoading && allList.length > 5 && (
+          <ERPIcon name="search" onPress={() => setShowSearch(true)} />
+        )}
+
+        {showFull && (
+          <ERPIcon
+            isLoading={isMenuLoading}
+            name="refresh"
+            onPress={() => setIsRefresh(!isRefresh)}
+          />
+        )}
+
+        {!isMenuLoading && showFull && (
+          <>
+            <ERPIcon
+              name={isHorizontal ? "dashboard" : "list"}
+              onPress={() => setIsHorizontal((p) => !p)}
+            />
+
+            <ERPIcon
+              name={
+                !showBookmarksOnly ? "bookmark-outline" : "bookmark"
+              }
+              onPress={() => {
+                setShowStarsOnly(false);
+                setShowBookmarksOnly((p) => !p);
+              }}
+            />
+
+            <ERPIcon
+              name={!showStarsOnly ? "trending-down" : "trending-up"}
+              onPress={() => {
+                setShowBookmarksOnly(false);
+                setShowStarsOnly((p) => !p);
+              }}
+            />
+
+            <ERPIcon
+              name={!hideTab ? "fullscreen" : "fullscreen-exit"}
+              onPress={() => setHideTab(!hideTab)}
+            />
+          </>
+        )}
+      </Animated.View>
+
+      {/* ALWAYS VISIBLE BUTTON (FIX) */}
+      <ERPIcon
+        name={!showFull ? "more-vert" : "close"}
+        onPress={() => setShowFull(!showFull)}
+      />
+    </View>
+  ),
+
+    headerLeft: () => (
+      <ERPIcon
+        extSize={24}
+        isMenu
+        name="menu"
+        onPress={() => navigation.openDrawer()}
+      />
+    ),
+  });
+}, [
+  showFull,
+  showSearch,
+  showBookmarksOnly,
+  isHorizontal,
+  searchText,
+  allList,
+  isMenuLoading,
+  showStarsOnly,
+  theme,
+  navigation,
+  hideTab,
+]);
   useFocusEffect(
     useCallback(() => {
       setIsHorizontal(false);
@@ -384,7 +406,7 @@ const MenuTab = ({
       >
         <TouchableOpacity
           onPress={() =>
-            toggleBookmark(getInitials(item?.name), item.id, backgroundColor)
+            toggleBookmark(item?.name, item.id, backgroundColor)
           }
           style={{ position: "absolute", top: 0, right: 0 }}
         >
@@ -405,25 +427,30 @@ const MenuTab = ({
             },
           ]}
         >
-          <MaterialIcons
-            name={item?.app_menu_icon || "widgets"}
-            color={"gray"}
-            size={18}
-          />
-          {/* <TranslatedText
-            numberOfLines={1}
-            text={item.icon || getInitials(item?.name)}
-            style={[
-                styles.iconTextV2  ,
-              theme === "dark" && { color: "black" },
-            ]}
-          ></TranslatedText> */}
+          {item?.app_menu_icon ? (
+            <MaterialIcons
+              name={item?.app_menu_icon || "widgets"}
+              color={"gray"}
+              size={18}
+            />
+          ) : (
+            <TranslatedText
+              numberOfLines={1}
+              text={item.icon || getInitials(item?.name)}
+              style={[
+                styles.iconTextV2,
+                theme === "dark" && { color: "black" },
+              ]}
+            ></TranslatedText>
+          )}
+
+          {/**/}
         </View>
 
         <View
           style={{
             marginLeft: isHorizontal ? 16 : 0,
-            marginTop: isHorizontal ? 0 : 12,
+            marginTop: isHorizontal ? 0 : 4,
           }}
         >
           <TranslatedText
@@ -493,9 +520,42 @@ const MenuTab = ({
             renderItem={({ item, index }) => (
               <View>
                 {/* HEADER */}
-                {/* <Text style={{ fontSize: 15, fontWeight: "bold", margin: 2 }}>
-                  {`Header ${index}`}
-                </Text> */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignContent: "center",
+                    alignItems: "center",
+                    marginLeft: 14,
+                    marginBottom: 6,
+                    backgroundColor: "#fafafa",
+                    width: "96%",
+                    justifyContent:'space-between'
+                  }}
+                >
+                 <View style={{
+                  flexDirection:'row'
+                 }}>
+                   <MaterialIcons name={"widgets"} color={"black"} size={18} />
+                  <Text
+                    style={{
+                      marginLeft: 6,
+                      fontSize: 14,
+                    }}
+                  >
+                    {`Header ${index}`}
+                  </Text>
+                 </View>
+                 <Text
+                    style={{
+                      marginLeft: 6,
+                      fontSize: 14,
+                      fontWeight: "bold",
+                      marginRight: 12
+                    }}
+                  >
+                    {`${index}`}
+                  </Text>
+                </View>
 
                 {/* CHILD ITEMS */}
                 <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
@@ -533,6 +593,7 @@ const MenuTab = ({
       <Toast
         visible={toast.visible}
         message={toast.message}
+        textColor={toast.textColor}
         onHide={hideToast}
         tbackgroundColor={toast.backgroundColor}
       />

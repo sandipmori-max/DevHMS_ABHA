@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
   inactiveDot: { backgroundColor: "#bbb" },
 
   skipBtn: {
-    marginTop: Platform.OS === "ios" ? 0 : 45,
+    marginTop: Platform.OS === "ios" ? 0 : 12,
     alignSelf: "flex-end",
     padding: 15,
     zIndex: 10,

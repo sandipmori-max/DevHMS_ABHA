@@ -54,7 +54,7 @@ const PrivacyPolicyScreen = () => {
     <SafeAreaView style={styles.container}>
       <View
         style={{
-          height: 16,
+          height: Platform.OS === 'ios' ?  16  : 6,
           width: "100%",
           backgroundColor:
             theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,

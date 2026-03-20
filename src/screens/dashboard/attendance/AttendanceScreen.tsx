@@ -38,9 +38,7 @@ import { ERP_COLOR_CODE } from "../../../utils/constants";
 import useTranslations from "../../../hooks/useTranslations";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ERP_GIF } from "../../../assets";
-import { NativeModules } from "react-native";
 import TranslatedText from "../tabs/home/TranslatedText";
-import { BackHandler } from "react-native";
 
 const AttendanceScreen = () => {
   const route = useRoute();
@@ -438,7 +436,7 @@ const AttendanceScreen = () => {
             >
               <View
                 style={{
-                  height: 16,
+                  height: Platform.OS === 'ios' ?  16  : 6,
                   width: "100%",
                   backgroundColor:
                     theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
@@ -482,8 +480,8 @@ const AttendanceScreen = () => {
               >
                 <>
                   <View
-                    style={{
-                      height: 16,
+                    style={{ 
+                      height: Platform.OS === 'ios' ?  16  : 6,
                       width: "100%",
                       backgroundColor:
                         theme === "dark"

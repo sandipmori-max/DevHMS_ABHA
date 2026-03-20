@@ -22,8 +22,8 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
-     borderBottomWidth: 1, 
-    marginTop: Platform?.OS === 'android' ? 25 : 45
+    borderBottomWidth: 1, 
+    marginTop: Platform?.OS === 'android' ? 12 : 45
   },
   title: {
     fontSize: 18,

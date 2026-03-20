@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Text, Image, Animated, View } from 'react-native';
+import { Text, Image, Animated, View, Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { ERP_GIF, ERP_ICON } from '../../assets';
@@ -78,7 +78,10 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, visible = true , i
   return (
   <>
   {
-    isShowTop && <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
+    isShowTop && <View style={{
+      
+                        height: Platform.OS === 'ios' ?  16  : 6
+      , width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
     
   }
   

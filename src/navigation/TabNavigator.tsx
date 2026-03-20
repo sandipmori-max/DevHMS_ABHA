@@ -75,7 +75,7 @@ const TabNavigator = () => {
           display: hidden ? "none" : "flex",
           backgroundColor:
             theme === "dark" ? DARK_COLOR : ERP_COLOR_CODE.ERP_WHITE,
-          height: 80,
+          height: Platform.OS === 'ios' ? 65 : 80,
           paddingBottom: 5,
           paddingTop: 5,
         },

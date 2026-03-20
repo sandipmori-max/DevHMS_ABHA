@@ -83,6 +83,15 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     user,
     attendanceDone,
   } = useAppSelector((state) => state.auth);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: showFull ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [showFull]);
 
   const runAI = async () => {
     try {
@@ -235,7 +244,11 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
             </TouchableOpacity>
           </View>
         ) : (
-          <Text
+          <>
+          
+          {
+            !showFull ? <>
+             <Text
             numberOfLines={1}
             style={{
               color: "#fff",
@@ -245,11 +258,67 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
           >
             {showFull ? t("text84") : user?.companyName}
           </Text>
+            </> : <Animated.View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                opacity: fadeAnim,
+                transform: [
+                  {
+                    translateY: fadeAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [-10, 0],
+                    }),
+                  },
+                  {
+                    scale: fadeAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.8, 1],
+                    }),
+                  },
+                ],
+              }}
+            >
+ <Text
+            numberOfLines={1}
+            style={{
+              color: "#fff",
+              fontSize: 18,
+              fontWeight: "600",
+            }}
+          >
+            {showFull ? t("text84") : user?.companyName}
+          </Text>
+            </Animated.View>
+
+          }</>
+         
         ),
-      headerRight: () => (
-        <>
-          {!showSearch && (
-            <>
+      headerRight: () =>
+        !showSearch && (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {/* ✅ ANIMATED ICONS */}
+            <Animated.View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                opacity: fadeAnim,
+                transform: [
+                  {
+                    translateY: fadeAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [-10, 0],
+                    }),
+                  },
+                  {
+                    scale: fadeAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.8, 1],
+                    }),
+                  },
+                ],
+              }}
+            >
               {showFull && (
                 <>
                   <ERPIcon
@@ -258,6 +327,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                       setControlsLoader(true);
                       setActionLoader(true);
                       setIsRefresh(!isRefresh);
+
                       dispatch(
                         getERPDashboardThunk({
                           branch: auth.dashboardBranch.trim(),
@@ -266,29 +336,35 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                           td: auth.dashboardToDate.trim(),
                         }),
                       );
+
                       const timer = setTimeout(() => {
                         setActionLoader(false);
                         setControlsLoader(false);
                         dispatch(setDashboardLoading(false));
                       }, 3000);
+
                       return () => clearTimeout(timer);
                     }}
                     isLoading={actionLoader}
                   />
+
                   {dashboard.length > 5 && (
                     <ERPIcon
                       name="search"
                       onPress={() => setShowSearch(true)}
                     />
                   )}
+
                   <ERPIcon
                     name={!isHorizontal ? "list" : "apps"}
                     onPress={() => setIsHorizontal((prev) => !prev)}
                   />
+
                   <ERPIcon
                     name={isFilterVisible ? "close" : "filter-alt"}
                     onPress={() => setIsFilterVisible((prev) => !prev)}
                   />
+
                   {attendanceDone && (
                     <ERPIcon
                       color={"green"}
@@ -298,6 +374,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                       }}
                     />
                   )}
+
                   <ERPIcon
                     name={!hideTab ? "fullscreen" : "fullscreen-exit"}
                     onPress={() => {
@@ -306,17 +383,18 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                   />
                 </>
               )}
-              <ERPIcon
-                name={!showFull ? "more-vert" : "close"}
-                onPress={() => {
-                  setIsFilterVisible(false);
-                  setShowFull(!showFull);
-                }}
-              />
-            </>
-          )}
-        </>
-      ),
+            </Animated.View>
+
+            {/* ✅ ALWAYS VISIBLE BUTTON */}
+            <ERPIcon
+              name={!showFull ? "more-vert" : "close"}
+              onPress={() => {
+                setIsFilterVisible(false);
+                setShowFull(!showFull);
+              }}
+            />
+          </View>
+        ),
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => navigation?.openDrawer()}
@@ -694,6 +772,8 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     return (
       <View
         style={{
+           justifyContent: "center",
+           
           // height: Dimensions.get("screen").height,
           backgroundColor: theme === "dark" ? "black" : "white",
         }}
@@ -707,38 +787,55 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
             backgroundColor: theme === "dark" ? "black" : "white",
           }}
         >
+          
           <View
             style={{
               backgroundColor:
                 theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
               padding: 12,
-              // width: width,
+              width: width,
               borderBottomRightRadius: 24,
               borderBottomLeftRadius: 24,
               borderColor: "white",
-              width: "100%",
+              // width: "100%",
+               alignItems: "center",
+                alignContent:'center',
               marginBottom: 10,
             }}
           >
-            {showFull && (
+            { showFull && (
               <Animated.View
-                style={{
-                  justifyContent: "center",
-                  alignContent: "center",
-                  alignItems: "center",
-                  gap: 8,
-                  flexDirection: "row",
-                  // transform: [{ translateX }],
-                }}
-              >
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                alignContent:'center',
+                opacity: fadeAnim,
+                transform: [
+                  {
+                    translateY: fadeAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [-10, 0],
+                    }),
+                  },
+                  {
+                    scale: fadeAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.8, 1],
+                    }),
+                  },
+                ],
+              }}
+            >
                 <MaterialIcons name="business" size={24} color={"#FFF"} />
                 <Text
+              
                   numberOfLines={1}
                   style={{
                     color: "#FFF",
                     fontWeight: "600",
                     fontSize: 16,
                     maxWidth: 280,
+                    marginLeft: 8
                   }}
                 >
                   {user?.companyName || ""}

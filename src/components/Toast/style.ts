@@ -5,7 +5,7 @@ const { width } = Dimensions.get('window');
 export const styles = StyleSheet.create({
   toastContainer: {
     position: 'absolute',
-    top: 0,
+    top: 1,
     alignSelf: 'center',
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
     paddingHorizontal: 20,

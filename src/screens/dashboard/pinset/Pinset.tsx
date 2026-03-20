@@ -13,6 +13,7 @@ import {
   Dimensions,
   Animated,
   Easing,
+  Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DARK_COLOR, ERP_COLOR_CODE } from "../../../utils/constants";
@@ -635,7 +636,7 @@ const PinSetupScreen = () => {
     <>
       <View
         style={{
-          height: 16,
+          height: Platform.OS === 'ios' ?  16  : 6,
           width: "100%",
           backgroundColor:
             theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,

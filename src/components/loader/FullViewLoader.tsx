@@ -1,4 +1,4 @@
-import { View, Text, Animated, Easing, Dimensions } from 'react-native';
+import { View, Text, Animated, Easing, Dimensions, Platform } from 'react-native';
 import React, { useEffect, useRef } from 'react';
 import FastImage from 'react-native-fast-image';
 
@@ -40,13 +40,13 @@ const FullViewLoader = ({ isShowTop = true }) => {
       Animated.sequence([
         Animated.timing(translateY, {
           toValue: -30,
-          duration: 1600,
+          duration: 600,
           easing: Easing.out(Easing.quad),
           useNativeDriver: true,
         }),
         Animated.timing(translateY, {
           toValue: 10,
-          duration: 1500,
+          duration: 1000,
           easing: Easing.in(Easing.quad),
           useNativeDriver: true,
         }),
@@ -75,7 +75,7 @@ const FullViewLoader = ({ isShowTop = true }) => {
       {isShowTop && (
         <View
           style={{
-            height: 16,
+            height: Platform.OS === 'ios' ?  16  : 6, 
             width: '100%',
             backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
             borderBottomLeftRadius: 12,

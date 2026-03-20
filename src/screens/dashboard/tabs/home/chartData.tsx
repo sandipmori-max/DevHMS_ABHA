@@ -32,7 +32,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
           margin: 8,
           borderRadius: 6,
           borderWidth: 0.5,
-          borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+          borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
           marginBottom: 8,
         }}
       >

@@ -1160,15 +1160,11 @@ export const getDashboardAI = async (dashboardData) => {
     });
 
     const json = await res.json();
-
-
     const message =
       json?.choices?.[0]?.message?.content?.replace(/"/g, "") || "";
-
     return message;
   } catch (error) {
     console.log("AI ERROR+++++++++", error);
-
     return null;
   }
 };

@@ -1,5 +1,4 @@
-import React from "react";
-import { Image, Platform, View } from "react-native";
+import { Platform, View } from "react-native";
 import {
   createStackNavigator,
   CardStyleInterpolators,
@@ -14,7 +13,6 @@ import PrivacyPolicyScreen from "../screens/dashboard/privacy/PrivacyPolicyScree
 import WebScreen from "../screens/dashboard/web/WebScreen";
 import ListScreen from "../screens/dashboard/list_page/ListScreen";
 import PageScreen from "../screens/dashboard/page/Page";
-import { ERP_ICON } from "../assets";
 import { ERP_COLOR_CODE } from "../utils/constants";
 import StartupScreen from "../screens/dashboard/startup/StartupScreen";
 import PinSetupScreen from "../screens/dashboard/pinset/Pinset";
@@ -39,26 +37,26 @@ const StackNavigator = () => {
 
   const screenOptions = {
     headerShown: true,
-    headerBackImage: () =>
-      Platform.OS === "ios" ? (
-        <View style={{ width: 24, marginLeft: 12 }}>
-          <MaterialIcons name="chevron-left" size={34} color="#fff" />
-        </View>
-      ) : (
-        <Image
-          source={ERP_ICON.BACK}
-          style={{ width: 24, height: 24, marginLeft: 10, tintColor: "white" }}
-          resizeMode="contain"
-        />
-      ),
+    headerBackImage: () => (
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <MaterialIcons name="chevron-left" size={28} color="#fff" />
+      </View>
+    ),
     headerStyle: {
       backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+      height: Platform.OS === "android" ? 48 : undefined,
+      elevation: 0,
+      shadowOpacity: 0,
     },
+    headerLeftContainerStyle: {
+      paddingLeft: 6,
+    },
+
     headerTintColor: ERP_COLOR_CODE.ERP_WHITE,
     headerTitleStyle: {
-      fontSize: 18,
+      fontSize: 14,
       headerTitleAlign: "left",
-      fontWeight: "bold",
+      fontWeight: "400",
       color: ERP_COLOR_CODE.ERP_WHITE,
     },
     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,

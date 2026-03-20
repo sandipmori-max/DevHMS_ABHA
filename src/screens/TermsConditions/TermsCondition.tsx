@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Modal,
+  Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ERP_COLOR_CODE } from "../../utils/constants";
@@ -35,7 +36,7 @@ const TermsAndConsent = ({ onAccept }: any) => {
 
   return (
     <>
-      <View style={{ height: 12, marginTop: 40 }} />
+      <View style={{ height: 12, marginTop: Platform.OS === 'ios' ?  40 : 10 }} />
       <Text
         style={[
           styles.title,
