@@ -7,13 +7,39 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 30,
+    // paddingHorizontal: 30,
   },
   logoWrapper: {
-    backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+    // backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     borderRadius: 24,
     marginBottom: 30,
   },
+  poweredBy: {
+  position: "absolute",
+  bottom: 30,
+  alignSelf: "center",
+  fontSize: 12,
+  letterSpacing: 1,
+},
+
+helloTitle: {
+  fontSize: 18,
+  marginTop: 10,
+  textAlign: "center",
+},
+
+title: {
+  fontSize: 22,
+  fontWeight: "bold",
+  textAlign: "center",
+  marginTop: 5,
+},
+
+subtitle: {
+  fontSize: 14,
+  textAlign: "center",
+  marginTop: 5,
+},
   logo: {
     width: width * 0.3,
     height: width * 0.3,
@@ -21,14 +47,14 @@ export const styles = StyleSheet.create({
   },
   helloTitle: {
     color: ERP_COLOR_CODE.ERP_555,
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 16,
+    fontWeight: "400",
     marginBottom: 8,
     textAlign: "center",
   },
   title: {
     color: ERP_COLOR_CODE.ERP_BLACK,
-    fontSize: 30,
+    fontSize: 18,
     fontWeight: "700",
     marginBottom: 8,
     textAlign: "center",

@@ -2,7 +2,6 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -44,6 +43,7 @@ import {
   evaluateRulesWithActions,
   parseCustomDatePage,
   requestCameraPermission,
+  runDynamicRules,
 } from "../../../utils/helpers";
 import DateRow from "./components/Date";
 import BoolInput from "./components/BoolInput";
@@ -159,7 +159,60 @@ const PageScreen = () => {
   const [locationEnabled, setLocationEnabled] = useState<boolean | null>(null);
   const [modalClose, setModalClose] = useState(false);
   const [isSettingVisible, setIsSettingVisible] = useState(false);
-  const [myScript, setMyScript] = useState("");
+  const [myScript, setMyScript] = useState([
+  // 🔥 DATE DIFF
+  {
+    logic: "AND",
+    rules: [
+      {
+        type: "formula",
+        formulaType: "dateDiff",
+        fieldName: "noofdays",
+        fromField: "fromdate",
+        toField: "todate",
+        inclusive: true,
+        triggerFields: ["fromdate", "todate"],
+      },
+    ],
+  },
+
+  // 🔥 NORMAL FORMULA
+  {
+    logic: "AND",
+    rules: [
+      {
+        type: "formula",
+        fieldName: "totalexpense",
+        formula:
+          "servicecharge + travelexpense + localexpense + accexpense",
+        minusField: "cashreceived",
+        triggerFields: [
+          "servicecharge",
+          "travelexpense",
+          "localexpense",
+          "accexpense",
+          "cashreceived",
+        ],
+      },
+    ],
+  },
+
+  // 🔥 CONDITION RULE
+  {
+    logic: "OR",
+    rules: [
+      {
+        left: "doctorlocation",
+        operator: "locationWithin",
+        right: "inlocation",
+        meters: 100,
+        message: "Doctor Location and InLocation Not Match",
+      },
+    ],
+    validActions: [{ field: "buttonSave", action: "enable" }],
+    invalidActions: [{ field: "buttonSave", action: "disable" }],
+  },
+]);
   const [backgroundDeniedModal, setBackgroundDeniedModal] = useState(false);
 
   const isCheckingPermission = useRef(false);
@@ -175,185 +228,6 @@ const PageScreen = () => {
       item?.defaultvalue === "#location" &&
       item?.visible === "0",
   );
-
-  const customScriptRule = "";
-  //   const customScriptRule = `{
-  //     "onClickButtonSave":
-  //      {
-  //         "logic": "OR",
-  //          "rules": [
-  //             {
-  //                "left": "amount",
-  //                "operator": "equals",
-  //                "right": ""
-  //            }
-  //        ],
-  //        "validActions": [
-  //             { "field": "buttonSave", "action": "disable" }
-  //        ],
-  //        "invalidActions": [
-  //            { "field": "buttonSave", "action": "enable" }
-  //        ],
-  //        "message": ""
-  //    },
-  //    "onPageLoad":
-  //    {
-  //        "logic": "OR",
-  //        "rules": [
-  //            {
-  //                "left": "amount",
-  //                "operator": "equals",
-  //                "right": ""
-  //            }
-  //        ],
-  //        "validActions": [
-  //            { "field": "amount", "action": "enable" }
-  //            ],
-  //        "invalidActions": [
-  //             { "field": "amount", "action": "disable" }
-  //            ]
-  //    },
-  //    "place_onInputChange":
-  //    {
-  //        "logic": "OR",
-  //        "rules": [
-  //            {
-  //                "left": "place",
-  //                "operator": "equals",
-  //                "right": "test"
-  //            }
-  //        ],
-  //        "validActions": [
-  //             { "field": "exptype", "action": "disable" }
-  //            ],
-  //        "invalidActions": [
-  //             { "field": "exptype", "action": "enable" }
-  //            ]
-  //    },
-  //    "projectid_onAjaxChange":
-  //    {
-  //        "logic": "OR",
-  //        "rules": [
-  //            {
-  //                "left": "projectname",
-  //                "operator": "equals",
-  //                "right": "00"
-  //            }
-  //        ],
-  //        "validActions": [
-  //             { "field": "qty", "action": "setValue", "text" : "2580258"}
-  //            ],
-  //        "invalidActions": [
-  //             { "field": "qty", "action": "disable" }
-  //            ]
-  //    },
-  //    "entryby_onDropDownChange":
-  //    {
-  //        "logic": "OR",
-  //        "rules": [
-  //            {
-  //                "left": "entryby",
-  //                "operator": "equals",
-  //                "right": "Sandip Mori"
-  //            }
-  //        ],
-  //        "validActions": [
-  //             { "field": "buttonSave", "action": "disable" }
-  //            ],
-  //        "invalidActions": [
-  //             { "field": "buttonSave", "action": "enable" }
-  //            ]
-  //    },
-  //    "status_onBoolChange":
-  //    {
-  //        "logic": "OR",
-  //        "rules": [
-  //            {
-  //                "left": "propname",
-  //                "operator": "equals",
-  //                "right": "Active"
-  //             }
-  //        ],
-  //        "validActions": [
-  //             { "field": "propname", "action": "borderColor", "borderColor" :"red"}
-  //            ],
-  //        "invalidActions": [
-  //             { "field": "buttonSave", "action": "enable" }
-  //            ]
-  //    },
-  //     "onImageChange":
-  //    {
-  //        "logic": "OR",
-  //        "rules": [
-  //            {
-  //                "left": "doctorlocation",
-  //                "operator": "locationWithin",
-  //                "right": "inlocation",
-  //                "meters": 50
-  //            }
-  //        ],
-  //        "validActions": [
-  //             { "field": "buttonSave", "action": "enable" }
-  //            ],
-  //        "invalidActions": [
-  //             { "field": "buttonSave", "action": "enable" }
-  //            ]
-  //    },
-  //    "onFileChange":
-  //    {
-  //        "logic": "OR",
-  //        "rules": [
-  //            {
-  //                "left": "doctorlocation",
-  //                "operator": "locationWithin",
-  //                "right": "inlocation",
-  //                "meters": 50
-  //            }
-  //        ],
-  //        "validActions": [
-  //             { "field": "buttonSave", "action": "disable" }
-  //            ],
-  //        "invalidActions": [
-  //             { "field": "buttonSave", "action": "enable" }
-  //            ]
-  //    },
-  //     "onLocationChange":
-  //    {
-  //        "logic": "OR",
-  //        "rules": [
-  //            {
-  //                "left": "doctorlocation",
-  //                "operator": "locationWithin",
-  //                "right": "inlocation",
-  //                "meters": 50
-  //            }
-  //        ],
-  //        "validActions": [
-  //             { "field": "buttonSave", "action": "enable" }
-  //            ],
-  //        "invalidActions": [
-  //             { "field": "buttonSave", "action": "enable" }
-  //            ]
-  //    },
-  //    "onBarCodeChange":
-  //    {
-  //        "logic": "OR",
-  //        "rules": [
-  //            {
-  //                "left": "doctorlocation",
-  //                "operator": "locationWithin",
-  //                "right": "inlocation",
-  //                "meters": 50
-  //            }
-  //        ],
-  //        "validActions": [
-  //             { "field": "buttonSave", "action": "enable" }
-  //            ],
-  //        "invalidActions": [
-  //             { "field": "buttonSave", "action": "enable" }
-  //            ]
-  //    }
-  // }`
 
   const hasMediaField = controls.some(
     (item) => item?.ctltype === "IMAGE" || item?.ctltype === "PHOTO",
@@ -781,13 +655,14 @@ const PageScreen = () => {
       const parsed = await dispatch(
         getERPPageThunk({ page: url, id: isFromNew ? 0 : id }),
       ).unwrap();
+        console.log("parsed.script ++++++++. ", parsed)
 
       if (
         parsed?.script &&
         typeof parsed.script === "object" &&
         !Array.isArray(parsed.script)
       ) {
-        setMyScript(parsed.script);
+        // setMyScript(parsed.script); ------------------------------------------
       }
 
       if (!isFromNew) {
@@ -858,6 +733,7 @@ const PageScreen = () => {
 
   const handleDateTimeConfirm = (date: Date) => {
     if (activeDateTimeField) {
+      
       setFormValues((prev) => ({
         ...prev,
         [activeDateTimeField]: date.toISOString(),
@@ -866,176 +742,63 @@ const PageScreen = () => {
     hideDateTimePicker();
   };
 
-  // useEffect(() => {
-  //   let parsedRules;
-
-  //   if (typeof customScriptRule === 'string') {
-  //     try {
-  //       const json = JSON.parse(customScriptRule);
-  //       parsedRules = json.onPageLoad;
-  //     } catch (e) {
-  //       console.error('Invalid JSON from backend', e);
-  //       return;
-  //     }
-  //   } else {
-  //     parsedRules = customScriptRule?.onPageLoad;
-  //   }
-
-  //   if (!parsedRules) return;
-
-  //   console.log('Parsed Rules:', parsedRules);
-
-  //   const { actions = [] } = evaluateRulesWithActions(parsedRules, formValues);
-
-  //   console.log('Actions:', actions);
-
-  //   // ✅ Check buttonSave enable action
-  //   const isButtonSaveEnabled = actions.some(
-  //     item => item?.field === 'buttonSave' && item?.action === 'enable'
-  //   );
-
-  //   // ✅ Apply actions once
-  //   const updatedControls = applyActionsToControls(controls, actions);
-  //   setControls(updatedControls);
-
-  //   // ✅ Update button state
-  //   setButtonSave(isButtonSaveEnabled);
-
-  // }, [formValues]);
-
-  const applyActionsToFormValues = (formValues, actions) => {
-    let updatedValues = { ...formValues };
-
-    actions.forEach((action) => {
-      if (action?.action === "setValue" && action?.field) {
-        updatedValues[action.field] = action.text ?? "";
-        console.log(`✅ setValue applied → ${action.field} = ${action.text}`);
-      }
-    });
-
-    return updatedValues;
-  };
-
-  console.log("================ SET VALUE START ================", formValues);
-
   const renderItem = useCallback(
     ({ item, index }: { item: any; index: number }) => {
       const setValue = (val) => {
-        console.log(
-          "================********* SET VALUE START ================",
-          item?.field,
-          "=====,",
-          val,
-        );
+  console.log("SET VALUE START 👉", item?.field, val);
 
-        if (myScript) {
-          console.log("Incoming value:", val);
-          console.log("Field:", item?.field);
-          console.log("Item:", item);
+  setFormValues((prev) => { 
+    let updatedValues;
 
-          let updatedValues;
+    if (typeof val === "object" && val !== null) {
+      updatedValues = { ...prev, ...val };
+    } else {
+      updatedValues = { ...prev, [item.field]: val };
+    }
 
-          if (typeof val === "object" && val !== null) {
-            updatedValues = { ...formValues, ...val };
-            console.log("Merged object value:", updatedValues);
-          } else {
-            updatedValues = { ...formValues, [item.field]: val };
-          }
+    console.log("Updated Values (before rules):", updatedValues);
+ 
+    const result = runDynamicRules(
+      myScript,          // 🔥 unified rules (formula + condition)
+      updatedValues,
+      item.field
+    );
 
-          // 🔹 Update form values
-          setFormValues(updatedValues);
+    console.log("After Rules Values 👉", result.values);
+    console.log("Actions 👉", result.actions);
+    console.log("Messages 👉", result.messages);
 
-          // 🔹 Clear field error
-          setErrors((prev) => ({ ...prev, [item?.field]: "" }));
+    let finalValues = { ...result.values };
+ 
+    result.actions.forEach((action) => {
+      if (action?.action === "setValue" && action?.field) {
+        finalValues[action.field] = action.value ?? "";
+        console.log(`📝 setValue → ${action.field} = ${action.value}`);
+      }
+    });
 
-          // 🔥 RULE EXECUTION LOGS
-          const eventName = getEventByControl(item);
-          console.log("Detected Event:", eventName);
+    // =========================
+    // 4️⃣ UPDATE CONTROLS
+    // =========================
+    if (result.actions?.length) {
+      const updatedControls = applyActionsToControls(controls, result.actions);
+      setControls(updatedControls);
+    }
 
-          const ruleKey = `${item.field}_${eventName}`;
-          console.log("Generated Rule Key:", ruleKey);
+    // =========================
+    // 5️⃣ CLEAR ERROR
+    // =========================
+    setErrors((prevErr) => ({
+      ...prevErr,
+      [item.field]: "",
+    }));
 
-          console.log("All Parsed Rules Keys:", Object.keys(parsedRules || {}));
+    console.log("FINAL VALUES ✅", finalValues);
+    console.log("SET VALUE END ==================");
 
-          const rule = parsedRules?.[ruleKey];
-          console.log("Matched Rule:", rule);
-
-          if (!rule) {
-            console.log("❌ No rule found for:", ruleKey);
-            console.log("================ SET VALUE END ==================");
-            return;
-          }
-
-          console.log("✅ Rule Found → Evaluating...", updatedValues);
-
-          const { actions } = evaluateRulesWithActions(rule, updatedValues);
-          console.log("Rule Actions:", actions);
-
-          if (!actions || actions.length === 0) {
-            console.log("⚠️ No actions returned from rule");
-            console.log("================ SET VALUE END ==================");
-            return;
-          }
-
-          /* 🔥 NEW PART — handle setValue action */
-          let newFormValues = { ...updatedValues };
-          let isFormValueChanged = false;
-
-          actions.forEach((action) => {
-            if (action?.action === "setValue" && action?.field) {
-              newFormValues[action.field] = action.text ?? "";
-              isFormValueChanged = true;
-              console.log(`📝 setValue → ${action.field} = ${action.text}`);
-            }
-          });
-
-          /* 🔹 Update formValues only if needed */
-          if (isFormValueChanged) {
-            console.log("Updated FormValues:", newFormValues);
-            setFormValues(newFormValues);
-          }
-
-          /* 🔹 Existing logic (unchanged) */
-          const updatedControls = applyActionsToControls(controls, actions);
-          console.log("Updated Controls:", updatedControls);
-
-          setControls(updatedControls);
-        } else {
-          if (typeof val === "object" && val !== null) {
-            setFormValues((prev) => ({ ...prev, ...val }));
-          } else {
-            setFormValues((prev) => ({ ...prev, [item?.field]: val }));
-          }
-          setErrors((prev) => ({ ...prev, [item?.field]: "" }));
-        }
-
-        if (formulaRules) {
-          setFormValues((prev) => {
-            console.log("================ ELSE ================");
-
-            let updatedValues;
-
-            if (typeof val === "object" && val !== null) {
-              updatedValues = { ...prev, ...val };
-            } else {
-              updatedValues = { ...prev, [item?.field]: val };
-            }
-
-            // 🔥 Apply formula
-            updatedValues = applyFormulaRules(updatedValues, item?.field);
-
-            console.log(
-              "================ updatedValues ------------- ",
-              updatedValues,
-            );
-
-            return updatedValues;
-          });
-
-          // 🔹 clear error
-          setErrors((prev) => ({ ...prev, [item?.field]: "" }));
-        }
-      };
+    return finalValues;
+  });
+};
 
       const value =
         formValues[item?.field] === "#location"
@@ -1208,6 +971,7 @@ const PageScreen = () => {
             errors={errors}
             value={value}
             showDatePicker={showDatePicker}
+            // setValue={setValue}
           />
         );
       }
@@ -1251,58 +1015,7 @@ const PageScreen = () => {
     },
     [formValues, errors, controls, locationEnabled],
   );
-
-  const formulaRules = [
-    {
-      fieldName: "totalexpense",
-      formula: "servicecharge + travelexpense + localexpense + accexpense",
-      minusField: "cashreceived",
-      triggerFields: [
-        "servicecharge",
-        "travelexpense",
-        "localexpense",
-        "accexpense",
-        "cashreceived",
-      ],
-    },
-  ];
-  const applyFormulaRules = (values, changedField) => {
-    let updatedValues = { ...values };
-
-    formulaRules.forEach((rule) => {
-      if (rule.triggerFields.includes(changedField)) {
-        updatedValues = applyFormula(rule, updatedValues);
-        console.log("+++++++++++++++++++++++++++++++++++++++ ", updatedValues);
-      }
-    });
-
-    return updatedValues;
-  };
-  const getEventByControl = (item) => {
-    if (item?.ctltype === "BOOL") return "onBoolChange";
-    if (item?.ctltype === "IMAGE") return "onImageChange";
-    if (item?.ctltype === "FILE") return "onFileChange";
-    if (item?.defaultvalue === "#location") return "onLocationChange";
-    if (item?.ctltype === "QRSCANNER") return "onBarCodeChange";
-    if (item?.ajax === 1) return "onAjaxChange";
-    if (item?.ddl && item?.ddl !== "") return "onDropDownChange";
-    return "onInputChange";
-  };
-
-  const getRuleKey = (item) => {
-    const eventName = getEventByControl(item);
-    return `${item.field}_${eventName}`;
-  };
-
-  const parsedRules = useMemo(() => {
-    try {
-      return JSON.parse(customScriptRule);
-    } catch (e) {
-      console.error("Invalid rules JSON");
-      return {};
-    }
-  }, []);
-
+ 
   const showDatePicker = (field: string, date: any) => {
     setActiveDateField(field);
     setActiveDate(date);
@@ -1314,7 +1027,25 @@ const PageScreen = () => {
     setActiveDateField(null);
   };
 
-  const handleConfirm = (date: Date) => {
+ const handleConfirm = (date: Date) => {
+  if (!activeDateField) return;
+  if(myScript){
+setFormValues((prev) => {
+    const updatedValues = {
+      ...prev,
+      [activeDateField]: date.toISOString(),
+    };
+    const result = runDynamicRules(
+      myScript,
+      updatedValues,
+      activeDateField
+    );
+
+    return result.values;
+  });
+
+  hideDatePicker();
+  }else{
     if (activeDateField) {
       setFormValues((prev) => ({
         ...prev,
@@ -1322,7 +1053,10 @@ const PageScreen = () => {
       }));
     }
     hideDatePicker();
-  };
+  }
+  
+};
+ 
 
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 

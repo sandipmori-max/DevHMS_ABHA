@@ -1068,18 +1068,141 @@ export const evaluateFormula = (formula, values) => {
   }
 };
 
-export const applyFormula = (config, values) => {
-  const total = evaluateFormula(config.formula, values);
+export const runDynamicRules = (
+  ruleBlocks: any[],
+  values: Record<string, any>,
+  changedField: string
+) => {
+  let updatedValues = { ...values };
+  let actions: any[] = [];
+  let messages: string[] = [];
 
-  const minusVal = Number(values[config.minusField]) || 0;
+  ruleBlocks.forEach((block) => {
+    const results: boolean[] = [];
 
-  const finalValue = total - minusVal;
+    block.rules.forEach((rule: any) => {
+      // =========================
+      // 🔥 FORMULA RULE
+      // =========================
+      if (rule.type === "formula") {
+        if (rule.triggerFields?.includes(changedField)) {
+          updatedValues = applyFormula(rule, updatedValues);
+        }
+
+        // formula always treated as valid
+        results.push(true);
+      }
+
+      // =========================
+      // 🔥 CONDITION RULE
+      // =========================
+      else {
+        const res = evaluateCondition(rule, updatedValues);
+        results.push(res);
+
+        if (!res && rule.message) {
+          messages.push(rule.message);
+        }
+      }
+    });
+
+    // =========================
+    // 🔥 APPLY LOGIC (AND / OR)
+    // =========================
+    const finalResult =
+      block.logic === "OR"
+        ? results.some(Boolean)
+        : results.every(Boolean);
+
+    // =========================
+    // 🔥 ACTIONS
+    // =========================
+    if (finalResult && block.validActions) {
+      actions = actions.concat(block.validActions);
+    }
+
+    if (!finalResult && block.invalidActions) {
+      actions = actions.concat(block.invalidActions);
+    }
+  });
+
   return {
-    ...values,
-    [config.fieldName]: finalValue,
+    values: updatedValues,
+    actions,
+    messages,
   };
 };
+export const extractFormulaRulesFromActions = (actions = []) => {
+  return actions
+    .filter((a) => a.action === "calculate")
+    .map((a) => {
+      // 🔥 dateDiff
+      if (a.formulaType === "dateDiff") {
+        return {
+          fieldName: a.field,
+          formulaType: "dateDiff",
+          fromField: a.fromField,
+          toField: a.toField,
+          inclusive: a.inclusive,
+          triggerFields: [a.fromField, a.toField], // 🔥 important
+        };
+      }
 
+      // 🔥 normal formula
+      return {
+        fieldName: a.field,
+        formula: a.formula,
+        minusField: a.minusField,
+        triggerFields: Object.keys(a) // fallback (or manually define)
+      };
+    });
+};
+
+export const applyFormula = (config, values) => {
+  // 🔥 DATE DIFF
+  if (config.formulaType === "dateDiff") {
+    console.log("Date -------         ", config);
+
+    const from = values[config.fromField];
+    const to = values[config.toField];
+
+    if (!from || !to) {
+      return { ...values, [config.fieldName]: "" };
+    }
+
+    const start = new Date(from);
+    const end = new Date(to);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      return { ...values, [config.fieldName]: "" };
+    }
+
+    // Calculate difference in milliseconds
+    const diffTime = end - start;
+
+    // Convert to full days
+    let days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    // Add 1 if inclusive or if same day
+    if (config.inclusive || days === 0) {
+      days += 1;
+    }
+
+    return {
+      ...values,
+      [config.fieldName]: days >= 0 ? days : 0,
+    };
+  }
+
+  // 🔹 existing formula logic
+  const total = evaluateFormula(config.formula, values);
+  const minusVal = Number(values[config.minusField]) || 0;
+
+  return {
+    ...values,
+    [config.fieldName]: total - minusVal,
+  };
+};
 export const createPrompt = (dataText) => {
   const hour = new Date().getHours();
 

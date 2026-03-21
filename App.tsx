@@ -1,5 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { Alert, AppState, StatusBar, StyleSheet, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Alert,
+  AppState,
+  StatusBar,
+  StyleSheet,
+  View,
+  Animated,
+  Easing,
+} from "react-native";
 import { Provider } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -49,12 +57,18 @@ const AppContent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [accepted, setAccepted] = useState(false);
 
+  // 🔥 Splash Animation
+  const splashOpacity = useRef(new Animated.Value(1)).current;
+
+  // 🔥 App Animation (BOTTOM → TOP)
+  const appOpacity = useRef(new Animated.Value(0)).current;
+  const appTranslateY = useRef(new Animated.Value(120)).current;
+
+  // 🔹 Check Terms
   useEffect(() => {
     const checkAcceptance = async () => {
       const value = await AsyncStorage.getItem("TERMS_ACCEPTED");
-      if (value === "true") {
-        setAccepted(true);
-      }
+      if (value === "true") setAccepted(true);
       setIsLoading(false);
     };
     checkAcceptance();
@@ -65,10 +79,12 @@ const AppContent = () => {
     setAccepted(true);
   };
 
+  // 🔹 Clear temp files
   useEffect(() => {
     clearAllTempFiles();
   }, []);
 
+  // 🔹 AppState
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextState) => {
       if (nextState === "background") {
@@ -79,6 +95,7 @@ const AppContent = () => {
     return () => subscription.remove();
   }, []);
 
+  // 🔹 Notifications
   useEffect(() => {
     requestUserPermission();
     setBackgroundMessageHandler();
@@ -113,6 +130,7 @@ const AppContent = () => {
     };
   }, []);
 
+  // 🔥 Loader
   if (isLoading) {
     return (
       <View style={{ flex: 1 }}>
@@ -121,52 +139,88 @@ const AppContent = () => {
     );
   }
 
+  // 🔥 Terms
   if (!accepted) {
     return <TermsAndConsent onAccept={handleAccept} />;
-  }
-
-  if (!isConnected) {
-    return (
-      <>
-        <StatusBar backgroundColor={statusBarColor} barStyle={barStyle} />
-        <SafeAreaView
-          edges={["top"]}
-          style={{ backgroundColor: statusBarColor }}
-        />
-        <SafeAreaView style={styles.safeArea}>
-          <NoInternetScreen onRetry={() => {}} />
-        </SafeAreaView>
-      </>
-    );
-  }
-
-  if (isSplashVisible) {
-    return (
-      <>
-        <StatusBar backgroundColor={statusBarColor} barStyle={barStyle} />
-        <SafeAreaView
-          edges={["top"]}
-          style={{ backgroundColor: statusBarColor }}
-        />
-        <SafeAreaView style={styles.safeArea}>
-          <CustomSplashScreen onFinish={() => setSplashVisible(false)} />
-        </SafeAreaView>
-      </>
-    );
   }
 
   return (
     <>
       <StatusBar backgroundColor={statusBarColor} barStyle={barStyle} />
-      <SafeAreaView
-        edges={["top"]}
-        style={{ backgroundColor: statusBarColor }}
-      />
-      <SafeAreaView edges={["left", "right", "bottom"]} style={styles.safeArea}>
-        <NavigationContainer>
-          <RootNavigator />
-        </NavigationContainer>
-      </SafeAreaView>
+
+      {/* 🔥 MAIN APP */}
+      <Animated.View
+        style={{
+          flex: 1,
+          opacity: appOpacity,
+          transform: [{ translateY: appTranslateY }],
+        }}
+      >
+        <SafeAreaView
+          edges={["top"]}
+          style={{ backgroundColor: statusBarColor }}
+        />
+
+        <SafeAreaView
+          edges={["left", "right", "bottom"]}
+          style={styles.safeArea}
+        >
+          <NavigationContainer>
+            <RootNavigator />
+          </NavigationContainer>
+        </SafeAreaView>
+      </Animated.View>
+
+      {/* 🔥 No Internet */}
+      {!isConnected && (
+        <View style={[StyleSheet.absoluteFillObject, { zIndex: 1000 }]}>
+          <NoInternetScreen onRetry={() => {}} />
+        </View>
+      )}
+
+      {/* 🔥 Splash */}
+      {isSplashVisible && (
+        <Animated.View
+          style={[
+            StyleSheet.absoluteFillObject,
+            {
+              opacity: splashOpacity,
+              zIndex: 999,
+            },
+          ]}
+        >
+          <CustomSplashScreen
+            onFinish={() => {
+              // 1️⃣ Splash Fade Out
+              Animated.timing(splashOpacity, {
+                toValue: 0,
+                duration: 400,
+                useNativeDriver: true,
+              }).start(() => {
+                setSplashVisible(false);
+
+                // 2️⃣ App Slide Up Animation 🔥
+                setTimeout(() => {
+                  Animated.parallel([
+                    Animated.timing(appOpacity, {
+                      toValue: 1,
+                      duration: 500,
+                      easing: Easing.out(Easing.exp),
+                      useNativeDriver: true,
+                    }),
+                    Animated.timing(appTranslateY, {
+                      toValue: 0,
+                      duration: 500,
+                      easing: Easing.out(Easing.exp),
+                      useNativeDriver: true,
+                    }),
+                  ]).start();
+                }, 100);
+              });
+            }}
+          />
+        </Animated.View>
+      )}
     </>
   );
 };

@@ -245,54 +245,54 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
           </View>
         ) : (
           <>
-          
-          {
-            !showFull ? <>
-             <Text
-            numberOfLines={1}
-            style={{
-              color: "#fff",
-              fontSize: 18,
-              fontWeight: "600",
-            }}
-          >
-            {showFull ? t("text84") : user?.companyName}
-          </Text>
-            </> : <Animated.View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                opacity: fadeAnim,
-                transform: [
-                  {
-                    translateY: fadeAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [-10, 0],
-                    }),
-                  },
-                  {
-                    scale: fadeAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.8, 1],
-                    }),
-                  },
-                ],
-              }}
-            >
- <Text
-            numberOfLines={1}
-            style={{
-              color: "#fff",
-              fontSize: 18,
-              fontWeight: "600",
-            }}
-          >
-            {showFull ? t("text84") : user?.companyName}
-          </Text>
-            </Animated.View>
-
-          }</>
-         
+            {!showFull ? (
+              <>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    color: "#fff",
+                    fontSize: 18,
+                    fontWeight: "600",
+                  }}
+                >
+                  {showFull ? t("text84") : user?.companyName}
+                </Text>
+              </>
+            ) : (
+              <Animated.View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  opacity: fadeAnim,
+                  transform: [
+                    {
+                      translateY: fadeAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [-10, 0],
+                      }),
+                    },
+                    {
+                      scale: fadeAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.8, 1],
+                      }),
+                    },
+                  ],
+                }}
+              >
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    color: "#fff",
+                    fontSize: 18,
+                    fontWeight: "600",
+                  }}
+                >
+                  {showFull ? t("text84") : user?.companyName}
+                </Text>
+              </Animated.View>
+            )}
+          </>
         ),
       headerRight: () =>
         !showSearch && (
@@ -365,16 +365,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                     onPress={() => setIsFilterVisible((prev) => !prev)}
                   />
 
-                  {attendanceDone && (
-                    <ERPIcon
-                      color={"green"}
-                      name={"location-on"}
-                      onPress={() => {
-                        navigation.navigate("LocationTrack");
-                      }}
-                    />
-                  )}
-
                   <ERPIcon
                     name={!hideTab ? "fullscreen" : "fullscreen-exit"}
                     onPress={() => {
@@ -384,7 +374,15 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                 </>
               )}
             </Animated.View>
-
+            {attendanceDone && (
+              <ERPIcon
+                color={"green"}
+                name={"location-on"}
+                onPress={() => {
+                  navigation.navigate("LocationTrack");
+                }}
+              />
+            )}
             {/* ✅ ALWAYS VISIBLE BUTTON */}
             <ERPIcon
               name={!showFull ? "more-vert" : "close"}
@@ -772,8 +770,8 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     return (
       <View
         style={{
-           justifyContent: "center",
-           
+          justifyContent: "center",
+
           // height: Dimensions.get("screen").height,
           backgroundColor: theme === "dark" ? "black" : "white",
         }}
@@ -787,7 +785,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
             backgroundColor: theme === "dark" ? "black" : "white",
           }}
         >
-          
           <View
             style={{
               backgroundColor:
@@ -798,44 +795,43 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
               borderBottomLeftRadius: 24,
               borderColor: "white",
               // width: "100%",
-               alignItems: "center",
-                alignContent:'center',
+              alignItems: "center",
+              alignContent: "center",
               marginBottom: 10,
             }}
           >
-            { showFull && (
+            {showFull && (
               <Animated.View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                alignContent:'center',
-                opacity: fadeAnim,
-                transform: [
-                  {
-                    translateY: fadeAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [-10, 0],
-                    }),
-                  },
-                  {
-                    scale: fadeAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.8, 1],
-                    }),
-                  },
-                ],
-              }}
-            >
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  alignContent: "center",
+                  opacity: fadeAnim,
+                  transform: [
+                    {
+                      translateY: fadeAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [-10, 0],
+                      }),
+                    },
+                    {
+                      scale: fadeAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.8, 1],
+                      }),
+                    },
+                  ],
+                }}
+              >
                 <MaterialIcons name="business" size={24} color={"#FFF"} />
                 <Text
-              
                   numberOfLines={1}
                   style={{
                     color: "#FFF",
                     fontWeight: "600",
                     fontSize: 16,
                     maxWidth: 280,
-                    marginLeft: 8
+                    marginLeft: 8,
                   }}
                 >
                   {user?.companyName || ""}
