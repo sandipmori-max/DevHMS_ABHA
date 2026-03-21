@@ -594,3 +594,13 @@ Home
 
 
 
+- OnBoarding
+- Login
+- Custome Drop down - list cut 
+- Date picker - crashed
+- Filter  ui
+- List hori/verticler - crashed  
+- Menu tab - rotate - crashed
+- List filter ui 
+- Page hori/verticler - crashed  
+- My attendace list ui - pending - hori/vertical 

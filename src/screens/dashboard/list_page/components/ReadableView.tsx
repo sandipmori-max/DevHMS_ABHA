@@ -628,7 +628,7 @@ const ReadableView = ({
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         onEndReached={loadMore}
-        onEndReachedThreshold={0.2} // trigger when 80% scrolled
+        onEndReachedThreshold={0.2}
         ListFooterComponent={
           isLoadingMore ? (
             <View style={{ padding: 20 }}>

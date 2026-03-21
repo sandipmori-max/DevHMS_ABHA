@@ -13,7 +13,8 @@ import {
   Keyboard,
   Platform,
   PermissionsAndroid,
-  AppState
+  AppState,
+  useWindowDimensions
 } from "react-native";
 import {
   RouteProp,
@@ -113,6 +114,8 @@ export async function requestLocationPermissions(): Promise<
 }
 
 const PageScreen = () => {
+  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const flatListRef = useRef<FlatList>(null);
@@ -1008,6 +1011,11 @@ const PageScreen = () => {
         <Animated.View
           entering={FadeInUp.delay(index * 70).springify()}
           layout={Layout.springify()}
+          style={isLandscape && {
+            width: '50%',
+            flex: 1,
+            marginRight: 8,
+          }}
         >
           {content}
         </Animated.View>
@@ -1125,7 +1133,7 @@ setFormValues((prev) => {
                   theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE,
               }}
             >
-              <FlatList
+              <FlatList 
                 showsVerticalScrollIndicator={false}
                 data={controls}
                 ref={flatListRef}
@@ -1133,6 +1141,7 @@ setFormValues((prev) => {
                 renderItem={renderItem}
                 contentContainerStyle={{ paddingBottom: keyboardHeight }}
                 keyboardShouldPersistTaps="handled"
+                numColumns={isLandscape ? 2 : 1}
               />
             </View>
             <CustomAlert

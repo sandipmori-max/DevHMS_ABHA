@@ -22,8 +22,8 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   const scaleAnim = useRef(new Animated.Value(0.6)).current;
   const textTranslateY = useRef(new Animated.Value(30)).current;
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
-const { height, width } = useWindowDimensions(); // ✅ FIX
-      const isLandscape = width > height;
+  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
   const { user } = useAppSelector((state) => state.auth);
@@ -84,78 +84,170 @@ const { height, width } = useWindowDimensions(); // ✅ FIX
     >
       <StatusBar hidden />
 
-      {/* 🔹 Logo */}
-      <Animated.View
-        style={[
-          styles.logoWrapper,
-          {
-            opacity: fadeAnim,
-            transform: [{ scale: scaleAnim }],
-          },
-        ]}
-      >
-        <Image
-          source={user?.companyLogo || ERP_ICON.APP_LOGO}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-      </Animated.View>
+      {isLandscape ? (
+        <>
+          <View style={{ flexDirection: "row" }}>
+            <View style={{ width: "50%",
+              justifyContent:'center',
+              alignContent:'center',
+              alignItems:'center'
+             }}>
+              <Animated.View
+                style={[
+                  styles.logoWrapper,
+                  {
+                    opacity: fadeAnim,
+                    transform: [{ scale: scaleAnim }],
+                  },
+                ]}
+              >
+                <Image
+                  source={user?.companyLogo || ERP_ICON.APP_LOGO}
+                  style={[styles.logo, {
+                    height: 80,
+                    width: 80
+                  }]}
+                  resizeMode="contain"
+                />
+              </Animated.View>
 
-      {/* 🔹 Greeting */}
-      {user?.name && (
-        <Animated.Text
-          style={[
-            styles.helloTitle,
-            {
-              transform: [{ translateY: textTranslateY }],
-              color: "#fff",
-            },
-          ]}
-        >
-          {greeting}, {firstLetterUpperCase(user?.name)}
-        </Animated.Text>
+              {user?.name && (
+                <Animated.Text
+                  style={[
+                    styles.helloTitle,
+                    {
+                      transform: [{ translateY: textTranslateY }],
+                      color: "#fff",
+                    },
+                  ]}
+                >
+                  {greeting}, {firstLetterUpperCase(user?.name)}
+                </Animated.Text>
+              )}
+            </View>
+
+            <View style={{ width: "50%",   
+              alignContent:'center',
+              alignItems:'center' }}>
+              {/* 🔹 Company Name */}
+              <Animated.Text
+                style={[
+                  styles.title,
+                  {
+                    transform: [{ translateY: textTranslateY }],
+                    color: "#fff",
+                  },
+                ]}
+              >
+                {user?.companyName
+                  ? `Welcome to\n${user.companyName}`
+                  : t("text.text53")}
+              </Animated.Text>
+
+              {/* 🔹 Subtitle */}
+              <Animated.Text
+                style={[
+                  styles.subtitle,
+                  {
+                    opacity: subtitleOpacity,
+                    color: "#ddd",
+                  },
+                ]}
+              >
+                {t("text.text54")}
+              </Animated.Text>
+
+              {/* 🔹 Powered By */}
+              <Animated.Text
+                style={[
+                  styles.poweredBy,
+                  {
+                    opacity: subtitleOpacity,
+                    color: "#aaa",
+                  },
+                ]}
+              >
+                Powered by - DevERP Solutions Pvt. Ltd.
+              </Animated.Text>
+            </View>
+          </View>
+        </>
+      ) : (
+        <>
+          {/* 🔹 Logo */}
+          <Animated.View
+            style={[
+              styles.logoWrapper,
+              {
+                opacity: fadeAnim,
+                transform: [{ scale: scaleAnim }],
+              },
+            ]}
+          >
+            <Image
+              source={user?.companyLogo || ERP_ICON.APP_LOGO}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </Animated.View>
+
+          {/* 🔹 Greeting */}
+          {user?.name && (
+            <Animated.Text
+              style={[
+                styles.helloTitle,
+                {
+                  transform: [{ translateY: textTranslateY }],
+                  color: "#fff",
+                },
+              ]}
+            >
+              {greeting}, {firstLetterUpperCase(user?.name)}
+            </Animated.Text>
+          )}
+
+          {/* 🔹 Company Name */}
+          <Animated.Text
+            style={[
+              styles.title,
+              {
+                transform: [{ translateY: textTranslateY }],
+                color: "#fff",
+              },
+            ]}
+          >
+            {user?.companyName
+              ? `Welcome to\n${user.companyName}`
+              : t("text.text53")}
+          </Animated.Text>
+
+          {/* 🔹 Subtitle */}
+          <Animated.Text
+            style={[
+              styles.subtitle,
+              {
+                opacity: subtitleOpacity,
+                color: "#ddd",
+              },
+            ]}
+          >
+            {t("text.text54")}
+          </Animated.Text>
+
+          {/* 🔹 Powered By */}
+          <Animated.Text
+            style={[
+              styles.poweredBy,
+              {
+                opacity: subtitleOpacity,
+                color: "#aaa",
+              },
+            ]}
+          >
+            Powered by - DevERP Solutions Pvt. Ltd.
+          </Animated.Text>
+        </>
       )}
-
-      {/* 🔹 Company Name */}
-      <Animated.Text
-        style={[
-          styles.title,
-          {
-            transform: [{ translateY: textTranslateY }],
-            color: "#fff",
-          },
-        ]}
-      >
-        {user?.companyName
-          ? `Welcome to\n${user.companyName}`
-          : t("text.text53")}
-      </Animated.Text>
-
-      {/* 🔹 Subtitle */}
-      <Animated.Text
-        style={[
-          styles.subtitle,
-          {
-            opacity: subtitleOpacity,
-            color: "#ddd",
-          },
-        ]}
-      >
-        {t("text.text54")}
-      </Animated.Text>
-
-      {/* 🔹 Powered By */}
-      <Animated.Text
-        style={[
-          styles.poweredBy,
-          {
-            opacity: subtitleOpacity,
-            color: "#aaa",
-          },
-        ]}
-      >
-        Powered by - DevERP Solutions Pvt. Ltd.
-      </Animated.Text>
     </LinearGradient>
   );
 };
