@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Text, Image, Animated, View, Platform } from 'react-native';
+import { Text, Image, Animated, View, Platform, useWindowDimensions } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { ERP_GIF, ERP_ICON } from '../../assets';
@@ -72,7 +72,8 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, visible = true , i
       });
     }
   }, [visible, message]);
-
+ const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   if (!shouldRender) return null;
 
   return (
@@ -92,7 +93,36 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, visible = true , i
         { opacity },
       ]}
     >
-      <Animated.Image
+      {
+        isLandscape ? <>
+        <View style={{flexDirection:'row'}}>
+          <View style={{width: '50%',     justifyContent: "center",
+                  alignContent: "center",
+                  alignItems: "center",}}>
+ <Animated.Image
+        source={ERP_ICON.ERROR_ICON}
+        style={[
+          styles.errorImage,
+          { transform: [{ translateX: imageTranslateX }] },
+        ]}
+      />
+          </View>
+          <View style={{width: '50%',     justifyContent: "center",
+                  alignContent: "center",
+                  alignItems: "center",}}>
+<Animated.Text
+        style={[
+          styles.errorText,
+          { transform: [{ translateX: textTranslateX }] },
+        ]}
+      >
+        {message}
+      </Animated.Text>
+          </View>
+        </View>
+        </> : <>
+        
+        <Animated.Image
         source={ERP_ICON.ERROR_ICON}
         style={[
           styles.errorImage,
@@ -106,7 +136,9 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, visible = true , i
         ]}
       >
         {message}
-      </Animated.Text>
+      </Animated.Text></>
+      }
+      
     </Animated.View>
   </>
   );

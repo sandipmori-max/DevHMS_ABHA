@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   BackHandler,
   StyleSheet,
+  useWindowDimensions,
 } from "react-native";
 
 import { styles } from "./CameraScanner.styles";
@@ -42,7 +43,8 @@ export const BarCodeCameraScanner = ({
   const camera = useRef<Camera>(null);
   const isFocused = useIsFocused();
   const { appState } = useAppStateListener();
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const [isCameraInitialized, setIsCameraInitialized] = useState(isIos);
   const [isActive, setIsActive] = useState(isIos);
   const [flash, setFlash] = useState<"on" | "off">(isIos ? "off" : "on");
@@ -113,8 +115,8 @@ export const BarCodeCameraScanner = ({
   if (!isFocused) return null;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <Modal presentationStyle="fullScreen" animationType="slide">
+    <SafeAreaView style={styles.safeArea} >
+      <Modal presentationStyle="fullScreen" supportedOrientations={["portrait", "landscape"]}animationType="slide">
         <View style={{ flex: 1 }}>
 
           {/* CAMERA */}

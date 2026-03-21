@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Modal,
   Platform,
+  useWindowDimensions,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ERP_COLOR_CODE } from "../../utils/constants";
@@ -15,7 +16,8 @@ const TermsAndConsent = ({ onAccept }: any) => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [locationAccepted, setLocationAccepted] = useState(false);
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const handleTermsContinue = () => {
     if (!termsAccepted) {
       return;
@@ -183,13 +185,19 @@ const TermsAndConsent = ({ onAccept }: any) => {
 
       {/* ========== LOCATION DISCLOSURE MODAL (NEW) ========== */}
       <Modal
+      supportedOrientations={["portrait", "landscape"]}
         visible={showLocationModal}
         transparent
         animationType="fade"
         onRequestClose={() => setShowLocationModal(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalBox}>
+        <View style={[styles.modalOverlay,isLandscape && {
+                        alignContent:'center',
+                        alignItems:'center'
+                      }]}>
+          <View style={[styles.modalBox, {
+          width: isLandscape ? '50%' : '100%'
+        }]}>
             <Text style={styles.modalTitle}>
               Location Data Usage Disclosure
             </Text>

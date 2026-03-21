@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   BackHandler,
   Modal,
+  useWindowDimensions,
 } from "react-native";
 import { Camera, useCameraDevice } from "react-native-vision-camera";
 import RNFS from "react-native-fs";
@@ -22,7 +23,8 @@ const MAX_SIZE_MB = 25;
 export default function VideoRecorder({ item }: any) {
   const cameraRef = useRef(null);
   const device = useCameraDevice("back");
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const [showCamera, setShowCamera] = useState(false);
   const [permissionsGranted, setPermissionsGranted] = useState(false);
 
@@ -172,6 +174,7 @@ export default function VideoRecorder({ item }: any) {
       visible={showCamera}
       animationType="slide"
       presentationStyle="fullScreen"
+      supportedOrientations={["portrait", "landscape"]}
     >
       <SafeAreaView style={styles.fullScreen}>
         {!permissionsGranted || !device ? (

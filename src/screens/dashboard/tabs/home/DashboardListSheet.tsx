@@ -8,15 +8,17 @@ import {
   Animated,
   Dimensions,
   Easing,
+  useWindowDimensions,
 } from "react-native";
 
-const { height } = Dimensions.get("screen");
-
+ 
 export default function DashboardListSheet({
   visible,
   onClose,
   data = [],
 }: any) {
+  const { height, width } = useWindowDimensions(); // ✅ FIX
+    const isLandscape = width > height;
   const sheetTranslateY = useRef(new Animated.Value(height)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const contentOpacity = useRef(new Animated.Value(0)).current;
@@ -97,7 +99,7 @@ export default function DashboardListSheet({
   };
 
   return (
-    <Modal visible={visible} transparent>
+    <Modal visible={visible} transparent supportedOrientations={["portrait", "landscape"]}>
       <Animated.View
         style={{
           flex: 1,
@@ -141,6 +143,7 @@ export default function DashboardListSheet({
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}
+            key={isLandscape ? "landscape" : "portrait"}    
           />
         </Animated.View>
       </Animated.View>

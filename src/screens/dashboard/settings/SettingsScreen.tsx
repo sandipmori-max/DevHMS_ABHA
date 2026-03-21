@@ -16,6 +16,7 @@ import {
   Modal,
   Platform,
   Animated,
+  useWindowDimensions,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { styles } from "./settings_style";
@@ -69,6 +70,7 @@ interface LanguageOption {
 const HIDDEN_POSITION = 400;
 
 const SettingsScreen = () => {
+  
   const navigation = useNavigation();
   const { t, changeLanguage, getAvailableLanguages, getCurrentLanguage } =
     useTranslations();
@@ -344,7 +346,7 @@ const SettingsScreen = () => {
         >
           <MaterialIcons
             name={item?.icon}
-            color={theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_BLACK}
+            color={theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR}
             size={22}
           />
         </View>
@@ -481,6 +483,9 @@ const SettingsScreen = () => {
     ],
   });
 
+  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
+
   return (
     <View
       style={[
@@ -496,7 +501,7 @@ const SettingsScreen = () => {
     >
       <View
         style={{
-          height: Platform.OS === 'ios' ?  16  : 6,
+          height: Platform.OS === "ios" ? 16 : 6,
           width: "100%",
           backgroundColor:
             theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
@@ -505,119 +510,299 @@ const SettingsScreen = () => {
         }}
       ></View>
 
-      <ScrollView
-        style={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {/* Notifications */}
-        <Animated.View style={[styles.sectionContainer, animatedStyle(0)]}>
-          <Text
-            style={[
-              styles.sectionTitle,
-              theme === "dark" && { backgroundColor: "black", color: "white" },
-            ]}
-          >
-            {t("settings.notifications")}
-          </Text>
-          <FlatList
-            keyboardShouldPersistTaps="handled"
-            data={settings.filter((item) => item.id === "1" || item.id === "2")}
-            renderItem={renderSettingItem}
-            keyExtractor={(item, index) => index.toString()}
-            scrollEnabled={false}
-          />
-        </Animated.View>
+      {isLandscape ? (
+        <>
+          <View style={{ flexDirection: "row" }}>
+            <View style={{ width: "50%" }}>
+              <ScrollView
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContent}
+              >
+                <Animated.View
+                  style={[styles.sectionContainer, animatedStyle(0)]}
+                >
+                  <Text
+                    style={[
+                      styles.sectionTitle,
+                      theme === "dark" && {
+                        backgroundColor: "black",
+                        color: "white",
+                      },
+                    ]}
+                  >
+                    {t("settings.notifications")}
+                  </Text>
+                  <FlatList
+                  key={isLandscape ? "landscape" : "portrait"}    
+                    keyboardShouldPersistTaps="handled"
+                    data={settings.filter(
+                      (item) => item.id === "1" || item.id === "2",
+                    )}
+                    renderItem={renderSettingItem}
+                    keyExtractor={(item, index) => index.toString()}
+                    scrollEnabled={false}
+                  />
+                </Animated.View>
+                <Animated.View
+                  style={[styles.sectionContainer, animatedStyle(1)]}
+                >
+                  <Text
+                    style={[
+                      styles.sectionTitle,
+                      theme === "dark" && {
+                        backgroundColor: "black",
+                        color: "white",
+                      },
+                    ]}
+                  >
+                    {t("settings.appearance")}
+                  </Text>
+                  <FlatList
+                  key={isLandscape ? "landscape" : "portrait"}    
+                    keyboardShouldPersistTaps="handled"
+                    data={settings.filter((item) => item.id === "3")}
+                    renderItem={renderSettingItem}
+                    keyExtractor={(item, index) => index.toString()}
+                    scrollEnabled={false}
+                  />
+                </Animated.View>
+              </ScrollView>
+            </View>
 
-        {/* Appearance */}
-        <Animated.View style={[styles.sectionContainer, animatedStyle(1)]}>
-          <Text
-            style={[
-              styles.sectionTitle,
-              theme === "dark" && { backgroundColor: "black", color: "white" },
-            ]}
-          >
-            {t("settings.appearance")}
-          </Text>
-          <FlatList
-            keyboardShouldPersistTaps="handled"
-            data={settings.filter((item) => item.id === "3")}
-            renderItem={renderSettingItem}
-            keyExtractor={(item, index) => index.toString()}
-            scrollEnabled={false}
-          />
-        </Animated.View>
+            <View style={{ width: "50%" }}>
+              <ScrollView
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContent}
+              >
+                {/* Security */}
+                <Animated.View
+                  style={[styles.sectionContainer, animatedStyle(2)]}
+                >
+                  <Text
+                    style={[
+                      styles.sectionTitle,
+                      theme === "dark" && {
+                        backgroundColor: "black",
+                        color: "white",
+                      },
+                    ]}
+                  >
+                    {t("settings.security")}
+                  </Text>
+                  <FlatList
+                  key={isLandscape ? "landscape" : "portrait"}    
+                    keyboardShouldPersistTaps="handled"
+                    data={settings.filter(
+                      (item) => item.id === "4" || item.id === "5",
+                    )}
+                    renderItem={renderSettingItem}
+                    keyExtractor={(item, index) => index.toString()}
+                    scrollEnabled={false}
+                  />
+                </Animated.View>
 
-        {/* Security */}
-        <Animated.View style={[styles.sectionContainer, animatedStyle(2)]}>
-          <Text
-            style={[
-              styles.sectionTitle,
-              theme === "dark" && { backgroundColor: "black", color: "white" },
-            ]}
-          >
-            {t("settings.security")}
-          </Text>
-          <FlatList
-            keyboardShouldPersistTaps="handled"
-            data={settings.filter((item) => item.id === "4" || item.id === "5")}
-            renderItem={renderSettingItem}
-            keyExtractor={(item, index) => index.toString()}
-            scrollEnabled={false}
-          />
-        </Animated.View>
+                {/* General */}
+                <Animated.View
+                  style={[styles.sectionContainer, animatedStyle(3)]}
+                >
+                  <Text
+                    style={[
+                      styles.sectionTitle,
+                      theme === "dark" && {
+                        backgroundColor: "black",
+                        color: "white",
+                      },
+                    ]}
+                  >
+                    {t("settings.general")}
+                  </Text>
+                  <FlatList
+                  key={isLandscape ? "landscape" : "portrait"}    
+                    keyboardShouldPersistTaps="handled"
+                    data={settings.filter(
+                      (item) =>
+                        item.id === "6" || item.id === "7" || item.id === "8",
+                    )}
+                    renderItem={renderSettingItem}
+                    keyExtractor={(item, index) => index.toString()}
+                    scrollEnabled={false}
+                  />
+                </Animated.View>
 
-        {/* General */}
-        <Animated.View style={[styles.sectionContainer, animatedStyle(3)]}>
-          <Text
-            style={[
-              styles.sectionTitle,
-              theme === "dark" && { backgroundColor: "black", color: "white" },
-            ]}
-          >
-            {t("settings.general")}
-          </Text>
-          <FlatList
-            keyboardShouldPersistTaps="handled"
-            data={settings.filter(
-              (item) => item.id === "6" || item.id === "7" || item.id === "8",
-            )}
-            renderItem={renderSettingItem}
-            keyExtractor={(item, index) => index.toString()}
-            scrollEnabled={false}
-          />
-        </Animated.View>
+                {/* Account */}
+                <Animated.View
+                  style={[styles.sectionContainer, animatedStyle(4)]}
+                >
+                  <Text
+                    style={[
+                      styles.sectionTitle,
+                      theme === "dark" && {
+                        backgroundColor: "black",
+                        color: "white",
+                      },
+                    ]}
+                  >
+                    {t("settings.account")}
+                  </Text>
+                  <FlatList
+                    keyboardShouldPersistTaps="handled"
+                    data={settings.filter((item) => item.id === "9")}
+                    renderItem={renderSettingItem}
+                    keyExtractor={(item, index) => index.toString()}
+                    scrollEnabled={false}
+                    key={isLandscape ? "landscape" : "portrait"}    
+                  />
+                </Animated.View>
+              </ScrollView>
+            </View>
+          </View>
+        </>
+      ) : (
+        <ScrollView
+          style={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {/* Notifications */}
+          <Animated.View style={[styles.sectionContainer, animatedStyle(0)]}>
+            <Text
+              style={[
+                styles.sectionTitle,
+                theme === "dark" && {
+                  backgroundColor: "black",
+                  color: "white",
+                },
+              ]}
+            >
+              {t("settings.notifications")}
+            </Text>
+            <FlatList
+              keyboardShouldPersistTaps="handled"
+              data={settings.filter(
+                (item) => item.id === "1" || item.id === "2",
+              )}
+              key={isLandscape ? "landscape" : "portrait"}    
+              renderItem={renderSettingItem}
+              keyExtractor={(item, index) => index.toString()}
+              scrollEnabled={false}
+            />
+          </Animated.View>
 
-        {/* Account */}
-        <Animated.View style={[styles.sectionContainer, animatedStyle(4)]}>
-          <Text
-            style={[
-              styles.sectionTitle,
-              theme === "dark" && { backgroundColor: "black", color: "white" },
-            ]}
-          >
-            {t("settings.account")}
-          </Text>
-          <FlatList
-            keyboardShouldPersistTaps="handled"
-            data={settings.filter((item) => item.id === "9")}
-            renderItem={renderSettingItem}
-            keyExtractor={(item, index) => index.toString()}
-            scrollEnabled={false}
-          />
-        </Animated.View>
+          {/* Appearance */}
+          <Animated.View style={[styles.sectionContainer, animatedStyle(1)]}>
+            <Text
+              style={[
+                styles.sectionTitle,
+                theme === "dark" && {
+                  backgroundColor: "black",
+                  color: "white",
+                },
+              ]}
+            >
+              {t("settings.appearance")}
+            </Text>
+            <FlatList
+              keyboardShouldPersistTaps="handled"
+              data={settings.filter((item) => item.id === "3")}
+              renderItem={renderSettingItem}
+              keyExtractor={(item, index) => index.toString()}
+              scrollEnabled={false}
+              key={isLandscape ? "landscape" : "portrait"}    
+            />
+          </Animated.View>
 
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
+          {/* Security */}
+          <Animated.View style={[styles.sectionContainer, animatedStyle(2)]}>
+            <Text
+              style={[
+                styles.sectionTitle,
+                theme === "dark" && {
+                  backgroundColor: "black",
+                  color: "white",
+                },
+              ]}
+            >
+              {t("settings.security")}
+            </Text>
+            <FlatList
+              keyboardShouldPersistTaps="handled"
+              data={settings.filter(
+                (item) => item.id === "4" || item.id === "5",
+              )}
+              key={isLandscape ? "landscape" : "portrait"}    
+              renderItem={renderSettingItem}
+              keyExtractor={(item, index) => index.toString()}
+              scrollEnabled={false}
+            />
+          </Animated.View>
+
+          {/* General */}
+          <Animated.View style={[styles.sectionContainer, animatedStyle(3)]}>
+            <Text
+              style={[
+                styles.sectionTitle,
+                theme === "dark" && {
+                  backgroundColor: "black",
+                  color: "white",
+                },
+              ]}
+            >
+              {t("settings.general")}
+            </Text>
+            <FlatList
+              keyboardShouldPersistTaps="handled"
+              data={settings.filter(
+                (item) => item.id === "6" || item.id === "7" || item.id === "8",
+              )}
+              key={isLandscape ? "landscape" : "portrait"}    
+              renderItem={renderSettingItem}
+              keyExtractor={(item, index) => index.toString()}
+              scrollEnabled={false}
+            />
+          </Animated.View>
+
+          {/* Account */}
+          <Animated.View style={[styles.sectionContainer, animatedStyle(4)]}>
+            <Text
+              style={[
+                styles.sectionTitle,
+                theme === "dark" && {
+                  backgroundColor: "black",
+                  color: "white",
+                },
+              ]}
+            >
+              {t("settings.account")}
+            </Text>
+            <FlatList
+            key={isLandscape ? "landscape" : "portrait"}    
+              keyboardShouldPersistTaps="handled"
+              data={settings.filter((item) => item.id === "9")}
+              renderItem={renderSettingItem}
+              keyExtractor={(item, index) => index.toString()}
+              scrollEnabled={false}
+            />
+          </Animated.View>
+
+          <View style={styles.bottomSpacing} />
+        </ScrollView>
+      )}
+
       <Modal
         visible={languageModalVisible}
         transparent
         animationType="none"
+        supportedOrientations={["portrait", "landscape"]}
         onRequestClose={closeWithAnimation}
       >
         <Animated.View
-          style={[languageStyles.modalOverlay, { opacity: overlayOpacity }]}
+          style={[languageStyles.modalOverlay,isLandscape && {
+                          alignContent:'center',
+                          alignItems:'center'
+                        }]}
         >
           <Animated.View
             style={[
@@ -627,7 +812,10 @@ const SettingsScreen = () => {
                 borderWidth: 1,
                 borderColor: "white",
               },
-              { transform: [{ translateY }] },
+              { transform: [{ translateY }] }
+              , {
+          width: isLandscape ? '50%' : '100%'
+        }
             ]}
           >
             {/* Header */}
@@ -655,6 +843,7 @@ const SettingsScreen = () => {
               renderItem={renderLanguageOption}
               keyExtractor={(_, index) => index.toString()}
               style={languageStyles.languageList}
+              key={isLandscape ? "landscape" : "portrait"}    
             />
           </Animated.View>
         </Animated.View>

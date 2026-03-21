@@ -7,11 +7,12 @@ import ProfileTab from "../screens/dashboard/tabs/profile/ProfileTab";
 import useTranslations from "../hooks/useTranslations";
 import { useAppSelector } from "../store/hooks";
 import AnimatedTabIcon from "../components/tab_icon/AnimatedTabIcon";
-import { Platform } from "react-native";
+import { Platform, useWindowDimensions } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
+  
   const theme = useAppSelector((state) => state.theme.mode);
   const { t } = useTranslations();
   const { appBottomMenuList } = useAppSelector((state) => state?.auth);

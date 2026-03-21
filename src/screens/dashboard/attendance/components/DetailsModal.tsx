@@ -64,6 +64,7 @@ const DetailsBottomSheet = ({ visible, onClose, item, baseLink }: any) => {
       visible={visible}
       transparent
       onRequestClose={onClose}
+      supportedOrientations={["portrait", "landscape"]}
     >
       <Animated.View
         style={{

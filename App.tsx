@@ -7,6 +7,8 @@ import {
   View,
   Animated,
   Easing,
+  Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import { Provider } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
@@ -45,6 +47,8 @@ const App = () => {
 };
 
 const AppContent = () => {
+  const { width, height } = useWindowDimensions();
+
   const isConnected = useNetworkStatus();
   const theme = useAppSelector((state) => state?.theme?.mode);
 
@@ -142,8 +146,8 @@ const AppContent = () => {
   // 🔥 Terms
   if (!accepted) {
     return <TermsAndConsent onAccept={handleAccept} />;
-  }
-
+  } 
+ 
   return (
     <>
       <StatusBar backgroundColor={statusBarColor} barStyle={barStyle} />
@@ -152,6 +156,7 @@ const AppContent = () => {
       <Animated.View
         style={{
           flex: 1,
+          width:width,
           opacity: appOpacity,
           transform: [{ translateY: appTranslateY }],
         }}
@@ -163,7 +168,9 @@ const AppContent = () => {
 
         <SafeAreaView
           edges={["left", "right", "bottom"]}
-          style={styles.safeArea}
+          style={[styles.safeArea,
+          
+          ]}
         >
           <NavigationContainer>
             <RootNavigator />

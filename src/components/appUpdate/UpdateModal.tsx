@@ -7,13 +7,15 @@ import {
   TouchableOpacity,
   Animated,
   Linking,
+  useWindowDimensions,
 } from 'react-native';
 import { styles } from './style';
 
 const UpdateModal = ({ visible, forceUpdate, storeUrl, onSkip }: any) => {
   const {t} = useTranslation()
   const scale = useRef(new Animated.Value(0.7)).current;
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   useEffect(() => {
     if (visible) {
       Animated.spring(scale, {
@@ -24,9 +26,17 @@ const UpdateModal = ({ visible, forceUpdate, storeUrl, onSkip }: any) => {
   }, [visible]);
 
   return (
-    <Modal transparent visible={visible} animationType="fade">
-      <View style={styles.overlay}>
-        <Animated.View style={[styles.container, { transform: [{ scale }] }]}>
+    <Modal supportedOrientations={["portrait", "landscape"]} transparent visible={visible} animationType="fade">
+      <View style={[styles.overlay,isLandscape && {
+        alignContent:'center',
+        alignItems:'center'
+      }]}>
+        <Animated.View style={[ 
+          styles.container, { transform: [{ scale }] },
+          
+            {
+          width: isLandscape ? '50%' : '100%'
+        },]}>
           <Text style={styles.title}>{t('test13')}</Text>
 
           <Text style={styles.desc}>

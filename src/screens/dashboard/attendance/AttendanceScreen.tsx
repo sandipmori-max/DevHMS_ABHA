@@ -16,6 +16,7 @@ import {
   Dimensions,
   Modal,
   ImageBackground,
+  useWindowDimensions,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import {
@@ -49,7 +50,8 @@ const AttendanceScreen = () => {
   const dispatch = useAppDispatch();
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const [resData, setResData] = useState<any>();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
@@ -346,8 +348,11 @@ const AttendanceScreen = () => {
         )}
 
         {showDatePicker?.show && Platform.OS === "ios" && (
-          <Modal transparent animationType="slide" statusBarTranslucent>
-            <View style={styles.overlay}>
+          <Modal transparent animationType="slide" supportedOrientations={["portrait", "landscape"]} statusBarTranslucent>
+            <View style={[styles.overlay,isLandscape && {
+                            alignContent:'center',
+                            alignItems:'center'
+                          }]}>
               <View
                 style={[
                   styles.sheet,

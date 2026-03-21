@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Alert,
+  useWindowDimensions,
 } from "react-native";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import TextRecognition from "@react-native-ml-kit/text-recognition";
@@ -37,7 +38,8 @@ const BusinessCardView = ({
   const [cacheBuster, setCacheBuster] = useState(Date.now());
   const [showPicker, setShowPicker] = useState(false);
   const { t } = useTranslations();
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const getImageUri = (type: "small" | "large") => {
     const base =
       imageUri ||
@@ -436,6 +438,7 @@ const BusinessCardView = ({
       </View>
 
       <Modal
+      supportedOrientations={["portrait", "landscape"]}
         visible={showPicker}
         transparent
         animationType="fade"

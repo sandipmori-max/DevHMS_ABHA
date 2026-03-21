@@ -6,6 +6,7 @@ import {
   View,
   Animated,
   Text,
+  useWindowDimensions,
 } from "react-native";
 import React, {
   useEffect,
@@ -62,6 +63,8 @@ const MenuTab = ({
   setHideTab,
   hideTab,
 }: any) => {
+  const { height, width } = useWindowDimensions(); // ✅ FIX
+    const isLandscape = width > height;
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const { menu, error, isMenuLoading, isAuthenticated, activeToken, user } =
@@ -489,10 +492,10 @@ useEffect(() => {
   if (list.length === 0) return <NoData />;
   const groupedList = [];
 
-  for (let i = 0; i < list.length; i += 6) {
+  for (let i = 0; i < list.length; i += 8) {
     groupedList.push({
-      header: `Header ${i / 6}`,
-      data: list.slice(i, i + 6),
+      header: `Header ${i / 8}`,
+      data: list.slice(i, i + 8),
     });
   }
   return (
@@ -515,6 +518,7 @@ useEffect(() => {
         <>
           <FlatList
             data={groupedList}
+           key={`${isHorizontal}-${showBookmarksOnly}-${searchText}`} 
             keyExtractor={(_, index) => index.toString()}
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => (
@@ -563,7 +567,7 @@ useEffect(() => {
                     <View
                       key={childIndex}
                       style={{
-                        width: "33%",
+                        width: "25%",
                       }}
                     >
                       {renderItem({ item: child, index: childIndex })}
@@ -580,7 +584,7 @@ useEffect(() => {
             key={`${isHorizontal}-${showBookmarksOnly}-${searchText}`}
             data={list}
             renderItem={renderItem}
-            numColumns={isHorizontal ? 1 : list.length > 8 ? 3 : 2}
+            numColumns={isLandscape ?  isHorizontal ? 2 : 4 : isHorizontal ? 1 : list.length > 8 ? 3 : 2}
             columnWrapperStyle={
               !isHorizontal ? styles.columnWrapper : undefined
             }

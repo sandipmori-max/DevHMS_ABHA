@@ -6,6 +6,7 @@ import {
   Animated,
   Easing,
   Text,
+  useWindowDimensions,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
@@ -21,7 +22,8 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   const scaleAnim = useRef(new Animated.Value(0.6)).current;
   const textTranslateY = useRef(new Animated.Value(30)).current;
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+      const isLandscape = width > height;
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
   const { user } = useAppSelector((state) => state.auth);

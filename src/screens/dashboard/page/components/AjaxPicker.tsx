@@ -6,6 +6,7 @@ import {
   View,
   Modal,
   ScrollView,
+  useWindowDimensions,
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { styles } from "../page_style";
@@ -28,7 +29,8 @@ const AjaxPicker = ({
   formValues,
 }: any) => {
   const dispatch = useAppDispatch();
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const [selectedOption, setSelectedOption] = useState(
     dtext || item?.text || item?.value,
   );
@@ -198,13 +200,15 @@ const AjaxPicker = ({
         />
       </TouchableOpacity>
 
-      <Modal visible={open} animationType="slide" transparent>
+      <Modal visible={open} supportedOrientations={["portrait", "landscape"]} animationType="slide" transparent>
         <View
-          style={{
-            flex: 1,
-            justifyContent: "flex-end",
-            backgroundColor: "rgba(0,0,0,0.4)",
-          }}
+          style={
+            [styles.overlay,isLandscape && {
+                            alignContent:'center',
+                            alignItems:'center'
+                          }]
+            
+            }
         >
           <View
             style={[
@@ -219,7 +223,10 @@ const AjaxPicker = ({
               theme === "dark" && {
                 borderWidth: 1,
                 borderColor: "white",
-              },
+              }
+              , {
+          width: isLandscape ? '50%' : '100%'
+        }
             ]}
           >
             <View
@@ -259,7 +266,7 @@ const AjaxPicker = ({
                 placeholderTextColor={ERP_COLOR_CODE.ERP_888}
                 value={search}
                 onChangeText={setSearch}
-                autoFocus={true}
+                autoFocus={isLandscape ? false : true}
               />
 
               {search?.length > 0 && (

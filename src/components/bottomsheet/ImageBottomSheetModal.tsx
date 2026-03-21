@@ -7,6 +7,7 @@ import {
   Animated,
   Image,
   ActivityIndicator,
+  useWindowDimensions,
 } from 'react-native';
 import { useAppSelector } from '../../store/hooks';
 import { styles } from './style';
@@ -23,7 +24,8 @@ const ImageBottomSheetModal = ({
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const theme = useAppSelector(state => state?.theme.mode);
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   useEffect(() => {
     if (visible) {
       setShowModal(true);
@@ -47,21 +49,28 @@ const ImageBottomSheetModal = ({
   if (!showModal) return null;
 
   return (
-    <Modal transparent animationType="none">
+    <Modal supportedOrientations={["portrait", "landscape"]} transparent animationType="none">
       <TouchableOpacity
         activeOpacity={1}
-        style={styles.overlay}
+        style={[styles.overlay,isLandscape && {
+                alignContent:'center',
+                alignItems:'center'
+              }]}
         onPress={onClose}
       >
         <Animated.View
           style={[
+            
             styles.container,
             { transform: [{ translateY }] },
             theme === 'dark' && {
               backgroundColor: 'black',
               borderWidth: 1,
               borderColor: 'white'
-            }
+            },
+            {
+          width: isLandscape ? '50%' : '100%'
+        },
           ]}
         >
           {/* Handle */}

@@ -297,7 +297,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
                           ? '#FFF'
                           : isActive
                             ? '#FFF'
-                            : '#000'
+                            : ERP_COLOR_CODE.ERP_APP_COLOR
                       }
                     />
                     <TranslatedText

@@ -11,6 +11,7 @@ import {
   ScrollView,
   Animated,
   Easing,
+  useWindowDimensions,
 } from "react-native";
 
 import AccountSwitcher from "./components/AccountSwitcher";
@@ -36,7 +37,8 @@ const ProfileTab = () => {
   const baseLink = useBaseLink();
   const theme = useAppSelector((state) => state?.theme.mode);
   const [isSwitchAccountOpen, setIsSwitchAccountOpen] = useState(false);
-
+  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const handleAddAccount = () => {
     setTapLoader(true);
     setTimeout(() => {
@@ -145,7 +147,154 @@ const ProfileTab = () => {
         }}
       ></View>
 
-      <ScrollView
+{
+  isLandscape ? <>
+  <View style={{flexDirection:'row'}}>
+<View style={{width: '50%'}}>
+ {/* Profile Card */}
+        <Animated.View
+          style={{
+            opacity: profileAnim,
+            transform: [
+              {
+                translateY: profileAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [30, 0], // slide up
+                }),
+              },
+            ],
+          }}
+        >
+          <ProfileSection
+            user={user}
+            baseLink={baseLink}
+            onEditPress={() =>
+              navigation.navigate("Page", {
+                id: user?.id,
+                title: t("profile.myProfile"),
+                isFromNew: false,
+                url: "UserProfile",
+                isFromProfile: true,
+              })
+            }
+          />
+        </Animated.View>
+</View>
+<View style={{width: '50%'}}>
+   <Animated.View
+          style={{
+            marginTop: 18,
+            opacity: accountAnim,
+            transform: [
+              {
+                translateY: accountAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [24, 0],
+                }),
+              },
+            ],
+          }}
+        >
+          <View
+            style={[
+              styles.sectionContainer,
+              theme === "dark" && {
+                borderWidth: 1,
+                borderColor: "white",
+                borderRadius: 8,
+                backgroundColor: "black",
+              },
+            ]}
+          >
+            <Text
+              style={[
+                styles.sectionTitle,
+                theme === "dark" && {
+                  backgroundColor: "black",
+                  color: "white",
+                  borderBottomWidth: 1,
+                  borderBottomColor: "white",
+                },
+              ]}
+            >
+              {t("profile.accountManagement")}
+            </Text>
+
+            <TouchableOpacity
+              style={styles.settingCard}
+              onPress={() => {
+                setIsSwitchAccountOpen(true);
+                setShowAccountSwitcher(true);
+              }}
+            >
+              <View style={styles.settingHeader}>
+                <View style={styles.settingIcon}>
+                  <MaterialIcons
+                    name={"group"}
+                    color={
+                      theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR
+                    }
+                    size={22}
+                  />
+                </View>
+                <View style={styles.settingInfo}>
+                  <Text
+                    style={[
+                      styles.settingTitle,
+                      theme === "dark" && {
+                        color: "white",
+                      },
+                    ]}
+                  >
+                    {t("profile.manageAccounts")}
+                  </Text>
+                  <Text style={styles.settingSubtitle}>
+                    {accounts?.length} {t("profile.account")}
+                    {accounts?.length !== 1 ? "s" : ""} {t("profile.available")}
+                  </Text>
+                </View>
+                <Text style={styles.arrowIcon}>›</Text>
+              </View>
+            </TouchableOpacity>
+
+            {activeAccount && (
+              <View style={styles.settingCard}>
+                <View style={[styles.settingHeader]}>
+                  <View style={styles.settingIcon}>
+                    <MaterialIcons
+                      name={"access-time"}
+                      color={
+                        theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR
+                      }
+                      size={22}
+                    />
+                  </View>
+                  <View style={styles.settingInfo}>
+                    <Text
+                      style={[
+                        styles.settingTitle,
+                        theme === "dark" && {
+                          color: "white",
+                        },
+                      ]}
+                    >
+                      {t("profile.lastLogin")}
+                    </Text>
+                    <TranslatedText
+                      numberOfLines={1}
+                      text={formatDateHr(activeAccount?.lastLoginAt, false)}
+                      style={styles.settingSubtitle}
+                    ></TranslatedText>
+                  </View>
+                </View>
+              </View>
+            )}
+          </View>
+        </Animated.View>
+</View>
+  </View>
+  
+  </> :  <ScrollView
         style={[
           styles.scrollContainer,
           theme === "dark" && {
@@ -240,7 +389,7 @@ const ProfileTab = () => {
                   <MaterialIcons
                     name={"group"}
                     color={
-                      theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_BLACK
+                      theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR
                     }
                     size={22}
                   />
@@ -272,7 +421,7 @@ const ProfileTab = () => {
                     <MaterialIcons
                       name={"access-time"}
                       color={
-                        theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_BLACK
+                        theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR
                       }
                       size={22}
                     />
@@ -301,6 +450,8 @@ const ProfileTab = () => {
         </Animated.View>
         <View style={styles.bottomSpacing} />
       </ScrollView>
+}
+     
 
       <AccountSwitcher
         visible={showAccountSwitcher}

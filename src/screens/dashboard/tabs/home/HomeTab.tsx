@@ -53,18 +53,20 @@ import {
   Alert,
   Modal,
   Platform,
+  useWindowDimensions,
 } from "react-native";
 import TranslatedText from "./TranslatedText";
 import GreetingBottomSheet from "./GreetingBottomSheet";
 
-const { width } = Dimensions.get("screen");
-
+ 
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;
   return /<([a-z]+)([^>]*?)>/i.test(str);
 };
 
 const HomeScreen = ({ setHideTab, hideTab }) => {
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
@@ -188,8 +190,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       return () => {};
     }, [isAuthenticated, navigation]),
   );
-
-  useEffect(() => {
+   useEffect(() => {
     Animated.loop(
       Animated.timing(translateX, {
         toValue: -350,
@@ -965,15 +966,21 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
               </>
             )}
             {showDatePicker?.show && Platform.OS === "ios" && (
-              <Modal transparent animationType="slide" statusBarTranslucent>
-                <View style={styles.overlay}>
+              <Modal transparent animationType="slide" supportedOrientations={["portrait", "landscape"]} statusBarTranslucent>
+                <View style={[styles.overlay,isLandscape && {
+                                alignContent:'center',
+                                alignItems:'center'
+                              }]}>
                   <View
                     style={[
                       styles.sheet,
                       theme === "dark" && {
                         borderWidth: 1,
                         borderColor: "white",
-                      },
+                      }
+                      , {
+          width: isLandscape ? '50%' : '100%'
+        }
                     ]}
                   >
                     {/* Divider */}
@@ -1095,8 +1102,133 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
             ></TranslatedText>
           </Animated.View>
         )}
+        {
+          isLandscape && isFilterVisible &&  (
+            <View style={{flexDirection:'row'}}
+            >
+<View
+              style={[
+                styles.dateContainer,
+                {
+                  marginTop: 8,
+                  marginHorizontal: 4,
+                },
+                {
+                width: '50%'
 
-        {isFilterVisible && (
+                }
+              ]}
+            >
+              {isFilterVisible &&
+                controls
+                  .filter((x) => x.ctltype === "DATE")
+                  .map((item, index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.dateRow,
+                        {
+                          width: "48%",
+                        },
+                      ]}
+                    >
+                      <Text style={{marginBottom: 12, color:'white'}}>{item?.field}</Text>
+                      <TouchableOpacity
+                        onPress={() =>
+                          setShowDatePicker({
+                            type: item.field === "fromdate" ? "from" : "to",
+                            show: true,
+                          })
+                        }
+                        style={[
+                          styles.dateButton,
+                          {
+                            width: "98%",
+                          },
+                        ]}
+                      >
+                        <View
+                          style={{ flexDirection: "row", alignItems: "center" }}
+                        >
+                          <MaterialIcons
+                            name="calendar-today"
+                            size={18}
+                            color="#fff"
+                            style={{ marginRight: 8 }}
+                          />
+                          <TranslatedText
+                            numberOfLines={1}
+                            text={
+                              item.field === "fromdate"
+                                ? fromDate || "Select From Date"
+                                : toDate || "Select To Date"
+                            }
+                            style={[styles.dateButtonText, { color: "#FFF" }]}
+                          ></TranslatedText>
+                        </View>
+                      </TouchableOpacity>
+                      {index === 0 && <View style={{ height: 1, width: 8 }} />}
+                    </View>
+                  ))}
+                  
+            </View>
+<View style={{
+  width: '50%'
+}}>
+   {isLandscape && isFilterVisible && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginTop: 4,
+                  marginHorizontal: 4,
+                }}
+              >
+                {controls
+                  .filter((x) => x.ctltype !== "DATE" && x.field !== "userid")
+                  .map((item, index) => (
+                    <>
+                      <View style={{ width: "49.5%" }}>
+                        <CustomPicker
+                          isForceOpen={false}
+                          isValidate={false}
+                          label={item.title}
+                          selectedValue={() => {}}
+                          dtext={
+                            item?.title === "Branch"
+                              ? auth?.dashboardBranch || item.dtext
+                              : auth.dashboardType || item?.dtext
+                          }
+                          onValueChange={(i) => {
+                            if (item?.title === "Branch") {
+                              dispatch(
+                                setActiveDashboardBranchId(
+                                  i?.value?.toString(),
+                                ),
+                              );
+                              dispatch(setActiveDashboardBranch(i?.name));
+                            } else {
+                              dispatch(setActiveDashboardType(i?.name));
+                              dispatch(
+                                setActiveDashboardTypeId(i?.value?.toString()),
+                              );
+                            }
+                          }}
+                          options={[]}
+                          item={item}
+                          errors={null}
+                          formValues={null}
+                        />
+                      </View>
+                    </>
+                  ))}
+              </View>
+            )}
+  </View>
+            </View>
+          )
+        }
+        {!isLandscape && isFilterVisible && (
           <>
             <View
               style={[
@@ -1157,9 +1289,10 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                       {index === 0 && <View style={{ height: 1, width: 8 }} />}
                     </View>
                   ))}
+                  
             </View>
 
-            {isFilterVisible && (
+            {!isLandscape && isFilterVisible && (
               <View
                 style={{
                   flexDirection: "row",
@@ -1212,15 +1345,21 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         )}
 
         {showDatePicker?.show && Platform.OS === "ios" && (
-          <Modal transparent animationType="slide" statusBarTranslucent>
-            <View style={styles.overlay}>
+          <Modal transparent animationType="slide"  supportedOrientations={["portrait", "landscape"]} statusBarTranslucent>
+            <View style={[styles.overlay,isLandscape && {
+                            alignContent:'center',
+                            alignItems:'center'
+                          }]}>
               <View
                 style={[
                   styles.sheet,
                   theme === "dark" && {
                     borderWidth: 1,
                     borderColor: "white",
-                  },
+                  }
+                  , {
+          width: isLandscape ? '50%' : '100%'
+        }
                 ]}
               >
                 {/* Divider */}
@@ -1299,6 +1438,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       </View>
       <FlatList
         data={[""]}
+        key={isLandscape ? "landscape" : "portrait"}    
         showsVerticalScrollIndicator={false}
         renderItem={() => {
           return (
@@ -1377,11 +1517,10 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                           </View>
                           <View style={styles.dashboardSection}>
                             <FlatList
-                              key={`${isHorizontal}`}
-                              keyboardShouldPersistTaps="handled"
+key={isLandscape ? "landscape" : "portrait"}                                  keyboardShouldPersistTaps="handled"
                               data={[...textItems, ...emptyItems]}
                               keyExtractor={(item, index) => index.toString()}
-                              numColumns={isHorizontal ? 1 : 2}
+                              numColumns={isLandscape ? isHorizontal ? 2 : 4 :  isHorizontal ? 1 : 2}
                               columnWrapperStyle={
                                 !isHorizontal ? styles.columnWrapper : undefined
                               }
@@ -1407,8 +1546,8 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                             ]}
                           >
                             <FlatList
-                              key={`${isHorizontal}`}
-                              keyboardShouldPersistTaps="handled"
+                      key={isLandscape ? "landscape" : "portrait"}          
+                      keyboardShouldPersistTaps="handled"
                               data={htmlItems}
                               keyExtractor={(item, index) => index.toString()}
                               renderItem={({ item, index }) =>
@@ -1419,6 +1558,8 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                   isFromMenu: true,
                                 })
                               }
+                              numColumns={isLandscape  ? 2 : 1}
+
                               showsVerticalScrollIndicator={false}
                             />
                           </View>

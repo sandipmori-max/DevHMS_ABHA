@@ -1,4 +1,4 @@
-import { Text, View, TextInput, TouchableOpacity, Alert, Modal, Platform, Animated, ActivityIndicator } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity, Alert, Modal, Platform, Animated, ActivityIndicator, useWindowDimensions } from 'react-native';
 import React, { useEffect, useLayoutEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 
@@ -17,9 +17,7 @@ import CustomAlert from '../../../components/alert/CustomAlert';
 import { handleDeleteActionThunk, handlePageActionThunk } from '../../../store/slices/page/thunk';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
-import useTranslations from '../../../hooks/useTranslations';
-import { tags } from 'react-native-svg/lib/typescript/xmlTags';
-import { JumpingTransition } from 'react-native-reanimated';
+import useTranslations from '../../../hooks/useTranslations'; 
 import TranslatedText from '../tabs/home/TranslatedText';
 
 const ListScreen = () => {
@@ -48,7 +46,8 @@ const ListScreen = () => {
   const [parsedError, setParsedError] = useState<any>();
   const [apiError, setApiError] = useState<any>(false);
   const [tapLoader, setTapLoader] = useState(false)
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   useEffect(() => {
     return (() => {
       setTapLoader(false)
@@ -564,13 +563,19 @@ const ListScreen = () => {
           )}
 
           {showDatePicker?.show && Platform.OS === 'ios' && (
-            <Modal transparent animationType="slide" statusBarTranslucent>
-              <View style={styles.overlay}>
+            <Modal transparent animationType="slide" statusBarTranslucent supportedOrientations={["portrait", "landscape"]}>
+              <View style={[styles.overlay,isLandscape && {
+                              alignContent:'center',
+                              alignItems:'center'
+                            }]}>
                <View style={[styles.sheet,
                              theme === 'dark' && {
                                borderWidth: 1,
                                borderColor: 'white'
                              }
+                             , {
+          width: isLandscape ? '50%' : '100%'
+        }
                              ]}>
                                {/* Divider */}
                                <View style={[

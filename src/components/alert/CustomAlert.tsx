@@ -9,6 +9,7 @@ import {
   BackHandler,
   Animated,
   Easing,
+  useWindowDimensions,
 } from "react-native";
 import FastImage from "react-native-fast-image";
 
@@ -44,7 +45,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   const alertStyles = getAlertStyles(type);
   const gifSource = getGifSource(type);
   const theme = useAppSelector((state) => state?.theme.mode);
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const [remarks, setRemarks] = useState("");
   const [error, setError] = useState("");
 
@@ -129,11 +131,18 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
       onRequestClose={() => {
         onClose();
       }}
+      supportedOrientations={["portrait", "landscape"]}
     >
-      <View style={styles.overlay}>
+      <View style={[styles.overlay,isLandscape && {
+        alignContent:'center',
+        alignItems:'center'
+      }]}>
         <Animated.View
           style={[
             styles.bottomSheet,
+            {
+          width: isLandscape ? '50%' : '100%'
+        },
             alertStyles.container,
             theme === "dark" && {
               backgroundColor: "black",

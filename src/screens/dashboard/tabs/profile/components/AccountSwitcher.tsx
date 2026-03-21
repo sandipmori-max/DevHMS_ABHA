@@ -9,6 +9,7 @@ import {
   Animated,
   Easing,
   Platform,
+  useWindowDimensions,
 } from "react-native";
 import { styles } from "./components_style";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
@@ -62,7 +63,8 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
   const { t } = useTranslation();
   const { execute: validateCompanyCode } = useApi();
   const theme = useAppSelector((state) => state?.theme.mode);
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const [showModal, setShowModal] = useState(false);
   const [img, setImg] = useState("");
   const { accounts, activeAccountId, user } = useAppSelector(
@@ -217,6 +219,8 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
             },
             //  { scale: pressItemAnim },
           ],
+          width: isLandscape ? '50%' : '100%',
+          marginLeft: isLandscape ? 4 : 0
         }}
       >
         <TouchableOpacity
@@ -424,7 +428,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
   };
 
   return (
-    <Modal visible={visible} transparent onRequestClose={handleClose}>
+    <Modal visible={visible} transparent  supportedOrientations={["portrait", "landscape"]} onRequestClose={handleClose}>
       <Animated.View
         style={[
           styles.container,
@@ -440,12 +444,16 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
             ],
             opacity: slideAnim,
           },
+          isLandscape && {
+            marginTop : -2
+          }
         ]}
       >
         <View
           style={[
             styles.header,
             theme === "dark" && { backgroundColor: "black" },
+            
           ]}
         >
           <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
@@ -461,11 +469,13 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
         </View>
 
         <FlatList
+        key={isLandscape ? "landscape" : "portrait"}    
           data={accounts}
           renderItem={renderAccount}
           keyExtractor={(item, index) => index.toString()}
           style={styles.accountsList}
           showsVerticalScrollIndicator={false}
+          numColumns={isLandscape ? 2 : 1}
         />
 
         <Animated.View

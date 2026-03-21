@@ -10,6 +10,7 @@ import {
   Dimensions,
   Image,
   TouchableWithoutFeedback,
+  useWindowDimensions,
 } from "react-native";
 import SignatureScreen, {
   SignatureViewRef,
@@ -32,7 +33,8 @@ const SignaturePad: React.FC = ({
   const [cacheBuster, setCacheBuster] = useState(Date.now());
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const handleSignature = (signature: string) => {
     setSavedSignature(signature);
     handleSignatureAttachment(`${item?.field}.jpeg; ${signature}`, item?.field);
@@ -101,6 +103,7 @@ const SignaturePad: React.FC = ({
       <Modal
         animationType="slide"
         transparent
+        supportedOrientations={["portrait", "landscape"]}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >

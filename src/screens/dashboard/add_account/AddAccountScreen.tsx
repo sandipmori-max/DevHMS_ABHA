@@ -14,6 +14,7 @@ import {
   Dimensions,
   ScrollView,
   KeyboardAvoidingView,
+  useWindowDimensions,
 } from "react-native";
 import { Formik } from "formik";
 
@@ -55,7 +56,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
 }) => {
   const { t } = useTranslation();
   const baseLink = useBaseLink();
-
+  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const dispatch = useAppDispatch();
   const theme = useAppSelector((state) => state?.theme.mode);
 
@@ -360,13 +362,18 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
       useNativeDriver: true,
     }).start();
   };
-useEffect(() => {
-  Image.prefetch(`${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`)
-    .then(() => setImageExists(true))
-    .catch(() => setImageExists(false));
-}, [baseLink]);
+  useEffect(() => {
+    Image.prefetch(`${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`)
+      .then(() => setImageExists(true))
+      .catch(() => setImageExists(false));
+  }, [baseLink]);
   return (
-    <Modal visible={visible} transparent onRequestClose={handleClose}>
+    <Modal
+      visible={visible}
+      transparent
+      supportedOrientations={["portrait", "landscape"]}
+      onRequestClose={handleClose}
+    >
       <ImageBackground
         source={theme === "dark" ? "" : ERP_GIF.BACK_IMG}
         style={{
@@ -378,6 +385,9 @@ useEffect(() => {
           style={[
             styles.header,
             theme === "dark" && { backgroundColor: "black" },
+            isLandscape && {
+              marginTop: 10,
+            },
           ]}
         >
           <TouchableOpacity
@@ -413,51 +423,21 @@ useEffect(() => {
           style={{ flex: 1 }}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
-            <Animated.View
-              style={[
-                styles.container,
-                theme === "dark" && { backgroundColor: "black" },
-                {
-                  transform: [
-                    {
-                      translateY: slideAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [800, 0],
-                      }),
-                    },
-                  ],
-                  opacity: slideAnim,
-                },
-                theme === "dark" && {
-                  marginTop: 0,
-                },
-              ]}
-            >
-              <FlatList
-                showsHorizontalScrollIndicator={false}
-                showsVerticalScrollIndicator={false}
-                keyExtractor={(item, index) => index.toString()}
-                keyboardShouldPersistTaps="handled"
-                data={[""]}
-                renderItem={() => (
-                  <Animated.View
+          {isLandscape ? (
+            <>
+              <>
+                <View style={{ flexDirection: "row" }}>
+                  <View
                     style={{
-                      opacity: formAnim,
-                      transform: [
-                        {
-                          translateY: formAnim.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [50, 0],
-                          }),
-                        },
-                      ],
+                      width: "50%",
+
+                      padding: 24,
+                      justifyContent: "center",
+                      alignContent: "center",
+                      alignItems: "center",
                     }}
                   >
-                    <View style={styles.formContainer}>
+                    <>
                       <View
                         style={{
                           alignContent: "center",
@@ -483,7 +463,7 @@ useEffect(() => {
                             {
                               marginTop: 0,
                             },
-                          ]} 
+                          ]}
                           onError={() => {
                             setImageExists(false);
                           }}
@@ -500,6 +480,12 @@ useEffect(() => {
                         {t("account.msg")}
                       </Text>
 
+                      <Text style={styles.note}>{t("account.msg1")}</Text>
+                    </>
+                  </View>
+
+                  <View style={{ width: "50%", padding: 2 }}>
+                    <ScrollView>
                       <Formik
                         initialValues={{
                           company_code: "",
@@ -898,81 +884,597 @@ useEffect(() => {
                                   </Text>
                                 </TouchableOpacity>
                               </Animated.View>
-
-                              <Text style={styles.note}>
-                                {t("account.msg1")}
-                              </Text>
                             </>
                           );
                         }}
                       </Formik>
-                    </View>
-                    <View style={{ height: 150 }} />
-                  </Animated.View>
-                )}
-              />
-              <CustomAlert
-                visible={alertVisible}
-                title={alertConfig.title}
-                message={alertConfig.message}
-                type={alertConfig.type}
-                onClose={async () => {
-                  setLoader(false);
-                  setAlertVisible(false);
-                  DevERPService.setAppId(user?.app_id);
-                  DevERPService.setToken(user?.token);
-                  await AsyncStorage.setItem("erp_token", user?.token || "");
-                  await AsyncStorage.setItem("auth_token", user?.token || "");
-                  await AsyncStorage.setItem(
-                    "erp_token_valid_till",
-                    user?.tokenValidTill || "",
-                  );
+                    </ScrollView>
+                  </View>
+                </View>
+              </>
+            </>
+          ) : (
+            <>
+              <ScrollView
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+              >
+                <Animated.View
+                  style={[
+                    styles.container,
+                    theme === "dark" && { backgroundColor: "black" },
+                    {
+                      transform: [
+                        {
+                          translateY: slideAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [800, 0],
+                          }),
+                        },
+                      ],
+                      opacity: slideAnim,
+                    },
+                    theme === "dark" && {
+                      marginTop: 0,
+                    },
+                  ]}
+                >
+                  <FlatList
+                    showsHorizontalScrollIndicator={false}
+                    showsVerticalScrollIndicator={false}
+                    keyExtractor={(item, index) => index.toString()}
+                    keyboardShouldPersistTaps="handled"
+                    data={[""]}
+                    renderItem={() => (
+                      <Animated.View
+                        style={{
+                          opacity: formAnim,
+                          transform: [
+                            {
+                              translateY: formAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [50, 0],
+                              }),
+                            },
+                          ],
+                        }}
+                      >
+                        <View style={styles.formContainer}>
+                          <View
+                            style={{
+                              alignContent: "center",
+                              alignSelf: "center",
+                              borderRadius: 20,
+                              height: 100,
+                              width: 140,
+                              marginBottom: 12,
+                              backgroundColor: !imageExists ? "none" : "white",
+                            }}
+                          >
+                            <FastImage
+                              source={
+                                !imageExists
+                                  ? ERP_ICON.APP_LOGO
+                                  : {
+                                      uri: `${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`,
+                                    }
+                              }
+                              // source={ERP_ICON.APP_LOGO}
+                              style={[
+                                styles.logo,
+                                {
+                                  marginTop: 0,
+                                },
+                              ]}
+                              onError={() => {
+                                setImageExists(false);
+                              }}
+                              resizeMode="contain"
+                            />
+                          </View>
 
-                  DevERPService.setAppId(user?.app_id || "");
-                  const validation = await validateCompanyCode(() =>
-                    DevERPService.validateCompanyCode(user?.company_code),
-                  );
+                          <Text
+                            style={[
+                              styles.subtitle,
+                              theme === "dark" && { color: "white" },
+                            ]}
+                          >
+                            {t("account.msg")}
+                          </Text>
 
-                  const currentFcmToken =
-                    Platform.OS === "ios"
-                      ? ""
-                      : fcmToken || (await getMessaging().getToken());
+                          <Formik
+                            initialValues={{
+                              company_code: "",
+                              user: "",
+                              password: "",
+                            }}
+                            validationSchema={erpAddAccountValidationSchema(t)}
+                            onSubmit={handleAddAccount}
+                          >
+                            {({
+                              handleChange,
+                              handleBlur,
+                              handleSubmit,
+                              values,
+                              errors,
+                              touched,
+                            }) => {
+                              useEffect(() => {
+                                if (
+                                  touched?.company_code &&
+                                  errors?.company_code
+                                ) {
+                                  ccErrorAnim.setValue(0);
+                                  Animated.timing(ccErrorAnim, {
+                                    toValue: 1,
+                                    duration: 280,
+                                    easing: Easing.out(Easing.ease),
+                                    useNativeDriver: true,
+                                  }).start();
+                                }
+                              }, [touched?.company_code, errors?.company_code]);
 
-                  const loginResult = await loginWithERP(() =>
-                    DevERPService.loginToERP({
-                      user: user?.username,
-                      pass: user?.password,
-                      firebaseid: currentFcmToken,
-                    }),
-                  );
+                              useEffect(() => {
+                                if (touched?.user && errors?.user) {
+                                  userErrorAnim.setValue(0);
+                                  Animated.timing(userErrorAnim, {
+                                    toValue: 1,
+                                    duration: 280,
+                                    easing: Easing.out(Easing.ease),
+                                    useNativeDriver: true,
+                                  }).start();
+                                }
+                              }, [touched?.user, errors?.user]);
 
-                  DevERPService.setToken(loginResult?.token);
-                  await AsyncStorage.setItem(
-                    "erp_token",
-                    loginResult?.token || "",
-                  );
-                  await AsyncStorage.setItem(
-                    "auth_token",
-                    loginResult?.token || "",
-                  );
-                  await AsyncStorage.setItem(
-                    "erp_token_valid_till",
-                    loginResult?.tokenValidTill || "",
-                  );
+                              useEffect(() => {
+                                if (touched?.password && errors?.password) {
+                                  passErrorAnim.setValue(0);
+                                  Animated.timing(passErrorAnim, {
+                                    toValue: 1,
+                                    duration: 280,
+                                    easing: Easing.out(Easing.ease),
+                                    useNativeDriver: true,
+                                  }).start();
+                                }
+                              }, [touched?.password, errors?.password]);
 
-                  setAlertVisible(false);
-                  setLoader(false);
-                  setAlertConfig({
-                    title: t("test4"),
-                    message: loginResult?.message || t("msg.msg2"),
-                    type: "error",
-                  });
-                }}
-                actionLoader={undefined}
-                closeHide={undefined}
-              />
-            </Animated.View>
-          </ScrollView>
+                              return (
+                                <>
+                                  {/* Company Code Input */}
+                                  <View style={styles.inputContainer}>
+                                    <Text
+                                      style={[
+                                        styles.inputLabel,
+                                        theme === "dark" && { color: "white" },
+                                      ]}
+                                    >
+                                      {t("account.companyCode")}
+                                    </Text>
+                                    <View
+                                      style={[
+                                        styles.inputContainer,
+                                        {
+                                          justifyContent: "center",
+                                          alignContent: "center",
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          borderRadius: 8,
+                                          borderWidth: 1,
+                                          borderColor:
+                                            ERP_COLOR_CODE.ERP_BORDER_LINE,
+                                          paddingLeft: 12,
+                                        },
+                                        touched?.company_code &&
+                                          errors?.company_code && {
+                                            borderColor:
+                                              ERP_COLOR_CODE.ERP_ERROR,
+                                            borderWidth: 0.8,
+                                          },
+                                        isInputEditCC && {
+                                          borderColor: "#81b5e4",
+                                          borderWidth: 0.8,
+                                        },
+                                        values?.company_code && {
+                                          borderColor: "green",
+                                          borderWidth: 0.8,
+                                        },
+                                        theme === "dark" && {
+                                          backgroundColor: "black",
+                                        },
+                                      ]}
+                                    >
+                                      <MaterialIcons
+                                        name="closed-caption-off"
+                                        size={20}
+                                        color={ERP_COLOR_CODE.ERP_999}
+                                      />
+                                      <TextInput
+                                        style={[
+                                          styles.input,
+                                          theme === "dark" && {
+                                            backgroundColor: "black",
+                                            color: "white",
+                                          },
+                                        ]}
+                                        placeholder={t("auth.enterCompanyCode")}
+                                        placeholderTextColor={
+                                          ERP_COLOR_CODE.ERP_999
+                                        }
+                                        autoCapitalize="none"
+                                        onChangeText={handleChange(
+                                          "company_code",
+                                        )}
+                                        value={values?.company_code}
+                                        onFocus={() => setIsInputEditCC(true)}
+                                        onBlur={() => {
+                                          if (!values?.company_code) {
+                                            handleBlur("company_code");
+                                            setIsInputEditCC(false);
+                                          }
+                                        }}
+                                      />
+                                    </View>
+                                    {touched?.company_code &&
+                                      errors?.company_code && (
+                                        <Animated.Text
+                                          style={[
+                                            styles.errorText,
+                                            {
+                                              opacity: ccErrorAnim,
+                                              transform: [
+                                                {
+                                                  translateX:
+                                                    ccErrorAnim.interpolate({
+                                                      inputRange: [0, 1],
+                                                      outputRange: [-38, 0], // slide from LEFT
+                                                    }),
+                                                },
+                                              ],
+                                            },
+                                          ]}
+                                        >
+                                          {errors?.company_code}
+                                        </Animated.Text>
+                                      )}
+                                  </View>
+
+                                  {/* User Input */}
+                                  <View style={styles.inputContainer}>
+                                    <Text
+                                      style={[
+                                        styles.inputLabel,
+                                        theme === "dark" && { color: "white" },
+                                      ]}
+                                    >
+                                      {t("auth.user")}
+                                    </Text>
+                                    <View
+                                      style={[
+                                        styles.inputContainer,
+                                        {
+                                          justifyContent: "center",
+                                          alignContent: "center",
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          borderRadius: 8,
+                                          borderWidth: 1,
+                                          borderColor:
+                                            ERP_COLOR_CODE.ERP_BORDER_LINE,
+                                          paddingLeft: 12,
+                                        },
+                                        touched?.user &&
+                                          errors?.user && {
+                                            borderColor:
+                                              ERP_COLOR_CODE.ERP_ERROR,
+                                            borderWidth: 0.8,
+                                          },
+                                        isInputEditUSer && {
+                                          borderColor: "#81b5e4",
+                                          borderWidth: 0.8,
+                                        },
+                                        values?.user && {
+                                          borderColor: "green",
+                                          borderWidth: 0.8,
+                                        },
+                                      ]}
+                                    >
+                                      <MaterialIcons
+                                        name="person"
+                                        size={20}
+                                        color={ERP_COLOR_CODE.ERP_999}
+                                      />
+                                      <TextInput
+                                        style={[
+                                          styles.input,
+                                          theme === "dark" && {
+                                            backgroundColor: "black",
+                                            color: "white",
+                                          },
+                                        ]}
+                                        placeholder={t("auth.enterUser")}
+                                        placeholderTextColor={
+                                          ERP_COLOR_CODE.ERP_999
+                                        }
+                                        autoCapitalize="none"
+                                        onChangeText={handleChange("user")}
+                                        value={values?.user}
+                                        onFocus={() => setIsInputEditUser(true)}
+                                        onBlur={() => {
+                                          if (!values?.user) {
+                                            handleBlur("user");
+                                            setIsInputEditUser(false);
+                                          }
+                                        }}
+                                      />
+                                    </View>
+                                    {touched?.user && errors?.user && (
+                                      <Animated.Text
+                                        style={[
+                                          styles.errorText,
+                                          {
+                                            opacity: userErrorAnim,
+                                            transform: [
+                                              {
+                                                translateX:
+                                                  userErrorAnim.interpolate({
+                                                    inputRange: [0, 1],
+                                                    outputRange: [-38, 0],
+                                                  }),
+                                              },
+                                            ],
+                                          },
+                                        ]}
+                                      >
+                                        {errors?.user}
+                                      </Animated.Text>
+                                    )}
+                                  </View>
+
+                                  {/* Password Input */}
+                                  <View style={styles.inputContainer}>
+                                    <Text
+                                      style={[
+                                        styles.inputLabel,
+                                        theme === "dark" && { color: "white" },
+                                      ]}
+                                    >
+                                      {t("auth.password")}
+                                    </Text>
+                                    <View
+                                      style={[
+                                        styles.inputContainer,
+                                        {
+                                          justifyContent: "center",
+                                          alignContent: "center",
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          borderRadius: 8,
+                                          borderWidth: 1,
+                                          borderColor:
+                                            ERP_COLOR_CODE.ERP_BORDER_LINE,
+                                          paddingLeft: 12,
+                                        },
+                                        touched?.password &&
+                                          errors?.password && {
+                                            borderColor:
+                                              ERP_COLOR_CODE.ERP_ERROR,
+                                            borderWidth: 0.8,
+                                          },
+                                        isInputEditPass && {
+                                          borderColor: "#81b5e4",
+                                          borderWidth: 0.8,
+                                        },
+                                        values?.password && {
+                                          borderColor: "green",
+                                          borderWidth: 0.8,
+                                        },
+                                      ]}
+                                    >
+                                      <MaterialIcons
+                                        name="password"
+                                        size={20}
+                                        color={ERP_COLOR_CODE.ERP_999}
+                                      />
+                                      <TextInput
+                                        style={[
+                                          styles.input1,
+                                          theme === "dark" && {
+                                            backgroundColor: "black",
+                                            color: "white",
+                                          },
+                                        ]}
+                                        placeholder={t("auth.enterPassword")}
+                                        secureTextEntry={!showPassword}
+                                        placeholderTextColor={
+                                          ERP_COLOR_CODE.ERP_999
+                                        }
+                                        value={values?.password}
+                                        onChangeText={handleChange("password")}
+                                        onFocus={() => setIsInputEditPass(true)}
+                                        onBlur={() => {
+                                          if (!values?.password) {
+                                            handleBlur("password");
+                                            setIsInputEditPass(false);
+                                          }
+                                        }}
+                                      />
+                                      <TouchableOpacity
+                                        onPress={() =>
+                                          setShowPassword((s) => !s)
+                                        }
+                                        style={styles.toggleButton}
+                                      >
+                                        <MaterialIcons
+                                          name={
+                                            !showPassword
+                                              ? "visibility-off"
+                                              : "visibility"
+                                          }
+                                          color={ERP_COLOR_CODE.ERP_999}
+                                          size={20}
+                                        />
+                                      </TouchableOpacity>
+                                    </View>
+                                    {touched?.password && errors?.password && (
+                                      <Animated.Text
+                                        style={[
+                                          styles.errorText,
+                                          {
+                                            opacity: passErrorAnim,
+                                            transform: [
+                                              {
+                                                translateX:
+                                                  passErrorAnim.interpolate({
+                                                    inputRange: [0, 1],
+                                                    outputRange: [-38, 0],
+                                                  }),
+                                              },
+                                            ],
+                                          },
+                                        ]}
+                                      >
+                                        {errors?.password}
+                                      </Animated.Text>
+                                    )}
+                                  </View>
+
+                                  {/* Add Button */}
+                                  <Animated.View
+                                    style={{
+                                      opacity: buttonAnim,
+                                      transform: [
+                                        {
+                                          translateY: buttonAnim.interpolate({
+                                            inputRange: [0, 1],
+                                            outputRange: [50, 0],
+                                          }),
+                                        },
+                                        { scale: pressAnim }, // 👈 press animation
+                                      ],
+                                    }}
+                                  >
+                                    <TouchableOpacity
+                                      style={[
+                                        styles.addButton,
+                                        loader && styles.disabledButton,
+                                        theme === "dark" && {
+                                          backgroundColor: "white",
+                                          borderColor: "white",
+                                          borderWidth: 1,
+                                        },
+                                      ]}
+                                      onPress={() => handleSubmit()}
+                                      onPressIn={onPressIn}
+                                      onPressOut={onPressOut}
+                                      disabled={loader}
+                                      activeOpacity={1} // avoid opacity conflict
+                                    >
+                                      <MaterialIcons
+                                        name="person-add-alt"
+                                        size={24}
+                                        color={
+                                          theme === "dark"
+                                            ? "black"
+                                            : ERP_COLOR_CODE.ERP_WHITE
+                                        }
+                                      />
+                                      <Text
+                                        style={[
+                                          styles.addButtonText,
+                                          theme === "dark" && {
+                                            color: "black",
+                                          },
+                                        ]}
+                                      >
+                                        {loader
+                                          ? t("account.adding")
+                                          : t("account.add")}
+                                      </Text>
+                                    </TouchableOpacity>
+                                  </Animated.View>
+
+                                  <Text style={styles.note}>
+                                    {t("account.msg1")}
+                                  </Text>
+                                </>
+                              );
+                            }}
+                          </Formik>
+                        </View>
+                        <View style={{ height: 150 }} />
+                      </Animated.View>
+                    )}
+                  />
+                  <CustomAlert
+                    visible={alertVisible}
+                    title={alertConfig.title}
+                    message={alertConfig.message}
+                    type={alertConfig.type}
+                    onClose={async () => {
+                      setLoader(false);
+                      setAlertVisible(false);
+                      DevERPService.setAppId(user?.app_id);
+                      DevERPService.setToken(user?.token);
+                      await AsyncStorage.setItem(
+                        "erp_token",
+                        user?.token || "",
+                      );
+                      await AsyncStorage.setItem(
+                        "auth_token",
+                        user?.token || "",
+                      );
+                      await AsyncStorage.setItem(
+                        "erp_token_valid_till",
+                        user?.tokenValidTill || "",
+                      );
+
+                      DevERPService.setAppId(user?.app_id || "");
+                      const validation = await validateCompanyCode(() =>
+                        DevERPService.validateCompanyCode(user?.company_code),
+                      );
+
+                      const currentFcmToken =
+                        Platform.OS === "ios"
+                          ? ""
+                          : fcmToken || (await getMessaging().getToken());
+
+                      const loginResult = await loginWithERP(() =>
+                        DevERPService.loginToERP({
+                          user: user?.username,
+                          pass: user?.password,
+                          firebaseid: currentFcmToken,
+                        }),
+                      );
+
+                      DevERPService.setToken(loginResult?.token);
+                      await AsyncStorage.setItem(
+                        "erp_token",
+                        loginResult?.token || "",
+                      );
+                      await AsyncStorage.setItem(
+                        "auth_token",
+                        loginResult?.token || "",
+                      );
+                      await AsyncStorage.setItem(
+                        "erp_token_valid_till",
+                        loginResult?.tokenValidTill || "",
+                      );
+
+                      setAlertVisible(false);
+                      setLoader(false);
+                      setAlertConfig({
+                        title: t("test4"),
+                        message: loginResult?.message || t("msg.msg2"),
+                        type: "error",
+                      });
+                    }}
+                    actionLoader={undefined}
+                    closeHide={undefined}
+                  />
+                </Animated.View>
+              </ScrollView>
+            </>
+          )}
         </KeyboardAvoidingView>
       </ImageBackground>
     </Modal>

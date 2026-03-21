@@ -10,6 +10,7 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  useWindowDimensions,
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { checkAuthStateThunk } from "../store/slices/auth/thunk";
@@ -81,7 +82,8 @@ const RootNavigator = () => {
     PERMISSION_DENIED: t("text1"),
     SERVICE_DISABLED: t("text2"),
   };
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const { isLoading, isAuthenticated, accounts, user, appColorCode } =
     useAppSelector((state) => state.auth);
   const { reLoading } = useAppSelector((state) => state.reloadApp);
@@ -382,9 +384,14 @@ const RootNavigator = () => {
         />
       )}
       {isAuthenticated && (
-        <Modal visible={backgroundDeniedModal} transparent>
-          <View style={styles.overlay}>
-            <View style={styles.modalContainer}>
+        <Modal visible={backgroundDeniedModal} supportedOrientations={["portrait", "landscape"]} transparent>
+          <View style={[styles.overlay,isLandscape && {
+                          alignContent:'center',
+                          alignItems:'center'
+                        }]}>
+            <View style={[styles.modalContainer, {
+              
+            }]}>
               <Text style={styles.title}>{t("test21")}</Text>
               <Text style={styles.message}>{t("test22")}</Text>
               <TouchableOpacity

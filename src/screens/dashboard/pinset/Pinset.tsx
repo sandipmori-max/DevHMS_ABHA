@@ -14,6 +14,7 @@ import {
   Animated,
   Easing,
   Platform,
+  useWindowDimensions,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DARK_COLOR, ERP_COLOR_CODE } from "../../../utils/constants";
@@ -48,6 +49,8 @@ const PinSetupScreen = () => {
   const dispatch = useAppDispatch();
   const theme = useAppSelector((state) => state.theme.mode);
   const [menuVisible, setMenuVisible] = useState(false);
+  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
 
   // PIN visual & stored
   const [pin, setPin] = useState<string>("");
@@ -662,7 +665,237 @@ const PinSetupScreen = () => {
           },
         ]}
       >
-        {/* Header */}
+        <View>
+        {
+          isLandscape ? <View style={{
+            flexDirection:'row'
+          }}> 
+          
+          <View style={{width: '50%',
+              justifyContent:'center',
+              alignContent:'center',
+              alignItems:'center',
+
+          }}>
+               <Animated.Text
+          style={[
+            styles.title,
+            {
+              textAlign:'center'
+            },
+            theme === "dark" && { color: "white" },
+            {
+              opacity: titleAnim,
+              transform: [
+                {
+                  translateY: titleAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-10, 0],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          {(() => {
+            if (screen === "verify") return t("text47");
+            if (screen === "setup") return t("text46");
+            if (screen === "confirm") return t("text45");
+            if (screen === "change_verify") return t("text44");
+            if (screen === "change_setup") return t("text43");
+            if (screen === "change_confirm") return t("text42");
+            if (screen === "remove_verify") return t("text41");
+            if (screen === "remove_confirm") return t("text40");
+            if (screen === "forgot_setup") return t("text39");
+            if (screen === "forgot_confirm") return t("text38");
+            if (screen === "blocked") return t("text37");
+            return storedPin ? t("text35") : t("text36");
+          })()}
+        </Animated.Text>
+
+        <Animated.Text
+          style={[
+            styles.subtitle,
+            
+            theme === "dark" && { color: "white" },
+            {
+              opacity: subtitleAnim,
+              transform: [
+                {
+                  translateY: subtitleAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-6, 0],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          {renderSubtitle()}
+        </Animated.Text>
+
+         
+            </View>
+             <View style={{
+              justifyContent:'center',
+              alignContent:'center',
+              alignItems:'center',
+              width: '50%'}}>
+               {/* PIN Circles */}
+        <View style={[styles.pinRow,{
+          marginBottom: 20,
+        }]}>
+          {[0, 1, 2, 3].map((i) => (
+            <Animated.View
+              key={i}
+              style={[
+                styles.pinCircle,
+                {
+                  backgroundColor:
+                    i < pin.length
+                      ? theme === "dark"
+                        ? "white"
+                        : ERP_COLOR_CODE.ERP_APP_COLOR
+                      : theme === "dark"
+                      ? DARK_COLOR
+                      : "#e5e7eb",
+
+                  transform: [
+                    // Screen-load scale
+                    {
+                      scale: Animated.multiply(
+                        pinAnims[i].interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [0.6, 1],
+                        }),
+                        // Highlight pulse
+                        pinPulseAnims[i].interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [1, 1.25],
+                        }),
+                      ),
+                    },
+                  ],
+                  opacity: pinAnims[i],
+                },
+              ]}
+            />
+          ))}
+        </View>
+                <View style={[styles.keypad, {
+                  width: '80%'
+                }]}>
+          {[
+            ["1", "2", "3"],
+            ["4", "5", "6"],
+            ["7", "8", "9"],
+            ["del", "0", "ok"],
+          ]
+            .flat()
+            .map((key, index) => {
+              const rowIndex = Math.floor(index / 3);
+              const colIndex = index % 3;
+
+              return (
+                colIndex === 0 && (
+                  <View key={rowIndex} style={[styles.keypadRow,{
+                    marginBottom : 12
+                  }]}>
+                    {[0, 1, 2].map((offset) => {
+                      const keyIndex = rowIndex * 3 + offset;
+                      const item = [
+                        ["1", "2", "3"],
+                        ["4", "5", "6"],
+                        ["7", "8", "9"],
+                        ["del", "0", "ok"],
+                      ][rowIndex][offset];
+
+                      return (
+                        <Animated.View
+                          key={item}
+                          style={{
+                            opacity: keyAnims[keyIndex],
+                            transform: [
+                              {
+                                scale: Animated.multiply(
+                                  // Screen load animation
+                                  keyAnims[keyIndex].interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [0.85, 1],
+                                  }),
+                                  // Press pulse animation
+                                  keyPulseAnims[keyIndex].interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [1, 1.2],
+                                  }),
+                                ),
+                              },
+                            ],
+                          }}
+                        >
+                          <TouchableOpacity
+                            style={[
+                              styles.key,
+                              theme === "dark" && {
+                                borderWidth: 1,
+                                borderColor: "white",
+                              },
+                              {
+                                height: 48,
+                                width: 48
+                              }
+                              
+                            ]}
+                            onPress={() => {
+                              if (screen === "blocked") return;
+
+                              // 🔔 trigger highlight
+                              triggerKeyPulse(keyIndex);
+
+                              if (item === "del") handleDelete();
+                              else if (item === "ok") handleOk();
+                              else handleKeyPress(item);
+                            }}
+                          >
+                            {item === "del" ? (
+                              <MaterialIcons
+                                name="backspace"
+                                size={28}
+                                color="#374151"
+                              />
+                            ) : item === "ok" ? (
+                              <MaterialIcons
+                                name="check-circle"
+                                size={32}
+                                color={pin.length === 4 ? "#16a34a" : "#9ca3af"}
+                              />
+                            ) : (
+                              <Text
+                                style={[
+                                  styles.keyText,
+                                  theme === "dark" && {
+                                    color: "white",
+                                  },
+                                ]}
+                              >
+                                {item}
+                              </Text>
+                            )}
+                          </TouchableOpacity>
+                        </Animated.View>
+                      );
+                    })}
+                  </View>
+                )
+              );
+            })}
+        </View>
+            </View>
+          </View> : <View style={{ 
+            justifyContent:'center',
+            alignContent:'center',
+            alignItems:'center', }}>
+           {/* Header */}
         <Animated.Text
           style={[
             styles.title,
@@ -856,6 +1089,12 @@ const PinSetupScreen = () => {
               );
             })}
         </View>
+          </View>
+          
+        }
+
+        </View>
+       
 
         <CustomAlert
           visible={alertVisible}

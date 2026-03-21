@@ -14,6 +14,7 @@ import {
   LayoutAnimation,
   UIManager,
   Platform,
+  useWindowDimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -120,7 +121,8 @@ const ReadableView = ({
   const slideAnim = useRef(new Animated.Value(300)).current; // right se start
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
+ const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   useEffect(() => {
     Animated.parallel([
       Animated.timing(slideAnim, {
@@ -221,6 +223,7 @@ const ReadableView = ({
             paddingTop: 6,
             borderWidth: 1,
             borderColor: ERP_COLOR_CODE.ERP_ddd,
+            width: isLandscape ? '48%' : '100%'
           }}
         >
           {/* main touchable */}
@@ -620,6 +623,8 @@ const ReadableView = ({
         renderItem={({ item, index }) => (
           <RenderCard item={item} index={index} />
         )}
+        key={isLandscape ? "landscape" : "portrait"}    
+        numColumns={isLandscape ? 2 : 1}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         onEndReached={loadMore}

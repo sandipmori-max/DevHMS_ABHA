@@ -84,8 +84,8 @@ export const CameraScanner = ({
 
   if (isFocused && device) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <Modal presentationStyle="fullScreen" animationType="slide">
+      <SafeAreaView style={styles.safeArea} >
+        <Modal supportedOrientations={["portrait", "landscape"]} presentationStyle="fullScreen" animationType="slide">
           {/* ---------- Header ---------- */}
           <View style={uiStyles.header}>
             <Text style={uiStyles.headerTitle}>{t('test19')}</Text>

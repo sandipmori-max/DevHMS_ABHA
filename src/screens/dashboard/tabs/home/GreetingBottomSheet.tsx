@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Modal, View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from "react-native";
 import TypingDots from "./TypingDots";
 
 const GreetingBottomSheet = ({
@@ -9,7 +9,8 @@ const GreetingBottomSheet = ({
   onClose,
 }: any) => {
   const [displayText, setDisplayText] = useState("");
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   useEffect(() => {
     if (!visible) {
       setDisplayText("");
@@ -31,9 +32,14 @@ const GreetingBottomSheet = ({
   }, [visible, message]);
 
   return (
-    <Modal visible={visible} transparent animationType="slide">
-      <View style={styles.overlay}>
-        <View style={styles.sheet}>
+    <Modal visible={visible} supportedOrientations={["portrait", "landscape"]} transparent animationType="slide">
+      <View style={[styles.overlay,isLandscape && {
+        alignContent:'center',
+        alignItems:'center'
+      }]}>
+        <View style={[styles.sheet, {
+          width: isLandscape ? '50%' : '100%'
+        }]}>
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.aiRow}>

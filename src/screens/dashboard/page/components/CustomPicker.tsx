@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
   ScrollView,
+  useWindowDimensions,
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { styles } from "../page_style";
@@ -33,7 +34,8 @@ const CustomPicker = ({
   isForceOpen,
 }: any) => {
   const { t } = useTranslations();
-
+const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<any[]>([]);
   const dispatch = useAppDispatch();
@@ -197,7 +199,7 @@ const CustomPicker = ({
       </TouchableOpacity>
 
       {/* Bottom Sheet Modal */}
-      <Modal transparent visible={open} animationType="none">
+      <Modal transparent visible={open} animationType="none" supportedOrientations={["portrait", "landscape"]}>
         {/* Close outside area */}
         <TouchableWithoutFeedback onPress={closeBottomSheet}>
           <View style={{ flex: 1, backgroundColor: "#00000066" }} />
@@ -205,11 +207,10 @@ const CustomPicker = ({
 
         {/* Bottom Sheet */}
         <Animated.View
-          style={{
+          style={[{
             position: "absolute",
             top: slideAnim,
-            left: 0,
-            right: 0,
+           
             height: SCREEN_HEIGHT * 0.75,
             backgroundColor: theme === "dark" ? "black" : "white",
             borderTopLeftRadius: 16,
@@ -217,14 +218,28 @@ const CustomPicker = ({
             padding: 16,
             borderWidth: 1,
             borderColor: theme === "dark" ? "white" : "black",
-          }}
+            width: isLandscape ? '50%' : '100%'
+          },
+          !isLandscape && {
+             left: 0,
+            right: 0,
+          },
+          isLandscape && {
+             right: width * 0.25,
+             justifyContent:'center'
+          }
+        
+        ]}
         >
           <View
-            style={{
+            style={[{
               flexDirection: "row",
               justifyContent: "space-between",
               padding: 4,
-            }}
+            }, isLandscape && {
+                alignContent:'center',
+                alignItems:'center'
+              }]}
           >
             <TranslatedText
               style={{

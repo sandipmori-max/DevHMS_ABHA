@@ -8,6 +8,7 @@ import {
   Animated,
   Easing,
   PanResponder,
+  useWindowDimensions,
 } from "react-native";
 import { styles } from "../page_style";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
@@ -22,7 +23,8 @@ const HIDDEN_POSITION = 300;
 const ErrorModal = ({ visible, errors, onClose }: any) => {
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
-
+  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const isLandscape = width > height;
   const translateY = useRef(new Animated.Value(HIDDEN_POSITION)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
 
@@ -84,9 +86,22 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
   }, [visible]);
 
   return (
-    <Modal visible={visible} transparent animationType="none">
+    <Modal
+      visible={visible}
+      transparent
+      supportedOrientations={["portrait", "landscape"]}
+      animationType="none"
+    >
       <View {...panResponder.panHandlers}></View>
-      <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
+      <Animated.View
+        style={[
+          styles.overlay,
+          isLandscape && {
+            alignContent: "center",
+            alignItems: "center",
+          },
+        ]}
+      >
         <Animated.View
           style={[
             styles.bottomSheet,
@@ -95,6 +110,9 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
               backgroundColor: "black",
               borderWidth: 1,
               borderColor: "white",
+            },
+            {
+              width: isLandscape ? "80%" : "100%",
             },
           ]}
         >
@@ -156,22 +174,58 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
             </View>
           </View>
 
-          {/* CONTENT – NOT DRAGGABLE */}
-          <View style={{ alignItems: "center" }}>
-            <FastImage
-              source={ERP_ICON.VALIDATON}
-              style={{ height: 160, width: 120 }}
-              resizeMode="contain"
-            />
-          </View>
+          {isLandscape ? (
+            <>
+              <View style={{ flexDirection: "row" }}>
+                <View
+                  style={{
+                    width: "50%",
+                  }}
+                >
+                  <View style={{ alignItems: "center" }}>
+                    <FastImage
+                      source={ERP_ICON.VALIDATON}
+                      style={{ height: 160, width: 120 }}
+                      resizeMode="contain"
+                    />
+                  </View>
+                </View>
 
-          <FlatList
-            data={errors}
-            keyExtractor={(_, i) => i.toString()}
-            renderItem={({ item }) => (
-              <Text style={styles.errorText}>• {item}</Text>
-            )}
-          />
+                <View
+                  style={{
+                    width: "50%",
+                  }}
+                >
+                  <FlatList
+                    data={errors}
+                    keyExtractor={(_, i) => i.toString()}
+                    renderItem={({ item }) => (
+                      <Text style={styles.errorText}>• {item}</Text>
+                    )}
+                  />
+                </View>
+              </View>
+            </>
+          ) : (
+            <>
+              {/* CONTENT – NOT DRAGGABLE */}
+              <View style={{ alignItems: "center" }}>
+                <FastImage
+                  source={ERP_ICON.VALIDATON}
+                  style={{ height: 160, width: 120 }}
+                  resizeMode="contain"
+                />
+              </View>
+
+              <FlatList
+                data={errors}
+                keyExtractor={(_, i) => i.toString()}
+                renderItem={({ item }) => (
+                  <Text style={styles.errorText}>• {item}</Text>
+                )}
+              />
+            </>
+          )}
         </Animated.View>
       </Animated.View>
     </Modal>
