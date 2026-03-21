@@ -20,7 +20,7 @@ import FilePickerRow from "../page/components/FilePicker";
 const FileFolderManager = () => {
   const [items, setItems] = useState([]);
   const [currentFolder, setCurrentFolder] = useState(null);
-const { height, width } = useWindowDimensions(); // ✅ FIX
+const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);

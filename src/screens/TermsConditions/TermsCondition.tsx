@@ -16,7 +16,7 @@ const TermsAndConsent = ({ onAccept }: any) => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [locationAccepted, setLocationAccepted] = useState(false);
-const { height, width } = useWindowDimensions(); // ✅ FIX
+const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const handleTermsContinue = () => {
     if (!termsAccepted) {

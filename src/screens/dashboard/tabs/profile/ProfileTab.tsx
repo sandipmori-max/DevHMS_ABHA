@@ -37,7 +37,7 @@ const ProfileTab = () => {
   const baseLink = useBaseLink();
   const theme = useAppSelector((state) => state?.theme.mode);
   const [isSwitchAccountOpen, setIsSwitchAccountOpen] = useState(false);
-  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const handleAddAccount = () => {
     setTapLoader(true);

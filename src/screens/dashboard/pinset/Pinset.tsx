@@ -49,7 +49,7 @@ const PinSetupScreen = () => {
   const dispatch = useAppDispatch();
   const theme = useAppSelector((state) => state.theme.mode);
   const [menuVisible, setMenuVisible] = useState(false);
-  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
 
   // PIN visual & stored

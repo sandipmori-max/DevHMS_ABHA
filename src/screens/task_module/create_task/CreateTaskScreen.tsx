@@ -23,7 +23,7 @@ const dummyUsers = [
 const CreateTaskScreen = ({ onCreate }) => {
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
-const { height, width } = useWindowDimensions(); // ✅ FIX
+const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   // dropdown
   const [dropdownVisible, setDropdownVisible] = useState(false);

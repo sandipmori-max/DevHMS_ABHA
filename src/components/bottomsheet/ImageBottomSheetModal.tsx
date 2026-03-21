@@ -24,7 +24,7 @@ const ImageBottomSheetModal = ({
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const theme = useAppSelector(state => state?.theme.mode);
-const { height, width } = useWindowDimensions(); // ✅ FIX
+const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   useEffect(() => {
     if (visible) {

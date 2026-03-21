@@ -82,7 +82,7 @@ const RootNavigator = () => {
     PERMISSION_DENIED: t("text1"),
     SERVICE_DISABLED: t("text2"),
   };
-const { height, width } = useWindowDimensions(); // ✅ FIX
+const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const { isLoading, isAuthenticated, accounts, user, appColorCode } =
     useAppSelector((state) => state.auth);

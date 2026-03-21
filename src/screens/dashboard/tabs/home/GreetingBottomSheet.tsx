@@ -9,7 +9,7 @@ const GreetingBottomSheet = ({
   onClose,
 }: any) => {
   const [displayText, setDisplayText] = useState("");
-const { height, width } = useWindowDimensions(); // ✅ FIX
+const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   useEffect(() => {
     if (!visible) {

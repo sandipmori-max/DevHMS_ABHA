@@ -34,7 +34,7 @@ const CustomPicker = ({
   isForceOpen,
 }: any) => {
   const { t } = useTranslations();
-const { height, width } = useWindowDimensions(); // ✅ FIX
+const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<any[]>([]);

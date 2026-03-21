@@ -29,7 +29,7 @@ const AjaxPicker = ({
   formValues,
 }: any) => {
   const dispatch = useAppDispatch();
-const { height, width } = useWindowDimensions(); // ✅ FIX
+const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const [selectedOption, setSelectedOption] = useState(
     dtext || item?.text || item?.value,

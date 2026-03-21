@@ -23,7 +23,7 @@ const HIDDEN_POSITION = 300;
 const ErrorModal = ({ visible, errors, onClose }: any) => {
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
-  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const translateY = useRef(new Animated.Value(HIDDEN_POSITION)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;

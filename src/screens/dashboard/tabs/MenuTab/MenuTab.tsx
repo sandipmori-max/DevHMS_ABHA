@@ -63,7 +63,7 @@ const MenuTab = ({
   setHideTab,
   hideTab,
 }: any) => {
-  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const { height, width } = useWindowDimensions();  
     const isLandscape = width > height;
   const navigation = useNavigation();
   const dispatch = useAppDispatch();

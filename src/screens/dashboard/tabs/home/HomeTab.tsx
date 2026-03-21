@@ -65,7 +65,7 @@ const hasHtmlContent = (str: string) => {
 };
 
 const HomeScreen = ({ setHideTab, hideTab }) => {
-const { height, width } = useWindowDimensions(); // ✅ FIX
+const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const { t } = useTranslation();
   const navigation = useNavigation<any>();

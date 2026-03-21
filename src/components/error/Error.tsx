@@ -72,7 +72,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, visible = true , i
       });
     }
   }, [visible, message]);
- const { height, width } = useWindowDimensions(); // ✅ FIX
+ const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   if (!shouldRender) return null;
 

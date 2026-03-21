@@ -25,7 +25,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
   const theme = useAppSelector((state) => state?.theme.mode);
 
   const [isVisibleFullMode, setIsVisibleFullMode] = useState(false);
-  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
 
   return (

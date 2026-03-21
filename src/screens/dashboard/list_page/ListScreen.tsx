@@ -46,7 +46,7 @@ const ListScreen = () => {
   const [parsedError, setParsedError] = useState<any>();
   const [apiError, setApiError] = useState<any>(false);
   const [tapLoader, setTapLoader] = useState(false)
-const { height, width } = useWindowDimensions(); // ✅ FIX
+const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   useEffect(() => {
     return (() => {

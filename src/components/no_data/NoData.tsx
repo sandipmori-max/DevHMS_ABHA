@@ -12,7 +12,7 @@ import { ERP_COLOR_CODE } from "../../utils/constants";
 const NoData = ({ isShowTop = true }: any) => {
   const { t } = useTranslation();
   const theme = useAppSelector((state) => state?.theme.mode);
-  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const opacity = useRef(new Animated.Value(0)).current;
 

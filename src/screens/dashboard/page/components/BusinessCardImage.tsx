@@ -38,7 +38,7 @@ const BusinessCardView = ({
   const [cacheBuster, setCacheBuster] = useState(Date.now());
   const [showPicker, setShowPicker] = useState(false);
   const { t } = useTranslations();
-const { height, width } = useWindowDimensions(); // ✅ FIX
+const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const getImageUri = (type: "small" | "large") => {
     const base =

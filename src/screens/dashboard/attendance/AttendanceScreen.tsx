@@ -50,7 +50,7 @@ const AttendanceScreen = () => {
   const dispatch = useAppDispatch();
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
-const { height, width } = useWindowDimensions(); // ✅ FIX
+const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const [resData, setResData] = useState<any>();
   const [selectedDate, setSelectedDate] = useState(new Date());

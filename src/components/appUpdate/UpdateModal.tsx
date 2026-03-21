@@ -14,7 +14,7 @@ import { styles } from './style';
 const UpdateModal = ({ visible, forceUpdate, storeUrl, onSkip }: any) => {
   const {t} = useTranslation()
   const scale = useRef(new Animated.Value(0.7)).current;
-const { height, width } = useWindowDimensions(); // ✅ FIX
+const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   useEffect(() => {
     if (visible) {

@@ -56,7 +56,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
 }) => {
   const { t } = useTranslation();
   const baseLink = useBaseLink();
-  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const dispatch = useAppDispatch();
   const theme = useAppSelector((state) => state?.theme.mode);

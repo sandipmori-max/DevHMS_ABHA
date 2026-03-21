@@ -483,7 +483,7 @@ const SettingsScreen = () => {
     ],
   });
 
-  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
 
   return (

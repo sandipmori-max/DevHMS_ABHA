@@ -33,7 +33,7 @@ const SignaturePad: React.FC = ({
   const [cacheBuster, setCacheBuster] = useState(Date.now());
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
-const { height, width } = useWindowDimensions(); // ✅ FIX
+const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const handleSignature = (signature: string) => {
     setSavedSignature(signature);

@@ -63,7 +63,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
   const { t } = useTranslation();
   const { execute: validateCompanyCode } = useApi();
   const theme = useAppSelector((state) => state?.theme.mode);
-const { height, width } = useWindowDimensions(); // ✅ FIX
+const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const [showModal, setShowModal] = useState(false);
   const [img, setImg] = useState("");

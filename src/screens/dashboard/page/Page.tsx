@@ -114,7 +114,7 @@ export async function requestLocationPermissions(): Promise<
 }
 
 const PageScreen = () => {
-  const { height, width } = useWindowDimensions(); // ✅ FIX
+  const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
