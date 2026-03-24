@@ -9,6 +9,7 @@ import {
   Animated,
   Pressable,
   Platform,
+  useWindowDimensions,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ERP_COLOR_CODE } from "../../utils/constants";
@@ -65,6 +66,8 @@ const Onboarding = ({ navigation }) => {
   const bgAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const [loading, setLoading] = useState(true);
+  const { height, width } = useWindowDimensions();
+  const isLandscape = width > height;
 
   useEffect(() => {
     if (!loading) {
@@ -229,7 +232,77 @@ const Onboarding = ({ navigation }) => {
       </View>
     );
   };
+  const renderItemV2 = ({ item, index }) => {
+    const inputRange = [
+      (index - 1) * width,
+      index * width,
+      (index + 1) * width,
+    ];
+    const opacity = scrollX.interpolate({ inputRange, outputRange: [0, 1, 0] });
 
+    const translateYTitle = scrollX.interpolate({
+      inputRange,
+      outputRange: [
+        item.layout.titleY + 30,
+        item.layout.titleY,
+        item.layout.titleY + 30,
+      ],
+    });
+
+    const translateYDesc = scrollX.interpolate({
+      inputRange,
+      outputRange: [
+        item.layout.descY + 30,
+        item.layout.descY,
+        item.layout.descY + 30,
+      ],
+    });
+
+    const alignStyle = "left";
+
+    return (
+      <View style={[styles.slideV2, { width }]}>
+        <FastImage
+          source={item?.image}
+          style={{
+            height: 100,
+            width: 100,
+            marginBottom: 32,
+          }}
+          resizeMode={FastImage.resizeMode.contain}
+        />
+
+        <Animated.Text
+          style={[
+            styles.title,
+            alignStyle,
+            {
+              opacity,
+              transform: [{ translateY: translateYTitle }],
+            },
+            {
+              fontSize: 24,
+            },
+          ]}
+        >
+          {item.title}
+        </Animated.Text>
+
+        <Animated.Text
+          style={[
+            styles.desc,
+            alignStyle,
+            {
+              opacity,
+              transform: [{ translateY: translateYDesc }],
+            },
+          ]}
+        >
+          {item.desc}
+        </Animated.Text>
+      </View>
+    );
+  };
   const bgColor = bgAnim.interpolate({
     inputRange: slides.map((_, i) => i),
     outputRange: slides.map((s) => s.bgColor[0]),
@@ -266,69 +339,167 @@ const Onboarding = ({ navigation }) => {
         ]}
       />
 
-      <Animated.FlatList
-        ref={flatListRef}
-        data={slides}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        onMomentumScrollEnd={handleScroll}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: false },
-        )}
-      />
+      {isLandscape ? (
+        <>
+          <View style={{ flexDirection: "row" }}>
+            <View style={{ width: "60%" }}>
+              <Animated.FlatList
+                ref={flatListRef}
+                data={slides}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                renderItem={renderItemV2}
+                keyExtractor={(item) => item.id}
+                onMomentumScrollEnd={handleScroll}
+                onScroll={Animated.event(
+                  [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                  { useNativeDriver: false },
+                )}
+              />
+            </View>
 
-      <View style={styles.dotsContainer}>
-        {slides.map((_, index) => {
-          const isActive = index === currentIndex;
-          return (
             <View
-              key={index}
-              style={[
-                styles.dot,
-                isActive ? styles.activeDot : styles.inactiveDot,
-              ]}
-            />
-          );
-        })}
-      </View>
-
-      <View style={styles.bottomBar}>
-        {currentIndex > 0 ? (
-          <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-            <Pressable style={styles.circleBtn} onPress={handlePrev}>
-              <MaterialIcons name="arrow-back" size={24} color="#444" />
-            </Pressable>
-          </Animated.View>
-        ) : (
-          <View style={{ width: 55 }} />
-        )}
-
-        {currentIndex < slides.length - 1 ? (
-          <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-            <Pressable style={styles.circleBtn} onPress={handleNext}>
-              <MaterialIcons name="arrow-forward" size={24} color="#444" />
-            </Pressable>
-          </Animated.View>
-        ) : (
-          <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-            <Pressable
-              style={[
-                styles.circleBtn,
-                {
-                  backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-                },
-              ]}
-              onPress={handleSkip}
+              style={{
+                width: "40%",
+                justifyContent: "flex-end",
+                bottom: 0,
+              }}
             >
-              <MaterialIcons name="done-all" size={26} color="#fff" />
-            </Pressable>
-          </Animated.View>
-        )}
-      </View>
+              <>
+                <View style={styles.dotsContainer}>
+                  {slides.map((_, index) => {
+                    const isActive = index === currentIndex;
+                    return (
+                      <View
+                        key={index}
+                        style={[
+                          styles.dot,
+                          isActive ? styles.activeDot : styles.inactiveDot,
+                        ]}
+                      />
+                    );
+                  })}
+                </View>
+
+                <View style={styles.bottomBar}>
+                  {currentIndex > 0 ? (
+                    <Animated.View
+                      style={{ transform: [{ scale: scaleAnim }] }}
+                    >
+                      <Pressable style={styles.circleBtn} onPress={handlePrev}>
+                        <MaterialIcons
+                          name="arrow-back"
+                          size={24}
+                          color="#444"
+                        />
+                      </Pressable>
+                    </Animated.View>
+                  ) : (
+                    <View style={{ width: 55 }} />
+                  )}
+
+                  {currentIndex < slides.length - 1 ? (
+                    <Animated.View
+                      style={{ transform: [{ scale: scaleAnim }] }}
+                    >
+                      <Pressable style={styles.circleBtn} onPress={handleNext}>
+                        <MaterialIcons
+                          name="arrow-forward"
+                          size={24}
+                          color="#444"
+                        />
+                      </Pressable>
+                    </Animated.View>
+                  ) : (
+                    <Animated.View
+                      style={{ transform: [{ scale: scaleAnim }] }}
+                    >
+                      <Pressable
+                        style={[
+                          styles.circleBtn,
+                          {
+                            backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                          },
+                        ]}
+                        onPress={handleSkip}
+                      >
+                        <MaterialIcons name="done-all" size={26} color="#fff" />
+                      </Pressable>
+                    </Animated.View>
+                  )}
+                </View>
+              </>
+            </View>
+          </View>
+        </>
+      ) : (
+        <>
+          <Animated.FlatList
+            ref={flatListRef}
+            data={slides}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            onMomentumScrollEnd={handleScroll}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+              { useNativeDriver: false },
+            )}
+          />
+
+          <View style={styles.dotsContainer}>
+            {slides.map((_, index) => {
+              const isActive = index === currentIndex;
+              return (
+                <View
+                  key={index}
+                  style={[
+                    styles.dot,
+                    isActive ? styles.activeDot : styles.inactiveDot,
+                  ]}
+                />
+              );
+            })}
+          </View>
+
+          <View style={styles.bottomBar}>
+            {currentIndex > 0 ? (
+              <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                <Pressable style={styles.circleBtn} onPress={handlePrev}>
+                  <MaterialIcons name="arrow-back" size={24} color="#444" />
+                </Pressable>
+              </Animated.View>
+            ) : (
+              <View style={{ width: 55 }} />
+            )}
+
+            {currentIndex < slides.length - 1 ? (
+              <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                <Pressable style={styles.circleBtn} onPress={handleNext}>
+                  <MaterialIcons name="arrow-forward" size={24} color="#444" />
+                </Pressable>
+              </Animated.View>
+            ) : (
+              <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                <Pressable
+                  style={[
+                    styles.circleBtn,
+                    {
+                      backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                    },
+                  ]}
+                  onPress={handleSkip}
+                >
+                  <MaterialIcons name="done-all" size={26} color="#fff" />
+                </Pressable>
+              </Animated.View>
+            )}
+          </View>
+        </>
+      )}
     </SafeAreaView>
   );
 };
@@ -346,7 +517,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: width,
     alignSelf: "center",
   },
-
+  slideV2: {
+    paddingHorizontal: 35,
+  },
   slide: {
     alignItems: "center",
     justifyContent: "center",

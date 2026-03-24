@@ -58,14 +58,13 @@ import {
 import TranslatedText from "./TranslatedText";
 import GreetingBottomSheet from "./GreetingBottomSheet";
 
- 
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;
   return /<([a-z]+)([^>]*?)>/i.test(str);
 };
 
 const HomeScreen = ({ setHideTab, hideTab }) => {
-const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
@@ -190,7 +189,7 @@ const { height, width } = useWindowDimensions();
       return () => {};
     }, [isAuthenticated, navigation]),
   );
-   useEffect(() => {
+  useEffect(() => {
     Animated.loop(
       Animated.timing(translateX, {
         toValue: -350,
@@ -246,9 +245,7 @@ const { height, width } = useWindowDimensions();
           </View>
         ) : (
           <>
-            {!showFull ? (
-              <>
-                <Text
+            <Text
                   numberOfLines={1}
                   style={{
                     color: "#fff",
@@ -256,43 +253,8 @@ const { height, width } = useWindowDimensions();
                     fontWeight: "600",
                   }}
                 >
-                  {showFull ? t("text84") : user?.companyName}
+                  {t("text84")}
                 </Text>
-              </>
-            ) : (
-              <Animated.View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  opacity: fadeAnim,
-                  transform: [
-                    {
-                      translateY: fadeAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [-10, 0],
-                      }),
-                    },
-                    {
-                      scale: fadeAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0.8, 1],
-                      }),
-                    },
-                  ],
-                }}
-              >
-                <Text
-                  numberOfLines={1}
-                  style={{
-                    color: "#fff",
-                    fontSize: 18,
-                    fontWeight: "600",
-                  }}
-                >
-                  {showFull ? t("text84") : user?.companyName}
-                </Text>
-              </Animated.View>
-            )}
           </>
         ),
       headerRight: () =>
@@ -322,39 +284,6 @@ const { height, width } = useWindowDimensions();
             >
               {showFull && (
                 <>
-                  <ERPIcon
-                    name="refresh"
-                    onPress={() => {
-                      setControlsLoader(true);
-                      setActionLoader(true);
-                      setIsRefresh(!isRefresh);
-
-                      dispatch(
-                        getERPDashboardThunk({
-                          branch: auth.dashboardBranch.trim(),
-                          type: auth.dashboardType.trim(),
-                          fd: auth.dashboardFromDate.trim(),
-                          td: auth.dashboardToDate.trim(),
-                        }),
-                      );
-
-                      const timer = setTimeout(() => {
-                        setActionLoader(false);
-                        setControlsLoader(false);
-                        dispatch(setDashboardLoading(false));
-                      }, 3000);
-
-                      return () => clearTimeout(timer);
-                    }}
-                    isLoading={actionLoader}
-                  />
-
-                  {dashboard.length > 5 && (
-                    <ERPIcon
-                      name="search"
-                      onPress={() => setShowSearch(true)}
-                    />
-                  )}
 
                   <ERPIcon
                     name={!isHorizontal ? "list" : "apps"}
@@ -375,6 +304,40 @@ const { height, width } = useWindowDimensions();
                 </>
               )}
             </Animated.View>
+            <ERPIcon
+                    name="refresh"
+                    onPress={() => {
+                      setControlsLoader(true);
+                      setActionLoader(true);
+                      setIsRefresh(!isRefresh);
+
+                      dispatch(
+                        getERPDashboardThunk({
+                          branch: auth.dashboardBranchId.trim(),
+                          type: auth.dashboardTypeId.trim(),
+                          fd: auth.dashboardFromDate.trim(),
+                          td: auth.dashboardToDate.trim(),
+                        }),
+                      );
+
+                      const timer = setTimeout(() => {
+                        setActionLoader(false);
+                        setControlsLoader(false);
+                        dispatch(setDashboardLoading(false));
+                      }, 3000);
+
+                      return () => clearTimeout(timer);
+                    }}
+                    isLoading={actionLoader}
+            />
+
+            {dashboard.length > 5 && (
+                    <ERPIcon
+                      name="search"
+                      onPress={() => setShowSearch(true)}
+                    />
+                  )}
+
             {attendanceDone && (
               <ERPIcon
                 color={"green"}
@@ -384,7 +347,6 @@ const { height, width } = useWindowDimensions();
                 }}
               />
             )}
-            {/* ✅ ALWAYS VISIBLE BUTTON */}
             <ERPIcon
               name={!showFull ? "more-vert" : "close"}
               onPress={() => {
@@ -494,8 +456,7 @@ const { height, width } = useWindowDimensions();
     isFromMenu,
   }: any) => {
     return (
-      <TouchableOpacity
-        key={item?.id || index}
+      <TouchableOpacity 
         style={[
           styles.dashboardItem,
           {
@@ -748,8 +709,8 @@ const { height, width } = useWindowDimensions();
   useEffect(() => {
     dispatch(
       getERPDashboardThunk({
-        branch: auth?.dashboardBranch.trim() || "",
-        type: auth?.dashboardType.trim() || "",
+        branch: auth?.dashboardBranchId.trim() || "",
+        type: auth?.dashboardTypeId.trim() || "",
         fd: auth?.dashboardFromDate.trim() || "",
         td: auth?.dashboardToDate.trim() || "",
       }),
@@ -966,21 +927,31 @@ const { height, width } = useWindowDimensions();
               </>
             )}
             {showDatePicker?.show && Platform.OS === "ios" && (
-              <Modal transparent animationType="slide" supportedOrientations={["portrait", "landscape"]} statusBarTranslucent>
-                <View style={[styles.overlay,isLandscape && {
-                                alignContent:'center',
-                                alignItems:'center'
-                              }]}>
+              <Modal
+                transparent
+                animationType="slide"
+                supportedOrientations={["portrait", "landscape"]}
+                statusBarTranslucent
+              >
+                <View
+                  style={[
+                    styles.overlay,
+                    isLandscape && {
+                      alignContent: "center",
+                      alignItems: "center",
+                    },
+                  ]}
+                >
                   <View
                     style={[
                       styles.sheet,
                       theme === "dark" && {
                         borderWidth: 1,
                         borderColor: "white",
-                      }
-                      , {
-          width: isLandscape ? '50%' : '100%'
-        }
+                      },
+                      {
+                        width: isLandscape ? "50%" : "100%",
+                      },
                     ]}
                   >
                     {/* Divider */}
@@ -1102,11 +1073,9 @@ const { height, width } = useWindowDimensions();
             ></TranslatedText>
           </Animated.View>
         )}
-        {
-          isLandscape && isFilterVisible &&  (
-            <View style={{flexDirection:'row'}}
-            >
-<View
+        {isLandscape && isFilterVisible && (
+          <View style={{ flexDirection: "row" }}>
+            <View
               style={[
                 styles.dateContainer,
                 {
@@ -1114,9 +1083,8 @@ const { height, width } = useWindowDimensions();
                   marginHorizontal: 4,
                 },
                 {
-                width: '50%'
-
-                }
+                  width: "50%",
+                },
               ]}
             >
               {isFilterVisible &&
@@ -1132,7 +1100,9 @@ const { height, width } = useWindowDimensions();
                         },
                       ]}
                     >
-                      <Text style={{marginBottom: 12, color:'white'}}>{item?.field}</Text>
+                      <Text style={{ marginBottom: 12, color: "white" }}>
+                        {item?.field}
+                      </Text>
                       <TouchableOpacity
                         onPress={() =>
                           setShowDatePicker({
@@ -1170,64 +1140,66 @@ const { height, width } = useWindowDimensions();
                       {index === 0 && <View style={{ height: 1, width: 8 }} />}
                     </View>
                   ))}
-                  
             </View>
-<View style={{
-  width: '50%'
-}}>
-   {isLandscape && isFilterVisible && (
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginTop: 4,
-                  marginHorizontal: 4,
-                }}
-              >
-                {controls
-                  .filter((x) => x.ctltype !== "DATE" && x.field !== "userid")
-                  .map((item, index) => (
-                    <>
-                      <View style={{ width: "49.5%" }}>
-                        <CustomPicker
-                          isForceOpen={false}
-                          isValidate={false}
-                          label={item.title}
-                          selectedValue={() => {}}
-                          dtext={
-                            item?.title === "Branch"
-                              ? auth?.dashboardBranch || item.dtext
-                              : auth.dashboardType || item?.dtext
-                          }
-                          onValueChange={(i) => {
-                            if (item?.title === "Branch") {
-                              dispatch(
-                                setActiveDashboardBranchId(
-                                  i?.value?.toString(),
-                                ),
-                              );
-                              dispatch(setActiveDashboardBranch(i?.name));
-                            } else {
-                              dispatch(setActiveDashboardType(i?.name));
-                              dispatch(
-                                setActiveDashboardTypeId(i?.value?.toString()),
-                              );
+            <View
+              style={{
+                width: "50%",
+              }}
+            >
+              {isLandscape && isFilterVisible && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 4,
+                    marginHorizontal: 4,
+                  }}
+                >
+                  {controls
+                    .filter((x) => x.ctltype !== "DATE" && x.field !== "userid")
+                    .map((item, index) => (
+                      <>
+                        <View style={{ width: "49.5%" }}>
+                          <CustomPicker
+                            isForceOpen={false}
+                            isValidate={false}
+                            label={item.title}
+                            selectedValue={() => {}}
+                            dtext={
+                              item?.title === "Branch"
+                                ? auth?.dashboardBranch || item.dtext
+                                : auth.dashboardType || item?.dtext
                             }
-                          }}
-                          options={[]}
-                          item={item}
-                          errors={null}
-                          formValues={null}
-                        />
-                      </View>
-                    </>
-                  ))}
-              </View>
-            )}
-  </View>
+                            onValueChange={(i) => {
+                              if (item?.title === "Branch") {
+                                dispatch(
+                                  setActiveDashboardBranchId(
+                                    i?.value?.toString(),
+                                  ),
+                                );
+                                dispatch(setActiveDashboardBranch(i?.name));
+                              } else {
+                                dispatch(setActiveDashboardType(i?.name));
+                                dispatch(
+                                  setActiveDashboardTypeId(
+                                    i?.value?.toString(),
+                                  ),
+                                );
+                              }
+                            }}
+                            options={[]}
+                            item={item}
+                            errors={null}
+                            formValues={null}
+                          />
+                        </View>
+                      </>
+                    ))}
+                </View>
+              )}
             </View>
-          )
-        }
+          </View>
+        )}
         {!isLandscape && isFilterVisible && (
           <>
             <View
@@ -1289,7 +1261,6 @@ const { height, width } = useWindowDimensions();
                       {index === 0 && <View style={{ height: 1, width: 8 }} />}
                     </View>
                   ))}
-                  
             </View>
 
             {!isLandscape && isFilterVisible && (
@@ -1345,21 +1316,32 @@ const { height, width } = useWindowDimensions();
         )}
 
         {showDatePicker?.show && Platform.OS === "ios" && (
-          <Modal transparent animationType="slide"  supportedOrientations={["portrait", "landscape"]} statusBarTranslucent>
-            <View style={[styles.overlay,isLandscape && {
-                            alignContent:'center',
-                            alignItems:'center'
-                          }]}>
+          <Modal
+            transparent
+            animationType="slide"
+            supportedOrientations={["portrait", "landscape"]}
+            statusBarTranslucent
+          >
+            <View
+              style={[
+                styles.overlay,
+                isLandscape && {
+                  alignContent: "center",
+                  alignItems: "center",
+                  // justifyContent:'center'
+                },
+              ]}
+            >
               <View
                 style={[
                   styles.sheet,
                   theme === "dark" && {
                     borderWidth: 1,
                     borderColor: "white",
-                  }
-                  , {
-          width: isLandscape ? '50%' : '100%'
-        }
+                  },
+                  {
+                    width: isLandscape ? "40%" : "100%",
+                  },
                 ]}
               >
                 {/* Divider */}
@@ -1438,7 +1420,7 @@ const { height, width } = useWindowDimensions();
       </View>
       <FlatList
         data={[""]}
-        key={isLandscape ? "landscape" : "portrait"}    
+        key={isLandscape ? `${isHorizontal}-landscape1` : `${isHorizontal}-portrait1`}
         showsVerticalScrollIndicator={false}
         renderItem={() => {
           return (
@@ -1517,10 +1499,19 @@ const { height, width } = useWindowDimensions();
                           </View>
                           <View style={styles.dashboardSection}>
                             <FlatList
-key={isLandscape ? "landscape" : "portrait"}                                  keyboardShouldPersistTaps="handled"
+                              key={isLandscape ? `${isHorizontal}-landscape2` : `${isHorizontal}-portrait2`}
+                              keyboardShouldPersistTaps="handled"
                               data={[...textItems, ...emptyItems]}
                               keyExtractor={(item, index) => index.toString()}
-                              numColumns={isLandscape ? isHorizontal ? 2 : 4 :  isHorizontal ? 1 : 2}
+                              numColumns={
+                                isLandscape
+                                  ? isHorizontal
+                                    ? 2
+                                    : 4
+                                  : isHorizontal
+                                  ? 1
+                                  : 2
+                              }
                               columnWrapperStyle={
                                 !isHorizontal ? styles.columnWrapper : undefined
                               }
@@ -1546,8 +1537,8 @@ key={isLandscape ? "landscape" : "portrait"}                                  ke
                             ]}
                           >
                             <FlatList
-                      key={isLandscape ? "landscape" : "portrait"}          
-                      keyboardShouldPersistTaps="handled"
+                              key={isLandscape ? `${isHorizontal}-landscape3` : `${isHorizontal}-portrait3`}
+                              keyboardShouldPersistTaps="handled"
                               data={htmlItems}
                               keyExtractor={(item, index) => index.toString()}
                               renderItem={({ item, index }) =>
@@ -1558,8 +1549,7 @@ key={isLandscape ? "landscape" : "portrait"}                                  ke
                                   isFromMenu: true,
                                 })
                               }
-                              numColumns={isLandscape  ? 2 : 1}
-
+                              numColumns={isLandscape ? 2 : 1}
                               showsVerticalScrollIndicator={false}
                             />
                           </View>

@@ -594,13 +594,24 @@ Home
 
 
 
-- OnBoarding
-- Login
+- OnBoarding - Done
+- Login - Done
+- List filter ui - Done 
+- Date picker - crashed - Done 
+- List hori/verticler - crashed  - Done
+- Menu tab - rotate - crashed - Done
+- Page hori/verticler - crashed - Done
+- My attendace list ui - pending - hori/vertical - Done
+
 - Custome Drop down - list cut 
-- Date picker - crashed
-- Filter  ui
-- List hori/verticler - crashed  
-- Menu tab - rotate - crashed
-- List filter ui 
-- Page hori/verticler - crashed  
-- My attendace list ui - pending - hori/vertical 
+
+- NEW - Pre-selected branch and type - home tab [manish]
+- NEW - calculation - script - [Aashutosh]
+- NEW - Exit app modal
+- NEW - Reach us - modal
+- NEW - App ratting 
+
+- Passed Branch id instead of Branch name - home tab filter
+- Passed Type id instead of Type name - home tab filter 
+
+- Image size compress 

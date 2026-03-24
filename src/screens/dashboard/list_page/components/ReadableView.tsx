@@ -121,7 +121,7 @@ const ReadableView = ({
   const slideAnim = useRef(new Animated.Value(300)).current; // right se start
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
- const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   useEffect(() => {
     Animated.parallel([
@@ -223,7 +223,7 @@ const ReadableView = ({
             paddingTop: 6,
             borderWidth: 1,
             borderColor: ERP_COLOR_CODE.ERP_ddd,
-            width: isLandscape ? '48%' : '100%'
+            width: isLandscape ? '48%' : '98%'
           }}
         >
           {/* main touchable */}

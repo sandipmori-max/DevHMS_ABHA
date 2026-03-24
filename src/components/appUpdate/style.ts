@@ -1,49 +1,62 @@
-
-import { 
-  StyleSheet, 
-} from 'react-native';
+import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.4)",
   },
-  container: {
-    width: '85%',
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 24,
-    alignItems: 'center',
+
+  bottomContainer: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
   },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
+
+  sheet: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+
+  dragHandle: {
+    width: 40,
+    height: 5,
+    backgroundColor: "#ccc",
+    borderRadius: 3,
+    alignSelf: "center",
     marginBottom: 10,
   },
+
+  title: {
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+
   desc: {
-    textAlign: 'center',
-    fontSize: 15,
-    color: '#555',
-    marginBottom: 20,
+    fontSize: 14,
+    color: "#555",
+    textAlign: "center",
+    marginVertical: 10,
   },
+
   updateBtn: {
-    backgroundColor: '#4F46E5',
-    paddingVertical: 12,
-    width: '100%',
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 12,
+    backgroundColor: "#007bff",
+    padding: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10,
   },
+
   updateText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    color: "#fff",
+    fontWeight: "600",
   },
+
   skipText: {
-    color: '#999',
-    marginTop: 6,
+    textAlign: "center",
+    marginTop: 15,
+    color: "#888",
   },
 });
- 

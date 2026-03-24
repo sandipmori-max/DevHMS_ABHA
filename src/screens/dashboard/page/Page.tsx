@@ -162,60 +162,61 @@ const PageScreen = () => {
   const [locationEnabled, setLocationEnabled] = useState<boolean | null>(null);
   const [modalClose, setModalClose] = useState(false);
   const [isSettingVisible, setIsSettingVisible] = useState(false);
-  const [myScript, setMyScript] = useState([
-  // 🔥 DATE DIFF
-  {
-    logic: "AND",
-    rules: [
-      {
-        type: "formula",
-        formulaType: "dateDiff",
-        fieldName: "noofdays",
-        fromField: "fromdate",
-        toField: "todate",
-        inclusive: true,
-        triggerFields: ["fromdate", "todate"],
-      },
-    ],
-  },
+  const [myScript, setMyScript] = useState(
+  []
+);
 
-  // 🔥 NORMAL FORMULA
-  {
-    logic: "AND",
-    rules: [
-      {
-        type: "formula",
-        fieldName: "totalexpense",
-        formula:
-          "servicecharge + travelexpense + localexpense + accexpense",
-        minusField: "cashreceived",
-        triggerFields: [
-          "servicecharge",
-          "travelexpense",
-          "localexpense",
-          "accexpense",
-          "cashreceived",
-        ],
-      },
-    ],
-  },
+  // [
+  // {
+  //   logic: "AND",
+  //   rules: [
+  //     {
+  //       type: "formula",
+  //       formulaType: "dateDiff",
+  //       fieldName: "noofdays",
+  //       fromField: "fromdate",
+  //       toField: "todate",
+  //       inclusive: true,
+  //       triggerFields: ["fromdate", "todate"],
+  //     },
+  //   ],
+  // },
 
-  // 🔥 CONDITION RULE
-  {
-    logic: "OR",
-    rules: [
-      {
-        left: "doctorlocation",
-        operator: "locationWithin",
-        right: "inlocation",
-        meters: 100,
-        message: "Doctor Location and InLocation Not Match",
-      },
-    ],
-    validActions: [{ field: "buttonSave", action: "enable" }],
-    invalidActions: [{ field: "buttonSave", action: "disable" }],
-  },
-]);
+  // {
+  //   logic: "AND",
+  //   rules: [
+  //     {
+  //       type: "formula",
+  //       fieldName: "totalexpense",
+  //       formula:
+  //         "servicecharge + travelexpense + localexpense + accexpense",
+  //       minusField: "cashreceived",
+  //       triggerFields: [
+  //         "servicecharge",
+  //         "travelexpense",
+  //         "localexpense",
+  //         "accexpense",
+  //         "cashreceived",
+  //       ],
+  //     },
+  //   ],
+  // },
+
+  // {
+  //   logic: "AND",
+  //   rules: [
+  //     {
+  //       left: "doctorlocation",
+  //       operator: "locationWithin",
+  //       right: "inlocation",
+  //       meters: 100,
+  //       message: "Doctor Location and InLocation Not Match",
+  //     },
+  //   ],
+  //   validActions: [{ field: "buttonSave", action: "enable" }],
+  //   invalidActions: [{ field: "buttonSave", action: "disable" }],
+  // },
+  // ]
   const [backgroundDeniedModal, setBackgroundDeniedModal] = useState(false);
 
   const isCheckingPermission = useRef(false);
@@ -665,7 +666,7 @@ const PageScreen = () => {
         typeof parsed.script === "object" &&
         !Array.isArray(parsed.script)
       ) {
-        // setMyScript(parsed.script); ------------------------------------------
+        setMyScript(parsed.script);
       }
 
       if (!isFromNew) {
@@ -1012,7 +1013,7 @@ const PageScreen = () => {
           entering={FadeInUp.delay(index * 70).springify()}
           layout={Layout.springify()}
           style={isLandscape && {
-            width: '50%',
+            width: '100%',
             flex: 1,
             marginRight: 8,
           }}
@@ -1136,6 +1137,8 @@ setFormValues((prev) => {
               <FlatList 
                 showsVerticalScrollIndicator={false}
                 data={controls}
+                    key={isLandscape ? `${isLandscape}-landscape` : `${isLandscape}-portrait`}
+
                 ref={flatListRef}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={renderItem}

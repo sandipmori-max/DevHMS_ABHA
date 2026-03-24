@@ -155,7 +155,10 @@ const NoData = ({ isShowTop = true }: any) => {
             >
               <FastImage
                 source={ERP_GIF.NO_DATA}
-                style={styles.image}
+                style={[styles.image, {
+                   width: width * 0.6,
+    height: width * 0.6,
+                }]}
                 resizeMode="contain"
               />
             </Animated.View>

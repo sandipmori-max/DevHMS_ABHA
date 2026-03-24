@@ -259,17 +259,9 @@ useEffect(() => {
           ],
         }}
       >
-        {showFull && !isMenuLoading && allList.length > 5 && (
-          <ERPIcon name="search" onPress={() => setShowSearch(true)} />
-        )}
+        
 
-        {showFull && (
-          <ERPIcon
-            isLoading={isMenuLoading}
-            name="refresh"
-            onPress={() => setIsRefresh(!isRefresh)}
-          />
-        )}
+        
 
         {!isMenuLoading && showFull && (
           <>
@@ -303,8 +295,16 @@ useEffect(() => {
           </>
         )}
       </Animated.View>
-
+      <ERPIcon
+            isLoading={isMenuLoading}
+            name="refresh"
+            onPress={() => setIsRefresh(!isRefresh)}
+          />
       {/* ALWAYS VISIBLE BUTTON (FIX) */}
+      { !isMenuLoading && allList.length > 5 && (
+          <ERPIcon name="search" onPress={() => setShowSearch(true)} />
+        )}
+
       <ERPIcon
         name={!showFull ? "more-vert" : "close"}
         onPress={() => setShowFull(!showFull)}
@@ -336,12 +336,15 @@ useEffect(() => {
 ]);
   useFocusEffect(
     useCallback(() => {
+      setSearchText("")
+      setShowSearch(false)
       setIsHorizontal(false);
       setShowFull(false);
       setShowSearch(false);
       setIsRefresh(false);
       setShowBookmarksOnly(false);
       setShowStarsOnly(false);
+    
       if (isAuthenticated) {
         dispatch(getERPMenuThunk())
           .unwrap()
@@ -428,6 +431,9 @@ useEffect(() => {
               backgroundColor:
                 theme === "dark" ? backgroundColor : ERP_COLOR_CODE.ERP_WHITE,
             },
+            item?.app_menu_icon && {
+              backgroundColor:'transparent',
+            }
           ]}
         >
           {item?.app_menu_icon ? (
@@ -492,10 +498,10 @@ useEffect(() => {
   if (list.length === 0) return <NoData />;
   const groupedList = [];
 
-  for (let i = 0; i < list.length; i += 8) {
+  for (let i = 0; i < list.length; i += 6) {
     groupedList.push({
-      header: `Header ${i / 8}`,
-      data: list.slice(i, i + 8),
+      header: `Header ${i / 6}`,
+      data: list.slice(i, i + 6),
     });
   }
   return (
@@ -522,14 +528,22 @@ useEffect(() => {
             keyExtractor={(_, index) => index.toString()}
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => (
-              <View>
+              <View style={{
+                marginVertical: 4,
+                marginHorizontal: 10,
+                paddingHorizontal: 6, 
+                backgroundColor: "#fafafa",
+                paddingVertical: 4,
+                borderRadius: 4,
+                borderWidth: 0.5,
+                borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE
+                }}> 
                 {/* HEADER */}
                 <View
                   style={{
                     flexDirection: "row",
                     alignContent: "center",
                     alignItems: "center",
-                    marginLeft: 14,
                     marginBottom: 6,
                     backgroundColor: "#fafafa",
                     width: "96%",
@@ -544,20 +558,21 @@ useEffect(() => {
                     style={{
                       marginLeft: 6,
                       fontSize: 14,
+                      color: ERP_COLOR_CODE.ERP_APP_COLOR
                     }}
                   >
-                    {`Header ${index}`}
+                    {/* {`Header ${index}`} */}
+                    -
                   </Text>
                  </View>
                  <Text
                     style={{
-                      marginLeft: 6,
                       fontSize: 14,
                       fontWeight: "bold",
-                      marginRight: 12
                     }}
                   >
-                    {`${index}`}
+                    {/* {`${index}`} */}
+                    -
                   </Text>
                 </View>
 
@@ -567,7 +582,7 @@ useEffect(() => {
                     <View
                       key={childIndex}
                       style={{
-                        width: "25%",
+                        width: "33%",
                       }}
                     >
                       {renderItem({ item: child, index: childIndex })}
@@ -581,7 +596,7 @@ useEffect(() => {
       ) : (
         <>
           <FlatList
-            key={`${isHorizontal}-${showBookmarksOnly}-${searchText}`}
+            key={ isLandscape ?  `${isHorizontal}-${showBookmarksOnly}-${searchText}-landscape` :  `${isHorizontal}-${showBookmarksOnly}-${searchText}-portrait`}
             data={list}
             renderItem={renderItem}
             numColumns={isLandscape ?  isHorizontal ? 2 : 4 : isHorizontal ? 1 : list.length > 8 ? 3 : 2}

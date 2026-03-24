@@ -7,7 +7,6 @@ import {
   View,
   Animated,
   Easing,
-  Dimensions,
   useWindowDimensions,
 } from "react-native";
 import { Provider } from "react-redux";
@@ -35,12 +34,24 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import FullViewLoader from "./src/components/loader/FullViewLoader";
 import TermsAndConsent from "./src/screens/TermsConditions/TermsCondition";
 import { useAppSelector } from "./src/store/hooks";
+import ExitBottomSheet from "./src/components/ExitBottomSheet";
+import { useAppUpdate } from "./src/hooks/useAppUpdate";
+import UpdateModal from "./src/components/appUpdate/UpdateModal";
 
 const App = () => {
+  const update = useAppUpdate();
+
   return (
     <Provider store={store}>
       <TranslationProvider>
         <AppContent />
+        <ExitBottomSheet />
+        <UpdateModal
+          visible={update.visible}
+          storeUrl={update.storeUrl}
+          forceUpdate={update.forceUpdate}
+          onSkip={update.onSkip}
+        />
       </TranslationProvider>
     </Provider>
   );
@@ -146,8 +157,8 @@ const AppContent = () => {
   // 🔥 Terms
   if (!accepted) {
     return <TermsAndConsent onAccept={handleAccept} />;
-  } 
- 
+  }
+
   return (
     <>
       <StatusBar backgroundColor={statusBarColor} barStyle={barStyle} />
@@ -156,7 +167,7 @@ const AppContent = () => {
       <Animated.View
         style={{
           flex: 1,
-          width:width,
+          width: width,
           opacity: appOpacity,
           transform: [{ translateY: appTranslateY }],
         }}
@@ -168,9 +179,7 @@ const AppContent = () => {
 
         <SafeAreaView
           edges={["left", "right", "bottom"]}
-          style={[styles.safeArea,
-          
-          ]}
+          style={[styles.safeArea]}
         >
           <NavigationContainer>
             <RootNavigator />

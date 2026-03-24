@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Platform,
+  useWindowDimensions,
 } from "react-native";
 import {
   Camera,
@@ -24,7 +25,8 @@ const FaceCameraScreen = ({ navigation, route }) => {
 
   const [hasPermission, setHasPermission] = useState(false);
   const [faceDetected, setFaceDetected] = useState(false);
-
+  const { height, width } = useWindowDimensions();
+  const isLandscape = width > height;
   useEffect(() => {
     const getPermission = async () => {
       const status = await Camera.requestCameraPermission();
@@ -95,7 +97,14 @@ const FaceCameraScreen = ({ navigation, route }) => {
       />
 
       {/* Header */}
-      <View style={styles.header}>
+      <View
+        style={[
+          styles.header,
+          isLandscape && {
+            top: 10,
+          },
+        ]}
+      >
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <MaterialIcons name="arrow-back" size={26} color="#fff" />
         </TouchableOpacity>
@@ -108,12 +117,18 @@ const FaceCameraScreen = ({ navigation, route }) => {
         <View
           style={[
             styles.faceFrame,
-            { borderColor: faceDetected ? "#00ff00" : "#ff3b30" },
+            !isLandscape && {
+              borderWidth: 1,
+
+              borderColor: faceDetected ? "#00ff00" : "#ff3b30",
+            },
           ]}
         />
       </View>
 
-      <View style={styles.messageContainer}>
+      <View style={[styles.messageContainer, isLandscape && {
+        top: 50,
+      }]}>
         <Text style={styles.message}>
           {faceDetected ? "Face Detected" : "Align your face in the frame"}
         </Text>
@@ -123,6 +138,7 @@ const FaceCameraScreen = ({ navigation, route }) => {
       {/* Message */}
 
       {/* Capture Button */}
+       
       <View style={styles.bottomContainer}>
         <TouchableOpacity
           disabled={!faceDetected}
@@ -145,7 +161,7 @@ const styles = StyleSheet.create({
 
   header: {
     position: "absolute",
-    top: Platform.OS === 'android' ? 20 : 40,
+    top: Platform.OS === "android" ? 20 : 30,
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -171,8 +187,7 @@ const styles = StyleSheet.create({
 
   faceFrame: {
     width: Dimensions.get("screen").width * 0.94,
-    height: Dimensions.get("screen").height * 0.6,
-    borderWidth: 1,
+    height: Dimensions.get("screen").height * 0.5,
     borderRadius: 10,
   },
 
