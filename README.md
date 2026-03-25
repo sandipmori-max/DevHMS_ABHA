@@ -614,4 +614,8 @@ Home
 - Passed Branch id instead of Branch name - home tab filter
 - Passed Type id instead of Type name - home tab filter 
 
-- Image size compress 
+- Image size compress
+
+- Drop down / Ajax / date - RESET - CLEAR - ALL RESET 
+- Firebase push notification - 
+- APN setup ios pending 

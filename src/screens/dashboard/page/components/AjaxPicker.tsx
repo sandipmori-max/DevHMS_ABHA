@@ -213,7 +213,7 @@ const { height, width } = useWindowDimensions();
           <View
             style={[
               {
-                height: "75%",
+                height: height * 0.75,
                 backgroundColor:
                   theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE,
                 borderTopLeftRadius: 16,

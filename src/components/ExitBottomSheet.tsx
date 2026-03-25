@@ -32,7 +32,7 @@ const ExitBottomSheet = () => {
   };
 
   return (
-    <Modal transparent visible={visible} animationType="fade">
+    <Modal transparent supportedOrientations={["portrait", "landscape"]} visible={visible} animationType="fade">
       {/* Background */}
       <TouchableWithoutFeedback onPress={() => setVisible(false)}>
         <View style={styles.overlay} />

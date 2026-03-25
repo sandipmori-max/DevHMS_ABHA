@@ -484,7 +484,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                     </>
                   </View>
 
-                  <View style={{ width: "50%", padding: 2 }}>
+                  <View style={{ width: "50%", padding: 2, flex: 1 }}>
                     <ScrollView>
                       <Formik
                         initialValues={{

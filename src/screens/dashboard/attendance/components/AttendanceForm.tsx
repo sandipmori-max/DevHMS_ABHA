@@ -37,7 +37,8 @@ import TranslatedText from "../../tabs/home/TranslatedText";
 import { updateAttendanceState } from "../../../../store/slices/auth/authSlice";
 import SlideButtonIOS from "./SlideButtonIOS";
 import RNFS from "react-native-fs";
-
+import ImageResizer from "@bam.tech/react-native-image-resizer";
+// import RNFS from "react-native-fs";
 const AttendanceForm = ({ setBlockAction, resData }: any) => {
   const { t } = useTranslations();
   const [showModal, setShowModal] = useState(false);
@@ -115,8 +116,17 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
             }
 
             const photoUri = "file://" + photoPath;
+            const compressedPhoto = await ImageResizer.createResizedImage(
+              photoPath,
+              600, // optional: adjust to safe dimensions
+              600,
+              "JPEG",
+              60,
+              0
+            );
 
-            const base64 = await RNFS.readFile(photoPath, "base64");
+            const base64 = await RNFS.readFile(compressedPhoto.uri, "base64");
+            // const base64 = await RNFS.readFile(photoPath, "base64");
 
             if (base64) {
               setFieldValue(
@@ -132,7 +142,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
             setStatusImage(photoUri);
 
             setTimeout(() => {
-              // handleSubmit();
+              handleSubmit();
             }, 1000);
           } catch (error) {
             console.log("---------------------11", error);

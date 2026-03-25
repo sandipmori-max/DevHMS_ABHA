@@ -117,7 +117,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     const timer = setTimeout(() => {
       runAI();
       aiCalled.current = true;
-    }, 4000);
+    }, 19000);
 
     return () => clearTimeout(timer);
   }, [dashboard]);
@@ -310,15 +310,13 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                       setControlsLoader(true);
                       setActionLoader(true);
                       setIsRefresh(!isRefresh);
-
-                      dispatch(
-                        getERPDashboardThunk({
-                          branch: auth.dashboardBranchId.trim(),
-                          type: auth.dashboardTypeId.trim(),
-                          fd: auth.dashboardFromDate.trim(),
-                          td: auth.dashboardToDate.trim(),
-                        }),
-                      );
+                      getCurrentMonthRange()
+                      dispatch(setActiveDashboardBranchId(""));
+                            dispatch(setActiveDashboardBranch(""));
+                            dispatch(setActiveDashboardType(""));
+                            dispatch(setActiveDashboardTypeId(""));
+                     const params = { branch: "", type: "", fd: "", td: "" };
+                      dispatch(getERPDashboardThunk(params));
 
                       const timer = setTimeout(() => {
                         setActionLoader(false);

@@ -1022,7 +1022,7 @@ const PageScreen = () => {
         </Animated.View>
       );
     },
-    [formValues, errors, controls, locationEnabled],
+    [formValues, errors, controls, locationEnabled, isLandscape],
   );
  
   const showDatePicker = (field: string, date: any) => {

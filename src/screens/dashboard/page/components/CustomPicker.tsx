@@ -21,8 +21,7 @@ import InputError from "../../../../components/error/InputError";
 import NoData from "../../../../components/no_data/NoData";
 import TranslatedText from "../../tabs/home/TranslatedText";
 
-const SCREEN_HEIGHT = Dimensions.get("window").height;
-
+ 
 const CustomPicker = ({
   isValidate,
   label,
@@ -36,6 +35,7 @@ const CustomPicker = ({
   const { t } = useTranslations();
 const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
+  const SCREEN_HEIGHT= height;
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<any[]>([]);
   const dispatch = useAppDispatch();

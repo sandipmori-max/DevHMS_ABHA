@@ -35,23 +35,23 @@ import FullViewLoader from "./src/components/loader/FullViewLoader";
 import TermsAndConsent from "./src/screens/TermsConditions/TermsCondition";
 import { useAppSelector } from "./src/store/hooks";
 import ExitBottomSheet from "./src/components/ExitBottomSheet";
-import { useAppUpdate } from "./src/hooks/useAppUpdate";
+// import { useAppUpdate } from "./src/hooks/useAppUpdate";
 import UpdateModal from "./src/components/appUpdate/UpdateModal";
 
 const App = () => {
-  const update = useAppUpdate();
+  // const update = useAppUpdate();
 
   return (
     <Provider store={store}>
       <TranslationProvider>
         <AppContent />
-        <ExitBottomSheet />
-        <UpdateModal
+        {/* <ExitBottomSheet /> */}
+        {/* <UpdateModal
           visible={update.visible}
           storeUrl={update.storeUrl}
           forceUpdate={update.forceUpdate}
           onSkip={update.onSkip}
-        />
+        /> */}
       </TranslationProvider>
     </Provider>
   );
