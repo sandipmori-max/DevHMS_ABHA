@@ -101,7 +101,8 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
         0
       );
     }
-
+    
+    
     // 👉 SAFE PATH HANDLING
     const compressedPath =
       Platform.OS === "android"
