@@ -8,7 +8,7 @@ import SettingsScreen from "../screens/dashboard/settings/SettingsScreen";
 import DrawerNavigator from "./DrawerNavigator";
 import TabNavigator from "./TabNavigator";
 import AttendanceScreen from "../screens/dashboard/attendance/AttendanceScreen";
-import DisplayScreen from "../screens/dashboard/display/DisplayScreen";
+// import DisplayScreen from "../screens/dashboard/display/DisplayScreen";
  import WebScreen from "../screens/dashboard/web/WebScreen";
 import ListScreen from "../screens/dashboard/list_page/ListScreen";
 import PageScreen from "../screens/dashboard/page/Page";
@@ -130,11 +130,11 @@ const StackNavigator = () => {
         name="MyAttendance"
         component={AttendanceScreen}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         options={screenOptions}
         name="Business"
         component={DisplayScreen}
-      />
+      /> */}
       {/* <Stack.Screen options={screenOptions} name="File Manager" component={ScanScreen} /> */}
       <Stack.Screen
         options={screenOptions}
@@ -158,11 +158,11 @@ const StackNavigator = () => {
         component={LocationTrackScreen}
       />
       <Stack.Screen name="FaceCameraScreen" component={FaceCameraScreen} />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Tasks"
         component={DisplayScreen}
         options={screenOptions}
-      />
+      /> */}
     </Stack.Navigator>
   );
 };

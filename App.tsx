@@ -34,9 +34,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import FullViewLoader from "./src/components/loader/FullViewLoader";
 import TermsAndConsent from "./src/screens/TermsConditions/TermsCondition";
 import { useAppSelector } from "./src/store/hooks";
-import ExitBottomSheet from "./src/components/ExitBottomSheet";
+// import ExitBottomSheet from "./src/components/ExitBottomSheet";
 // import { useAppUpdate } from "./src/hooks/useAppUpdate";
-import UpdateModal from "./src/components/appUpdate/UpdateModal";
+// import UpdateModal from "./src/components/appUpdate/UpdateModal";
 
 const App = () => {
   // const update = useAppUpdate();

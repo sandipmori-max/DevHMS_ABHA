@@ -11,11 +11,11 @@ import WebView from "react-native-webview";
 import { ERP_COLOR_CODE } from "../../../utils/constants";
 import useTranslations from "../../../hooks/useTranslations";
 import FullViewLoader from "../../../components/loader/FullViewLoader";
-import { styles } from "./web_style";
-import { useBaseLink } from "../../../hooks/useBaseLink";
+ import { useBaseLink } from "../../../hooks/useBaseLink";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ERPIcon from "../../../components/icon/ERPIcon";
 import { useAppSelector } from "../../../store/hooks";
+import { styles } from "./web_style";
 
 const WebScreen = () => {
   const { t } = useTranslations();

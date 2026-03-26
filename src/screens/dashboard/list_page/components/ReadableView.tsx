@@ -26,12 +26,12 @@ import { styles } from "../list_page_style";
 import NoData from "../../../../components/no_data/NoData";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
-import MemoizedFooterView from "./MemoizedFooterView";
-import RemarksView from "./RemarksView";
-import { useAppSelector } from "../../../../store/hooks";
+ import { useAppSelector } from "../../../../store/hooks";
 import useTranslations from "../../../../hooks/useTranslations";
 import { Easing } from "react-native";
 import ImageBottomSheetModal from "../../../../components/bottomsheet/ImageBottomSheetModal";
+import RemarksView from "./RemarksView";
+import MemoizedFooterView from "./MemoizedFooterView";
 
 // enable LayoutAnimation on Android
 if (
