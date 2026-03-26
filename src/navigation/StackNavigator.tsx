@@ -9,8 +9,7 @@ import DrawerNavigator from "./DrawerNavigator";
 import TabNavigator from "./TabNavigator";
 import AttendanceScreen from "../screens/dashboard/attendance/AttendanceScreen";
 import DisplayScreen from "../screens/dashboard/display/DisplayScreen";
-import PrivacyPolicyScreen from "../screens/dashboard/privacy/PrivacyPolicyScreen";
-import WebScreen from "../screens/dashboard/web/WebScreen";
+ import WebScreen from "../screens/dashboard/web/WebScreen";
 import ListScreen from "../screens/dashboard/list_page/ListScreen";
 import PageScreen from "../screens/dashboard/page/Page";
 import { ERP_COLOR_CODE } from "../utils/constants";
@@ -21,7 +20,8 @@ import { useAppSelector } from "../store/hooks";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import LocationTrackScreen from "../screens/dashboard/tabs/home/LocationTrack";
 import FaceCameraScreen from "../screens/dashboard/attendance/components/FaceCameraScreen";
-
+import PrivacyPolicyScreen from "../screens/dashboard/privacy/PrivacyPolicyScreen";
+ 
 const Stack = createStackNavigator<any>();
 
 const StackNavigator = () => {
@@ -121,7 +121,7 @@ const StackNavigator = () => {
         component={AttendanceScreen}
         options={{
           ...screenOptions,
-          gestureEnabled: false, // Back button hide
+          gestureEnabled: false,
         }}
       />
 
