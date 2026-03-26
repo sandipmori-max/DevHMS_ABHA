@@ -1495,8 +1495,42 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                               <View style={{ marginTop: 12 }} />
                             )}
                           </View>
-                          <View style={styles.dashboardSection}>
-                            <FlatList
+                          <View style={[styles.dashboardSection, 
+                            {
+                                marginLeft: 2,
+                                marginRight: 12,
+                              },
+                          ]}>
+
+                              <FlatList
+                              key={isLandscape ? `${isHorizontal}-landscape3` : `${isHorizontal}-portrait3`}
+                              keyboardShouldPersistTaps="handled"
+                              data={htmlItems}
+                              keyExtractor={(item, index) => index.toString()}
+                              renderItem={({ item, index }) =>
+                                renderDashboardItem({
+                                  item,
+                                  index,
+                                  isFromHtml: true,
+                                  isFromMenu: true,
+                                })
+                              } 
+                              showsVerticalScrollIndicator={false}
+                            />
+
+                         
+                          </View>
+
+                          <View
+                            style={[
+                              styles.dashboardSection,
+                              {
+                                marginLeft: 2,
+                                marginRight: 4,
+                              },
+                            ]}
+                          >
+                               <FlatList
                               key={isLandscape ? `${isHorizontal}-landscape2` : `${isHorizontal}-portrait2`}
                               keyboardShouldPersistTaps="handled"
                               data={[...textItems, ...emptyItems]}
@@ -1523,33 +1557,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                               }
                               showsVerticalScrollIndicator={false}
                             />
-                          </View>
-
-                          <View
-                            style={[
-                              styles.dashboardSection,
-                              {
-                                marginLeft: 2,
-                                marginRight: 8,
-                              },
-                            ]}
-                          >
-                            <FlatList
-                              key={isLandscape ? `${isHorizontal}-landscape3` : `${isHorizontal}-portrait3`}
-                              keyboardShouldPersistTaps="handled"
-                              data={htmlItems}
-                              keyExtractor={(item, index) => index.toString()}
-                              renderItem={({ item, index }) =>
-                                renderDashboardItem({
-                                  item,
-                                  index,
-                                  isFromHtml: true,
-                                  isFromMenu: true,
-                                })
-                              }
-                              numColumns={isLandscape ? 2 : 1}
-                              showsVerticalScrollIndicator={false}
-                            />
+                          
                           </View>
                         </View>
                       )}
