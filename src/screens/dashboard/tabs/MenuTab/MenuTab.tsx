@@ -63,15 +63,15 @@ const MenuTab = ({
   setHideTab,
   hideTab,
 }: any) => {
-  const { height, width } = useWindowDimensions();  
-    const isLandscape = width > height;
+  const { height, width } = useWindowDimensions();
+  const isLandscape = width > height;
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const { menu, error, isMenuLoading, isAuthenticated, activeToken, user } =
     useAppSelector((state) => state.auth);
   const theme = useAppSelector((state) => state.theme.mode);
   const { t } = useTranslation();
-const fadeAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
   const allList = menu?.filter((item) => item?.isReport === type) ?? [];
   const [isRefresh, setIsRefresh] = useState(false);
   const [isHorizontal, setIsHorizontal] = useState(false);
@@ -87,7 +87,7 @@ const fadeAnim = useRef(new Animated.Value(0)).current;
     visible: false,
     message: "",
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-    textColor: 'black'
+    textColor: "black",
   });
   const [taps, setTaps] = useState({});
   const sortedList = [...filteredList].sort((a, b) => {
@@ -103,15 +103,20 @@ const fadeAnim = useRef(new Animated.Value(0)).current;
     : filteredList;
 
   const showToast = (msg, backgroundColor, color) =>
-    setToast({ visible: true, message: msg, backgroundColor: backgroundColor , textColor: color});
+    setToast({
+      visible: true,
+      message: msg,
+      backgroundColor: backgroundColor,
+      textColor: color,
+    });
   const hideToast = () => setToast((t) => ({ ...t, visible: false }));
-useEffect(() => {
-  Animated.timing(fadeAnim, {
-    toValue: showFull ? 1 : 0,
-    duration: 300,
-    useNativeDriver: true,
-  }).start();
-}, [showFull]);
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: showFull ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [showFull]);
   function getInitials(name) {
     if (!name) return "";
 
@@ -149,7 +154,7 @@ useEffect(() => {
   }, []);
 
   // Toggle bookmark
-  const toggleBookmark = async (name, id, backgroundColor) => {
+  const toggleBookmark = async (name, id) => {
     const updated = !bookmarks[id];
     setBookmarks((prev) => ({ ...prev, [id]: updated }));
 
@@ -159,7 +164,7 @@ useEffect(() => {
     showToast(
       updated ? `${name} bookmarked` : `${name} removed`,
       updated ? ERP_COLOR_CODE.ERP_green : ERP_COLOR_CODE.ERP_ERROR,
-      'white'
+      "white",
     );
   };
 
@@ -185,166 +190,196 @@ useEffect(() => {
 
   // Header setup
   useLayoutEffect(() => {
-  navigation.setOptions({
-    headerStyle: {
-      backgroundColor:
-        theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-    },
-    headerBackTitle: "",
-    headerTintColor: "white",
+    navigation.setOptions({
+      headerStyle: {
+        backgroundColor:
+          theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+      },
+      headerBackTitle: "",
+      headerTintColor: "white",
 
-    headerTitle: () =>
-      showSearch ? (
-        <View
-          style={{
-            width: Dimensions.get("screen").width - 60,
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <TextInput
-            value={searchText}
-            onChangeText={setSearchText}
-            placeholder={searchPlaceholder}
-            autoFocus={true}
+      headerTitle: () =>
+        showSearch ? (
+          <View
             style={{
-              flex: 1,
-              backgroundColor: "#f0f0f0",
-              borderRadius: 8,
-              paddingHorizontal: 12,
-              height: 36,
-            }}
-          />
-          <TouchableOpacity
-            style={{ marginLeft: 12 }}
-            onPress={() => {
-              setShowSearch(false);
-              setSearchText("");
+              width: isLandscape
+                ? Dimensions.get("screen").width - 160
+                : Dimensions.get("screen").width - 60,
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
-            <MaterialIcons name="clear" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <TranslatedText
-          text={headerText}
-          numberOfLines={1}
-          style={{ color: "white", fontSize: 18, fontWeight: "600" }}
+            <TextInput
+              value={searchText}
+              onChangeText={setSearchText}
+              placeholder={searchPlaceholder}
+              autoFocus={true}
+              style={{
+                flex: 1,
+                backgroundColor: "#f0f0f0",
+                borderRadius: 8,
+                paddingHorizontal: 12,
+                height: 36,
+              }}
+            />
+            <TouchableOpacity
+              style={{ marginLeft: 12 }}
+              onPress={() => {
+                setShowSearch(false);
+                setSearchText("");
+              }}
+            >
+              <MaterialIcons name="clear" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TranslatedText
+            text={headerText}
+            numberOfLines={1}
+            style={{ color: "white", fontSize: 18, fontWeight: "600" }}
+          />
+        ),
+
+      headerRight: () =>
+        !showSearch && (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {/* ANIMATED ICONS */}
+            <Animated.View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                opacity: fadeAnim,
+                transform: [
+                  {
+                    translateY: fadeAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [-10, 0],
+                    }),
+                  },
+                  {
+                    scale: fadeAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.8, 1],
+                    }),
+                  },
+                ],
+              }}
+            >
+              {!isMenuLoading && showFull && (
+                <>
+                  <ERPIcon
+                    name={isHorizontal ? "dashboard" : "list"}
+                    onPress={() => setIsHorizontal((p) => !p)}
+                  />
+
+                  <ERPIcon
+                    name={!showBookmarksOnly ? "bookmark-outline" : "bookmark"}
+                    onPress={() => {
+                      setShowStarsOnly(false);
+                      setShowBookmarksOnly((p) => !p);
+                    }}
+                  />
+
+                  <ERPIcon
+                    name={!showStarsOnly ? "trending-down" : "trending-up"}
+                    onPress={() => {
+                      setShowBookmarksOnly(false);
+                      setShowStarsOnly((p) => !p);
+                    }}
+                  />
+
+                  <ERPIcon
+                    name={!hideTab ? "fullscreen" : "fullscreen-exit"}
+                    onPress={() => setHideTab(!hideTab)}
+                  />
+                </>
+              )}
+            </Animated.View>
+            <ERPIcon
+              isLoading={isMenuLoading}
+              name="refresh"
+              onPress={() => setIsRefresh(!isRefresh)}
+            />
+            {/* ALWAYS VISIBLE BUTTON (FIX) */}
+            {!isMenuLoading && allList.length > 5 && (
+              <ERPIcon name="search" onPress={() => setShowSearch(true)} />
+            )}
+
+           {
+            isLandscape &&  <>
+                  <ERPIcon
+                    name={isHorizontal ? "dashboard" : "list"}
+                    onPress={() => setIsHorizontal((p) => !p)}
+                  />
+
+                  <ERPIcon
+                    name={!showBookmarksOnly ? "bookmark-outline" : "bookmark"}
+                    onPress={() => {
+                      setShowStarsOnly(false);
+                      setShowBookmarksOnly((p) => !p);
+                    }}
+                  />
+
+                  <ERPIcon
+                    name={!showStarsOnly ? "trending-down" : "trending-up"}
+                    onPress={() => {
+                      setShowBookmarksOnly(false);
+                      setShowStarsOnly((p) => !p);
+                    }}
+                  />
+
+                  <ERPIcon
+                    name={!hideTab ? "fullscreen" : "fullscreen-exit"}
+                    onPress={() => setHideTab(!hideTab)}
+                  />
+                </>
+           }
+
+            {
+              !isLandscape &&  <ERPIcon
+              name={!showFull ? "more-vert" : "close"}
+              onPress={() => setShowFull(!showFull)}
+            />
+            }
+           
+          </View>
+        ),
+
+      headerLeft: () => (
+        <ERPIcon
+          extSize={24}
+          isMenu
+          name="menu"
+          onPress={() => navigation.openDrawer()}
         />
       ),
+    });
+  }, [
+    showFull,
+    showSearch,
+    showBookmarksOnly,
+    isHorizontal,
+    searchText,
+    allList,
+    isMenuLoading,
+    showStarsOnly,
+    theme,
+    navigation,
+    hideTab,
+    isLandscape,
+  ]);
 
-   headerRight: () =>
-  !showSearch && (
-    <View style={{ flexDirection: "row", alignItems: "center" }}>
-      
-      {/* ANIMATED ICONS */}
-      <Animated.View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          opacity: fadeAnim,
-          transform: [
-            {
-              translateY: fadeAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [-10, 0],
-              }),
-            },
-            {
-              scale: fadeAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0.8, 1],
-              }),
-            },
-          ],
-        }}
-      >
-        
-
-        
-
-        {!isMenuLoading && showFull && (
-          <>
-            <ERPIcon
-              name={isHorizontal ? "dashboard" : "list"}
-              onPress={() => setIsHorizontal((p) => !p)}
-            />
-
-            <ERPIcon
-              name={
-                !showBookmarksOnly ? "bookmark-outline" : "bookmark"
-              }
-              onPress={() => {
-                setShowStarsOnly(false);
-                setShowBookmarksOnly((p) => !p);
-              }}
-            />
-
-            <ERPIcon
-              name={!showStarsOnly ? "trending-down" : "trending-up"}
-              onPress={() => {
-                setShowBookmarksOnly(false);
-                setShowStarsOnly((p) => !p);
-              }}
-            />
-
-            <ERPIcon
-              name={!hideTab ? "fullscreen" : "fullscreen-exit"}
-              onPress={() => setHideTab(!hideTab)}
-            />
-          </>
-        )}
-      </Animated.View>
-      <ERPIcon
-            isLoading={isMenuLoading}
-            name="refresh"
-            onPress={() => setIsRefresh(!isRefresh)}
-          />
-      {/* ALWAYS VISIBLE BUTTON (FIX) */}
-      { !isMenuLoading && allList.length > 5 && (
-          <ERPIcon name="search" onPress={() => setShowSearch(true)} />
-        )}
-
-      <ERPIcon
-        name={!showFull ? "more-vert" : "close"}
-        onPress={() => setShowFull(!showFull)}
-      />
-    </View>
-  ),
-
-    headerLeft: () => (
-      <ERPIcon
-        extSize={24}
-        isMenu
-        name="menu"
-        onPress={() => navigation.openDrawer()}
-      />
-    ),
-  });
-}, [
-  showFull,
-  showSearch,
-  showBookmarksOnly,
-  isHorizontal,
-  searchText,
-  allList,
-  isMenuLoading,
-  showStarsOnly,
-  theme,
-  navigation,
-  hideTab,
-]);
   useFocusEffect(
     useCallback(() => {
-      setSearchText("")
-      setShowSearch(false)
+      setSearchText("");
+      setShowSearch(false);
       setIsHorizontal(false);
       setShowFull(false);
       setShowSearch(false);
       setIsRefresh(false);
       setShowBookmarksOnly(false);
       setShowStarsOnly(false);
-    
+
       if (isAuthenticated) {
         dispatch(getERPMenuThunk())
           .unwrap()
@@ -411,9 +446,7 @@ useEffect(() => {
         }}
       >
         <TouchableOpacity
-          onPress={() =>
-            toggleBookmark(item?.name, item.id, backgroundColor)
-          }
+          onPress={() => toggleBookmark(item?.name, item.id)}
           style={{ position: "absolute", top: 0, right: 0 }}
         >
           <MaterialIcons
@@ -432,8 +465,8 @@ useEffect(() => {
                 theme === "dark" ? backgroundColor : ERP_COLOR_CODE.ERP_WHITE,
             },
             item?.app_menu_icon && {
-              backgroundColor:'transparent',
-            }
+              backgroundColor: "transparent",
+            },
           ]}
         >
           {item?.app_menu_icon ? (
@@ -498,12 +531,22 @@ useEffect(() => {
   if (list.length === 0) return <NoData />;
   const groupedList = [];
 
-  for (let i = 0; i < list.length; i += 6) {
-    groupedList.push({
-      header: `Header ${i / 6}`,
-      data: list.slice(i, i + 6),
-    });
+  if (isLandscape) {
+    for (let i = 0; i < list.length; i += 8) {
+      groupedList.push({
+        header: `Header ${i / 8}`,
+        data: list.slice(i, i + 8),
+      });
+    }
+  } else {
+    for (let i = 0; i < list.length; i += 6) {
+      groupedList.push({
+        header: `Header ${i / 6}`,
+        data: list.slice(i, i + 6),
+      });
+    }
   }
+
   return (
     <View
       style={{ flex: 1, backgroundColor: theme === "dark" ? "black" : "white" }}
@@ -524,20 +567,22 @@ useEffect(() => {
         <>
           <FlatList
             data={groupedList}
-           key={`${isHorizontal}-${showBookmarksOnly}-${searchText}`} 
+            key={`${isHorizontal}-${showBookmarksOnly}-${searchText}`}
             keyExtractor={(_, index) => index.toString()}
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => (
-              <View style={{
-                marginVertical: 4,
-                marginHorizontal: 10,
-                paddingHorizontal: 6, 
-                backgroundColor: "#fafafa",
-                paddingVertical: 4,
-                borderRadius: 4,
-                borderWidth: 0.5,
-                borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE
-                }}> 
+              <View
+                style={{
+                  marginVertical: 4,
+                  marginHorizontal: 10,
+                  paddingHorizontal: 6,
+                  backgroundColor: "#fafafa",
+                  paddingVertical: 4,
+                  borderRadius: 4,
+                  borderWidth: 0.5,
+                  borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+                }}
+              >
                 {/* HEADER */}
                 <View
                   style={{
@@ -547,32 +592,32 @@ useEffect(() => {
                     marginBottom: 6,
                     backgroundColor: "#fafafa",
                     width: "96%",
-                    justifyContent:'space-between'
+                    justifyContent: "space-between",
                   }}
                 >
-                 <View style={{
-                  flexDirection:'row'
-                 }}>
-                   <MaterialIcons name={"widgets"} color={"black"} size={18} />
-                  <Text
+                  <View
                     style={{
-                      marginLeft: 6,
-                      fontSize: 14,
-                      color: ERP_COLOR_CODE.ERP_APP_COLOR
+                      flexDirection: "row",
                     }}
                   >
-                    {/* {`Header ${index}`} */}
-                    -
-                  </Text>
-                 </View>
-                 <Text
+                    <MaterialIcons name={"widgets"} color={"black"} size={18} />
+                    <Text
+                      style={{
+                        marginLeft: 6,
+                        fontSize: 14,
+                        color: ERP_COLOR_CODE.ERP_APP_COLOR,
+                      }}
+                    >
+                      {/* {`Header ${index}`} */}-
+                    </Text>
+                  </View>
+                  <Text
                     style={{
                       fontSize: 14,
                       fontWeight: "bold",
                     }}
                   >
-                    {/* {`${index}`} */}
-                    -
+                    {/* {`${index}`} */}-
                   </Text>
                 </View>
 
@@ -582,7 +627,7 @@ useEffect(() => {
                     <View
                       key={childIndex}
                       style={{
-                        width: "33%",
+                        width: isLandscape ? "25%" : "33%",
                       }}
                     >
                       {renderItem({ item: child, index: childIndex })}
@@ -596,10 +641,24 @@ useEffect(() => {
       ) : (
         <>
           <FlatList
-            key={ isLandscape ?  `${isHorizontal}-${showBookmarksOnly}-${searchText}-landscape` :  `${isHorizontal}-${showBookmarksOnly}-${searchText}-portrait`}
+            key={
+              isLandscape
+                ? `${isHorizontal}-${showBookmarksOnly}-${searchText}-landscape`
+                : `${isHorizontal}-${showBookmarksOnly}-${searchText}-portrait`
+            }
             data={list}
             renderItem={renderItem}
-            numColumns={isLandscape ?  isHorizontal ? 2 : 4 : isHorizontal ? 1 : list.length > 8 ? 3 : 2}
+            numColumns={
+              isLandscape
+                ? isHorizontal
+                  ? 2
+                  : 4
+                : isHorizontal
+                ? 1
+                : list.length > 8
+                ? 4
+                : 2
+            }
             columnWrapperStyle={
               !isHorizontal ? styles.columnWrapper : undefined
             }

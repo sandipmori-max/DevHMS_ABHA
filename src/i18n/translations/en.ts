@@ -356,5 +356,10 @@ export default {
   text99: 'Hello',
   company_code_required: "Company code is required",
   user_name_required: "User name is required",
-  password_required: "Password is required"
+  password_required: "Password is required",
+  loading1: "Loading your personalized experience...",
+  loading2: "Preparing your dashboard with the latest updates...",
+  loading3: "Syncing data to ensure everything is up to date...",
+  loading4: "Almost there, setting things up for you...",
+  loading5: "Optimizing performance for a smooth experience..."
 };

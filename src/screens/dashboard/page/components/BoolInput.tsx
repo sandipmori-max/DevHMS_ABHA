@@ -19,13 +19,20 @@ const BoolInput = ({ value, onChange, label }: BoolInputProps) => {
     <View style={{ marginBottom: 10 }}>
       {label && <TranslatedText
       
-      style={[{ marginBottom: 12, fontWeight: '600' }, theme === 'dark' && { color: 'white' }]}
+      style={[{  fontWeight: '600' }, theme === 'dark' && { color: 'white' }]}
       numberOfLines={1}
       text={label}
       
       ></TranslatedText>}
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <TouchableOpacity
+      <View style={{ 
+        padding: 12,
+        marginVertical: 4,
+        borderWidth: 0.4,
+        borderRadius: 8,
+        width:'60%',
+        flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{flexDirection:'row', width:'40%', alignContent:'center', alignItems:'center'}}>
+          <TouchableOpacity
           style={[styles.radio, value && styles.radioSelected]}
           onPress={() => onChange(true)}
         >
@@ -34,11 +41,24 @@ const BoolInput = ({ value, onChange, label }: BoolInputProps) => {
         <TouchableOpacity
           onPress={() => onChange(true)}
         >
-        <Text style={[{ marginRight: 16, }, theme === 'dark' && { color: 'white' }]}>{t("title.title7")}</Text>
+        <Text style={[
+          { marginRight: 16, }, theme === 'dark' && { color: 'white' },
+          value ?
+          {
+            fontWeight: '600',
+            color: 'black'
+          } :  {
+             color: 'gray'
+          }
+          ]}>{t("title.title7")}</Text>
 
         </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity
+        <View style={{
+          marginLeft: 18,
+          flexDirection:'row' , width:'40%', alignContent:'center', alignItems:'center'}}>
+          <TouchableOpacity
           style={[styles.radio, !value && styles.radioSelected]}
           onPress={() => onChange(false)}
         >
@@ -47,9 +67,19 @@ const BoolInput = ({ value, onChange, label }: BoolInputProps) => {
          <TouchableOpacity
           onPress={() => onChange(false)}
         >
-        <Text style={[theme === 'dark' && { color: 'white' }]}>{t("title.title8")}</Text>
+        <Text style={[theme === 'dark' && { color: 'white' },
+
+           !value ?
+          {
+            fontWeight: '600',
+            color: 'black'
+          } :  {
+             color: 'gray'
+          }
+        ]}>{t("title.title8")}</Text>
 
         </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -64,16 +94,17 @@ const styles = StyleSheet.create({
     borderColor: ERP_COLOR_CODE.ERP_333,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 4,
+    marginRight: 8,
+    
   },
   radioSelected: {
-    borderColor: ERP_COLOR_CODE.ERP_COLOR,
+    borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
   },
   radioInner: {
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: ERP_COLOR_CODE.ERP_COLOR,
+    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
   },
 });
 

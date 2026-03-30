@@ -211,7 +211,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         showSearch ? (
           <View
             style={{
-              width: width - 70,
+              width: isLandscape ? width - 170 : width - 70,
               flexDirection: "row",
               alignItems: "center",
             }}
@@ -246,15 +246,15 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         ) : (
           <>
             <Text
-                  numberOfLines={1}
-                  style={{
-                    color: "#fff",
-                    fontSize: 18,
-                    fontWeight: "600",
-                  }}
-                >
-                  {t("text84")}
-                </Text>
+              numberOfLines={1}
+              style={{
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "600",
+              }}
+            >
+              {t("text84")}
+            </Text>
           </>
         ),
       headerRight: () =>
@@ -284,7 +284,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
             >
               {showFull && (
                 <>
-
                   <ERPIcon
                     name={!isHorizontal ? "list" : "apps"}
                     onPress={() => setIsHorizontal((prev) => !prev)}
@@ -305,36 +304,33 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
               )}
             </Animated.View>
             <ERPIcon
-                    name="refresh"
-                    onPress={() => {
-                      setControlsLoader(true);
-                      setActionLoader(true);
-                      setIsRefresh(!isRefresh);
-                      getCurrentMonthRange()
-                      dispatch(setActiveDashboardBranchId(""));
-                            dispatch(setActiveDashboardBranch(""));
-                            dispatch(setActiveDashboardType(""));
-                            dispatch(setActiveDashboardTypeId(""));
-                     const params = { branch: "", type: "", fd: "", td: "" };
-                      dispatch(getERPDashboardThunk(params));
+              name="refresh"
+              onPress={() => {
+                setControlsLoader(true);
+                setActionLoader(true);
+                setIsRefresh(!isRefresh);
+                getCurrentMonthRange();
+                dispatch(setActiveDashboardBranchId(""));
+                dispatch(setActiveDashboardBranch(""));
+                dispatch(setActiveDashboardType(""));
+                dispatch(setActiveDashboardTypeId(""));
+                const params = { branch: "", type: "", fd: "", td: "" };
+                dispatch(getERPDashboardThunk(params));
 
-                      const timer = setTimeout(() => {
-                        setActionLoader(false);
-                        setControlsLoader(false);
-                        dispatch(setDashboardLoading(false));
-                      }, 3000);
+                const timer = setTimeout(() => {
+                  setActionLoader(false);
+                  setControlsLoader(false);
+                  dispatch(setDashboardLoading(false));
+                }, 6000);
 
-                      return () => clearTimeout(timer);
-                    }}
-                    isLoading={actionLoader}
+                return () => clearTimeout(timer);
+              }}
+              isLoading={actionLoader}
             />
 
             {dashboard.length > 5 && (
-                    <ERPIcon
-                      name="search"
-                      onPress={() => setShowSearch(true)}
-                    />
-                  )}
+              <ERPIcon name="search" onPress={() => setShowSearch(true)} />
+            )}
 
             {attendanceDone && (
               <ERPIcon
@@ -345,13 +341,33 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                 }}
               />
             )}
-            <ERPIcon
-              name={!showFull ? "more-vert" : "close"}
-              onPress={() => {
-                setIsFilterVisible(false);
-                setShowFull(!showFull);
-              }}
-            />
+            {isLandscape && (
+              <>
+                <ERPIcon
+                  name={!isHorizontal ? "list" : "apps"}
+                  onPress={() => setIsHorizontal((prev) => !prev)}
+                />
+                <ERPIcon
+                  name={!hideTab ? "fullscreen" : "fullscreen-exit"}
+                  onPress={() => {
+                    setHideTab(!hideTab);
+                  }}
+                />
+                <ERPIcon
+                  name={isFilterVisible ? "close" : "filter-alt"}
+                  onPress={() => setIsFilterVisible((prev) => !prev)}
+                />
+              </>
+            )}
+            {!isLandscape && (
+              <ERPIcon
+                name={!showFull ? "more-vert" : "close"}
+                onPress={() => {
+                  setIsFilterVisible(false);
+                  setShowFull(!showFull);
+                }}
+              />
+            )}
           </View>
         ),
       headerLeft: () => (
@@ -387,6 +403,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     filteredDashboard,
     isFilterVisible,
     hideTab,
+    isLandscape,
   ]);
 
   useFocusEffect(
@@ -401,7 +418,9 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         dispatch(getERPMenuThunk());
         timer = setTimeout(() => {
           dispatch(setDashboardLoading(false));
-        }, 3000);
+        }, 6000);
+
+        
       }
       // ✅ single cleanup function
       return () => {
@@ -454,7 +473,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     isFromMenu,
   }: any) => {
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         style={[
           styles.dashboardItem,
           {
@@ -639,6 +658,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       getCurrentMonthRange();
   }, [getCurrentMonthRange]);
 
+  
   const handleDateChange = (event: any, selectedDate?: Date) => {
     if (event?.type === "dismissed" || !selectedDate) {
       setShowDatePicker(null);
@@ -715,7 +735,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     );
     const timer = setTimeout(() => {
       dispatch(setDashboardLoading(false));
-    }, 3000);
+    }, 6000);
     return () => clearTimeout(timer);
   }, [
     auth.dashboardBranch,
@@ -1418,7 +1438,11 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       </View>
       <FlatList
         data={[""]}
-        key={isLandscape ? `${isHorizontal}-landscape1` : `${isHorizontal}-portrait1`}
+        key={
+          isLandscape
+            ? `${isHorizontal}-landscape1`
+            : `${isHorizontal}-portrait1`
+        }
         showsVerticalScrollIndicator={false}
         renderItem={() => {
           return (
@@ -1495,15 +1519,21 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                               <View style={{ marginTop: 12 }} />
                             )}
                           </View>
-                          <View style={[styles.dashboardSection, 
-                            {
+                          <View
+                            style={[
+                              styles.dashboardSection,
+                              {
                                 marginLeft: 2,
                                 marginRight: 12,
                               },
-                          ]}>
-
-                              <FlatList
-                              key={isLandscape ? `${isHorizontal}-landscape3` : `${isHorizontal}-portrait3`}
+                            ]}
+                          >
+                            <FlatList
+                              key={
+                                isLandscape
+                                  ? `${isHorizontal}-landscape3`
+                                  : `${isHorizontal}-portrait3`
+                              }
                               keyboardShouldPersistTaps="handled"
                               data={htmlItems}
                               keyExtractor={(item, index) => index.toString()}
@@ -1514,11 +1544,9 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                   isFromHtml: true,
                                   isFromMenu: true,
                                 })
-                              } 
+                              }
                               showsVerticalScrollIndicator={false}
                             />
-
-                         
                           </View>
 
                           <View
@@ -1530,8 +1558,12 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                               },
                             ]}
                           >
-                               <FlatList
-                              key={isLandscape ? `${isHorizontal}-landscape2` : `${isHorizontal}-portrait2`}
+                            <FlatList
+                              key={
+                                isLandscape
+                                  ? `${isHorizontal}-landscape2`
+                                  : `${isHorizontal}-portrait2`
+                              }
                               keyboardShouldPersistTaps="handled"
                               data={[...textItems, ...emptyItems]}
                               keyExtractor={(item, index) => index.toString()}
@@ -1557,7 +1589,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                               }
                               showsVerticalScrollIndicator={false}
                             />
-                          
                           </View>
                         </View>
                       )}

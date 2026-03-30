@@ -1,17 +1,22 @@
-import { View, Text, Animated, Easing, Dimensions, Platform } from 'react-native';
-import React, { useEffect, useRef } from 'react';
-import FastImage from 'react-native-fast-image';
+import {
+  View,
+  Animated,
+  Easing,
+  Platform,
+} from "react-native";
+import React, { useEffect, useRef } from "react";
+import FastImage from "react-native-fast-image";
 
-import { styles } from './loader_style';
-import { useAppSelector } from '../../store/hooks';
-import { useTranslation } from 'react-i18next';
-import { ERP_COLOR_CODE } from '../../utils/constants';
-import { useBaseLink } from '../../hooks/useBaseLink';
-import TypingDots from '../../screens/dashboard/tabs/home/TypingDots';
+import { styles } from "./loader_style";
+import { useAppSelector } from "../../store/hooks";
+import { useTranslation } from "react-i18next";
+import { ERP_COLOR_CODE } from "../../utils/constants";
+import { useBaseLink } from "../../hooks/useBaseLink";
+import TypingDots from "../../screens/dashboard/tabs/home/TypingDots";
 
 const FullViewLoader = ({ isShowTop = true }) => {
   const { t } = useTranslation();
-  const theme = useAppSelector(state => state?.theme.mode);
+  const theme = useAppSelector((state) => state?.theme.mode);
   const baseLink = useBaseLink();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -19,8 +24,38 @@ const FullViewLoader = ({ isShowTop = true }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const translateY = useRef(new Animated.Value(0)).current;
 
+  const messages = [
+    t("test7"),
+    t("loading1"),
+    t("loading2"),
+    t("loading3"),
+    t("loading4"),
+    t("loading5"),
+  ];
+
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const textFade = useRef(new Animated.Value(1)).current;
+
   useEffect(() => {
-    // Fade in text animation
+    const interval = setInterval(() => {
+      Animated.timing(textFade, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        setCurrentIndex((prev) => (prev + 1) % messages.length);
+        Animated.timing(textFade, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      });
+    }, 2000); 
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -35,7 +70,6 @@ const FullViewLoader = ({ isShowTop = true }) => {
       }),
     ]).start();
 
-    // Top-down bouncing animation
     Animated.loop(
       Animated.sequence([
         Animated.timing(translateY, {
@@ -50,10 +84,9 @@ const FullViewLoader = ({ isShowTop = true }) => {
           easing: Easing.in(Easing.quad),
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
 
-    // Pulse animation (optional)
     Animated.loop(
       Animated.sequence([
         Animated.timing(scaleAnim, {
@@ -66,7 +99,7 @@ const FullViewLoader = ({ isShowTop = true }) => {
           duration: 400,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
   }, []);
 
@@ -75,9 +108,10 @@ const FullViewLoader = ({ isShowTop = true }) => {
       {isShowTop && (
         <View
           style={{
-            height: Platform.OS === 'ios' ?  16  : 6, 
-            width: '100%',
-            backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
+            height: Platform.OS === "ios" ? 16 : 6,
+            width: "100%",
+            backgroundColor:
+              theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
             borderBottomLeftRadius: 12,
             borderBottomRightRadius: 12,
           }}
@@ -87,8 +121,8 @@ const FullViewLoader = ({ isShowTop = true }) => {
       <View
         style={[
           styles.loadingContainer,
-          theme === 'dark' && { backgroundColor: 'black' },
-          { justifyContent: 'center', alignItems: 'center' },
+          theme === "dark" && { backgroundColor: "black" },
+          { justifyContent: "center", alignItems: "center" },
         ]}
       >
         <Animated.View
@@ -111,26 +145,25 @@ const FullViewLoader = ({ isShowTop = true }) => {
             {
               opacity: fadeAnim,
               transform: [{ translateY: translateAnim }],
-              color: theme === 'dark' ? '#fff' : '#000',
+              color: theme === "dark" ? "#fff" : "#000",
               marginTop: 20,
             },
           ]}
         >
           <TypingDots visible={true} />
-          {/* {t('test6')} */}
         </Animated.Text>
 
         <Animated.Text
           style={[
             styles.subtitle,
             {
-              opacity: fadeAnim,
-              color: theme === 'dark' ? '#aaa' : '#555',
+              opacity: textFade,
+              color: theme === "dark" ? "#aaa" : "#555",
               marginTop: 4,
             },
           ]}
         >
-          {t('test7')}
+          {messages[currentIndex]}
         </Animated.Text>
       </View>
     </>

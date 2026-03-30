@@ -63,7 +63,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
   const { t } = useTranslation();
   const { execute: validateCompanyCode } = useApi();
   const theme = useAppSelector((state) => state?.theme.mode);
-const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const [showModal, setShowModal] = useState(false);
   const [img, setImg] = useState("");
@@ -219,8 +219,8 @@ const { height, width } = useWindowDimensions();
             },
             //  { scale: pressItemAnim },
           ],
-          width: isLandscape ? '50%' : '100%',
-          marginLeft: isLandscape ? 4 : 0
+          width: isLandscape ? "50%" : "100%",
+          marginLeft: isLandscape ? 4 : 0,
         }}
       >
         <TouchableOpacity
@@ -428,7 +428,12 @@ const { height, width } = useWindowDimensions();
   };
 
   return (
-    <Modal visible={visible} transparent  supportedOrientations={["portrait", "landscape"]} onRequestClose={handleClose}>
+    <Modal
+      visible={visible}
+      transparent
+      supportedOrientations={["portrait", "landscape"]}
+      onRequestClose={handleClose}
+    >
       <Animated.View
         style={[
           styles.container,
@@ -445,15 +450,14 @@ const { height, width } = useWindowDimensions();
             opacity: slideAnim,
           },
           isLandscape && {
-            marginTop : -2
-          }
+            marginTop: -2,
+          },
         ]}
       >
         <View
           style={[
             styles.header,
             theme === "dark" && { backgroundColor: "black" },
-            
           ]}
         >
           <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
@@ -468,62 +472,71 @@ const { height, width } = useWindowDimensions();
           <Text style={styles.title}>{t("text95")}</Text>
         </View>
 
-        <FlatList
-        key={isLandscape ? "landscape" : "portrait"}    
-          data={accounts}
-          renderItem={renderAccount}
-          keyExtractor={(item, index) => index.toString()}
-          style={styles.accountsList}
-          showsVerticalScrollIndicator={false}
-          numColumns={isLandscape ? 2 : 1}
-        />
-
-        <Animated.View
+        <View
           style={{
-            opacity: buttonAnim,
-            transform: [
-              {
-                translateY: buttonAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [50, 0],
-                }),
-              },
-              { scale: pressAnim },
-            ],
+            paddingHorizontal: isLandscape ? 12 : 0,
+            flex: 1,
           }}
         >
-          <TouchableOpacity
-            style={[
-              styles.addAccountButton,
-              theme === "dark" && { backgroundColor: "white" },
-              tapLoader && {
-                backgroundColor: ERP_COLOR_CODE.ERP_999,
-              },
-            ]}
-            onPress={() => {
-              onAddAccount();
-            }}
-            onPressIn={onPressIn}
-            onPressOut={onPressOut}
-          >
-            {
-              <MaterialIcons
-                name="person-add-alt"
-                size={24}
-                color={theme === "dark" ? "black" : "white"}
-              />
-            }
+          <FlatList
+            key={isLandscape ? "landscape" : "portrait"}
+            data={accounts}
+            renderItem={renderAccount}
+            keyExtractor={(item, index) => index.toString()}
+            style={styles.accountsList}
+            showsVerticalScrollIndicator={false}
+            numColumns={isLandscape ? 2 : 1}
+          />
+        </View>
 
-            <Text
+        {!isLandscape && (
+          <Animated.View
+            style={{
+              opacity: buttonAnim,
+              transform: [
+                {
+                  translateY: buttonAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [50, 0],
+                  }),
+                },
+                { scale: pressAnim },
+              ],
+            }}
+          >
+            <TouchableOpacity
               style={[
-                styles.addAccountText,
-                theme === "dark" && { color: "black" },
+                styles.addAccountButton,
+                theme === "dark" && { backgroundColor: "white" },
+                tapLoader && {
+                  backgroundColor: ERP_COLOR_CODE.ERP_999,
+                },
               ]}
+              onPress={() => {
+                onAddAccount();
+              }}
+              onPressIn={onPressIn}
+              onPressOut={onPressOut}
             >
-              {tapLoader ? t("text96") : t("text97")}
-            </Text>
-          </TouchableOpacity>
-        </Animated.View>
+              {
+                <MaterialIcons
+                  name="person-add-alt"
+                  size={24}
+                  color={theme === "dark" ? "black" : "white"}
+                />
+              }
+
+              <Text
+                style={[
+                  styles.addAccountText,
+                  theme === "dark" && { color: "black" },
+                ]}
+              >
+                {tapLoader ? t("text96") : t("text97")}
+              </Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
 
         <CustomAlert
           visible={alertVisible}
