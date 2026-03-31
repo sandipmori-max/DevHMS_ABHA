@@ -38,7 +38,8 @@ import { updateAttendanceState } from "../../../../store/slices/auth/authSlice";
 import SlideButtonIOS from "./SlideButtonIOS";
 import RNFS from "react-native-fs";
 import ImageResizer from "@bam.tech/react-native-image-resizer";
-// import RNFS from "react-native-fs";
+import { launchCamera } from "react-native-image-picker";
+
 const AttendanceForm = ({ setBlockAction, resData }: any) => {
   const { t } = useTranslations();
   const [showModal, setShowModal] = useState(false);
@@ -154,7 +155,43 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
       },
     });
   };
-
+ const openCameraV2 = (
+    setFieldValue: (field: keyof AttendanceFormValues, value: any) => void,
+    handleSubmit: () => void,
+  ) => {
+    launchCamera(
+      {
+        mediaType: "photo",
+        cameraType: "back",
+        quality: 0.7,
+        includeBase64: true,
+      },
+      (response) => {
+        if (response?.didCancel || response?.errorCode) {
+          setLocationLoading(false);
+          setBlockAction(false);
+          return;
+        }
+        const photoUri = response?.assets?.[0]?.uri;
+        const asset = response?.assets?.[0];
+        if (!photoUri) return;
+        if (asset?.base64) {
+          setFieldValue(
+            "imageBase64",
+            `${
+              resData?.success === 1 || resData?.success === "1"
+                ? "punchOut.jpeg"
+                : "punchIn.jpeg"
+            }; data:${asset?.type};base64,${asset?.base64}`,
+          );
+        }
+        setStatusImage(photoUri);
+        setTimeout(() => {
+          handleSubmit();
+        }, 1000);
+      },
+    );
+  };
   const handleStatusToggle = async (
     setFieldValue: (field: keyof AttendanceFormValues, value: any) => void,
     handleSubmit: () => void,

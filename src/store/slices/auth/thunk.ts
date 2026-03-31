@@ -121,6 +121,7 @@ export const loginUserThunk = createAsyncThunk(
         companyName: companyData?.response?.name || "",
         app_id: response?.app_id || "",
         password: password || "",
+        faceDetectionRequired: response?.faceDetectionRequired || false
       };
       const db = await getDBConnection();
       await createAccountsTable(db);
