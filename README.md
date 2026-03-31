@@ -212,7 +212,7 @@ curl --location 'https://payroll.deverp.net/devws/msp_api.aspx/syncLocation' \
     "location":"45.5556,12.6655"
 }'
 
-================================================================================
+     
 
 1) Prerequisites (local)
 

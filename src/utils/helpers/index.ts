@@ -658,9 +658,9 @@ export const handleLocationPress = (location: string) => {
     .catch((err) => console.error("Error opening map:", err));
 };
 
-// =======================
+//   =
 // Operators (camelCase full names)
-// =======================
+//   =
 const operators = {
   // Equality
   equals: (a, b) => {
@@ -856,9 +856,9 @@ const getDistanceInMeters = (lat1, lon1, lat2, lon2) => {
   return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 };
 
-// =======================
+//   =
 // Evaluate Condition
-// =======================
+//   =
 const evaluateCondition = (rule, values) => {
   if (!rule || !rule.operator) return false;
 
@@ -1081,9 +1081,9 @@ export const runDynamicRules = (
     const results: boolean[] = [];
 
     block.rules.forEach((rule: any) => {
-      // =========================
+      //   ===
       // 🔥 FORMULA RULE
-      // =========================
+      //   ===
       if (rule.type === "formula") {
         if (rule.triggerFields?.includes(changedField)) {
           updatedValues = applyFormula(rule, updatedValues);
@@ -1093,9 +1093,9 @@ export const runDynamicRules = (
         results.push(true);
       }
 
-      // =========================
+      //   ===
       // 🔥 CONDITION RULE
-      // =========================
+      //   ===
       else {
         const res = evaluateCondition(rule, updatedValues);
         results.push(res);
@@ -1106,17 +1106,17 @@ export const runDynamicRules = (
       }
     });
 
-    // =========================
+    //   ===
     // 🔥 APPLY LOGIC (AND / OR)
-    // =========================
+    //   ===
     const finalResult =
       block.logic === "OR"
         ? results.some(Boolean)
         : results.every(Boolean);
 
-    // =========================
+    //   ===
     // 🔥 ACTIONS
-    // =========================
+    //   ===
     if (finalResult && block.validActions) {
       actions = actions.concat(block.validActions);
     }

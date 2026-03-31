@@ -47,13 +47,13 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   const { user } = useAppSelector((state) => state.auth);
   const theme = useAppSelector((state) => state.theme.mode);
   const baseLink = useBaseLink();
-  /* ================= SAFE CURRENT ROUTE ================= */
+  /*  = SAFE CURRENT ROUTE  = */
   const currentRoute = useNavigationState((state) => {
     const route = state.routes[state.index];
     return route?.name;
   });
 
-  /* ================= ANIMATION VALUES ================= */
+  /*  = ANIMATION VALUES  = */
   const menuAnim = useRef(
     ERP_DRAWER_LIST.map(() => new Animated.Value(-40)),
   ).current;
@@ -61,11 +61,11 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   const footerTranslateY = useRef(new Animated.Value(40)).current;
   const footerOpacity = useRef(new Animated.Value(0)).current;
 
-  /* ================= HEADER ANIMATION ================= */
+  /*  = HEADER ANIMATION  = */
   const headerTranslateY = useRef(new Animated.Value(-60)).current;
   const headerOpacity = useRef(new Animated.Value(0)).current;
 
-  /* ================= RUN ON EVERY DRAWER OPEN ================= */
+  /*  = RUN ON EVERY DRAWER OPEN  = */
   useEffect(() => {
     if (drawerStatus !== "open") return;
 
@@ -143,7 +143,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
         backgroundColor: theme === "dark" ? DARK_COLOR : "white",
       }}
     >
-      {/* ================= HEADER ================= */}
+      {/*  = HEADER  = */}
       <Animated.View
         style={{
           minWidth: "100%",
@@ -261,7 +261,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
         </View>
       </Animated.View>
 
-      {/* ================= MENU ================= */}
+      {/*  = MENU  = */}
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View
@@ -393,7 +393,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
         onClose={() => setShowAbout(false)}
       />
 
-      {/* ================= FOOTER ================= */}
+      {/*  = FOOTER  = */}
       <Animated.View
         style={{
           transform: [{ translateY: footerTranslateY }],

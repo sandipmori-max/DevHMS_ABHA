@@ -55,7 +55,7 @@ const TermsAndConsent = ({ onAccept }: any) => {
         <Text style={styles.updated}>
                 Last updated: December 10, 2025
               </Text>
-      {/* ========== OLD TERMS & CONDITIONS (UNCHANGED FLOW) ========== */}
+      {/*  ==== OLD TERMS & CONDITIONS (UNCHANGED FLOW)  ==== */}
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={styles.container}
@@ -341,7 +341,7 @@ const TermsAndConsent = ({ onAccept }: any) => {
         )}
       </ScrollView>
 
-      {/* ========== LOCATION DISCLOSURE MODAL (NEW) ========== */}
+      {/*  ==== LOCATION DISCLOSURE MODAL (NEW)  ==== */}
       <Modal
         supportedOrientations={["portrait", "landscape"]}
         visible={showLocationModal}

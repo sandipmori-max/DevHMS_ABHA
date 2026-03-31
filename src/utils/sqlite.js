@@ -9,9 +9,9 @@ const ERP_TABLE = {
   ERP_BOOKMARKS: 'erp_bookmarks',
 };
 
-// =====================
+//      ===
 // 🚀 MIGRATIONS SUPPORT
-// =====================
+//      ===
 
 const ERP_QUERY_SCHEMA_TABLE_CREATE = `
   CREATE TABLE IF NOT EXISTS schema_version (
@@ -78,9 +78,9 @@ const migrateDatabase = async (db) => {
   }
 };
 
-// =====================
+//  =====
 // 🚀 DB CONNECTION
-// =====================
+//  =====
 
 export const getDBConnection = async () => {
   const db = await SQLite.openDatabase({
@@ -91,9 +91,9 @@ export const getDBConnection = async () => {
   return db;
 };
 
-// =====================
+//  =====
 // 🚀 QUERIES
-// =====================
+//  =====
 
 const ERP_QUERY_COMPANY_TABLE_CREATE = `
   CREATE TABLE IF NOT EXISTS company_details (
@@ -126,9 +126,9 @@ const ERP_QUERY_BOOKMARKS_TABLE_CREATE = `
   );
 `;
 
-// =====================
+//  =====
 // 🚀 TABLE CREATION
-// =====================
+//  =====
 
 export const createCompanyTable = async (db) => {
   try {

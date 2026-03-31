@@ -187,7 +187,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       setIsFilterVisible(false);
       setIsHorizontal(false);
       return () => {};
-    }, [isAuthenticated, navigation]),
+    }, [isAuthenticated, navigation, isLandscape]),
   );
   useEffect(() => {
     Animated.loop(

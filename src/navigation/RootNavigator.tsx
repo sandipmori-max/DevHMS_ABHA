@@ -159,7 +159,7 @@ const { height, width } = useWindowDimensions();
       } catch (error) {
         dispatch(updateAttendanceState(false));
 
-        console.log("error======", error);
+        console.log("error ", error);
       }
     }, 1000);
 

@@ -18,6 +18,8 @@ const TabNavigator = () => {
   const { appBottomMenuList } = useAppSelector((state) => state?.auth);
 
   const [hidden, setHidden] = useState(false);
+  const { height, width } = useWindowDimensions();
+  const isLandscape = width > height;
 
   const navigationItems = (appBottomMenuList || []).map((item) => ({
     name: item?.name,
@@ -78,13 +80,14 @@ const TabNavigator = () => {
             theme === "dark" ? DARK_COLOR : ERP_COLOR_CODE.ERP_WHITE,
           height: Platform.OS === 'ios' ? 65 : 80,
           paddingBottom: 5,
-          paddingTop: 5,
+          paddingTop: 5, 
         },
         headerStyle: {
           backgroundColor:
             theme === "dark" ? DARK_COLOR : ERP_COLOR_CODE.ERP_APP_COLOR,
         },
         headerTintColor: "white",
+      
       }}
     >
       {tabConfig.map((tab, index) => (
