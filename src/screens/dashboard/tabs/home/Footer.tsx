@@ -48,6 +48,8 @@ const Footer = ({
   const isHTML = typeof footer === "string" && footer.trim().startsWith("<");
   const isMarquee = footer.includes("<marquee");
 
+  console.log("html-----", footer)
+
   if (isMarquee) {
     return <MarqueeFooter html={footer} />;
   } else if (isHTML) {
@@ -70,7 +72,7 @@ const Footer = ({
           fontWeight: "600",
         }}
         text={footer}
-        numberOfLines={1}
+        numberOfLines={3}
       ></TranslatedText>
     );
   }

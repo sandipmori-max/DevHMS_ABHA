@@ -110,12 +110,13 @@ export default function DashboardListSheet({
       >
         <Animated.View
           style={{
-            height: height * 0.55,
+            height: isLandscape ? height * 0.65 : height * 0.55,
             backgroundColor: "#fff",
             borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
             padding: 16,
             transform: [{ translateY: sheetTranslateY }],
+            marginHorizontal: isLandscape ?  48 : 0
           }}
         >
           {/* Header */}

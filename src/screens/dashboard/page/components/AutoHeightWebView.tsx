@@ -21,10 +21,10 @@ const AutoHeightWebView = ({
    
 }) => {
   const [webViewHeight, setWebViewHeight] = useState(0);
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const webviewRef = useRef<WebView>(null);
   const theme = useAppSelector(state => state?.theme.mode);
- 
+   const isLandscape = width > height;
   const isDark = theme === "dark";
 
   const BG = isDark ? "#000000" : "#FFFFFF";
@@ -52,20 +52,17 @@ const AutoHeightWebView = ({
       body > *:last-child { margin-bottom: 0 !important; }
       table {
         height: 100% !important;
-        width: ${isFromListPage ? '92%' :  isFromPage ? '92%' : '82%'} !important;
+        width: ${isFromListPage ? '92%' :  isFromPage ? '92%' : isLandscape ? '82%' :'88%'} !important;
         border-collapse: collapse !important;
         table-layout: fixed !important;
         word-break: break-word !important;
       }
+        
       th, td {
         border: 1px solid ${BORDER} !important;
         padding: 6px !important;
         text-align: left !important;
-      }
-      th {
-        background: ${TH_BG} !important;
-        font-weight: bold !important;
-      }
+      } 
       tr:nth-child(even) { background: ${EVEN_ROW} !important; }
       img { max-width: 100% !important; height: auto !important; display: block !important; }
       div, p, span, h1,h2,h3,h4,h5,h6 {
@@ -75,14 +72,22 @@ const AutoHeightWebView = ({
     </style>
   `;
 
+  console.log("defaultCSS", html)
+
+  const cleanedHTML = html
+  .replace(/<h[1-6]>\s*<table/gi, "<table")
+  .replace(/<\/table>\s*<\/h[1-6]>/gi, "</table>");
+
   const formattedHTML = `
     <!DOCTYPE html>
     <html>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
         ${defaultCSS}
       </head>
-      <body>${html}</body>
+      <body>${cleanedHTML}</body>
     </html>
   `; 
   
@@ -110,15 +115,19 @@ const AutoHeightWebView = ({
     <View
       style={{
         overflow: 'scroll',
-        width,
+        width:  isLandscape ?  width - 150 : width - 40,
         backgroundColor: BG,
+        marginVertical:4
       }}
     >
       {html.includes('<table ') ? (
         <WebView
           ref={webviewRef}
           source={{ html: formattedHTML }}
-          style={{ width, height: webViewHeight || 100, backgroundColor: BG }}
+          style={{ width, 
+            height: webViewHeight || 1,
+            backgroundColor: BG 
+          }}
           injectedJavaScript={injectedJS}
           onMessage={event => {
             const height = Number(event.nativeEvent.data);

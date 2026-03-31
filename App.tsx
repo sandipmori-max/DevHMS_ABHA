@@ -8,6 +8,7 @@ import {
   Animated,
   Easing,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import { Provider } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
@@ -34,7 +35,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import FullViewLoader from "./src/components/loader/FullViewLoader";
 import TermsAndConsent from "./src/screens/TermsConditions/TermsCondition";
 import { useAppSelector } from "./src/store/hooks";
-// import ExitBottomSheet from "./src/components/ExitBottomSheet";
+import ExitBottomSheet from "./src/components/ExitBottomSheet";
 // import { useAppUpdate } from "./src/hooks/useAppUpdate";
 // import UpdateModal from "./src/components/appUpdate/UpdateModal";
 
@@ -45,7 +46,10 @@ const App = () => {
     <Provider store={store}>
       <TranslationProvider>
         <AppContent />
-        {/* <ExitBottomSheet /> */}
+        {
+          Platform.OS === 'android' &&  <ExitBottomSheet />
+        }
+       
         {/* <UpdateModal
           visible={update.visible}
           storeUrl={update.storeUrl}

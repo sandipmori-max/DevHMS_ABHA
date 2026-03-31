@@ -144,7 +144,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                         numberOfLines={1}
                         style={{
                           width: isLandscape ? "48%" :"26%",
-                          fontWeight: "500",
+                          fontWeight: "400",
                           maxWidth: 110,
                           color: theme === "dark" ? "#fff" : "#000",
                         }}
@@ -156,7 +156,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                           width: isLandscape ?  "80%" : "80%",
                           fontSize: 14,
                           color: item.color,
-                          fontWeight: "800",
+                          fontWeight: "500",
                         }}
                         numberOfLines={1}
                         text={`:- ${item.value}`}
@@ -164,7 +164,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                     </View>
                   )}
                 />
-                {!isLandscape && firstList.length >= 5 && (
+                { (
                   <TouchableOpacity
                     onPress={() => {
                       setIsVisibleFullMode(true);
@@ -192,22 +192,20 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                   </View>
 {
   isLandscape &&  <View style={{
-                   width:'50%',
-                   alignContent:'center',
+                   width:'50%', 
+                   justifyContent:'center',
+                   top: -10
                 }}> 
                     <FlatList
                 showsHorizontalScrollIndicator={false}
                 showsVerticalScrollIndicator={false}
-                horizontal={true}
+                horizontal={isLandscape ? false : true}
                 keyExtractor={(item, index) => index.toString()}
                 data={secondList}
-                key={isLandscape ? "landscape" : "portrait"}    
                 renderItem={({ item }) => (
                   <View
-                    style={{
-                      marginHorizontal: 4,
-                      flexDirection: "row",
-                      alignItems: "center",
+                    style={{ 
+                      flexDirection: "row", 
                       marginBottom: 4,
                     }}
                   >
@@ -225,7 +223,12 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                     <TranslatedText
                       text={item.text}
                       numberOfLines={1}
-                      style={{ maxWidth: 80 }}
+                      style={[{ maxWidth: 90 },
+{
+   width: isLandscape ? "48%" :"26%",
+}
+                        
+                      ]}
                     ></TranslatedText>
                     <TranslatedText
                       numberOfLines={1}
@@ -242,6 +245,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
               />
                   </View>
 }
+                
                   
               </View>
             </View>
