@@ -234,17 +234,32 @@ class DevERPService {
     });
   }
 
-  getListData(page: string, fd: string, td: string, param: string) {
+  getListData(page: string, fd: string, td: string, param: string, branch: string) {
     return this.apiCall<ListDataResponse>("msp_api.aspx/getListData", {
       token: this.token,
       page,
       fd,
       td,
       param,
+      branch
     }).then((res) =>
       JSON.stringify({ data: res.data, config: res.config || [] }),
     );
   }
+
+getConfigData(page: string) {
+  return this.apiCall<ListDataResponse>("msp_api.aspx/getListConfig", {
+    token: this.token,
+    page,
+  }).then((res) => {
+    console.log("API Response (getConfigData):", res); // 👈 added log
+
+    return JSON.stringify({
+      data: res,
+      config: res || [],
+    });
+  });
+}
 
   markAttendance(rawData: any, isPunchIn: boolean, user: any, id: any) {
     const pageType = isPunchIn ? "punchin" : "punchout";

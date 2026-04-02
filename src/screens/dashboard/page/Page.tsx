@@ -24,7 +24,7 @@ import {
 } from "@react-navigation/native";
 import Animated, { FadeInUp, Layout } from "react-native-reanimated";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getERPPageThunk } from "../../../store/slices/auth/thunk";
+import { getERPAppConfigMenuThunk, getERPPageThunk } from "../../../store/slices/auth/thunk";
 import { savePageThunk } from "../../../store/slices/page/thunk";
 import FullViewLoader from "../../../components/loader/FullViewLoader";
 import NoData from "../../../components/no_data/NoData";
@@ -592,7 +592,7 @@ const PageScreen = () => {
                       ).unwrap();
                       setLoader(false);
                       setIsValidate(false);
-
+                      dispatch(getERPAppConfigMenuThunk());
                       fetchPageData();
                       setAlertConfig({
                         title: t("title.title17"),
@@ -659,8 +659,6 @@ const PageScreen = () => {
       const parsed = await dispatch(
         getERPPageThunk({ page: url, id: isFromNew ? 0 : id }),
       ).unwrap();
-        console.log("parsed.script ++++++++. ", parsed)
-
       if (
         parsed?.script &&
         typeof parsed.script === "object" &&

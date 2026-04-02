@@ -26,7 +26,10 @@ import {
 } from "@react-navigation/native";
 
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getERPListDataThunk } from "../../../store/slices/auth/thunk";
+import {
+  getERPListDataThunk,
+  getERPPageThunk,
+} from "../../../store/slices/auth/thunk";
 import { styles } from "./list_page_style";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { formatDateForAPI, parseCustomDate } from "../../../utils/helpers";
@@ -45,6 +48,9 @@ import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ERP_COLOR_CODE } from "../../../utils/constants";
 import useTranslations from "../../../hooks/useTranslations";
 import TranslatedText from "../tabs/home/TranslatedText";
+import CustomPicker from "../page/components/CustomPicker";
+import CustomMultiplePicker from "../page/components/CustomMultiplePicker";
+import { updateSelectedBranchesState } from "../../../store/slices/auth/authSlice";
 
 const ListScreen = () => {
   const navigation = useNavigation();
@@ -59,6 +65,7 @@ const ListScreen = () => {
   const [loadingListId, setLoadingListId] = useState<string | null>(null);
   const [listData, setListData] = useState<any[]>([]);
   const [configData, setConfigData] = useState<any[]>([]);
+  const [selectedBranch, setSelectedBranch] = useState("");
 
   const [error, setError] = useState<string | null>(null);
 
@@ -98,7 +105,7 @@ const ListScreen = () => {
   }>(null);
 
   const route = useRoute<RouteProp<ListRouteParams, "List">>();
-  const { item } = route?.params;
+  const { item, parsedConfig } = route?.params;
   const theme = useAppSelector((state) => state?.theme.mode);
 
   const pageTitle = item?.title || item?.name || "List Data";
@@ -111,6 +118,8 @@ const ListScreen = () => {
   const [pageSize] = useState(100);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [controls, setControls] = useState<any[]>([]);
+
   const pressAnim = useRef(new Animated.Value(1)).current;
   const onPressIn = () => {
     Animated.spring(pressAnim, {
@@ -178,6 +187,7 @@ const ListScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      dispatch(updateSelectedBranchesState([]));
       setTapLoader(false);
       return () => {};
     }, [navigation]),
@@ -227,15 +237,7 @@ const ListScreen = () => {
           } */}
           {!error && (
             <ERPIcon
-              name={
-                isFilterVisible
-                  ? "close"
-                  : !hasDateField
-                  ? "search"
-                  : isFilterVisible
-                  ? "close"
-                  : "filter-alt"
-              }
+              name={isFilterVisible ? "close" : "filter-alt"}
               onPress={() => {
                 setIsFilterVisible(!isFilterVisible);
               }}
@@ -254,16 +256,43 @@ const ListScreen = () => {
     error,
   ]);
 
+  const fetchPageData = useCallback(async () => {
+    try {
+      const parsed = await dispatch(
+        getERPPageThunk({ page: "Dashboard", id: "" }),
+      ).unwrap();
+      const pageControls = Array.isArray(parsed?.pagectl)
+        ? parsed?.pagectl
+        : [];
+      const normalizedControls = pageControls?.map((c) => ({
+        ...c,
+        disabled: String(c?.disabled ?? "0"),
+        visible: String(c?.visible ?? "1"),
+        mandatory: String(c?.mandatory ?? "0"),
+      }));
+      setControls(normalizedControls);
+    } catch (e: any) {
+    } finally {
+      setTimeout(() => {
+        setActionLoader(false);
+      }, 10);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    fetchPageData();
+  }, [navigation]);
+
   const getCurrentMonthRange = useCallback(() => {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastDay = new Date();
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     const fromDateStr = formatDateForAPI(firstDay);
     const toDateStr = formatDateForAPI(lastDay);
     setFromDate(fromDateStr);
     setToDate(toDateStr);
     return { fromDate: fromDateStr, toDate: toDateStr };
-  }, []);
+  }, [navigation]);
 
   const debouncedSearch = useCallback(
     useMemo(() => {
@@ -323,7 +352,8 @@ const ListScreen = () => {
     try {
       setSearchQuery("");
       getCurrentMonthRange();
-      await fetchListData(fromDate, toDate);
+      await fetchListData();
+       dispatch(updateSelectedBranchesState([]));
     } catch (e) {}
   };
 
@@ -374,93 +404,94 @@ const ListScreen = () => {
     setShowDatePicker(null);
   };
 
-  const fetchListData = useCallback(
-    async (fromDateStr: string, toDateStr: string) => {
-      // if (isFilterVisible) {
-      //   return;
-      // }
-      try {
-        setError(null);
-        setLoadingListId(item?.id || 0);
+  const fetchListData = async () => {
+    try {
+      setError(null);
+      setLoadingListId(item?.id || 0);
 
-        const raw = await dispatch(
-          getERPListDataThunk({
-            page: item?.url,
-            fromDate: fromDateStr,
-            toDate: toDateStr,
-            param: "",
-          }),
-        ).unwrap();
-        const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
-        let dataArray = [];
-        let configArray = [];
+      console.log("----------", fromDate, toDate, selectedBranch);
+      const raw = await dispatch(
+        getERPListDataThunk({
+          page: item?.url,
+          fromDate: fromDate,
+          toDate: toDate,
+          param: "",
+          branch: selectedBranch || "",
+        }),
+      ).unwrap();
+      const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+      console.log("parsed", parsed);
+      let dataArray = [];
+      let configArray = [];
 
-        if (Array.isArray(parsed)) {
-          dataArray = parsed;
-          configArray = [];
-        } else if (Array.isArray(parsed?.data)) {
-          dataArray = parsed.data;
+      if (Array.isArray(parsed)) {
+        dataArray = parsed;
+        configArray = [];
+      } else if (Array.isArray(parsed?.data)) {
+        dataArray = parsed.data;
+        configArray = parsed.config || [];
+      } else if (Array.isArray(parsed?.list)) {
+        dataArray = parsed.list;
+        configArray = parsed.config || [];
+      } else if (parsed && typeof parsed === "object") {
+        const keys = Object.keys(parsed).filter((key) => !isNaN(Number(key)));
+        if (keys.length > 0) {
+          dataArray = keys.map((key) => parsed[key]);
           configArray = parsed.config || [];
-        } else if (Array.isArray(parsed?.list)) {
-          dataArray = parsed.list;
-          configArray = parsed.config || [];
-        } else if (parsed && typeof parsed === "object") {
-          const keys = Object.keys(parsed).filter((key) => !isNaN(Number(key)));
-          if (keys.length > 0) {
-            dataArray = keys.map((key) => parsed[key]);
-            configArray = parsed.config || [];
-          }
         }
-
-        setConfigData(configArray);
-        setListData(dataArray);
-        setFilteredData(dataArray);
-      } catch (e: any) {
-        setError(e || "Failed to load list data");
-        setParsedError(e);
-      } finally {
-        setLoadingListId(null);
-        setTimeout(() => {
-          setActionLoader(false);
-        }, 10);
       }
-    },
-    [item, dispatch],
-  );
 
-  useEffect(() => {
-    const { fromDate: initialFromDate, toDate: initialToDate } =
-      getCurrentMonthRange();
-    fetchListData(initialFromDate, initialToDate);
-  }, [getCurrentMonthRange, fetchListData]);
-
-  useEffect(() => {
-    if (fromDate && toDate) {
-      fetchListData(fromDate, toDate);
+      setConfigData(configArray);
+      setListData(dataArray);
+      setFilteredData(dataArray);
+    } catch (e: any) {
+      setError(e || "Failed to load list data");
+      setParsedError(e);
+    } finally {
+      setLoadingListId(null);
+      setTimeout(() => {
+        setActionLoader(false);
+      }, 10);
     }
-  }, [fromDate, toDate]);
+  };
+
+  useEffect(() => {
+    getCurrentMonthRange();
+  }, [navigation]);
+
+  useEffect(() => {
+    fetchListData();
+  }, [toDate, fromDate, selectedBranch,navigation]);
+
+  // useEffect(() => {
+  //   if (fromDate && toDate) {
+  //     fetchListData(fromDate, toDate);
+  //   }
+  // }, [fromDate, toDate]);
 
   useFocusEffect(
     useCallback(() => {
       const { fromDate: initialFromDate, toDate: initialToDate } =
         getCurrentMonthRange();
-      fetchListData(initialFromDate, initialToDate);
+      fetchListData();
       return () => {};
-    }, [getCurrentMonthRange, fetchListData]),
+    }, [ ]),
   );
 
   const handleItemPressed = (item, page, pageTitle = "") => {
     setIsFilterVisible(false);
     setSearchQuery("");
-    navigation.navigate("Page", {
-      item,
-      title: page,
-      isFromNew: true,
-      url: pageName,
-      pageTitle: pageTitle,
-      isFromBusinessCard: isFromBusinessCard,
-      isFromProfile: false,
-    });
+    if (parsedConfig?.editentry === 1 || parsedConfig?.editentry === "1") {
+      navigation.navigate("Page", {
+        item,
+        title: page,
+        isFromNew: true,
+        url: pageName,
+        pageTitle: pageTitle,
+        isFromBusinessCard: isFromBusinessCard,
+        isFromProfile: false,
+      });
+    }
   };
 
   const handleActionButtonPressed = (actionValue, label, color, id, item) => {
@@ -698,7 +729,7 @@ const ListScreen = () => {
                 </View>
               </View>
 
-              {hasDateField && (
+              {(parsedConfig?.period === 1 || parsedConfig?.period === "1") && (
                 <View style={styles.dateContainer}>
                   {/* Start Date */}
                   <View style={styles.dateRow}>
@@ -754,6 +785,49 @@ const ListScreen = () => {
                   </View>
                 </View>
               )}
+
+              {(parsedConfig?.branchwise === 1 || parsedConfig?.branchwise === "1") && controls
+                .filter((x) => x.ctltype !== "DATE" && x.field !== "userid")
+                .map((item, index) => (
+                  <>
+                    {item?.title === "Branch" && (
+                      <View style={{ width: "100%" }}>
+                        <CustomMultiplePicker
+                          isForMultipleSelection={true}
+                          isForceOpen={false}
+                          isValidate={false}
+                          label={item.title}
+                          selectedValue={() => {}}
+                          dtext={"Branch"}
+                          onValueChange={(i) => {
+                            console.log("i-----------------", i);
+                            i.map((item) => item.value).join(",");
+                            setSelectedBranch(
+                              i.map((item) => item.value).join(","),
+                            );
+                            // if (item?.title === "Branch") {
+                            //   dispatch(
+                            //     setActiveDashboardBranchId(
+                            //       i?.value?.toString(),
+                            //     ),
+                            //   );
+                            //   dispatch(setActiveDashboardBranch(i?.name));
+                            // } else {
+                            //   dispatch(setActiveDashboardType(i?.name));
+                            //   dispatch(
+                            //     setActiveDashboardTypeId(i?.value?.toString()),
+                            //   );
+                            // }
+                          }}
+                          options={[]}
+                          item={item}
+                          errors={null}
+                          formValues={null}
+                        />
+                      </View>
+                    )}
+                  </>
+                ))}
             </>
           )}
 
@@ -915,44 +989,51 @@ const ListScreen = () => {
         </>
       )}
 
-      {hasIdField && !isFromAlertCard && !loadingListId && configData && (
-        <Animated.View
-          style={{
-            transform: [{ scale: pressAnim }],
-          }}
-        >
-          <TouchableOpacity
-            style={[
-              styles.addButton,
-              {
-                bottom:
-                  filteredData.length === 0 ? 40 : totalAmount === 0 ? 64 : 78,
-              },
-              theme === "dark" && {
-                backgroundColor: "white",
-                borderWidth: 1,
-                borderColor: "white",
-              },
-            ]}
-            onPressIn={onPressIn}
-            onPressOut={onPressOut}
-            onPress={() => {
-              setTapLoader(true);
-              handleItemPressed({}, pageParamsName, pageTitle);
+      {(parsedConfig?.newentry === 1 || parsedConfig?.newentry === "1") &&
+        !isFromAlertCard &&
+        !loadingListId &&
+        configData && (
+          <Animated.View
+            style={{
+              transform: [{ scale: pressAnim }],
             }}
           >
-            {tapLoader ? (
-              <ActivityIndicator size={"large"} color={"#fff"} />
-            ) : (
-              <MaterialIcons
-                size={32}
-                name="add"
-                color={theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE}
-              />
-            )}
-          </TouchableOpacity>
-        </Animated.View>
-      )}
+            <TouchableOpacity
+              style={[
+                styles.addButton,
+                {
+                  bottom:
+                    filteredData.length === 0
+                      ? 40
+                      : totalAmount === 0
+                      ? 64
+                      : 78,
+                },
+                theme === "dark" && {
+                  backgroundColor: "white",
+                  borderWidth: 1,
+                  borderColor: "white",
+                },
+              ]}
+              onPressIn={onPressIn}
+              onPressOut={onPressOut}
+              onPress={() => {
+                setTapLoader(true);
+                handleItemPressed({}, pageParamsName, pageTitle);
+              }}
+            >
+              {tapLoader ? (
+                <ActivityIndicator size={"large"} color={"#fff"} />
+              ) : (
+                <MaterialIcons
+                  size={32}
+                  name="add"
+                  color={theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE}
+                />
+              )}
+            </TouchableOpacity>
+          </Animated.View>
+        )}
 
       <CustomAlert
         visible={alertVisible}

@@ -59,4 +59,5 @@ export interface AuthState {
   isPinVerifyLoaded: boolean;
   attendanceDone: boolean;
   locationLogs: [];
+  selectedBranches: []
 }

@@ -14,6 +14,7 @@ import FullViewLoader from "../../../../components/loader/FullViewLoader";
 import NoData from "../../../../components/no_data/NoData";
 import ERPIcon from "../../../../components/icon/ERPIcon";
 import {
+  getERPAppConfigMenuThunk,
   getERPDashboardThunk,
   getERPMenuThunk,
   getERPPageThunk,
@@ -57,6 +58,7 @@ import {
 } from "react-native";
 import TranslatedText from "./TranslatedText";
 import GreetingBottomSheet from "./GreetingBottomSheet";
+import { getDDLThunk } from "../../../../store/slices/dropdown/thunk";
 
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;
@@ -310,11 +312,12 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                 setActionLoader(true);
                 setIsRefresh(!isRefresh);
                 getCurrentMonthRange();
+                dispatch(getERPAppConfigMenuThunk());
                 dispatch(setActiveDashboardBranchId(""));
                 dispatch(setActiveDashboardBranch(""));
                 dispatch(setActiveDashboardType(""));
                 dispatch(setActiveDashboardTypeId(""));
-                const params = { branch: "", type: "", fd: "", td: "" };
+                const params = { branch: "", type: "", fd: fromDate, td: toDate };
                 dispatch(getERPDashboardThunk(params));
 
                 const timer = setTimeout(() => {
@@ -412,8 +415,8 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
       if (isAuthenticated) {
         setLoadingPageId(true);
-        // dispatch(getERPAppConfigMenuThunk());
-        const params = { branch: "", type: "", fd: "", td: "" };
+        dispatch(getERPAppConfigMenuThunk());
+        const params = { branch: "", type: "", fd: fromDate, td: toDate};
         dispatch(getERPDashboardThunk(params));
         dispatch(getERPMenuThunk());
         timer = setTimeout(() => {
@@ -428,7 +431,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
           clearTimeout(timer);
         }
       };
-    }, [isAuthenticated, dispatch]),
+    }, [isAuthenticated, dispatch, fromDate, toDate]),
   );
 
   const accentColors = [
@@ -645,7 +648,11 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   const getCurrentMonthRange = useCallback(() => {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastDay = new Date();
+    const lastDay = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0
+  );
     const fromDateStr = formatDateForAPI(firstDay);
     const toDateStr = formatDateForAPI(lastDay);
     setFromDate(fromDateStr);
@@ -729,8 +736,8 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       getERPDashboardThunk({
         branch: auth?.dashboardBranchId.trim() || "",
         type: auth?.dashboardTypeId.trim() || "",
-        fd: auth?.dashboardFromDate.trim() || "",
-        td: auth?.dashboardToDate.trim() || "",
+        fd: auth?.dashboardFromDate.trim() || fromDate,
+        td: auth?.dashboardToDate.trim() || toDate,
       }),
     );
     const timer = setTimeout(() => {
@@ -742,8 +749,54 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     auth.dashboardType,
     auth.dashboardFromDate,
     auth.dashboardToDate,
+    fromDate,
+    toDate
   ]);
 
+//   {
+//     "dtlid": 500018877,
+//     "id": 100000223,
+//     "seqno": 1,
+//     "field": "branchid",
+//     "dfield": "",
+//     "fieldtitle": "Branch",
+//     "title": "Branch",
+//     "text": 1,
+//     "dtext": "",
+//     "defaultvalue": "#branchid",
+//     "tooltip": "BranchName",
+//     "size": "",
+//     "ctltype": "INT",
+//     "ddl": "ViewUserBranch-BranchID,BranchName",
+//     "ddlfield": "BranchName",
+//     "ddlwhere": "UserID in ($UID,-1)",
+//     "ajax": 0,
+//     "visible": "0",
+//     "refcol": 0,
+//     "mandatory": "1",
+//     "disabled": "0"
+// }
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const res = await dispatch(
+        getDDLThunk({
+          dtlid: '500018877',
+          where: `UserID in (${user?.id}, -1) AND selected = 1`,
+        }),
+      ).unwrap();
+
+      const data = res?.data ?? [];
+
+      console.log("--------------------------------------------DDL Data:", data);
+    } catch (error) {
+      console.log("-------------------------------------DDL Error:", error);
+    }
+  };
+
+  fetchData();
+}, []);
   if (isDashboardLoading)
     return <FullViewLoader isShowTop={theme === "dark" ? false : true} />;
   if (!actionLoader && filteredDashboard?.length === 0) {

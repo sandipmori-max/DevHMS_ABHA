@@ -31,9 +31,10 @@ const CustomPicker = ({
   errors,
   dtext,
   isForceOpen,
+  isForMultipleSelection = false
 }: any) => {
   const { t } = useTranslations();
-const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const SCREEN_HEIGHT= height;
   const [open, setOpen] = useState(false);
@@ -90,7 +91,7 @@ const { height, width } = useWindowDimensions();
       const res = await dispatch(
         getDDLThunk({
           dtlid: item?.dtlid,
-          where: !isForceOpen ? `UserID in (${user?.id}, -1)` : item?.ddlwhere,
+          where: !isForceOpen ? `UserID in (${user?.id}, -1) and selected = 1` : item?.ddlwhere,
         }),
       ).unwrap();
 

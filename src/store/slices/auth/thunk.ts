@@ -319,24 +319,24 @@ export const getERPMenuThunk = createAsyncThunk(
 );
 
 export const getERPAppConfigMenuThunk = createAsyncThunk(
-  "auth/getERPAppConfigMenu",
+  'auth/getERPAppConfigMenu',
   async (_, { rejectWithValue }) => {
     try {
       const response = await DevERPService.getAppMenu();
-
-      if (response && typeof response === "string") {
+      console.log("response------------------", response)
+      if (response && typeof response === 'string') {
         return response;
-      } else if (response && typeof response === "object") {
+      } else if (response && typeof response === 'object') {
         return response;
       }
 
-      return rejectWithValue("Invalid menu response format");
+      return rejectWithValue('Invalid menu response format');
     } catch (error: any) {
-      return rejectWithValue(error?.message || "Failed to get ERP menu");
+       console.log("response---error---------------", error)
+      return rejectWithValue(error?.message || 'Failed to get ERP menu');
     }
   },
 );
-
 type ERPDashboardParams = {
   branch: string;
   type: string;
@@ -348,6 +348,7 @@ export const getERPDashboardThunk = createAsyncThunk(
   "auth/getERPDashboard",
   async ({ branch, type, fd, td }: ERPDashboardParams, { rejectWithValue }) => {
     try {
+      console.log("dashboard-----------", branch, type, fd, td )
       const dashboard = await DevERPService.getDashboard(branch, type, fd, td);
       return dashboard;
     } catch (error: any) {
@@ -378,7 +379,8 @@ export const getERPListDataThunk = createAsyncThunk(
       fromDate,
       toDate,
       param,
-    }: { page: string; fromDate: string; toDate: string; param?: string },
+      branch
+    }: { page: string; fromDate: string; toDate: string; param?: string, branch?: string},
     { rejectWithValue },
   ) => {
     try {
@@ -387,9 +389,33 @@ export const getERPListDataThunk = createAsyncThunk(
         fromDate,
         toDate,
         param,
+        branch
       );
       return listData;
     } catch (error: any) {
+      return rejectWithValue(error?.message || "Failed to get ERP list data");
+    }
+  },
+);
+
+
+export const getERPConfigDataThunk = createAsyncThunk(
+  "auth/getListConfig",
+  async (
+    {
+      page, 
+    }: { page: string},
+    { rejectWithValue },
+  ) => {
+    try {
+      console.log("page =================", page)
+      const listData = await DevERPService.getConfigData(
+        page, 
+      );
+      return listData;
+    } catch (error: any) {
+      console.log("error =================", error)
+
       return rejectWithValue(error?.message || "Failed to get ERP list data");
     }
   },

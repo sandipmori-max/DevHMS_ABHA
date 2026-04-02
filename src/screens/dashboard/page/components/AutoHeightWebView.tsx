@@ -72,8 +72,7 @@ const AutoHeightWebView = ({
     </style>
   `;
 
-  console.log("defaultCSS", html)
-
+ 
   const cleanedHTML = html
   .replace(/<h[1-6]>\s*<table/gi, "<table")
   .replace(/<\/table>\s*<\/h[1-6]>/gi, "</table>");

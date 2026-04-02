@@ -222,7 +222,7 @@ const { height, width } = useWindowDimensions();
                     alertStyles.message,
                     { textAlign: "left", fontSize: 14, fontWeight: "800" },
                   ]}
-                  numberOfLines={1}
+                  numberOfLines={3}
                   text={message || ""}
                 ></TranslatedText>
 

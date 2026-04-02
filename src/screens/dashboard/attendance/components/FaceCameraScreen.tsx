@@ -20,7 +20,6 @@ import { useFaceDetector } from "react-native-vision-camera-face-detector";
 import { Worklets } from "react-native-worklets-core";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import ImageResizer from "@bam.tech/react-native-image-resizer";
-import RNFS from "react-native-fs";
 import { useBaseLink } from "../../../../hooks/useBaseLink";
 import { useAppSelector } from "../../../../store/hooks";
 import CustomAlert from "../../../../components/alert/CustomAlert";
@@ -128,9 +127,9 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
         enableAutoRedEyeReduction: true,
         skipMetadata: true,
         enableShutterSound: true,
-        quality: 0.3,
-        width: 640,
-        height: 480,
+        quality: 0.8,
+        width: 800,
+        height: 800,
     });
 
     const photoPath = photo?.path;
@@ -143,8 +142,8 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
     try {
       compressedImage = await ImageResizer.createResizedImage(
         photoPath,
-        600,
-        600,
+        800,
+        800,
         "JPEG",
         60,
         0,
@@ -157,8 +156,8 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
 
       compressedImage = await ImageResizer.createResizedImage(
         photoPath,
-        400,
-        400,
+        800,
+        800,
         "JPEG",
         50,
         0
@@ -185,7 +184,7 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
 
     console.log("🎯 Confidence:", confidence);
 
-    if (confidence > 73.975) {
+    if (confidence > 84.975) {
       onCapture(compressedUri);
       navigation.goBack();
     } else {
@@ -196,7 +195,6 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
           type: "error",
         });
     }
-
   } catch (error) {
     console.log("❌ Error:", error);
   } finally {

@@ -7,6 +7,7 @@ import {
   Animated,
   Text,
   useWindowDimensions,
+  SectionList,
 } from "react-native";
 import React, {
   useEffect,
@@ -20,7 +21,10 @@ import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import NoData from "../../../../components/no_data/NoData";
 import FullViewLoader from "../../../../components/loader/FullViewLoader";
 import ERPIcon from "../../../../components/icon/ERPIcon";
-import { getERPMenuThunk } from "../../../../store/slices/auth/thunk";
+import {
+  getERPConfigDataThunk,
+  getERPMenuThunk,
+} from "../../../../store/slices/auth/thunk";
 import {
   createBookmarksTable,
   getBookmarks,
@@ -305,43 +309,42 @@ const MenuTab = ({
               <ERPIcon name="search" onPress={() => setShowSearch(true)} />
             )}
 
-           {
-            isLandscape &&  <>
-                  <ERPIcon
-                    name={isHorizontal ? "dashboard" : "list"}
-                    onPress={() => setIsHorizontal((p) => !p)}
-                  />
+            {isLandscape && (
+              <>
+                <ERPIcon
+                  name={isHorizontal ? "dashboard" : "list"}
+                  onPress={() => setIsHorizontal((p) => !p)}
+                />
 
-                  <ERPIcon
-                    name={!showBookmarksOnly ? "bookmark-outline" : "bookmark"}
-                    onPress={() => {
-                      setShowStarsOnly(false);
-                      setShowBookmarksOnly((p) => !p);
-                    }}
-                  />
+                <ERPIcon
+                  name={!showBookmarksOnly ? "bookmark-outline" : "bookmark"}
+                  onPress={() => {
+                    setShowStarsOnly(false);
+                    setShowBookmarksOnly((p) => !p);
+                  }}
+                />
 
-                  <ERPIcon
-                    name={!showStarsOnly ? "trending-down" : "trending-up"}
-                    onPress={() => {
-                      setShowBookmarksOnly(false);
-                      setShowStarsOnly((p) => !p);
-                    }}
-                  />
+                <ERPIcon
+                  name={!showStarsOnly ? "trending-down" : "trending-up"}
+                  onPress={() => {
+                    setShowBookmarksOnly(false);
+                    setShowStarsOnly((p) => !p);
+                  }}
+                />
 
-                  <ERPIcon
-                    name={!hideTab ? "fullscreen" : "fullscreen-exit"}
-                    onPress={() => setHideTab(!hideTab)}
-                  />
-                </>
-           }
+                <ERPIcon
+                  name={!hideTab ? "fullscreen" : "fullscreen-exit"}
+                  onPress={() => setHideTab(!hideTab)}
+                />
+              </>
+            )}
 
-            {
-              !isLandscape &&  <ERPIcon
-              name={!showFull ? "more-vert" : "close"}
-              onPress={() => setShowFull(!showFull)}
-            />
-            }
-           
+            {!isLandscape && (
+              <ERPIcon
+                name={!showFull ? "more-vert" : "close"}
+                onPress={() => setShowFull(!showFull)}
+              />
+            )}
           </View>
         ),
 
@@ -416,6 +419,63 @@ const MenuTab = ({
     };
   }, []);
 
+  const sectionListData = Object.values(
+    list.reduce((acc, item) => {
+      const moduleName = (item.Module || item.module || "Others")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      if (!acc[moduleName]) {
+        acc[moduleName] = {
+          title: moduleName,
+          data: [],
+        };
+      }
+
+      acc[moduleName].data.push(item);
+
+      return acc;
+    }, {}),
+  );
+
+  const extractConfig = (raw: any) => {
+    try {
+      const parsedRaw = typeof raw === "string" ? JSON.parse(raw) : raw;
+
+      let msg = parsedRaw?.data?.message;
+      if (!msg) return null;
+
+      // remove outer quotes + last }
+      msg = msg.replace(/^"+|"+$/g, "").replace(/}$/, "");
+
+      const obj: any = {};
+
+      msg.split(",").forEach((pair) => {
+        let [key, value] = pair.split(":");
+
+        if (!key || !value) return;
+
+        // clean key
+        key = key.replace(/"/g, "").trim();
+
+        // clean value
+        value = value.trim();
+
+        // number detect
+        if (!isNaN(Number(value))) {
+          obj[key] = Number(value);
+        } else {
+          obj[key] = value.replace(/"/g, "").trim();
+        }
+      });
+
+      return obj;
+    } catch (e) {
+      console.log("Parse Failed:", e);
+      return null;
+    }
+  };
+
   const renderItem = ({ item, index }: any) => {
     const backgroundColor = accentColors[index % accentColors.length];
 
@@ -436,12 +496,34 @@ const MenuTab = ({
         ]}
         onPress={async () => {
           const db = await getDBConnection();
+          let raw = null;
+          try {
+            raw = await dispatch(
+              getERPConfigDataThunk({
+                page: item?.url,
+              }),
+            ).unwrap();
+
+            console.log("++++++++++++++++++++++++++++++++++++++raw", raw);
+          } catch (error) {
+            console.log("++++++++++++++++++++++++++++++++++++++error", error);
+          }
+
+          const parsedConfig = extractConfig(raw);
+
+          console.log("FINAL CONFIG:", parsedConfig);
+          console.log("parsedConfig:", parsedConfig);
+          console.log(
+            "+++++++++++++++++parsedConfig+++++++++++++++++++++parsedConfig",
+            parsedConfig,
+          );
+
           await increaseTapCount(db, item.id, user?.id);
 
           if (item.url.includes(".")) {
-            navigation.navigate("Web", { item });
+            navigation.navigate("Web", { item, parsedConfig });
           } else {
-            navigation.navigate("List", { item });
+            navigation.navigate("List", { item, parsedConfig });
           }
         }}
       >
@@ -529,23 +611,6 @@ const MenuTab = ({
     return <FullViewLoader isShowTop={theme === "dark" ? false : true} />;
   if (error) return <ErrorMessage message={error} isShowTop={false} />;
   if (list.length === 0) return <NoData />;
-  const groupedList = [];
-
-  if (isLandscape) {
-    for (let i = 0; i < list.length; i += 8) {
-      groupedList.push({
-        header: `Header ${i / 8}`,
-        data: list.slice(i, i + 8),
-      });
-    }
-  } else {
-    for (let i = 0; i < list.length; i += 6) {
-      groupedList.push({
-        header: `Header ${i / 6}`,
-        data: list.slice(i, i + 6),
-      });
-    }
-  }
 
   return (
     <View
@@ -565,65 +630,69 @@ const MenuTab = ({
 
       {!isHorizontal && list.length > 8 ? (
         <>
-          <FlatList
-            data={groupedList}
-            key={`${isHorizontal}-${showBookmarksOnly}-${searchText}`}
-            keyExtractor={(_, index) => index.toString()}
+          <SectionList
+            sections={sectionListData}
+            keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}
-            renderItem={({ item, index }) => (
+            showsHorizontalScrollIndicator={false}
+            renderSectionHeader={({ section }) => (
               <View
                 style={{
-                  marginVertical: 4,
-                  marginHorizontal: 10,
-                  paddingHorizontal: 6,
+                  flexDirection: "row",
+                  alignContent: "center",
+                  alignItems: "center",
+                  marginBottom: 6,
                   backgroundColor: "#fafafa",
-                  paddingVertical: 4,
-                  borderRadius: 4,
-                  borderWidth: 0.5,
-                  borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+                  width: "98%",
+                  justifyContent: "space-between",
+                  padding: 4,
                 }}
               >
-                {/* HEADER */}
                 <View
                   style={{
                     flexDirection: "row",
-                    alignContent: "center",
-                    alignItems: "center",
-                    marginBottom: 6,
-                    backgroundColor: "#fafafa",
-                    width: "96%",
-                    justifyContent: "space-between",
                   }}
                 >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                    }}
-                  >
-                    <MaterialIcons name={"widgets"} color={"black"} size={18} />
-                    <Text
-                      style={{
-                        marginLeft: 6,
-                        fontSize: 14,
-                        color: ERP_COLOR_CODE.ERP_APP_COLOR,
-                      }}
-                    >
-                      {/* {`Header ${index}`} */}-
-                    </Text>
-                  </View>
+                  <MaterialIcons name={"widgets"} color={"black"} size={18} />
                   <Text
                     style={{
-                      fontSize: 14,
-                      fontWeight: "bold",
+                      marginLeft: 6,
+                      fontWeight: '600',
+                      color: ERP_COLOR_CODE.ERP_APP_COLOR,
                     }}
                   >
-                    {/* {`${index}`} */}-
+                    {section?.title}
                   </Text>
                 </View>
-
-                {/* CHILD ITEMS */}
+                <View  style={{
+                    height: 24,
+                    width: 24,
+                    borderRadius: 4,
+                    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                    justifyContent:'center',
+                    alignContent:'center',
+                    alignItems:'center',
+                    opacity: 0.5
+                  }}>
+ <Text
+           style={{  
+            color:'white'
+                  }}      
+                >
+                  {section.data.length}
+                </Text>
+                </View>
+               
+              </View>
+            )}
+            renderItem={({ item, index, section }) => {
+              const items = section.data;
+              const chunkSize = isLandscape ? 4 : 3;
+              if (index % chunkSize !== 0) return null;
+              const rowItems = items.slice(index, index + chunkSize);
+              return (
                 <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-                  {item.data.map((child, childIndex) => (
+                  {rowItems.map((child, childIndex) => (
                     <View
                       key={childIndex}
                       style={{
@@ -634,8 +703,8 @@ const MenuTab = ({
                     </View>
                   ))}
                 </View>
-              </View>
-            )}
+              );
+            }}
           />
         </>
       ) : (

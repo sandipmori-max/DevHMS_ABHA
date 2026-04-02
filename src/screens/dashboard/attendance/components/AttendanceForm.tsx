@@ -408,6 +408,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
 
               setTimeout(() => {
                 setAlertVisible(false);
+                setAlertMapVisible(true);
 
                 setAlertMapConfig({
                   title: "Location tracked status",
@@ -416,7 +417,6 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
                     : "tracked stop",
                   type: "location",
                 });
-                setAlertMapVisible(true);
               }, 1100);
             })
             .catch((err) => {

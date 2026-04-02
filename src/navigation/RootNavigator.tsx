@@ -13,7 +13,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { checkAuthStateThunk } from "../store/slices/auth/thunk";
+import { checkAuthStateThunk, getERPAppConfigMenuThunk } from "../store/slices/auth/thunk";
 import DevERPService from "../services/api/deverp";
 import AuthNavigator from "./AuthNavigator";
 import StackNavigator from "./StackNavigator";
@@ -172,6 +172,12 @@ const { height, width } = useWindowDimensions();
     };
   }, [isAuthenticated, reLoading]);
   const app_id = user?.app_id;
+
+   useEffect(() => {
+    if(isAuthenticated){
+      dispatch(getERPAppConfigMenuThunk());
+    }
+  }, [isAuthenticated])
 
   useEffect(() => {
     const fetchDeviceName = async () => {
