@@ -117,6 +117,7 @@ const ReadableView = ({
   const screenWidth = Dimensions.get("window").width;
   const [listData, setListData] = useState(filteredData || []);
   const theme = useAppSelector((state) => state?.theme?.mode);
+  console.log("Rendering+++++++++++++ TableView with data length:", loadingListId ,filteredData);
 
   const slideAnim = useRef(new Animated.Value(300)).current; // right se start
 
@@ -597,6 +598,8 @@ const ReadableView = ({
       </>
     );
   };
+
+   
 
   if (!loadingListId && listData?.length === 0) {
     return (

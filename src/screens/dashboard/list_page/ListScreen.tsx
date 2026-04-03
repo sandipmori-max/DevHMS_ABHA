@@ -52,6 +52,7 @@ import CustomPicker from "../page/components/CustomPicker";
 import CustomMultiplePicker from "../page/components/CustomMultiplePicker";
 import { updateSelectedBranchesState, updateSelectedBranchIdsState, updateSelectedFromDateState, updateSelectedToDateState } from "../../../store/slices/auth/authSlice";
 import { getDDLThunk } from "../../../store/slices/dropdown/thunk";
+import NoData from "../../../components/no_data/NoData";
 
 const ListScreen = () => {
   const navigation = useNavigation();
@@ -478,25 +479,18 @@ const ListScreen = () => {
   }, []);
 
   console.log("selectedBranch", selectedBranchIds, toDate, fromDate);
-  useEffect(() => {
-    fetchListData();
-  }, [toDate, fromDate, selectedBranchIds]);
-
+  
   // useEffect(() => {
   //   if (fromDate && toDate) {
   //     fetchListData(fromDate, toDate);
   //   }
   // }, [fromDate, toDate]);
 
-  useFocusEffect(
-    useCallback(() => {
-      // const { fromDate: initialFromDate, toDate: initialToDate } =
-        // getCurrentMonthRange();
-      // fetchListData();
-      return () => {};
-    }, [navigation]),
-  );
-
+ useFocusEffect(
+  useCallback(() => {
+    fetchListData();
+  }, [fromDate, toDate, selectedBranchIds])
+);
   const handleItemPressed = (item, page, pageTitle = "") => {
     setIsFilterVisible(false);
     setSearchQuery("");
@@ -965,26 +959,7 @@ const ListScreen = () => {
             <FullViewLoader />
           ) : (
             <>
-              {isTableView ? (
-                <>
-                  <TableView
-                    configData={configData}
-                    filteredData={filteredData}
-                    loadingListId={loadingListId}
-                    totalAmount={totalAmount}
-                    totalQty={totalQty}
-                    pageParamsName={pageParamsName}
-                    handleItemPressed={handleItemPressed}
-                    pageName={pageName}
-                    setIsFilterVisible={setIsFilterVisible}
-                    setSearchQuery={setSearchQuery}
-                    isFromBusinessCard={isFromBusinessCard}
-                    handleActionButtonPressed={handleActionButtonPressed}
-                  />
-                </>
-              ) : (
-                <>
-                  <ReadableView
+            <ReadableView
                     handleDeleteNotification={handleDeleteNotification}
                     isFromAlertCard={isFromAlertCard}
                     configData={configData}
@@ -1002,8 +977,7 @@ const ListScreen = () => {
                     isLoadingMore={isLoadingMore}
                     loadMore={loadMore}
                   />
-                </>
-              )}
+              
             </>
           )}
         </>
@@ -1054,7 +1028,7 @@ const ListScreen = () => {
             </TouchableOpacity>
           </Animated.View>
         )}
-
+     
       <CustomAlert
         visible={alertVisible}
         title={alertConfig.title}
