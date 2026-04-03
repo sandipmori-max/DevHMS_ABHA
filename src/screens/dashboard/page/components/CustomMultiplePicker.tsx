@@ -20,7 +20,7 @@ import useTranslations from "../../../../hooks/useTranslations";
 import InputError from "../../../../components/error/InputError";
 import NoData from "../../../../components/no_data/NoData";
 import TranslatedText from "../../tabs/home/TranslatedText";
-import { updateSelectedBranchesState } from "../../../../store/slices/auth/authSlice";
+import { updateSelectedBranchesState, updateSelectedBranchIdsState } from "../../../../store/slices/auth/authSlice";
 
 const CustomMultiplePicker = ({
   isValidate,
@@ -183,8 +183,9 @@ const CustomMultiplePicker = ({
                 onPress={() => {
                   const updatedOptions = selectedBranches.filter(
                     (o) => o.value !== opt.value,
-                  );
-
+                  ); 
+                  const branchValues = updatedOptions.map((item) => item.value).join(",");
+                  dispatch(updateSelectedBranchIdsState(branchValues));
                   dispatch(updateSelectedBranchesState(updatedOptions));
                 }}
               >

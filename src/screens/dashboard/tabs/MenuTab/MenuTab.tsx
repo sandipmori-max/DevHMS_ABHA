@@ -105,7 +105,6 @@ const MenuTab = ({
     : showBookmarksOnly
     ? filteredList.filter((i) => bookmarks[i.id])
     : filteredList;
-
   const showToast = (msg, backgroundColor, color) =>
     setToast({
       visible: true,
@@ -370,6 +369,7 @@ const MenuTab = ({
     navigation,
     hideTab,
     isLandscape,
+    menu
   ]);
 
   useFocusEffect(
@@ -551,9 +551,9 @@ const MenuTab = ({
             },
           ]}
         >
-          {item?.app_menu_icon ? (
+          {item?.materialIcon ? (
             <MaterialIcons
-              name={item?.app_menu_icon || "widgets"}
+              name={item?.materialIcon || "widgets"}
               color={"gray"}
               size={18}
             />

@@ -101,7 +101,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
     return () => subscription.remove();
   }, []);
 
-  const openCameraV2 = (setFieldValue, handleSubmit) => {
+  const openCamera = (setFieldValue, handleSubmit) => {
     setLocationLoading(false);
     setBlockAction(false);
     navigation.navigate("FaceCameraScreen", {
@@ -155,7 +155,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
       },
     });
   };
- const openCamera = (
+ const openCameraV2 = (
     setFieldValue: (field: keyof AttendanceFormValues, value: any) => void,
     handleSubmit: () => void,
   ) => {
@@ -413,10 +413,15 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
                 setAlertMapConfig({
                   title: "Location tracked status",
                   message: !isAttendanceDone
-                    ? "You will be tracked until Punch Out"
-                    : "tracked stop",
+                    ? "Location tracking has started and will continue until you punch out."
+                    : "Location tracking has been stopped.",
                   type: "location",
                 });
+
+                 setTimeout(() => {
+                    setAlertMapVisible(false);
+                    navigation.goBack();
+                  }, 1500);
               }, 1100);
             })
             .catch((err) => {

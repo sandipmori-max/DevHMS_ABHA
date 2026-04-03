@@ -165,7 +165,7 @@ const AppContent = () => {
 
   return (
     <>
-      <StatusBar backgroundColor={statusBarColor} barStyle={barStyle} />
+      <StatusBar backgroundColor={theme === "dark" ? "#000000" : ERP_COLOR_CODE.ERP_APP_COLOR} barStyle={barStyle} />
 
       {/* 🔥 MAIN APP */}
       <Animated.View

@@ -63,6 +63,7 @@ import VideoRecorder from "./components/VideoRecorder";
 import ScanScreen from "./components/ScanScreen";
 import BarCodeScan from "./components/BarCodeScan";
 import TranslatedText from "../tabs/home/TranslatedText";
+import { setReloadApp } from "../../../store/slices/reloadApp/reloadAppSlice";
 
 type PageRouteParams = { PageScreen: { item: any } };
 
@@ -593,6 +594,11 @@ const PageScreen = () => {
                       setLoader(false);
                       setIsValidate(false);
                       dispatch(getERPAppConfigMenuThunk());
+                      if(isFromProfile){
+                         setTimeout(() => {
+                               dispatch(setReloadApp());
+                             }, 1000);
+                      }
                       fetchPageData();
                       setAlertConfig({
                         title: t("title.title17"),

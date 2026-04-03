@@ -59,5 +59,8 @@ export interface AuthState {
   isPinVerifyLoaded: boolean;
   attendanceDone: boolean;
   locationLogs: [];
-  selectedBranches: []
+  selectedBranches: [],
+  fromDate: string;
+  toDate: string;
+  selectedBranchIds: ""
 }

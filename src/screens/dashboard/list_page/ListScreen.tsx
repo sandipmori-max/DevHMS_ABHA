@@ -50,7 +50,7 @@ import useTranslations from "../../../hooks/useTranslations";
 import TranslatedText from "../tabs/home/TranslatedText";
 import CustomPicker from "../page/components/CustomPicker";
 import CustomMultiplePicker from "../page/components/CustomMultiplePicker";
-import { updateSelectedBranchesState } from "../../../store/slices/auth/authSlice";
+import { updateSelectedBranchesState, updateSelectedBranchIdsState, updateSelectedFromDateState, updateSelectedToDateState } from "../../../store/slices/auth/authSlice";
 import { getDDLThunk } from "../../../store/slices/dropdown/thunk";
 
 const ListScreen = () => {
@@ -66,10 +66,10 @@ const ListScreen = () => {
   const [loadingListId, setLoadingListId] = useState<string | null>(null);
   const [listData, setListData] = useState<any[]>([]);
   const [configData, setConfigData] = useState<any[]>([]);
-  const [selectedBranch, setSelectedBranch] = useState("");
-  const { user } = useAppSelector((state) => state.auth);
+  const { user, fromDate, toDate,selectedBranchIds  } = useAppSelector((state) => state.auth);
   const [error, setError] = useState<string | null>(null);
 
+  console.log("user", user, fromDate, toDate);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false);
   const [isTableView, setIsTableView] = useState<boolean>(false);
@@ -98,8 +98,6 @@ const ListScreen = () => {
     id: 0,
   });
 
-  const [fromDate, setFromDate] = useState<string>("");
-  const [toDate, setToDate] = useState<string>("");
   const [showDatePicker, setShowDatePicker] = useState<null | {
     type: "from" | "to";
     show: boolean;
@@ -224,7 +222,6 @@ const ListScreen = () => {
               onPress={() => {
                 setActionLoader(true);
                 onRefresh();
-                fetchPageData();
               }}
               isLoading={actionLoaders}
             />
@@ -286,8 +283,14 @@ const ListScreen = () => {
       ).unwrap();
 
       const data = res?.data ?? [];
-      dispatch(updateSelectedBranchesState(data));
+      const filtered = data.filter(item => item.value !== -1);
+      const branchValues = filtered.map((item) => item.value).join(",");
+      dispatch(updateSelectedBranchIdsState(branchValues));
+      dispatch(updateSelectedBranchesState(filtered));
+      fetchListData();
+
     } catch (e: any) {
+
     } finally {
       setTimeout(() => {
         setActionLoader(false);
@@ -295,20 +298,20 @@ const ListScreen = () => {
     }
   }
 
-  useEffect(() => {
-    fetchPageData();
-  }, [navigation]);
+  // useEffect(() => {
+    // fetchPageData();
+  // }, [navigation]);
 
-  const getCurrentMonthRange = useCallback(() => {
-    const now = new Date();
+  const getCurrentMonthRange = () =>{
+     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     const fromDateStr = formatDateForAPI(firstDay);
     const toDateStr = formatDateForAPI(lastDay);
-    setFromDate(fromDateStr);
-    setToDate(toDateStr);
-    return { fromDate: fromDateStr, toDate: toDateStr };
-  }, [navigation]);
+    dispatch(updateSelectedFromDateState(fromDateStr));
+    dispatch(updateSelectedToDateState(toDateStr));
+    fetchPageData();
+  }
 
   const debouncedSearch = useCallback(
     useMemo(() => {
@@ -368,8 +371,6 @@ const ListScreen = () => {
     try {
       setSearchQuery("");
       getCurrentMonthRange();
-      await fetchListData();
-      dispatch(updateSelectedBranchesState([]));
     } catch (e) {}
   };
 
@@ -406,14 +407,15 @@ const ListScreen = () => {
           setShowDatePicker(null);
           return;
         }
-      }
-      setToDate(formattedDate);
-    } else {
-      setFromDate(formattedDate);
+      } 
+    dispatch(updateSelectedToDateState(formattedDate));
+
+    } else { 
+      dispatch(updateSelectedFromDateState(formattedDate));
       if (toDate) {
         const toDateObj = new Date(toDate.split("-").reverse().join("-"));
         if (selectedDate > toDateObj) {
-          setToDate("");
+           dispatch(updateSelectedToDateState(''));
         }
       }
     }
@@ -425,14 +427,14 @@ const ListScreen = () => {
       setError(null);
       setLoadingListId(item?.id || 0);
 
-      console.log("----------", fromDate, toDate, selectedBranch);
+    console.log("API PARAMETERS ++++++++++++++++++++++++++++++ ----------", fromDate, toDate, selectedBranchIds);
       const raw = await dispatch(
         getERPListDataThunk({
           page: item?.url,
           fromDate: fromDate,
           toDate: toDate,
           param: "",
-          branch: selectedBranch || "",
+          branch: `${selectedBranchIds}` || "",
         }),
       ).unwrap();
       const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
@@ -473,11 +475,12 @@ const ListScreen = () => {
 
   useEffect(() => {
     getCurrentMonthRange();
-  }, [navigation]);
+  }, []);
 
+  console.log("selectedBranch", selectedBranchIds, toDate, fromDate);
   useEffect(() => {
     fetchListData();
-  }, [toDate, fromDate, selectedBranch, navigation]);
+  }, [toDate, fromDate, selectedBranchIds]);
 
   // useEffect(() => {
   //   if (fromDate && toDate) {
@@ -487,11 +490,11 @@ const ListScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      const { fromDate: initialFromDate, toDate: initialToDate } =
-        getCurrentMonthRange();
-      fetchListData();
+      // const { fromDate: initialFromDate, toDate: initialToDate } =
+        // getCurrentMonthRange();
+      // fetchListData();
       return () => {};
-    }, []),
+    }, [navigation]),
   );
 
   const handleItemPressed = (item, page, pageTitle = "") => {
@@ -820,9 +823,8 @@ const ListScreen = () => {
                             onValueChange={(i) => {
                               console.log("i-----------------", i);
                               i.map((item) => item.value).join(",");
-                              setSelectedBranch(
-                                i.map((item) => item.value).join(","),
-                              );
+                               dispatch(updateSelectedBranchesState(i));
+                               dispatch(updateSelectedBranchIdsState(i.map((item) => item.value).join(",")));
                               // if (item?.title === "Branch") {
                               //   dispatch(
                               //     setActiveDashboardBranchId(

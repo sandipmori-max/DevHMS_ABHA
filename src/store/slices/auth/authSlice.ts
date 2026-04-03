@@ -37,7 +37,10 @@ const initialState: AuthState = {
   isPinVerifyLoaded: false,
   attendanceDone: false,
   locationLogs: [],
-  selectedBranches: []
+  selectedBranches: [],
+  selectedBranchIds: "",
+  fromDate: '',
+  toDate: '',
 };
 
 const authSlice = createSlice({
@@ -55,6 +58,15 @@ const authSlice = createSlice({
     },
     updateSelectedBranchesState: (state, action) => {
       state.selectedBranches = action.payload;
+    },
+     updateSelectedBranchIdsState: (state, action) => {
+      state.selectedBranchIds = action.payload;
+    },
+     updateSelectedFromDateState: (state, action) => {
+      state.fromDate = action.payload;
+    },
+     updateSelectedToDateState: (state, action) => {
+      state.toDate = action.payload;
     },
     updateAttendanceState: (state, action: PayloadAction<boolean>) => {
       state.attendanceDone = action.payload;
@@ -397,6 +409,9 @@ export const {
   updatePinVerifyLoadedState,
   updateAttendanceState,
   addLocation,
-  updateSelectedBranchesState
+  updateSelectedBranchesState,
+  updateSelectedFromDateState,
+  updateSelectedToDateState,
+  updateSelectedBranchIdsState
 } = authSlice.actions;
 export default authSlice.reducer;

@@ -26,7 +26,9 @@ import TranslatedText from "../home/TranslatedText";
 const ProfileTab = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
-  const { user, accounts } = useAppSelector((state) => state?.auth);
+    const { reLoading } = useAppSelector((state) => state.reloadApp);
+  
+  const { user, accounts, menu } = useAppSelector((state) => state?.auth);
   const [showAccountSwitcher, setShowAccountSwitcher] = useState(false);
   const [showAddAccount, setShowAddAccount] = useState(false);
   const baseLink = useBaseLink();
@@ -120,7 +122,7 @@ const ProfileTab = () => {
         />
       ),
     });
-  }, [navigation, theme, tapLoader]);
+  }, [navigation, theme, tapLoader, reLoading]);
 
   return (
     <View

@@ -14,6 +14,7 @@ import {
 import { styles } from "./components_style";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import {
+  getERPAppConfigMenuThunk,
   removeAccountThunk,
   switchAccountThunk,
 } from "../../../../../store/slices/auth/thunk";
@@ -155,6 +156,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
     if (accountId !== activeAccountId) {
       dispatch(switchAccountThunk(accountId));
       dispatch(getLastPunchInThunk());
+      dispatch(getERPAppConfigMenuThunk());
       setTimeout(() => {
         dispatch(setReloadApp());
       }, 1000);
@@ -457,6 +459,9 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
         <View
           style={[
             styles.header,
+            {
+              backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+            },
             theme === "dark" && { backgroundColor: "black" },
           ]}
         >
@@ -507,6 +512,9 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
             <TouchableOpacity
               style={[
                 styles.addAccountButton,
+                {
+                  backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                },
                 theme === "dark" && { backgroundColor: "white" },
                 tapLoader && {
                   backgroundColor: ERP_COLOR_CODE.ERP_999,

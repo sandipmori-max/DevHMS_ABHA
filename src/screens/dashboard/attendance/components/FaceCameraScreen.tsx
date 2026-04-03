@@ -117,7 +117,7 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
     }
   };
 
- const takePhoto = async () => {
+ const takePhotov2 = async () => {
   try {
     setLoading(true); // loader start
 
@@ -202,75 +202,52 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
   }
 };
 
-  //  const takePhoto = async () => {
-  //   try {
-  //     const photo = await camera?.current?.takePhoto({
-  //       qualityPrioritization: "speed",
-  //       flash: "off",
-  //       enableAutoRedEyeReduction: true,
-  //       skipMetadata: true,
-  //       enableShutterSound: true,
-  //       quality: 0.3,
-  //       width: 640,
-  //       height: 480,
-  //     });
+   const takePhoto = async () => {
+    try {
+      const photo = await camera?.current?.takePhoto({
+        qualityPrioritization: "speed",
+        flash: "off",
+        enableAutoRedEyeReduction: true,
+        skipMetadata: true,
+        enableShutterSound: true,
+        quality: 0.3,
+        width: 640,
+        height: 480,
+      });
 
-  //     const photoPath = photo?.path;
+      const photoPath = photo?.path;
+      let compressedImage;
+      try {
+        compressedImage = await ImageResizer.createResizedImage(
+          photoPath,
+          600,
+          600,
+          "JPEG",
+          60,
+          0,
+          undefined,
+          false,
+          { mode: "contain" }
+        );
+      } catch (err) {
+        console.log("⚠️ Primary compression failed, fallback...");
 
-  //     const originalStat = await RNFS.stat(photoPath);
-  //     const originalSizeKB = (originalStat.size / 1024).toFixed(2);
+        compressedImage = await ImageResizer.createResizedImage(
+          photoPath,
+          400,
+          400,
+          "JPEG",
+          50,
+          0
+        );
+      }
 
-  //     console.log("📸 Original Path:", photoPath);
-  //     console.log("📦 Original Size:", originalSizeKB, "KB");
-
-  //     let compressedImage;
-
-  //     try {
-  //       compressedImage = await ImageResizer.createResizedImage(
-  //         photoPath,
-  //         600,
-  //         600,
-  //         "JPEG",
-  //         60,
-  //         0,
-  //         undefined,
-  //         false,
-  //         { mode: "contain" }
-  //       );
-  //     } catch (err) {
-  //       console.log("⚠️ Primary compression failed, fallback...");
-
-  //       compressedImage = await ImageResizer.createResizedImage(
-  //         photoPath,
-  //         400,
-  //         400,
-  //         "JPEG",
-  //         50,
-  //         0
-  //       );
-  //     }
-
-  //     // 👉 SAFE PATH HANDLING
-  //     const compressedPath =
-  //       Platform.OS === "android"
-  //         ? compressedImage.uri.replace("file://", "")
-  //         : compressedImage.uri;
-
-  //     const compressedStat = await RNFS.stat(compressedPath);
-  //     const compressedSizeKB = (compressedStat.size / 1024).toFixed(2);
-
-  //     console.log("🗜️ Compressed Path:", compressedImage.uri);
-  //     console.log("📦 Compressed Size:", compressedSizeKB, "KB");
-
-  //     Alert.alert("originalSizeKB" , `originalSizeKB ${originalSizeKB} and Compressed : ${compressedSizeKB}`)
-  //     // ✅ FINAL OUTPUT
-  //     onCapture(compressedImage?.uri);
-
-  //     navigation.goBack();
-  //   } catch (error) {
-  //     console.log("❌ error++++++", error);
-  //   }
-  // };
+      onCapture(compressedImage?.uri);
+      navigation.goBack();
+    } catch (error) {
+      console.log("❌ error++++++", error);
+    }
+  };
 
   const format = useCameraFormat(device, [
     { photoResolution: { width: 1280, height: 1280 } }, // 🔥 prevents crash

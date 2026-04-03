@@ -86,6 +86,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     error,
     user,
     attendanceDone,
+    menu
   } = useAppSelector((state) => state.auth);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -418,7 +419,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     isFilterVisible,
     hideTab,
     isLandscape,
-    controls,
+    controls
   ]);
 
   useFocusEffect(

@@ -830,7 +830,11 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
 
                             {/* Add Button */}
                             <Animated.View
-                              style={{
+                              style={[
+                                 {
+                                    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                                  },
+                                {
                                 opacity: buttonAnim,
                                 transform: [
                                   {
@@ -841,16 +845,20 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                   },
                                   { scale: pressAnim }, // 👈 press animation
                                 ],
-                              }}
+                              }]}
                             >
                               <TouchableOpacity
                                 style={[
                                   styles.addButton,
+                                 
                                   loader && styles.disabledButton,
                                   theme === "dark" && {
                                     backgroundColor: "white",
                                     borderColor: "white",
                                     borderWidth: 1,
+                                  },
+                                   {
+                                    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
                                   },
                                 ]}
                                 onPress={() => handleSubmit()}

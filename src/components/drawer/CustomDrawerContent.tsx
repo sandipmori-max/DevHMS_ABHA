@@ -522,8 +522,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   const headerTranslateY = useRef(new Animated.Value(-60)).current;
   const headerOpacity = useRef(new Animated.Value(0)).current;
   const { appDrawerMenuList } = useAppSelector((state) => state?.auth);
-  console.log("appDrawerMenuList", appDrawerMenuList);
-  /* ================= RUN ON EVERY DRAWER OPEN ================= */
+   /* ================= RUN ON EVERY DRAWER OPEN ================= */
   useEffect(() => {
     if (drawerStatus !== "open") return;
     // reset menu items
@@ -735,8 +734,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
           ]}
         >
           {appDrawerMenuList.map((item, index) => {
-            console.log("item", item, currentRoute);
-            const isActive = currentRoute === item.name;
+             const isActive = currentRoute === item.name;
             return (
               <Animated.View
                 key={item.name}
