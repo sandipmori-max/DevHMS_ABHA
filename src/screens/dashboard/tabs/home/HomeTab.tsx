@@ -59,6 +59,7 @@ import {
 import TranslatedText from "./TranslatedText";
 import GreetingBottomSheet from "./GreetingBottomSheet";
 import { getDDLThunk } from "../../../../store/slices/dropdown/thunk";
+import { refresh } from "@react-native-community/netinfo";
 
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;
@@ -148,6 +149,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   const [filteredDashboard, setFilteredDashboard] = useState(dashboard);
   const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
+  const [preSelectedBranch, setPreSelectedBranch] = useState();
   const translateX = useRef(new Animated.Value(width)).current;
 
   const htmlItems = filteredDashboard.filter((item) =>
@@ -182,11 +184,12 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(setActiveDashboardBranchId(""));
-      dispatch(setActiveDashboardBranch(""));
-      dispatch(setActiveDashboardType(""));
-      dispatch(setActiveDashboardTypeId(""));
+      // dispatch(setActiveDashboardBranchId(""));
+      // dispatch(setActiveDashboardBranch(""));
+      // dispatch(setActiveDashboardType(""));
+      // dispatch(setActiveDashboardTypeId(""));
       setIsFilterVisible(false);
+      setShowFull(false);
       setIsHorizontal(false);
       return () => {};
     }, [isAuthenticated, navigation, isLandscape]),
@@ -290,11 +293,12 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                     name={!isHorizontal ? "list" : "apps"}
                     onPress={() => setIsHorizontal((prev) => !prev)}
                   />
-
-                  <ERPIcon
-                    name={isFilterVisible ? "close" : "filter-alt"}
-                    onPress={() => setIsFilterVisible((prev) => !prev)}
-                  />
+                  {controls.length > 0 && (
+                    <ERPIcon
+                      name={isFilterVisible ? "close" : "filter-alt"}
+                      onPress={() => setIsFilterVisible((prev) => !prev)}
+                    />
+                  )}
 
                   <ERPIcon
                     name={!hideTab ? "fullscreen" : "fullscreen-exit"}
@@ -317,7 +321,12 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                 dispatch(setActiveDashboardBranch(""));
                 dispatch(setActiveDashboardType(""));
                 dispatch(setActiveDashboardTypeId(""));
-                const params = { branch: "", type: "", fd: fromDate, td: toDate };
+                const params = {
+                  branch: "",
+                  type: "",
+                  fd: fromDate,
+                  td: toDate,
+                };
                 dispatch(getERPDashboardThunk(params));
 
                 const timer = setTimeout(() => {
@@ -356,10 +365,12 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                     setHideTab(!hideTab);
                   }}
                 />
-                <ERPIcon
-                  name={isFilterVisible ? "close" : "filter-alt"}
-                  onPress={() => setIsFilterVisible((prev) => !prev)}
-                />
+                {controls.length > 0 && (
+                  <ERPIcon
+                    name={isFilterVisible ? "close" : "filter-alt"}
+                    onPress={() => setIsFilterVisible((prev) => !prev)}
+                  />
+                )}
               </>
             )}
             {!isLandscape && (
@@ -407,6 +418,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     isFilterVisible,
     hideTab,
     isLandscape,
+    controls,
   ]);
 
   useFocusEffect(
@@ -416,14 +428,12 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       if (isAuthenticated) {
         setLoadingPageId(true);
         dispatch(getERPAppConfigMenuThunk());
-        const params = { branch: "", type: "", fd: fromDate, td: toDate};
+        const params = { branch: "", type: "", fd: fromDate, td: toDate };
         dispatch(getERPDashboardThunk(params));
         dispatch(getERPMenuThunk());
         timer = setTimeout(() => {
           dispatch(setDashboardLoading(false));
         }, 6000);
-
-        
       }
       // ✅ single cleanup function
       return () => {
@@ -648,11 +658,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   const getCurrentMonthRange = useCallback(() => {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastDay = new Date(
-    now.getFullYear(),
-    now.getMonth() + 1,
-    0
-  );
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     const fromDateStr = formatDateForAPI(firstDay);
     const toDateStr = formatDateForAPI(lastDay);
     setFromDate(fromDateStr);
@@ -665,7 +671,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       getCurrentMonthRange();
   }, [getCurrentMonthRange]);
 
-  
   const handleDateChange = (event: any, selectedDate?: Date) => {
     if (event?.type === "dismissed" || !selectedDate) {
       setShowDatePicker(null);
@@ -750,53 +755,81 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     auth.dashboardFromDate,
     auth.dashboardToDate,
     fromDate,
-    toDate
+    toDate,
+    controls,
   ]);
 
-//   {
-//     "dtlid": 500018877,
-//     "id": 100000223,
-//     "seqno": 1,
-//     "field": "branchid",
-//     "dfield": "",
-//     "fieldtitle": "Branch",
-//     "title": "Branch",
-//     "text": 1,
-//     "dtext": "",
-//     "defaultvalue": "#branchid",
-//     "tooltip": "BranchName",
-//     "size": "",
-//     "ctltype": "INT",
-//     "ddl": "ViewUserBranch-BranchID,BranchName",
-//     "ddlfield": "BranchName",
-//     "ddlwhere": "UserID in ($UID,-1)",
-//     "ajax": 0,
-//     "visible": "0",
-//     "refcol": 0,
-//     "mandatory": "1",
-//     "disabled": "0"
-// }
+  //   {
+  //     "dtlid": 500018877,
+  //     "id": 100000223,
+  //     "seqno": 1,
+  //     "field": "branchid",
+  //     "dfield": "",
+  //     "fieldtitle": "Branch",
+  //     "title": "Branch",
+  //     "text": 1,
+  //     "dtext": "",
+  //     "defaultvalue": "#branchid",
+  //     "tooltip": "BranchName",
+  //     "size": "",
+  //     "ctltype": "INT",
+  //     "ddl": "ViewUserBranch-BranchID,BranchName",
+  //     "ddlfield": "BranchName",
+  //     "ddlwhere": "UserID in ($UID,-1)",
+  //     "ajax": 0,
+  //     "visible": "0",
+  //     "refcol": 0,
+  //     "mandatory": "1",
+  //     "disabled": "0"
+  // }
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const res = await dispatch(
-        getDDLThunk({
-          dtlid: '500018877',
-          where: `UserID in (${user?.id}, -1) AND selected = 1`,
-        }),
-      ).unwrap();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        console.log(
+          "--------------------------------------------controls +++++++++++++++ controls:",
+          controls,
+        );
+        const branchObj = controls.find((item) => item.fieldtitle === "Branch");
+        const typeObj = controls.find((item) => item.fieldtitle === "Type");
 
-      const data = res?.data ?? [];
+        const res = await dispatch(
+          getDDLThunk({
+            dtlid: branchObj?.dtlid,
+            where: `UserID in (${user?.id}, -1) AND selected = 1`,
+          }),
+        ).unwrap();
 
-      console.log("--------------------------------------------DDL Data:", data);
-    } catch (error) {
-      console.log("-------------------------------------DDL Error:", error);
-    }
-  };
+        const data = res?.data ?? [];
+        // setPreSelectedBranch(data);
+        dispatch(setActiveDashboardBranchId(data[0]?.value?.toString()));
+        dispatch(setActiveDashboardBranch(data[0]?.name));
 
-  fetchData();
-}, []);
+        const res1 = await dispatch(
+          getDDLThunk({
+            dtlid: typeObj?.dtlid,
+            where: `UserID in (${user?.id}, -1) AND selected = 1`,
+          }),
+        ).unwrap();
+        const data1 = res1?.data ?? [];
+        console.log(
+          "--------------------------------------------DDLres1 Data:",
+          res1,
+        );
+        dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString()));
+        dispatch(setActiveDashboardType(data1[0]?.name));
+        console.log(
+          "--------------------------------------------DDL Data:",
+          data1,
+        );
+      } catch (error) {
+        console.log("-------------------------------------DDL Error:", error);
+      }
+    };
+
+    fetchData();
+  }, [controls, isRefresh]);
+
   if (isDashboardLoading)
     return <FullViewLoader isShowTop={theme === "dark" ? false : true} />;
   if (!actionLoader && filteredDashboard?.length === 0) {
@@ -804,8 +837,6 @@ useEffect(() => {
       <View
         style={{
           justifyContent: "center",
-
-          // height: Dimensions.get("screen").height,
           backgroundColor: theme === "dark" ? "black" : "white",
         }}
       >

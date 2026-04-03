@@ -51,6 +51,7 @@ import TranslatedText from "../tabs/home/TranslatedText";
 import CustomPicker from "../page/components/CustomPicker";
 import CustomMultiplePicker from "../page/components/CustomMultiplePicker";
 import { updateSelectedBranchesState } from "../../../store/slices/auth/authSlice";
+import { getDDLThunk } from "../../../store/slices/dropdown/thunk";
 
 const ListScreen = () => {
   const navigation = useNavigation();
@@ -66,7 +67,7 @@ const ListScreen = () => {
   const [listData, setListData] = useState<any[]>([]);
   const [configData, setConfigData] = useState<any[]>([]);
   const [selectedBranch, setSelectedBranch] = useState("");
-
+  const { user } = useAppSelector((state) => state.auth);
   const [error, setError] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -187,7 +188,7 @@ const ListScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(updateSelectedBranchesState([]));
+      // dispatch(updateSelectedBranchesState([]));
       setTapLoader(false);
       return () => {};
     }, [navigation]),
@@ -223,6 +224,7 @@ const ListScreen = () => {
               onPress={() => {
                 setActionLoader(true);
                 onRefresh();
+                fetchPageData();
               }}
               isLoading={actionLoaders}
             />
@@ -256,7 +258,7 @@ const ListScreen = () => {
     error,
   ]);
 
-  const fetchPageData = useCallback(async () => {
+  const fetchPageData = async() => {
     try {
       const parsed = await dispatch(
         getERPPageThunk({ page: "Dashboard", id: "" }),
@@ -271,13 +273,27 @@ const ListScreen = () => {
         mandatory: String(c?.mandatory ?? "0"),
       }));
       setControls(normalizedControls);
+
+      const branchObj = normalizedControls.find(
+        (item) => item.fieldtitle === "Branch",
+      );
+
+      const res = await dispatch(
+        getDDLThunk({
+          dtlid: branchObj?.dtlid,
+          where: `UserID in (${user?.id}, -1) AND selected = 1`,
+        }),
+      ).unwrap();
+
+      const data = res?.data ?? [];
+      dispatch(updateSelectedBranchesState(data));
     } catch (e: any) {
     } finally {
       setTimeout(() => {
         setActionLoader(false);
       }, 10);
     }
-  }, [dispatch]);
+  }
 
   useEffect(() => {
     fetchPageData();
@@ -353,7 +369,7 @@ const ListScreen = () => {
       setSearchQuery("");
       getCurrentMonthRange();
       await fetchListData();
-       dispatch(updateSelectedBranchesState([]));
+      dispatch(updateSelectedBranchesState([]));
     } catch (e) {}
   };
 
@@ -461,7 +477,7 @@ const ListScreen = () => {
 
   useEffect(() => {
     fetchListData();
-  }, [toDate, fromDate, selectedBranch,navigation]);
+  }, [toDate, fromDate, selectedBranch, navigation]);
 
   // useEffect(() => {
   //   if (fromDate && toDate) {
@@ -475,7 +491,7 @@ const ListScreen = () => {
         getCurrentMonthRange();
       fetchListData();
       return () => {};
-    }, [ ]),
+    }, []),
   );
 
   const handleItemPressed = (item, page, pageTitle = "") => {
@@ -786,48 +802,50 @@ const ListScreen = () => {
                 </View>
               )}
 
-              {(parsedConfig?.branchwise === 1 || parsedConfig?.branchwise === "1") && controls
-                .filter((x) => x.ctltype !== "DATE" && x.field !== "userid")
-                .map((item, index) => (
-                  <>
-                    {item?.title === "Branch" && (
-                      <View style={{ width: "100%" }}>
-                        <CustomMultiplePicker
-                          isForMultipleSelection={true}
-                          isForceOpen={false}
-                          isValidate={false}
-                          label={item.title}
-                          selectedValue={() => {}}
-                          dtext={"Branch"}
-                          onValueChange={(i) => {
-                            console.log("i-----------------", i);
-                            i.map((item) => item.value).join(",");
-                            setSelectedBranch(
-                              i.map((item) => item.value).join(","),
-                            );
-                            // if (item?.title === "Branch") {
-                            //   dispatch(
-                            //     setActiveDashboardBranchId(
-                            //       i?.value?.toString(),
-                            //     ),
-                            //   );
-                            //   dispatch(setActiveDashboardBranch(i?.name));
-                            // } else {
-                            //   dispatch(setActiveDashboardType(i?.name));
-                            //   dispatch(
-                            //     setActiveDashboardTypeId(i?.value?.toString()),
-                            //   );
-                            // }
-                          }}
-                          options={[]}
-                          item={item}
-                          errors={null}
-                          formValues={null}
-                        />
-                      </View>
-                    )}
-                  </>
-                ))}
+              {(parsedConfig?.branchwise === 1 ||
+                parsedConfig?.branchwise === "1") &&
+                controls
+                  .filter((x) => x.ctltype !== "DATE" && x.field !== "userid")
+                  .map((item, index) => (
+                    <>
+                      {item?.title === "Branch" && (
+                        <View style={{ width: "100%" }}>
+                          <CustomMultiplePicker
+                            isForMultipleSelection={true}
+                            isForceOpen={false}
+                            isValidate={false}
+                            label={item.title}
+                            selectedValue={() => {}}
+                            dtext={"Branch"}
+                            onValueChange={(i) => {
+                              console.log("i-----------------", i);
+                              i.map((item) => item.value).join(",");
+                              setSelectedBranch(
+                                i.map((item) => item.value).join(","),
+                              );
+                              // if (item?.title === "Branch") {
+                              //   dispatch(
+                              //     setActiveDashboardBranchId(
+                              //       i?.value?.toString(),
+                              //     ),
+                              //   );
+                              //   dispatch(setActiveDashboardBranch(i?.name));
+                              // } else {
+                              //   dispatch(setActiveDashboardType(i?.name));
+                              //   dispatch(
+                              //     setActiveDashboardTypeId(i?.value?.toString()),
+                              //   );
+                              // }
+                            }}
+                            options={[]}
+                            item={item}
+                            errors={null}
+                            formValues={null}
+                          />
+                        </View>
+                      )}
+                    </>
+                  ))}
             </>
           )}
 

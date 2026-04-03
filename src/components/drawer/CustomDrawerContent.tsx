@@ -483,8 +483,7 @@ import {
 import { ERP_DRAWER_LIST } from "../../constants";
 import { styles } from "./drawer_style";
 import { useBaseLink } from "../../hooks/useBaseLink";
-import { DARK_COLOR, ERP_COLOR_CODE } from "../../utils/constants";
-import ContactRow from "./ContactRow";
+import { ERP_COLOR_CODE } from "../../utils/constants";
 import ImageBottomSheetModal from "../bottomsheet/ImageBottomSheetModal";
 import { useTranslation } from "react-i18next";
 import TranslatedText from "../../screens/dashboard/tabs/home/TranslatedText";
@@ -640,7 +639,9 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                   priority: FastImage.priority.normal,
                   cache: FastImage.cacheControl.web,
                 }}
-                style={styles.profileImage}
+                style={[styles.profileImage, {
+                   backgroundColor : ERP_COLOR_CODE.ERP_APP_COLOR
+                }]}
                 onLoad={() => {
                   setImageExists(true);
                 }}
@@ -745,6 +746,9 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                   style={[
                     styles.drawerItem,
                     isActive && styles.activeItemBackground,
+                    isActive && {
+                      backgroundColor : ERP_COLOR_CODE.ERP_APP_COLOR
+                    },
                     isActive &&
                       theme === "dark" && { backgroundColor: "black" },
                   ]}

@@ -17,7 +17,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { DARK_COLOR, ERP_COLOR_CODE } from "../../../utils/constants";
+import {  ERP_COLOR_CODE } from "../../../utils/constants";
 import {
   getDBConnection,
   setPinCode,
@@ -757,7 +757,7 @@ const PinSetupScreen = () => {
                         ? "white"
                         : ERP_COLOR_CODE.ERP_APP_COLOR
                       : theme === "dark"
-                      ? DARK_COLOR
+                      ?  ERP_COLOR_CODE.ERP_APP_COLOR
                       : "#e5e7eb",
 
                   transform: [
@@ -963,7 +963,7 @@ const PinSetupScreen = () => {
                         ? "white"
                         : ERP_COLOR_CODE.ERP_APP_COLOR
                       : theme === "dark"
-                      ? DARK_COLOR
+                      ?  ERP_COLOR_CODE.ERP_APP_COLOR
                       : "#e5e7eb",
 
                   transform: [

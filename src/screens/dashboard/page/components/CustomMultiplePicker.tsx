@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { styles } from "../page_style";
-import { DARK_COLOR, ERP_COLOR_CODE } from "../../../../utils/constants";
+import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import { getDDLThunk } from "../../../../store/slices/dropdown/thunk";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import FullViewLoader from "../../../../components/loader/FullViewLoader";
@@ -47,7 +47,7 @@ const CustomMultiplePicker = ({
   const [loader, setLoader] = useState(false);
 
   const [selectedOption, setSelectedOption] = useState("");
- 
+
   const theme = useAppSelector((state) => state?.theme.mode);
   const { user, selectedBranches } = useAppSelector((state) => state?.auth);
 
@@ -60,11 +60,11 @@ const CustomMultiplePicker = ({
 
   useEffect(() => {
     if (!search) {
-      setFilteredOptions(options);
+      setFilteredOptions(options.filter(item => item.value !== -1));
     } else {
       const lower = search.toLowerCase();
       setFilteredOptions(
-        options.filter((o) => o.name?.toLowerCase().includes(lower)),
+        options.filter(item => item.value !== -1).filter((o) => o.name?.toLowerCase().includes(lower)),
       );
     }
   }, [search, options]);
@@ -104,9 +104,7 @@ const CustomMultiplePicker = ({
       const res = await dispatch(
         getDDLThunk({
           dtlid: item?.dtlid,
-          where: !isForceOpen
-            ? `UserID in (${user?.id}, -1) and selected = 1`
-            : item?.ddlwhere,
+          where: !isForceOpen ? `UserID in (${user?.id}, -1)` : item?.ddlwhere,
         }),
       ).unwrap();
 
@@ -129,7 +127,6 @@ const CustomMultiplePicker = ({
     } else {
       updatedOptions = [...selectedBranches, opt];
     }
- 
 
     // Redux update
     dispatch(updateSelectedBranchesState(updatedOptions));
@@ -139,22 +136,22 @@ const CustomMultiplePicker = ({
     selectedBranches.some((o) => o.value === opt.value);
 
   const handleSelectAll = () => {
-  let updatedOptions = [];
+    let updatedOptions = [];
 
-  if (selectedBranches.length === options.length) {
-    updatedOptions = [];
-  } else {
-    updatedOptions = options;
-  }
- 
-  dispatch(updateSelectedBranchesState(updatedOptions));
-};
+    if (selectedBranches.length === options.length) {
+      updatedOptions = [];
+    } else {
+      updatedOptions = options;
+    }
 
-const handleDone = () => {
+    dispatch(updateSelectedBranchesState(updatedOptions));
+  };
+
+  const handleDone = () => {
     onValueChange(selectedBranches);
     closeBottomSheet();
-};
-
+  }; 
+ 
   return (
     <View style={{ marginVertical: 6 }}>
       {/* LABEL */}
@@ -179,14 +176,16 @@ const handleDone = () => {
                 borderColor: "white",
               }}
             >
-              <Text style={{ color: "white", marginRight: 4 }}>{opt.name}</Text>
+              <Text style={{ color: "white", marginRight: 4 }}>
+                {opt?.name}
+              </Text>
               <TouchableOpacity
                 onPress={() => {
-                    const updatedOptions = selectedBranches.filter(
-                    (o) => o.value !== opt.value
-                    );
- 
-                    dispatch(updateSelectedBranchesState(updatedOptions));
+                  const updatedOptions = selectedBranches.filter(
+                    (o) => o.value !== opt.value,
+                  );
+
+                  dispatch(updateSelectedBranchesState(updatedOptions));
                 }}
               >
                 <MaterialIcons name="close" size={14} color="white" />
@@ -264,7 +263,7 @@ const handleDone = () => {
           />
 
           {/* SELECT ALL */}
-          {isForMultipleSelection && (
+          {/* {isForMultipleSelection && (
             <TouchableOpacity
               onPress={handleSelectAll}
               style={{ marginBottom: 8 }}
@@ -275,7 +274,7 @@ const handleDone = () => {
                   : "Select All"}
               </Text>
             </TouchableOpacity>
-          )}
+          )} */}
 
           {/* LIST */}
           {loader ? (
@@ -291,11 +290,31 @@ const handleDone = () => {
                   return (
                     <TouchableOpacity
                       key={i}
-                      style={{
-                        padding: 12,
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
+                      style={[
+                        {
+                          padding: 12,
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        },
+
+                        {
+                          backgroundColor:
+                            selected  
+                              ? ERP_COLOR_CODE.ERP_F8F9FA
+                              : ERP_COLOR_CODE.ERP_WHITE,
+                          marginBottom: 4,
+                          borderRadius: 8,
+                          padding: 12,
+                        },
+                        theme === "dark" &&
+                          selected === opt?.name && {
+                            backgroundColor: "white",
+                          },
+                        theme === "dark" && {
+                          backgroundColor: "black",
+                          borderBottomColor: ERP_COLOR_CODE.ERP_F8F9FA,
+                        },
+                      ]}
                       onPress={() => {
                         if (isForMultipleSelection) {
                           toggleSelection(opt);
@@ -310,7 +329,7 @@ const handleDone = () => {
 
                       {selected && (
                         <MaterialIcons
-                          name="done"
+                          name="done-all"
                           size={20}
                           color={ERP_COLOR_CODE.ERP_APP_COLOR}
                         />

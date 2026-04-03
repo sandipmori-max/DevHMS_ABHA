@@ -1,7 +1,7 @@
 import { View, Text } from "react-native";
 import React from "react";
 import { styles } from "../page_style";
-import { DARK_COLOR, ERP_COLOR_CODE } from "../../../../utils/constants";
+import {  ERP_COLOR_CODE } from "../../../../utils/constants";
 import {
   formatDateHr, 
 } from "../../../../utils/helpers";
@@ -69,7 +69,7 @@ const Disabled = ({ item, value, type }: any) => {
         style={[
           styles.disabledBox,
           theme === "dark" && {
-            backgroundColor: DARK_COLOR,
+            backgroundColor:  ERP_COLOR_CODE.ERP_APP_COLOR,
           },
         ]}
       >

@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { styles } from "../page_style";
-import { DARK_COLOR, ERP_COLOR_CODE } from "../../../../utils/constants";
+import {  ERP_COLOR_CODE } from "../../../../utils/constants";
 import { getAjaxThunk } from "../../../../store/slices/ajax/thunk";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import FullViewLoader from "../../../../components/loader/FullViewLoader";
@@ -170,7 +170,7 @@ const { height, width } = useWindowDimensions();
           },
           item?.disabled == "1" &&
             theme === "dark" && {
-              backgroundColor: DARK_COLOR,
+              backgroundColor:  ERP_COLOR_CODE.ERP_APP_COLOR,
             },
         ]}
         onPress={() => {

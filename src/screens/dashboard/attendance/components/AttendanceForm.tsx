@@ -101,7 +101,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
     return () => subscription.remove();
   }, []);
 
-  const openCamera = (setFieldValue, handleSubmit) => {
+  const openCameraV2 = (setFieldValue, handleSubmit) => {
     setLocationLoading(false);
     setBlockAction(false);
     navigation.navigate("FaceCameraScreen", {
@@ -155,7 +155,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
       },
     });
   };
- const openCameraV2 = (
+ const openCamera = (
     setFieldValue: (field: keyof AttendanceFormValues, value: any) => void,
     handleSubmit: () => void,
   ) => {

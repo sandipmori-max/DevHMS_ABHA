@@ -355,11 +355,6 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
           {faceDetected ? "Face Detected" : "Align your face in the frame"}
         </Text>
       </View>
-      {/* Face Frame */}
-
-      {/* Message */}
-
-      {/* Capture Button */}
 
       <View style={styles.bottomContainer}>
         <TouchableOpacity

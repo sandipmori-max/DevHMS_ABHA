@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { styles } from "../page_style";
-import { DARK_COLOR, ERP_COLOR_CODE } from "../../../../utils/constants";
+import {  ERP_COLOR_CODE } from "../../../../utils/constants";
 import { getDDLThunk } from "../../../../store/slices/dropdown/thunk";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import FullViewLoader from "../../../../components/loader/FullViewLoader";
@@ -46,7 +46,7 @@ const CustomPicker = ({
   const { user } = useAppSelector((state) => state?.auth);
 
   const optionsCache = useRef<{ [key: string]: any[] }>({});
-
+ 
   // Bottom sheet animation
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
@@ -91,7 +91,7 @@ const CustomPicker = ({
       const res = await dispatch(
         getDDLThunk({
           dtlid: item?.dtlid,
-          where: !isForceOpen ? `UserID in (${user?.id}, -1) and selected = 1` : item?.ddlwhere,
+          where: !isForceOpen ? `UserID in (${user?.id}, -1)` : item?.ddlwhere,
         }),
       ).unwrap();
 
@@ -104,6 +104,8 @@ const CustomPicker = ({
       setLoader(false);
     }
   }, [dispatch, item?.dtlid, item?.ddlwhere, open]);
+
+  const filtered = options.filter(item => item.value !== -1);
 
   return (
     <View style={{ marginBottom: 16 }}>
@@ -143,7 +145,7 @@ const CustomPicker = ({
           item?.disabled === "1" && styles.disabledBox,
           item?.disabled === "1" &&
             theme === "dark" && {
-              backgroundColor: DARK_COLOR,
+              backgroundColor:  ERP_COLOR_CODE.ERP_APP_COLOR,
               borderWidth: 1,
             },
           isForceOpen &&
@@ -159,7 +161,7 @@ const CustomPicker = ({
             },
           isForceOpen &&
             theme === "dark" && {
-              backgroundColor: DARK_COLOR,
+              backgroundColor:  ERP_COLOR_CODE.ERP_APP_COLOR,
             },
           item?.background && {
             backgroundColor: item?.background,
@@ -170,7 +172,7 @@ const CustomPicker = ({
 
           item?.disabled == "1" &&
             theme === "dark" && {
-              backgroundColor: DARK_COLOR,
+              backgroundColor:  ERP_COLOR_CODE.ERP_APP_COLOR,
             },
         ]}
         onPress={() => {
@@ -273,8 +275,8 @@ const CustomPicker = ({
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
             >
-              {options.length > 0 ? (
-                options.map((opt: any, i: number) => (
+              {filtered.length > 0 ? (
+                filtered.map((opt: any, i: number) => (
                   <TouchableOpacity
                     key={i}
                     style={[

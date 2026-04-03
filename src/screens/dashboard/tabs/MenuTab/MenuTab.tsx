@@ -632,6 +632,7 @@ const MenuTab = ({
         <>
           <SectionList
             sections={sectionListData}
+            keyboardShouldPersistTaps="handled"
             keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
@@ -657,32 +658,33 @@ const MenuTab = ({
                   <Text
                     style={{
                       marginLeft: 6,
-                      fontWeight: '600',
+                      fontWeight: "600",
                       color: ERP_COLOR_CODE.ERP_APP_COLOR,
                     }}
                   >
                     {section?.title}
                   </Text>
                 </View>
-                <View  style={{
+                <View
+                  style={{
                     height: 24,
                     width: 24,
                     borderRadius: 4,
                     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-                    justifyContent:'center',
-                    alignContent:'center',
-                    alignItems:'center',
-                    opacity: 0.5
-                  }}>
- <Text
-           style={{  
-            color:'white'
-                  }}      
+                    justifyContent: "center",
+                    alignContent: "center",
+                    alignItems: "center",
+                    opacity: 0.5,
+                  }}
                 >
-                  {section.data.length}
-                </Text>
+                  <Text
+                    style={{
+                      color: "white",
+                    }}
+                  >
+                    {section.data.length}
+                  </Text>
                 </View>
-               
               </View>
             )}
             renderItem={({ item, index, section }) => {
@@ -716,6 +718,7 @@ const MenuTab = ({
                 : `${isHorizontal}-${showBookmarksOnly}-${searchText}-portrait`
             }
             data={list}
+            keyboardShouldPersistTaps="handled"
             renderItem={renderItem}
             numColumns={
               isLandscape
