@@ -37,6 +37,7 @@ import {
   clearAuthState,
   setDashboard,
   setEmptyMenu,
+  updateAppMenuList,
 } from "../../../../../store/slices/auth/authSlice";
 import { resetAjaxState } from "../../../../../store/slices/ajax/ajaxSlice";
 import { resetAttendanceState } from "../../../../../store/slices/attendance/attendanceSlice";
@@ -156,7 +157,12 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
     if (accountId !== activeAccountId) {
       dispatch(switchAccountThunk(accountId));
       dispatch(getLastPunchInThunk());
-      dispatch(getERPAppConfigMenuThunk());
+      try {
+        dispatch(getERPAppConfigMenuThunk());
+      } catch (error) {
+        dispatch(updateAppMenuList([])); // Clear menu on error
+        console.log("Error fetching app config menu:", error);
+      }
       setTimeout(() => {
         dispatch(setReloadApp());
       }, 1000);
@@ -361,6 +367,9 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
               <View
                 style={[
                   styles.activeIndicator,
+                  {
+                    backgroundColor: theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR,
+                  },
                   theme === "dark" && { backgroundColor: "white" },
                 ]}
               >
@@ -460,7 +469,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
           style={[
             styles.header,
             {
-              backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+              backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
             },
             theme === "dark" && { backgroundColor: "black" },
           ]}
@@ -516,6 +525,9 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
                   backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
                 },
                 theme === "dark" && { backgroundColor: "white" },
+                 {
+                    backgroundColor: theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR,
+                  },
                 tapLoader && {
                   backgroundColor: ERP_COLOR_CODE.ERP_999,
                 },

@@ -454,7 +454,6 @@
 
 // export default CustomDrawerContent;
 
-
 import React, { useEffect, useRef, useState } from "react";
 import {
   View,
@@ -522,7 +521,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   const headerTranslateY = useRef(new Animated.Value(-60)).current;
   const headerOpacity = useRef(new Animated.Value(0)).current;
   const { appDrawerMenuList } = useAppSelector((state) => state?.auth);
-   /* ================= RUN ON EVERY DRAWER OPEN ================= */
+  /* ================= RUN ON EVERY DRAWER OPEN ================= */
   useEffect(() => {
     if (drawerStatus !== "open") return;
     // reset menu items
@@ -596,7 +595,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
       {...props}
       contentContainerStyle={{
         flexGrow: 1,
-        backgroundColor: theme === "dark" ? ERP_COLOR_CODE.ERP_APP_COLOR : "white",
+        backgroundColor:
+          theme === "dark" ? ERP_COLOR_CODE.ERP_APP_COLOR : "white",
       }}
     >
       {/* ================= HEADER ================= */}
@@ -611,7 +611,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
           style={[
             styles.header,
             {
-               backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+              backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
             },
             theme === "dark" && { backgroundColor: "black" },
           ]}
@@ -638,9 +638,12 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                   priority: FastImage.priority.normal,
                   cache: FastImage.cacheControl.web,
                 }}
-                style={[styles.profileImage, {
-                   backgroundColor : ERP_COLOR_CODE.ERP_APP_COLOR
-                }]}
+                style={[
+                  styles.profileImage,
+                  {
+                    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                  },
+                ]}
                 onLoad={() => {
                   setImageExists(true);
                 }}
@@ -734,7 +737,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
           ]}
         >
           {appDrawerMenuList.map((item, index) => {
-             const isActive = currentRoute === item.name;
+            const isActive = currentRoute === item.name;
             return (
               <Animated.View
                 key={item.name}
@@ -745,7 +748,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                     styles.drawerItem,
                     isActive && styles.activeItemBackground,
                     isActive && {
-                      backgroundColor : ERP_COLOR_CODE.ERP_APP_COLOR
+                      backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
                     },
                     isActive &&
                       theme === "dark" && { backgroundColor: "black" },
@@ -767,7 +770,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                           title: item?.name,
                           name: item?.name,
                           url: item?.url,
-                          isFromBusinessCard: item?.isFromBusinessCard ||  false,
+                          isFromBusinessCard: item?.isFromBusinessCard || false,
                           isFromAlertCard: item?.isFromAlertCard || false,
                           id: "0",
                         },
@@ -776,13 +779,13 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                       return;
                     }
                     ////// -----------
-                   
+
                     if (item?.link === "Attendance") {
                       props?.navigation.closeDrawer();
                       navigation.navigate(item?.name, { isFor: "Attendance" });
                       return;
                     }
-                    if (item?.link ===  "MyAttendance") {
+                    if (item?.link === "MyAttendance") {
                       props?.navigation.closeDrawer();
                       navigation.navigate(item?.link, {
                         isFor: "MyAttendance",
@@ -832,6 +835,117 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
               </Animated.View>
             );
           })}
+
+          {appDrawerMenuList.length === 0 &&
+            ERP_DRAWER_LIST.map((item, index) => {
+              const isActive = currentRoute === item.route;
+
+              return (
+                <Animated.View
+                  key={item.route}
+                  style={{ transform: [{ translateX: menuAnim[index] }] }}
+                >
+                  <TouchableOpacity
+                    style={[
+                      styles.drawerItem,
+                      isActive && styles.activeItemBackground,
+                      isActive &&
+                        theme === "dark" && { backgroundColor: "black" },
+                    ]}
+                    onPress={() => {
+                      if (item?.route === "AboutUs") {
+                        setShowAbout(true);
+                        return;
+                      }
+                      if (item?.route === "AppRatting") {
+                        handleReview();
+                        return;
+                      }
+                      if (item?.route === "Alert") {
+                        props?.navigation.navigate("List", {
+                          item: {
+                            title: "Notification",
+                            name: "Notification",
+                            url: "DEVNOTIFY",
+                            isFromBusinessCard: false,
+                            isFromAlertCard: true,
+                            id: "0",
+                          },
+                        });
+                        props?.navigation.closeDrawer();
+                        return;
+                      }
+                      if (item?.route === "List") {
+                        props?.navigation.navigate("List", {
+                          item: {
+                            title: "Business Card",
+                            name: "Business Card",
+                            url: "BusinessCardMst",
+                            isFromBusinessCard: true,
+                            id: "0",
+                          },
+                        });
+                        props?.navigation.closeDrawer();
+                        return;
+                      }
+                      if (item?.route === "Attendance") {
+                        // NativeModules.OrientationModule.enableLandscape();
+                        props?.navigation.closeDrawer();
+                        navigation.navigate(item?.route, {
+                          isFor: "Attendance",
+                        });
+                        return;
+                      }
+                      if (item?.route === "MyAttendance") {
+                        props?.navigation.closeDrawer();
+                        navigation.navigate(item?.route, {
+                          isFor: "MyAttendance",
+                        });
+                        return;
+                      }
+                      if (item?.route === "Home") {
+                        props?.navigation.navigate("Home", { screen: "Home" });
+                        props?.navigation.closeDrawer();
+                        return;
+                      } else {
+                        props?.navigation.closeDrawer();
+                        navigation.navigate(item?.route as never);
+                      }
+                    }}
+                  >
+                    <View style={styles.itemRow}>
+                      <MaterialIcons
+                        name={item.icon}
+                        size={20}
+                        color={
+                          theme === "dark"
+                            ? "#FFF"
+                            : isActive
+                            ? "#FFF"
+                            : ERP_COLOR_CODE.ERP_APP_COLOR
+                        }
+                      />
+                      <TranslatedText
+                        style={[
+                          styles.itemLabel,
+                          isActive && styles.activeText,
+                          {
+                            color:
+                              theme === "dark"
+                                ? "white"
+                                : isActive
+                                ? "#FFF"
+                                : "#000",
+                          },
+                        ]}
+                        numberOfLines={1}
+                        text={item.label}
+                      ></TranslatedText>
+                    </View>
+                  </TouchableOpacity>
+                </Animated.View>
+              );
+            })}
         </View>
       </ScrollView>
 
@@ -890,8 +1004,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                 styles.logoutText,
                 theme === "dark" && { color: "white" },
                 {
-                  marginLeft: 8
-                }
+                  marginLeft: 8,
+                },
               ]}
             >
               (c) DevERP Solutions Pvt. Ltd.
@@ -906,4 +1020,3 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
 };
 
 export default CustomDrawerContent;
-

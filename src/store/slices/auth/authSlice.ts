@@ -68,6 +68,12 @@ const authSlice = createSlice({
      updateSelectedToDateState: (state, action) => {
       state.toDate = action.payload;
     },
+     updateAppMenuList: (state, action) => {
+      console.log("Updating app menu list with:", action.payload);
+      state.appBottomMenuList = [];
+      state.appDrawerMenuList = [];
+
+    },
     updateAttendanceState: (state, action: PayloadAction<boolean>) => {
       state.attendanceDone = action.payload;
     },
@@ -333,6 +339,11 @@ const authSlice = createSlice({
       .addCase(getERPAppConfigMenuThunk.rejected, (state, action) => {
         // state.isMenuLoading = false;
         state.error = action.payload as string;
+        state.appBottomMenuList = [];
+        state.appDrawerMenuList = [];
+        setERPAppColor('#251d50');
+        state.appColorCode = '#251d50';
+
       })
 
       .addCase(getERPDashboardThunk.pending, state => {
@@ -412,6 +423,7 @@ export const {
   updateSelectedBranchesState,
   updateSelectedFromDateState,
   updateSelectedToDateState,
-  updateSelectedBranchIdsState
+  updateSelectedBranchIdsState,
+  updateAppMenuList
 } = authSlice.actions;
 export default authSlice.reducer;

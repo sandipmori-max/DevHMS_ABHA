@@ -41,6 +41,7 @@ import {
   setActiveDashboardType,
   setActiveDashboardTypeId,
   setDashboardLoading,
+  updateAppMenuList,
 } from "../../../../store/slices/auth/authSlice";
 import {
   View,
@@ -59,7 +60,7 @@ import {
 import TranslatedText from "./TranslatedText";
 import GreetingBottomSheet from "./GreetingBottomSheet";
 import { getDDLThunk } from "../../../../store/slices/dropdown/thunk";
-import { refresh } from "@react-native-community/netinfo";
+ import CustomAlert from "../../../../components/alert/CustomAlert";
 
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;
@@ -74,6 +75,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   const dispatch = useAppDispatch();
   const [controls, setControls] = useState<any[]>([]);
   const [controlsLoader, setControlsLoader] = useState<any>(false);
+  const [alertVisible, setAlertVisible] = useState(true);
 
   const [aiMessage, setAiMessage] = useState("");
   const [visibleAI, setVisibleAI] = useState(false);
@@ -139,7 +141,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
   const [visible, setVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
-
+  const { appBottomMenuList } = useAppSelector((state) => state?.auth);
   const theme = useAppSelector((state) => state?.theme.mode);
   const [actionLoader, setActionLoader] = useState(false);
   const [isHorizontal, setIsHorizontal] = useState(false);
@@ -313,6 +315,11 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
             <ERPIcon
               name="refresh"
               onPress={() => {
+                if(appBottomMenuList.length === 0){
+                  setAlertVisible(true)
+                }else{
+                  setAlertVisible(false)
+                }
                 setControlsLoader(true);
                 setActionLoader(true);
                 setIsRefresh(!isRefresh);
@@ -428,7 +435,12 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
       if (isAuthenticated) {
         setLoadingPageId(true);
-        dispatch(getERPAppConfigMenuThunk());
+        try {
+               dispatch(getERPAppConfigMenuThunk());
+             } catch (error) {
+              dispatch(updateAppMenuList([])); // Clear menu on error
+                console.log("Error fetching app config menu:", error);
+             }
         const params = { branch: "", type: "", fd: fromDate, td: toDate };
         dispatch(getERPDashboardThunk(params));
         dispatch(getERPMenuThunk());
@@ -1131,6 +1143,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     );
   }
 
+
   return (
     <View
       style={{
@@ -1686,6 +1699,22 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         }}
       />
 
+      {
+        appBottomMenuList.length === 0 && alertVisible && <CustomAlert
+          visible={alertVisible}
+          title={'No menu available'}
+          message={'Please contact your administrator.'}
+          type={'error'}
+          onClose={() => {
+            setAlertVisible(false)
+          }}
+          isSettingVisible={false}
+          actionLoader={undefined}
+          closeHide={false}
+        />
+      }
+
+ 
       <GreetingBottomSheet
         visible={visibleAI}
         message={aiMessage}

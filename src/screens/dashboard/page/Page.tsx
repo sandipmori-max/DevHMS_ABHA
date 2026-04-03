@@ -64,6 +64,7 @@ import ScanScreen from "./components/ScanScreen";
 import BarCodeScan from "./components/BarCodeScan";
 import TranslatedText from "../tabs/home/TranslatedText";
 import { setReloadApp } from "../../../store/slices/reloadApp/reloadAppSlice";
+import { updateAppMenuList } from "../../../store/slices/auth/authSlice";
 
 type PageRouteParams = { PageScreen: { item: any } };
 
@@ -593,7 +594,12 @@ const PageScreen = () => {
                       ).unwrap();
                       setLoader(false);
                       setIsValidate(false);
-                      dispatch(getERPAppConfigMenuThunk());
+                      try {
+                             dispatch(getERPAppConfigMenuThunk());
+                           } catch (error) {
+                            dispatch(updateAppMenuList([])); // Clear menu on error
+                              console.log("Error fetching app config menu:", error);
+                           }
                       if(isFromProfile){
                          setTimeout(() => {
                                dispatch(setReloadApp());

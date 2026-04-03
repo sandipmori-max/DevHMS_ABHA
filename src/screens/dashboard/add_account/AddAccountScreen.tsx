@@ -347,7 +347,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
   const userErrorAnim = useRef(new Animated.Value(0)).current;
   const passErrorAnim = useRef(new Animated.Value(0)).current;
   const pressAnim = useRef(new Animated.Value(1)).current;
-  
+
   const onPressIn = () => {
     Animated.spring(pressAnim, {
       toValue: 0.86,
@@ -831,35 +831,37 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                             {/* Add Button */}
                             <Animated.View
                               style={[
-                                 {
-                                    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-                                  },
+                              
                                 {
-                                opacity: buttonAnim,
-                                transform: [
-                                  {
-                                    translateY: buttonAnim.interpolate({
-                                      inputRange: [0, 1],
-                                      outputRange: [50, 0],
-                                    }),
-                                  },
-                                  { scale: pressAnim }, // 👈 press animation
-                                ],
-                              }]}
+                                  opacity: buttonAnim,
+                                  transform: [
+                                    {
+                                      translateY: buttonAnim.interpolate({
+                                        inputRange: [0, 1],
+                                        outputRange: [50, 0],
+                                      }),
+                                    },
+                                    { scale: pressAnim }, // 👈 press animation
+                                  ],
+                                },
+                              ]}
                             >
                               <TouchableOpacity
                                 style={[
                                   styles.addButton,
-                                 
+                                  {
+                                    backgroundColor:
+                                      theme === "dark"
+                                        ? "white"
+                                        : ERP_COLOR_CODE.ERP_APP_COLOR,
+                                  },
                                   loader && styles.disabledButton,
                                   theme === "dark" && {
                                     backgroundColor: "white",
                                     borderColor: "white",
                                     borderWidth: 1,
                                   },
-                                   {
-                                    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-                                  },
+                                   
                                 ]}
                                 onPress={() => handleSubmit()}
                                 onPressIn={onPressIn}
@@ -1379,7 +1381,9 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
 
                                     {/* Add Button */}
                                     <Animated.View
-                                      style={{
+                                      style={[
+                                        {
+                                   
                                         opacity: buttonAnim,
                                         transform: [
                                           {
@@ -1390,11 +1394,17 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                           },
                                           { scale: pressAnim }, // 👈 press animation
                                         ],
-                                      }}
+                                      }]}
                                     >
                                       <TouchableOpacity
                                         style={[
                                           styles.addButton,
+                                          {
+                                    backgroundColor:
+                                      theme === "dark"
+                                        ? "white"
+                                        : ERP_COLOR_CODE.ERP_APP_COLOR,
+                                  },
                                           loader && styles.disabledButton,
                                           theme === "dark" && {
                                             backgroundColor: "white",

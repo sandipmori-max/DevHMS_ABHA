@@ -26,6 +26,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ERP_COLOR_CODE } from "../../../utils/constants";
 import { setReloadApp } from "../../../store/slices/reloadApp/reloadAppSlice";
 import { ERP_GIF } from "../../../assets";
+import { updateAppMenuList } from "../../../store/slices/auth/authSlice";
 
 const LoginScreen = ({ navigation, route }: any) => {
   const { t } = useTranslations();
@@ -84,7 +85,12 @@ const LoginScreen = ({ navigation, route }: any) => {
         companyData,
       }),
     );
-    dispatch(getERPAppConfigMenuThunk());
+    try {
+           dispatch(getERPAppConfigMenuThunk());
+         } catch (error) {
+          dispatch(updateAppMenuList([])); // Clear menu on error
+            console.log("Error fetching app config menu:", error);
+         }
     setTimeout(() => {
       dispatch(setReloadApp());
     }, 1000);

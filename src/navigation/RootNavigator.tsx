@@ -13,7 +13,10 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { checkAuthStateThunk, getERPAppConfigMenuThunk } from "../store/slices/auth/thunk";
+import {
+  checkAuthStateThunk,
+  getERPAppConfigMenuThunk,
+} from "../store/slices/auth/thunk";
 import DevERPService from "../services/api/deverp";
 import AuthNavigator from "./AuthNavigator";
 import StackNavigator from "./StackNavigator";
@@ -27,6 +30,7 @@ import { request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import { getLastPunchInThunk } from "../store/slices/attendance/thunk";
 import { setReloadApp } from "../store/slices/reloadApp/reloadAppSlice";
 import {
+  updateAppMenuList,
   updateAttendanceState,
   updatePinVerifyLoadedState,
 } from "../store/slices/auth/authSlice";
@@ -82,7 +86,7 @@ const RootNavigator = () => {
     PERMISSION_DENIED: t("text1"),
     SERVICE_DISABLED: t("text2"),
   };
-const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const { isLoading, isAuthenticated, accounts, user, appColorCode } =
     useAppSelector((state) => state.auth);
@@ -91,8 +95,7 @@ const { height, width } = useWindowDimensions();
   const langCode = useAppSelector((state) => state.theme.langcode);
 
   const [alertVisible, setAlertVisible] = useState(false);
-  const [openSettings, setOpenSettings] = useState(false);
-  const [isLocationRequired, setIsLocationReuired] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false); 
 
   const [backgroundDeniedModal, setBackgroundDeniedModal] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
@@ -173,11 +176,16 @@ const { height, width } = useWindowDimensions();
   }, [isAuthenticated, reLoading]);
   const app_id = user?.app_id;
 
-   useEffect(() => {
-    if(isAuthenticated){
-      dispatch(getERPAppConfigMenuThunk());
+  useEffect(() => {
+    if (isAuthenticated) {
+     try {
+       dispatch(getERPAppConfigMenuThunk());
+     } catch (error) {
+      dispatch(updateAppMenuList([])); // Clear menu on error
+        console.log("Error fetching app config menu:", error);
+     }
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const fetchDeviceName = async () => {
@@ -390,14 +398,21 @@ const { height, width } = useWindowDimensions();
         />
       )}
       {isAuthenticated && (
-        <Modal visible={backgroundDeniedModal} supportedOrientations={["portrait", "landscape"]} transparent>
-          <View style={[styles.overlay,isLandscape && {
-                          alignContent:'center',
-                          alignItems:'center'
-                        }]}>
-            <View style={[styles.modalContainer, {
-              
-            }]}>
+        <Modal
+          visible={backgroundDeniedModal}
+          supportedOrientations={["portrait", "landscape"]}
+          transparent
+        >
+          <View
+            style={[
+              styles.overlay,
+              isLandscape && {
+                alignContent: "center",
+                alignItems: "center",
+              },
+            ]}
+          >
+            <View style={[styles.modalContainer, {}]}>
               <Text style={styles.title}>{t("test21")}</Text>
               <Text style={styles.message}>{t("test22")}</Text>
               <TouchableOpacity

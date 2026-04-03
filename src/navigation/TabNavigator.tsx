@@ -141,17 +141,19 @@ import ProfileTab from "../screens/dashboard/tabs/profile/ProfileTab";
 import { useAppSelector } from "../store/hooks";
 import AnimatedTabIcon from "../components/tab_icon/AnimatedTabIcon";
 import { Platform } from "react-native";
+import CustomAlert from "../components/alert/CustomAlert";
+import useTranslations from "../hooks/useTranslations";
 
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
   const theme = useAppSelector((state) => state.theme.mode);
   const { appBottomMenuList } = useAppSelector((state) => state?.auth);
-
+const { t } = useTranslations();
   // ✅ NEW: Tab visibility state
   const [hidden, setHidden] = useState(false);
 
-
+console.log("Bottom Menu List:", appBottomMenuList); // Debugging log
   const navigationItems = (appBottomMenuList || []).map((item) => ({
     name: item?.name,
     type: item?.code,
@@ -165,9 +167,25 @@ const TabNavigator = () => {
     return null;
   };
 
-  if (!appBottomMenuList || appBottomMenuList.length === 0) {
-    return null; // ya loading spinner
-  }
+ 
+  const tabConfig = [
+    {
+      name: t("navigation.home"),
+      component: HomeScreen,
+      icon: "home",
+      label: t("navigation.home"),
+    },
+     
+    {
+      name: t("navigation.profile"),
+      component: ProfileTab,
+      icon: "person",
+      label: t("navigation.profile"),
+    },
+  ];
+
+  
+
 
   return (
     <Tab.Navigator
@@ -194,7 +212,53 @@ const TabNavigator = () => {
         headerTintColor: "white",
       }}
     >
-      {navigationItems.map((item, index) => {
+       
+      {navigationItems.length > 0 && navigationItems.map((item, index) => {
+        const Component = getComponent(item);
+
+        return (
+          <Tab.Screen
+            key={index}
+            name={item.name}
+            children={
+              Component
+                ? () => (
+                    <Component
+                      hideTab={hidden}
+                      setHideTab={setHidden}
+                    />
+                  )
+                : () => (
+                    <MenuTab
+                      hideTab={hidden}
+                      setHideTab={setHidden}
+                      type={item.type}
+                      headerText={item.label}
+                      searchPlaceholder={`Search ${item.label}`}
+                    />
+                  )
+            }
+            options={{
+              tabBarLabel: item.label,
+              title: item.label,
+              tabBarLabelStyle: {
+                fontSize: 12,
+                fontWeight: "500",
+                marginTop: 8,
+              },
+              tabBarIcon: ({ color, size, focused }) => (
+                <AnimatedTabIcon 
+                  name={item.icon}
+                  color={color}
+                  size={size}
+                  focused={focused}
+                />
+              ),
+            }}
+          />
+        );
+      })}
+      {navigationItems.length === 0 && tabConfig.map((item, index) => {
         const Component = getComponent(item);
 
         return (
