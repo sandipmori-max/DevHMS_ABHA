@@ -41,6 +41,7 @@ import ImageResizer from "@bam.tech/react-native-image-resizer";
 import { launchCamera } from "react-native-image-picker";
 
 const AttendanceForm = ({ setBlockAction, resData }: any) => {
+  let ATTENDANCE_LEVEL = 1;
   const { t } = useTranslations();
   const [showModal, setShowModal] = useState(false);
   const [img, setImg] = useState("");
@@ -93,7 +94,11 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
             setAlertVisible(false);
             const { setFieldValue, handleSubmit } = pendingCameraAction.current;
             pendingCameraAction.current = null;
-            openCamera(setFieldValue, handleSubmit);
+            if(ATTENDANCE_LEVEL === 0){
+              openCameraV2(setFieldValue, handleSubmit);
+            }else{
+              openCamera(setFieldValue, handleSubmit);
+            }
           }
         }
       },
@@ -162,8 +167,8 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
     launchCamera(
       {
         mediaType: "photo",
-        cameraType: "back",
-        quality: 0.7,
+        cameraType: "front",
+        quality: 0.4,
         includeBase64: true,
       },
       (response) => {
@@ -238,7 +243,11 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
           setUserLocation({ latitude, longitude });
           setFieldValue("latitude", String(latitude));
           setFieldValue("longitude", String(longitude));
-          openCamera(setFieldValue, handleSubmit);
+          if(ATTENDANCE_LEVEL === 0){
+            openCameraV2(setFieldValue, handleSubmit);
+          }else{
+            openCamera(setFieldValue, handleSubmit);
+          }
         },
         (error) => {
           console.log("-----------------------******", error);
@@ -420,6 +429,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
 
                  setTimeout(() => {
                     setAlertMapVisible(false);
+                       dispatch(setReloadApp());
                     navigation.goBack();
                   }, 1500);
               }, 1100);

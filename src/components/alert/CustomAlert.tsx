@@ -166,7 +166,7 @@ const { height, width } = useWindowDimensions();
           <Animated.View style={{ opacity: headerAnim }}>
             <View style={styles.header}>
               <TranslatedText
-                numberOfLines={1}
+                numberOfLines={2}
                 text={title || ""}
                 style={alertStyles.title}
               ></TranslatedText>
@@ -242,7 +242,7 @@ const { height, width } = useWindowDimensions();
 
                 {error ? (
                   <TranslatedText
-                    numberOfLines={1}
+                    numberOfLines={3}
                     text={error}
                     style={{ color: ERP_COLOR_CODE.ERP_ERROR }}
                   ></TranslatedText>
@@ -250,7 +250,7 @@ const { height, width } = useWindowDimensions();
               </View>
             ) : (
               <TranslatedText
-                numberOfLines={1}
+                numberOfLines={3}
                 text={message || ""}
                 style={alertStyles.message}
               ></TranslatedText>

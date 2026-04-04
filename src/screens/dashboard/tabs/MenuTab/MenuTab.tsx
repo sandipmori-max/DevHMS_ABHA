@@ -369,7 +369,7 @@ const MenuTab = ({
     navigation,
     hideTab,
     isLandscape,
-    menu
+    menu,
   ]);
 
   useFocusEffect(
@@ -428,7 +428,7 @@ const MenuTab = ({
       if (!acc[moduleName]) {
         acc[moduleName] = {
           title: moduleName,
-          moduleMaterialIcon: item.moduleMaterialIcon || '',
+          moduleMaterialIcon: item.moduleMaterialIcon || "",
           data: [],
         };
       }
@@ -478,7 +478,7 @@ const MenuTab = ({
   };
 
   const renderItem = ({ item, index }: any) => {
-    const backgroundColor = accentColors[index % accentColors.length];
+    const backgroundColor = accentColors[index];
 
     return (
       <TouchableOpacity
@@ -555,8 +555,8 @@ const MenuTab = ({
           {item?.materialIcon ? (
             <MaterialIcons
               name={item?.materialIcon || "widgets"}
-              color={"gray"}
-              size={18}
+              color={ERP_COLOR_CODE.ERP_APP_COLOR}
+              size={22}
             />
           ) : (
             <TranslatedText
@@ -615,7 +615,9 @@ const MenuTab = ({
 
   return (
     <View
-      style={{ flex: 1, backgroundColor: theme === "dark" ? "black" : "white" }}
+      style={{ 
+      
+        flex: 1, backgroundColor: theme === "dark" ? "black" : "white" }}
     >
       <View
         style={{
@@ -644,7 +646,7 @@ const MenuTab = ({
                   alignContent: "center",
                   alignItems: "center",
                   marginBottom: 6,
-                  backgroundColor: "#fafafa",
+                  backgroundColor: "#fff9f9",
                   width: "98%",
                   justifyContent: "space-between",
                   padding: 4,
@@ -653,14 +655,19 @@ const MenuTab = ({
                 <View
                   style={{
                     flexDirection: "row",
+                    marginLeft: 6
                   }}
                 >
-                  <MaterialIcons name={ section?.moduleMaterialIcon || "widgets"} color={"black"} size={18} />
+                  <MaterialIcons
+                    name={section?.moduleMaterialIcon || "widgets"}
+                    color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                    size={18}
+                  />
                   <Text
                     style={{
                       marginLeft: 6,
                       fontWeight: "600",
-                      color: ERP_COLOR_CODE.ERP_BLACK,
+                      color: ERP_COLOR_CODE.ERP_161515,
                     }}
                   >
                     {section?.title}
@@ -691,21 +698,33 @@ const MenuTab = ({
             renderItem={({ item, index, section }) => {
               const items = section.data;
               const chunkSize = isLandscape ? 4 : 3;
+
               if (index % chunkSize !== 0) return null;
               const rowItems = items.slice(index, index + chunkSize);
+
               return (
-                <View style={{  
-                  flexDirection: "row", flexWrap: "wrap" }}>
-                  {rowItems.map((child, childIndex) => (
-                    <View
-                      key={childIndex}
-                      style={{
-                        width: isLandscape ? "25%" : "33%",
-                      }}
-                    >
-                      {renderItem({ item: child, index: childIndex })}
-                    </View>
-                  ))}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    flexWrap: "wrap", 
+                   }}
+                >
+                  {rowItems.map((child, childIndex) => {
+                    const globalIndex = index + childIndex;
+
+                    return (
+                      <View
+                        key={childIndex}
+                        style={{
+                          width: isLandscape ? "25%" : "33%",
+                         
+
+                        }}
+                      >
+                        {renderItem({ item: child, index: globalIndex })}
+                      </View>
+                    );
+                  })}
                 </View>
               );
             }}

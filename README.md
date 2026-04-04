@@ -619,3 +619,1500 @@ Home
 - Drop down / Ajax / date - RESET - CLEAR - ALL RESET 
 - Firebase push notification - 
 - APN setup ios pending 
+
+///// Branch wise - entry list 
+
+
+////////////////////// Attendaced 4 LAYER /////////////////////////
+
+- 0 - No Location - No Face 
+- 1 - No Location - Only Face 
+- 2 - YES Location - YES Face 
+- 3 - YES Location - YES Face - YES Face Matched
+
+//////////////////////
+
+
+
+
+
+import React, { useEffect, useState, useRef } from "react";
+import {
+  PermissionsAndroid,
+  Platform,
+  NativeModules,
+  AppState,
+  Linking,
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  useWindowDimensions,
+} from "react-native";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import {
+  checkAuthStateThunk,
+  getERPAppConfigMenuThunk,
+} from "../store/slices/auth/thunk";
+import DevERPService from "../services/api/deverp";
+import AuthNavigator from "./AuthNavigator";
+import StackNavigator from "./StackNavigator";
+import FullViewLoader from "../components/loader/FullViewLoader";
+import DeviceInfo from "react-native-device-info";
+import CustomAlert from "../components/alert/CustomAlert";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ERP_COLOR_CODE } from "../utils/constants";
+import { changeLanguage } from "../i18n";
+import { request, PERMISSIONS, RESULTS } from "react-native-permissions";
+import { getLastPunchInThunk } from "../store/slices/attendance/thunk";
+import { setReloadApp } from "../store/slices/reloadApp/reloadAppSlice";
+import {
+  updateAppMenuList,
+  updateAttendanceState,
+  updatePinVerifyLoadedState,
+} from "../store/slices/auth/authSlice";
+import { useTranslation } from "react-i18next";
+
+// ------------------------- Location Permission Helper -------------------------
+export async function requestLocationPermissions(): Promise<
+  "granted" | "foreground-only" | "denied" | "blocked"
+> {
+  if (Platform.OS === "android") {
+    const fine = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+
+    if (fine === PermissionsAndroid.RESULTS.GRANTED) {
+      // Ask background AFTER foreground
+      const background = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION,
+      );
+
+      return background === PermissionsAndroid.RESULTS.GRANTED
+        ? "granted"
+        : "foreground-only";
+    }
+
+    if (fine === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+      return "blocked";
+    }
+
+    return "denied";
+  }
+
+  // -------------------- iOS --------------------
+  const whenInUse = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+
+  if (whenInUse === RESULTS.GRANTED || whenInUse === RESULTS.LIMITED) {
+    const always = await request(PERMISSIONS.IOS.LOCATION_ALWAYS);
+    return always === RESULTS.GRANTED ? "granted" : "foreground-only";
+  }
+
+  if (whenInUse === RESULTS.BLOCKED) {
+    return "blocked";
+  }
+
+  return "denied";
+}
+
+// ------------------------- RootNavigator -------------------------
+const RootNavigator = () => {
+  let ATTENDANCE_LEVEL = 1;
+  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const LOCATION_MESSAGES = {
+    PERMISSION_DENIED: t("text1"),
+    SERVICE_DISABLED: t("text2"),
+  };
+  const { height, width } = useWindowDimensions();
+  const isLandscape = width > height;
+  const { isLoading, isAuthenticated, accounts, user, appColorCode } =
+    useAppSelector((state) => state.auth);
+  const { reLoading } = useAppSelector((state) => state.reloadApp);
+
+  const langCode = useAppSelector((state) => state.theme.langcode);
+
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
+
+  const [backgroundDeniedModal, setBackgroundDeniedModal] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({
+    title: "",
+    message: "",
+    type: "error" as "error" | "success" | "info" | "location",
+  });
+
+  const locationModalShownRef = useRef(false);
+  const appState = useRef(AppState.currentState);
+
+  const locationServiceIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const gpsModalShownRef = useRef(false);
+
+  const checkLocationServiceOnly = async () => {
+    if (!isAuthenticated) return;
+
+    const enabled = await DeviceInfo.isLocationEnabled();
+
+    // GPS OFF → show modal once & stop features
+    if (!enabled && !gpsModalShownRef.current) {
+      setAlertConfig({
+        title: t("test3"),
+        message: LOCATION_MESSAGES.SERVICE_DISABLED,
+        type: "location",
+      });
+
+      setAlertVisible(true);
+      setOpenSettings(false);
+      setBackgroundDeniedModal(false);
+
+      gpsModalShownRef.current = true;
+      locationModalShownRef.current = true; // reuse existing stop-flow logic
+      return;
+    }
+
+    // GPS ON again → reset flags & resume
+    if (enabled && gpsModalShownRef.current) {
+      gpsModalShownRef.current = false;
+      locationModalShownRef.current = false;
+      setAlertVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    // Start checking every 1 second
+    locationServiceIntervalRef.current = setInterval(() => {
+      if (ATTENDANCE_LEVEL !== 0) {
+        try {
+          dispatch(getLastPunchInThunk())
+            .unwrap()
+            .then((res) => {
+              if (res?.success === 1 || res?.success === "1") {
+                dispatch(updateAttendanceState(true));
+                checkLocationServiceOnly();
+              } else {
+                dispatch(updateAttendanceState(false));
+              }
+            })
+            .catch((err) => {
+              dispatch(updateAttendanceState(false));
+            });
+        } catch (error) {
+          dispatch(updateAttendanceState(false));
+
+          console.log("error ", error);
+        }
+      }
+    }, 1000);
+
+    return () => {
+      // Cleanup on logout / unmount
+      if (locationServiceIntervalRef.current) {
+        clearInterval(locationServiceIntervalRef.current);
+        locationServiceIntervalRef.current = null;
+      }
+    };
+  }, [isAuthenticated, reLoading]);
+  const app_id = user?.app_id;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      try {
+        dispatch(getERPAppConfigMenuThunk());
+      } catch (error) {
+        dispatch(updateAppMenuList([])); // Clear menu on error
+        console.log("Error fetching app config menu:", error);
+      }
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    const fetchDeviceName = async () => {
+      const name = await DeviceInfo.getDeviceName();
+      let appid = await AsyncStorage.getItem("appid");
+      if (!appid) {
+        appid = app_id;
+        await AsyncStorage.setItem("appid", appid || "");
+      }
+      await AsyncStorage.setItem("device", name);
+
+      DevERPService.initialize();
+      DevERPService.setAppId(appid || "");
+      DevERPService.setDevice(name);
+
+      dispatch(checkAuthStateThunk());
+    };
+    fetchDeviceName();
+  }, [dispatch]);
+
+  // ------------------------- AppState Listener -------------------------
+  useEffect(() => {
+    const handleAppStateChange = async (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === "active"
+      ) {
+        if (ATTENDANCE_LEVEL !== 0) {
+          try {
+            dispatch(getLastPunchInThunk())
+              .unwrap()
+              .then((res) => {
+                if (res?.success === 1 || res?.success === "1") {
+                  dispatch(updateAttendanceState(true));
+
+                  checkLocation();
+                } else {
+                  dispatch(updateAttendanceState(false));
+                }
+              })
+              .catch((err) => {
+                dispatch(updateAttendanceState(false));
+              });
+          } catch (error) {
+            dispatch(updateAttendanceState(false));
+
+            console.log("error*******", error);
+          }
+        }
+      }
+      appState.current = nextAppState;
+    };
+
+    const sub = AppState.addEventListener("change", handleAppStateChange);
+    return () => sub.remove();
+  }, [isAuthenticated, reLoading]);
+
+  // ------------------------- Language -------------------------
+  useEffect(() => {
+    changeLanguage(langCode);
+  }, [langCode]);
+
+  // ------------------------- Device Setup -------------------------
+  const init = async () => {
+    const name = await DeviceInfo.getDeviceName();
+    await AsyncStorage.setItem("device", name);
+    await DevERPService.initialize();
+    await dispatch(checkAuthStateThunk());
+  };
+
+  // ------------------------- Check Location -------------------------
+  const checkLocation = async () => {
+    if (!isAuthenticated) return;
+
+    const enabled = await DeviceInfo.isLocationEnabled();
+
+    const permission = await requestLocationPermissions();
+
+    if (enabled && permission === "granted") {
+      locationModalShownRef.current = false;
+      setAlertVisible(false);
+      setBackgroundDeniedModal(false);
+
+      if (accounts.length) {
+        const data = accounts
+          .map((u) => {
+            if (user?.id.toString() === u?.user?.id.toString()) {
+              return {
+                token: u.user.token,
+                link: u.user.companyLink.replace(/^https:\/\//i, "http://"),
+              };
+            }
+            return null;
+          })
+          .filter(Boolean);
+
+        NativeModules.LocationModule.setUserTokens(data);
+        NativeModules.LocationModule.startService();
+      }
+      return;
+    }
+
+    if (permission === "foreground-only") {
+      setBackgroundDeniedModal(true);
+      setAlertVisible(false);
+      return;
+    }
+
+    // ------------------------- Denied / Disabled Handling -------------------------
+    if (!locationModalShownRef.current) {
+      // CASE 1: Location service disabled (GPS OFF)
+      if (!enabled) {
+        setAlertConfig({
+          title: t("test3"),
+          message: LOCATION_MESSAGES.SERVICE_DISABLED,
+          type: "location",
+        });
+
+        setAlertVisible(true);
+        setOpenSettings(false);
+        setBackgroundDeniedModal(false); // ❌ no Open Settings modal
+        locationModalShownRef.current = true;
+        return;
+      }
+
+      // CASE 2: Permission denied or blocked
+      if (permission === "denied" || permission === "blocked") {
+        setAlertConfig({
+          title: "Permission Denied",
+          message: LOCATION_MESSAGES.PERMISSION_DENIED,
+          type: "location",
+        });
+
+        setAlertVisible(true);
+        setOpenSettings(true);
+        setBackgroundDeniedModal(false); // ❌ background modal not needed here
+        locationModalShownRef.current = true;
+        return;
+      }
+    }
+  };
+
+  useEffect(() => {
+    init();
+    return () => {
+      dispatch(setReloadApp());
+      dispatch(updatePinVerifyLoadedState(false));
+    };
+  }, []);
+
+  // ------------------------- Focus -------------------------
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Optional: cancel timeout if component unmounts
+      const timer = setTimeout(() => {
+        if (ATTENDANCE_LEVEL !== 0) {
+          try {
+            dispatch(getLastPunchInThunk())
+              .unwrap()
+              .then((res) => {
+                if (res?.success === 1 || res?.success === "1") {
+                  dispatch(updateAttendanceState(true));
+
+                  checkLocation();
+                } else {
+                  dispatch(updateAttendanceState(false));
+
+                  setAlertVisible(false);
+                  setOpenSettings(false);
+                  setBackgroundDeniedModal(false);
+                  NativeModules.LocationModule.setUserTokens([]);
+                  NativeModules.LocationModule.stopService();
+                }
+              })
+              .catch((err) => {
+                dispatch(updateAttendanceState(false));
+
+                setAlertVisible(false);
+                setOpenSettings(false);
+                setBackgroundDeniedModal(false);
+                NativeModules.LocationModule.setUserTokens([]);
+                NativeModules.LocationModule.stopService();
+              });
+          } catch (error) {
+            dispatch(updateAttendanceState(false));
+
+            console.log("error//////", error);
+          }
+        }
+      }, 2500);
+      // Cleanup to avoid memory leaks
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, reLoading]);
+
+  // ------------------------- Render -------------------------
+  if (isLoading) return <FullViewLoader />;
+
+  return (
+    <>
+      {isAuthenticated ? <StackNavigator /> : <AuthNavigator />}
+      {ATTENDANCE_LEVEL !== 0 && isAuthenticated && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          type={alertConfig.type}
+          onClose={() => {
+            // setAlertVisible(true)
+          }}
+          isSettingVisible={openSettings}
+          actionLoader={undefined}
+          closeHide={true}
+        />
+      )}
+      {ATTENDANCE_LEVEL !== 0 && isAuthenticated && (
+        <Modal
+          visible={backgroundDeniedModal}
+          supportedOrientations={["portrait", "landscape"]}
+          transparent
+        >
+          <View
+            style={[
+              styles.overlay,
+              isLandscape && {
+                alignContent: "center",
+                alignItems: "center",
+              },
+            ]}
+          >
+            <View style={[styles.modalContainer, {}]}>
+              <Text style={styles.title}>{t("test21")}</Text>
+              <Text style={styles.message}>{t("test22")}</Text>
+              <TouchableOpacity
+                style={styles.btnPrimary}
+                onPress={() => Linking.openSettings()}
+              >
+                <Text style={styles.btnText}>{t("test23")}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
+    </>
+  );
+};
+
+export default RootNavigator;
+
+// ------------------------- Styles -------------------------
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    width: "85%",
+    padding: 20,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  message: {
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  btnPrimary: {
+    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+    padding: 12,
+    borderRadius: 10,
+  },
+  btnText: {
+    color: "#fff",
+    fontWeight: "600",
+    textAlign: "center",
+  },
+});
+
+
+-----
+
+
+import {
+  View,
+  Text,
+  Image,
+  TextInput,
+  AppState,
+  Animated,
+  TouchableOpacity,
+  Platform,
+  useWindowDimensions,
+} from "react-native";
+import React, { useState, useRef, useEffect } from "react";
+import { Formik } from "formik";
+import * as Yup from "yup";
+import Geolocation from "@react-native-community/geolocation";
+
+import { AttendanceFormValues, UserLocation } from "../types";
+import {
+  firstLetterUpperCase,
+  requestCameraAndLocationPermission,
+  requestCameraPermissionV2,
+} from "../../../../utils/helpers";
+import useTranslations from "../../../../hooks/useTranslations";
+import { styles } from "../attendance_style";
+import CustomAlert from "../../../../components/alert/CustomAlert";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { markAttendanceThunk } from "../../../../store/slices/attendance/thunk";
+import { ERP_COLOR_CODE } from "../../../../utils/constants";
+import { useNavigation } from "@react-navigation/native";
+import SlideButton from "./SlideButton";
+import { useBaseLink } from "../../../../hooks/useBaseLink";
+import ProfileImage from "../../../../components/profile/ProfileImage";
+import DeviceInfo from "react-native-device-info";
+import { setReloadApp } from "../../../../store/slices/reloadApp/reloadAppSlice";
+import { Easing } from "react-native";
+import ImageBottomSheetModal from "../../../../components/bottomsheet/ImageBottomSheetModal";
+import TranslatedText from "../../tabs/home/TranslatedText";
+import { updateAttendanceState } from "../../../../store/slices/auth/authSlice";
+import SlideButtonIOS from "./SlideButtonIOS";
+import RNFS from "react-native-fs";
+import ImageResizer from "@bam.tech/react-native-image-resizer";
+import { launchCamera } from "react-native-image-picker";
+
+const AttendanceForm = ({ setBlockAction, resData }: any) => {
+  const { t } = useTranslations();
+
+  let ATTENDANCE_LEVEL = 1;
+
+  const [showModal, setShowModal] = useState(false);
+  const [img, setImg] = useState("");
+  const navigation = useNavigation();
+  const dispatch = useAppDispatch();
+  const { user, attendanceDone: isAttendanceDone } = useAppSelector(
+    (state) => state?.auth,
+  );
+
+  const { height, width } = useWindowDimensions();
+  const isLandscape = width > height;
+  const baseLink = useBaseLink();
+  const theme = useAppSelector((state) => state?.theme.mode);
+  const [statusImage, setStatusImage] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [attendanceDone, setAttendanceDone] = useState(false);
+
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [isSettingVisible, setIsSettingVisible] = useState(false);
+  const [modalClose, setModalClose] = useState(false);
+  const [alertLocationVisible, setLocationAlertVisible] = useState(false);
+  const [blocked, setBlocked] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({
+    title: "",
+    message: "",
+    type: "info" as "error" | "success" | "info",
+  });
+  const [alertMapVisible, setAlertMapVisible] = useState(false);
+
+  const [alertMapConfig, setAlertMapConfig] = useState({
+    title: "",
+    message: "",
+    type: "info" as "error" | "success" | "info" | "location",
+  });
+  // -------------------- Pending Camera Action --------------------
+  const pendingCameraAction = useRef<{
+    setFieldValue: (field: keyof AttendanceFormValues, value: any) => void;
+    handleSubmit: () => void;
+  } | null>(null);
+
+  // -------------------- AppState Listener --------------------
+  useEffect(() => {
+    const subscription = AppState.addEventListener(
+      "change",
+      async (nextAppState) => {
+        if(ATTENDANCE_LEVEL === 0) return;
+        if (nextAppState === "active" && pendingCameraAction.current) {
+           const hasPermission = await requestCameraAndLocationPermission();
+            if (hasPermission) {
+              setIsSettingVisible(false);
+              setAlertVisible(false);
+              const { setFieldValue, handleSubmit } =
+                pendingCameraAction.current;
+              pendingCameraAction.current = null;
+              if(ATTENDANCE_LEVEL === 1){
+            openCamera(setFieldValue, handleSubmit);
+          } else {
+            openCameraV2(setFieldValue, handleSubmit);
+          }
+            }
+        }
+      },
+    );
+    return () => subscription.remove();
+  }, []);
+
+
+  const openCamera = (setFieldValue, handleSubmit) => {
+
+    if(ATTENDANCE_LEVEL === 0){
+      setFieldValue(
+                "imageBase64",
+                 "",
+              );
+
+         setTimeout(() => {
+              handleSubmit();
+            }, 1000);
+    }else{
+      setLocationLoading(false);
+    setBlockAction(false);
+    navigation.navigate("FaceCameraScreen", {
+      onCapture: async (photoPath) => {
+        setTimeout(async () => {
+          try {
+            setLocationLoading(true);
+            setBlockAction(true);
+            if (!photoPath) {
+              setLocationLoading(false);
+              setBlockAction(false);
+              return;
+            }
+
+            const photoUri = "file://" + photoPath;
+            const compressedPhoto = await ImageResizer.createResizedImage(
+              photoPath,
+              600, // optional: adjust to safe dimensions
+              600,
+              "JPEG",
+              60,
+              0,
+            );
+
+            const base64 = await RNFS.readFile(compressedPhoto.uri, "base64");
+            // const base64 = await RNFS.readFile(photoPath, "base64");
+
+            if (base64) {
+              setFieldValue(
+                "imageBase64",
+                `${
+                  resData?.success === 1 || resData?.success === "1"
+                    ? "punchOut.jpeg"
+                    : "punchIn.jpeg"
+                }; data:image/jpeg;base64,${base64}`,
+              );
+            }
+
+            setStatusImage(photoUri);
+
+            setTimeout(() => {
+              handleSubmit();
+            }, 1000);
+          } catch (error) {
+            console.log("---------------------11", error);
+
+            setLocationLoading(false);
+            setBlockAction(false);
+          }
+        }, 300);
+      },
+    });
+    }
+
+    
+  };
+
+  const openCameraV2 = (
+    setFieldValue: (field: keyof AttendanceFormValues, value: any) => void,
+    handleSubmit: () => void,
+  ) => {
+    launchCamera(
+      {
+        mediaType: "photo",
+        cameraType: "back",
+        quality: 0.7,
+        includeBase64: true,
+      },
+      (response) => {
+        if (response?.didCancel || response?.errorCode) {
+          setLocationLoading(false);
+          setBlockAction(false);
+          return;
+        }
+        const photoUri = response?.assets?.[0]?.uri;
+        const asset = response?.assets?.[0];
+        if (!photoUri) return;
+        if (asset?.base64) {
+          setFieldValue(
+            "imageBase64",
+            `${
+              resData?.success === 1 || resData?.success === "1"
+                ? "punchOut.jpeg"
+                : "punchIn.jpeg"
+            }; data:${asset?.type};base64,${asset?.base64}`,
+          );
+        }
+        setStatusImage(photoUri);
+        setTimeout(() => {
+          handleSubmit();
+        }, 1000);
+      },
+    );
+  };
+
+
+  const handleStatusToggle = async (
+    setFieldValue: (field: keyof AttendanceFormValues, value: any) => void,
+    handleSubmit: () => void,
+  ) => {
+    const enabled = await DeviceInfo.isLocationEnabled();
+    if (ATTENDANCE_LEVEL !== 0 && !enabled) {
+      setBlocked(false);
+      setLocationLoading(false);
+      setAttendanceDone(false);
+      setLocationAlertVisible(true);
+      return;
+    } else {
+      setLocationAlertVisible(false);
+    }
+    setBlockAction(true);
+
+    if (locationLoading) return;
+
+    
+    if(ATTENDANCE_LEVEL !== 0){
+      const hasPermission = await requestCameraAndLocationPermission();
+
+      if (!hasPermission) {
+        pendingCameraAction.current = { setFieldValue, handleSubmit };
+        setAlertConfig({
+          title: t("errors.permissionRequired"),
+          message: t("errors.cameraLocationPermission"),
+          type: "error",
+        });
+        setModalClose(false);
+        setAlertVisible(true);
+        setIsSettingVisible(true);
+
+        setBlockAction(false);
+        return;
+      }
+    }
+
+    setBlocked(false);
+    setLocationLoading(true);
+
+    const getLocationWithRetry = () => {
+      Geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position?.coords;
+
+          setUserLocation({ latitude, longitude });
+          setFieldValue("latitude", String(latitude));
+          setFieldValue("longitude", String(longitude));
+          if(ATTENDANCE_LEVEL === 1){
+            openCameraV2(setFieldValue, handleSubmit);
+          } else {
+            openCamera(setFieldValue, handleSubmit);
+          }
+        },
+        (error) => {
+          console.log("-----------------------******", error);
+
+          setAlertConfig({
+            title: t("errors.locationError"),
+            message: error?.message || t("msg.msg5"),
+            type: "error",
+          });
+          setAlertVisible(true);
+          setLocationLoading(false);
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 15000,
+          maximumAge: 10000,
+        },
+      );
+    };
+
+    if (ATTENDANCE_LEVEL !== 0) {
+      getLocationWithRetry();
+    } else {
+      console.log("Skipping location fetch due to attendance level 0");
+      setFieldValue("latitude", "");
+      setFieldValue("longitude", "");
+      setFieldValue("imageBase64", "");
+          setTimeout(() => {
+        handleSubmit(); // ✅ yaha sahi hai
+      }, 1000);
+    }
+  };
+
+  const formatName = (name = "") =>
+    name
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+
+  const animProfile = useRef(new Animated.Value(20)).current;
+  const animName = useRef(new Animated.Value(20)).current;
+  const animRemark = useRef(new Animated.Value(20)).current;
+  const animImage = useRef(new Animated.Value(20)).current;
+  const animButton = useRef(new Animated.Value(20)).current;
+
+  const fadeProfile = useRef(new Animated.Value(0)).current;
+  const fadeName = useRef(new Animated.Value(0)).current;
+  const fadeRemark = useRef(new Animated.Value(0)).current;
+  const fadeImage = useRef(new Animated.Value(0)).current;
+  const fadeButton = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.stagger(120, [
+      Animated.parallel([
+        Animated.timing(animProfile, {
+          toValue: 0,
+          duration: 350,
+          easing: Easing.out(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeProfile, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]),
+
+      Animated.parallel([
+        Animated.timing(animName, {
+          toValue: 0,
+          duration: 350,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeName, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]),
+
+      Animated.parallel([
+        Animated.timing(animRemark, {
+          toValue: 0,
+          duration: 350,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeRemark, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]),
+
+      Animated.parallel([
+        Animated.timing(animImage, {
+          toValue: 0,
+          duration: 350,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeImage, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]),
+
+      Animated.parallel([
+        Animated.timing(animButton, {
+          toValue: 0,
+          duration: 350,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeButton, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start();
+  }, []);
+
+  return (
+    <View
+      style={{
+        width: "100%",
+        padding: 16,
+      }}
+    >
+      <Formik
+        initialValues={{
+          name: user?.name,
+          latitude: ATTENDANCE_LEVEL === 1 ? userLocation ? String(userLocation?.latitude) : "" : "",
+          longitude: ATTENDANCE_LEVEL === 1 ? userLocation ? String(userLocation?.longitude) : "" : "",
+          remark: "",
+          dateTime: new Date().toISOString(),
+          imageBase64: "",
+        }}
+        validationSchema={Yup.object({
+          name: Yup.string().required(t("attendance.nameRequired")),
+          longitude: Yup.string().optional(),
+          remark: Yup.string().optional(),
+          dateTime: Yup.string().optional(),
+          imageBase64:  ATTENDANCE_LEVEL === 0 ?  Yup.string().optional() : Yup.string().required(t("msg.msg6")),
+        })}
+        onSubmit={(values) => {
+          console.log("Submitting with values:", values);
+          dispatch(
+            markAttendanceThunk({
+              rawData: values,
+              type:
+                resData?.success === 1 || resData?.success === "1"
+                  ? false
+                  : true,
+              user,
+              id:
+                resData?.success === 1 || resData?.success === "1"
+                  ? resData?.id
+                  : "0",
+            }),
+          )
+            .unwrap()
+            .then((res) => {
+              if (resData?.success === 1 || resData?.success === "1") {
+                dispatch(updateAttendanceState(true));
+              } else {
+                dispatch(updateAttendanceState(false));
+              }
+              setAttendanceDone(true);
+              setAlertConfig({
+                title: t("title.title3"),
+                message: t("msg.msg7"),
+                type: "success",
+              });
+              setAlertVisible(true);
+              setLocationLoading(false);
+              setBlockAction(false);
+              if(ATTENDANCE_LEVEL === 0){
+                navigation.goBack();
+                return;
+              }
+              setTimeout(() => {
+                setAlertVisible(false);
+                setAlertMapVisible(true);
+
+                setAlertMapConfig({
+                  title: "Location tracked status",
+                  message: !isAttendanceDone
+                    ? "Location tracking has started and will continue until you punch out."
+                    : "Location tracking has been stopped.",
+                  type: "location",
+                });
+
+                setTimeout(() => {
+                  setAlertMapVisible(false);
+                  navigation.goBack();
+                }, 1500);
+              }, 1100);
+            })
+            .catch((err) => {
+              setAttendanceDone(false);
+              setAlertConfig({
+                title: t("title.title1"),
+                message: err || t("msg.msg4"),
+                type: "error",
+              });
+              setAlertVisible(true);
+              setLocationLoading(false);
+              setBlockAction(false);
+            });
+        }}
+      >
+        {({ values, errors, touched, setFieldValue, handleSubmit }) => (
+          <View
+            style={[
+              styles.profileCard,
+              {
+                backgroundColor: theme === "dark" ? "black" : "transparent",
+              },
+            ]}
+          >
+            {isLandscape ? (
+              <>
+                <View style={{ flexDirection: "row" }}>
+                  <View style={{ width: "50%", justifyContent: "center" }}>
+                    <View style={styles.profileRow}>
+                      <View style={styles.imageCol}>
+                        {`${baseLink}/FileUpload/1/UserMaster/${user?.id}/profileimage.jpeg` ? (
+                          <TouchableOpacity
+                            onPress={() => {
+                              setImg(
+                                `${baseLink}/FileUpload/1/UserMaster/${user?.id}/profileimage.jpeg`,
+                              );
+                              setShowModal(true);
+                            }}
+                          >
+                            <Animated.View
+                              style={{
+                                opacity: fadeProfile,
+                                transform: [{ translateY: animProfile }],
+                              }}
+                            >
+                              <View style={styles.profileRow}>
+                                <ProfileImage
+                                  userId={user?.id}
+                                  baseLink={baseLink}
+                                  userName={firstLetterUpperCase(
+                                    user?.name || "",
+                                  )}
+                                />
+                              </View>
+                            </Animated.View>
+                          </TouchableOpacity>
+                        ) : (
+                          <View
+                            style={[
+                              styles.profileAvatar,
+                              {
+                                justifyContent: "center",
+                                alignItems: "center",
+                                backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                              },
+                            ]}
+                          >
+                            <Animated.View
+                              style={{
+                                opacity: fadeName,
+                                transform: [{ translateY: animName }],
+                              }}
+                            >
+                              <TranslatedText
+                                text={firstLetterUpperCase(user?.name || "")}
+                                numberOfLines={1}
+                                style={{
+                                  color: ERP_COLOR_CODE.ERP_WHITE,
+                                  fontWeight: "bold",
+                                  fontSize: 26,
+                                }}
+                              ></TranslatedText>
+                            </Animated.View>
+                          </View>
+                        )}
+                      </View>
+                    </View>
+                  </View>
+
+                  <View style={{ width: "50%" }}>
+                    <View style={{}}>
+                      <Animated.View
+                        style={{
+                          opacity: fadeRemark,
+                          transform: [{ translateY: animRemark }],
+                        }}
+                      >
+                        <View style={styles.formGroup}>
+                          <Text
+                            style={[
+                              styles.label,
+                              theme === "dark" && {
+                                color: "white",
+                              },
+                            ]}
+                          >
+                            {t("attendance.employeeName")}
+                          </Text>
+                          <TextInput
+                            style={[
+                              styles.input,
+                              styles.inputReadonly,
+                              theme === "dark" && {
+                                borderWidth: 1,
+                                borderColor: "white",
+                                color: "black",
+                                backgroundColor: "black",
+                              },
+                              {
+                                backgroundColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+                              },
+                            ]}
+                            value={formatName(values?.name)}
+                            editable={false}
+                          />
+                          {touched?.name && errors?.name ? (
+                            <TranslatedText
+                              numberOfLines={1}
+                              text={errors?.name}
+                              style={styles.errorText}
+                            ></TranslatedText>
+                          ) : null}
+                        </View>
+                        <View style={styles.formGroup}>
+                          <Text
+                            style={[
+                              styles.label,
+                              theme === "dark" && {
+                                color: "white",
+                              },
+                            ]}
+                          >
+                            {resData?.success === 1 || resData?.success === "1"
+                              ? t("attendance.outremark")
+                              : t("attendance.remark")}
+                          </Text>
+
+                          <TextInput
+                            style={[
+                              styles.input,
+                              { minHeight: 100, textAlignVertical: "top" },
+                              theme === "dark" && {
+                                borderWidth: 1,
+                                borderColor: "white",
+                                color: "white",
+                                backgroundColor: "black",
+                              },
+                            ]}
+                            placeholderTextColor={
+                              theme === "dark" ? "white" : "black"
+                            }
+                            value={values?.remark}
+                            onChangeText={(text) =>
+                              setFieldValue("remark", text)
+                            }
+                            placeholder={t("attendance.enterRemark")}
+                            multiline
+                            numberOfLines={3}
+                          />
+                        </View>
+                      </Animated.View>
+                      {statusImage && (
+                        <View>
+                          <Image
+                            source={{ uri: statusImage }}
+                            style={styles.selfyAvatar}
+                          />
+                          <Text style={styles.imageLabel}>
+                            {t("attendance.capturedPhoto")}
+                          </Text>
+                        </View>
+                      )}
+                      <View>
+                        <Animated.View
+                          style={{
+                            opacity: fadeButton,
+                            transform: [{ translateY: animButton }],
+                          }}
+                        >
+                          <View>
+                            {Platform.OS === "ios" ? (
+                              <SlideButtonIOS
+                                label={
+                                  resData?.success === 1 ||
+                                  resData?.success === "1"
+                                    ? `${t("text.texti3")} ${t(
+                                        "attendance.checkOut",
+                                      )}`
+                                    : `${t("text.texti3")} ${t(
+                                        "attendance.checkIn",
+                                      )}`
+                                }
+                                successColor={
+                                  resData?.success === 1 ||
+                                  resData?.success === "1"
+                                    ? ERP_COLOR_CODE.ERP_ERROR
+                                    : ERP_COLOR_CODE.ERP_APP_COLOR
+                                }
+                                loading={locationLoading}
+                                completed={attendanceDone}
+                                onSlideSuccess={() => {
+                                  handleStatusToggle(
+                                    setFieldValue,
+                                    handleSubmit,
+                                  );
+                                }}
+                              />
+                            ) : (
+                              <SlideButton
+                                label={
+                                  resData?.success === 1 ||
+                                  resData?.success === "1"
+                                    ? `${t("text.text3")} ${t(
+                                        "attendance.checkOut",
+                                      )}`
+                                    : `${t("text.text3")} ${t(
+                                        "attendance.checkIn",
+                                      )}`
+                                }
+                                successColor={
+                                  resData?.success === 1 ||
+                                  resData?.success === "1"
+                                    ? ERP_COLOR_CODE.ERP_ERROR
+                                    : ERP_COLOR_CODE.ERP_APP_COLOR
+                                }
+                                loading={locationLoading}
+                                completed={attendanceDone}
+                                blocked={blocked}
+                                onSlideSuccess={() => {
+                                  handleStatusToggle(
+                                    setFieldValue,
+                                    handleSubmit,
+                                  );
+                                }}
+                              />
+                            )}
+                          </View>
+                        </Animated.View>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </>
+            ) : (
+              <>
+                <View style={styles.profileRow}>
+                  <View style={styles.imageCol}>
+                    {`${baseLink}/FileUpload/1/UserMaster/${user?.id}/profileimage.jpeg` ? (
+                      <TouchableOpacity
+                        onPress={() => {
+                          setImg(
+                            `${baseLink}/FileUpload/1/UserMaster/${user?.id}/profileimage.jpeg`,
+                          );
+                          setShowModal(true);
+                        }}
+                      >
+                        <Animated.View
+                          style={{
+                            opacity: fadeProfile,
+                            transform: [{ translateY: animProfile }],
+                          }}
+                        >
+                          <View style={styles.profileRow}>
+                            <ProfileImage
+                              userId={user?.id}
+                              baseLink={baseLink}
+                              userName={firstLetterUpperCase(user?.name || "")}
+                            />
+                          </View>
+                        </Animated.View>
+                      </TouchableOpacity>
+                    ) : (
+                      <View
+                        style={[
+                          styles.profileAvatar,
+                          {
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                          },
+                        ]}
+                      >
+                        <Animated.View
+                          style={{
+                            opacity: fadeName,
+                            transform: [{ translateY: animName }],
+                          }}
+                        >
+                          <TranslatedText
+                            text={firstLetterUpperCase(user?.name || "")}
+                            numberOfLines={1}
+                            style={{
+                              color: ERP_COLOR_CODE.ERP_WHITE,
+                              fontWeight: "bold",
+                              fontSize: 26,
+                            }}
+                          ></TranslatedText>
+                        </Animated.View>
+                      </View>
+                    )}
+                  </View>
+                </View>
+
+                <View style={{}}>
+                  <Animated.View
+                    style={{
+                      opacity: fadeRemark,
+                      transform: [{ translateY: animRemark }],
+                    }}
+                  >
+                    <View style={styles.formGroup}>
+                      <Text
+                        style={[
+                          styles.label,
+                          theme === "dark" && {
+                            color: "white",
+                          },
+                        ]}
+                      >
+                        {t("attendance.employeeName")}
+                      </Text>
+                      <TextInput
+                        style={[
+                          styles.input,
+                          styles.inputReadonly,
+                          theme === "dark" && {
+                            borderWidth: 1,
+                            borderColor: "white",
+                            color: "black",
+                            backgroundColor: "black",
+                          },
+                          { backgroundColor: ERP_COLOR_CODE.ERP_BORDER_LINE },
+                        ]}
+                        value={formatName(values?.name)}
+                        editable={false}
+                      />
+                      {touched?.name && errors?.name ? (
+                        <TranslatedText
+                          numberOfLines={1}
+                          text={errors?.name}
+                          style={styles.errorText}
+                        ></TranslatedText>
+                      ) : null}
+                    </View>
+                    <View style={styles.formGroup}>
+                      <Text
+                        style={[
+                          styles.label,
+                          theme === "dark" && {
+                            color: "white",
+                          },
+                        ]}
+                      >
+                        {resData?.success === 1 || resData?.success === "1"
+                          ? t("attendance.outremark")
+                          : t("attendance.remark")}
+                      </Text>
+
+                      <TextInput
+                        style={[
+                          styles.input,
+                          { minHeight: 100, textAlignVertical: "top" },
+                          theme === "dark" && {
+                            borderWidth: 1,
+                            borderColor: "white",
+                            color: "white",
+                            backgroundColor: "black",
+                          },
+                        ]}
+                        placeholderTextColor={
+                          theme === "dark" ? "white" : "black"
+                        }
+                        value={values?.remark}
+                        onChangeText={(text) => setFieldValue("remark", text)}
+                        placeholder={t("attendance.enterRemark")}
+                        multiline
+                        numberOfLines={3}
+                      />
+                    </View>
+                  </Animated.View>
+                  {statusImage && (
+                    <View>
+                      <Image
+                        source={{ uri: statusImage }}
+                        style={styles.selfyAvatar}
+                      />
+                      <Text style={styles.imageLabel}>
+                        {t("attendance.capturedPhoto")}
+                      </Text>
+                    </View>
+                  )}
+                  <Animated.View
+                    style={{
+                      opacity: fadeButton,
+                      transform: [{ translateY: animButton }],
+                    }}
+                  >
+                    <View>
+                      {Platform.OS === "ios" ? (
+                        <SlideButtonIOS
+                          label={
+                            resData?.success === 1 || resData?.success === "1"
+                              ? `${t("text.texti3")} ${t(
+                                  "attendance.checkOut",
+                                )}`
+                              : `${t("text.texti3")} ${t("attendance.checkIn")}`
+                          }
+                          successColor={
+                            resData?.success === 1 || resData?.success === "1"
+                              ? ERP_COLOR_CODE.ERP_ERROR
+                              : ERP_COLOR_CODE.ERP_APP_COLOR
+                          }
+                          loading={locationLoading}
+                          completed={attendanceDone}
+                          onSlideSuccess={() => {
+                            handleStatusToggle(setFieldValue, handleSubmit);
+                          }}
+                        />
+                      ) : (
+                        <SlideButton
+                          label={
+                            resData?.success === 1 || resData?.success === "1"
+                              ? `${t("text.text3")} ${t("attendance.checkOut")}`
+                              : `${t("text.text3")} ${t("attendance.checkIn")}`
+                          }
+                          successColor={
+                            resData?.success === 1 || resData?.success === "1"
+                              ? ERP_COLOR_CODE.ERP_ERROR
+                              : ERP_COLOR_CODE.ERP_APP_COLOR
+                          }
+                          loading={locationLoading}
+                          completed={attendanceDone}
+                          blocked={blocked}
+                          onSlideSuccess={() => {
+                            handleStatusToggle(setFieldValue, handleSubmit);
+                          }}
+                        />
+                      )}
+                    </View>
+                  </Animated.View>
+                </View>
+              </>
+            )}
+          </View>
+        )}
+      </Formik>
+
+      <ImageBottomSheetModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        imageUrl={img}
+      />
+
+      <CustomAlert
+        visible={alertLocationVisible}
+        title={t("title.title4")}
+        message={t("msg.msg8")}
+        type={"error"}
+        onClose={() => {
+          setBlocked(true);
+          setAlertVisible(false);
+          setTimeout(() => {
+            setBlocked(false);
+          }, 1000);
+          setLocationLoading(false);
+          setAttendanceDone(false);
+          setLocationAlertVisible(false);
+        }}
+        actionLoader={undefined}
+        isSettingVisible={false}
+        closeHide={undefined}
+      />
+
+      <CustomAlert
+        visible={alertMapVisible}
+        title={alertMapConfig?.title}
+        message={alertMapConfig?.message}
+        type={alertMapConfig?.type}
+        onClose={() => {
+          navigation?.goBack();
+          setAlertMapVisible(false);
+          dispatch(setReloadApp());
+        }}
+        actionLoader={undefined}
+        isSettingVisible={false}
+        closeHide={undefined}
+      />
+
+      <CustomAlert
+        visible={alertVisible}
+        title={alertConfig?.title}
+        message={alertConfig?.message}
+        type={alertConfig?.type}
+        onClose={() => {
+          if (!modalClose) {
+            if (attendanceDone) {
+              navigation?.goBack();
+              setAlertVisible(false);
+            } else {
+              setBlocked(true);
+              setAlertVisible(false);
+              setTimeout(() => {
+                setBlocked(false);
+              }, 1000);
+            }
+          }
+        }}
+        actionLoader={undefined}
+        isSettingVisible={isSettingVisible}
+        closeHide={undefined}
+      />
+    </View>
+  );
+};
+
+export default AttendanceForm;

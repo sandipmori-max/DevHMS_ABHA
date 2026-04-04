@@ -76,6 +76,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   const [controls, setControls] = useState<any[]>([]);
   const [controlsLoader, setControlsLoader] = useState<any>(false);
   const [alertVisible, setAlertVisible] = useState(true);
+  const { reLoading } = useAppSelector((state) => state.reloadApp);
 
   const [aiMessage, setAiMessage] = useState("");
   const [visibleAI, setVisibleAI] = useState(false);
@@ -315,83 +316,89 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
             <ERPIcon
               name="refresh"
               onPress={async () => {
-                
                 try {
-              if (appBottomMenuList.length === 0) {
-                  setAlertVisible(true);
-                } else {
-                  setAlertVisible(false);
-                }
-                setControlsLoader(true);
-                setActionLoader(true);
-                setIsRefresh(!isRefresh);
-                const now = new Date();
-                const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-                const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-                const fromDateStr = formatDateForAPI(firstDay);
-                const toDateStr = formatDateForAPI(lastDay);
-                setFromDate(fromDateStr);
-                setToDate(toDateStr);
-                dispatch(setActiveDashboardBranchId(""));
-                dispatch(setActiveDashboardBranch(""));
-                dispatch(setActiveDashboardType(""));
-                dispatch(setActiveDashboardTypeId(""));
-                const branchObj = controls.find(
-                  (item) => item.fieldtitle === "Branch",
-                );
-                const typeObj = controls.find(
-                  (item) => item.fieldtitle === "Type",
-                );
+                  if (appBottomMenuList.length === 0) {
+                    setAlertVisible(true);
+                  } else {
+                    setAlertVisible(false);
+                  }
+                  setControlsLoader(true);
+                  setActionLoader(true);
+                  setIsRefresh(!isRefresh);
+                  const now = new Date();
+                  const firstDay = new Date(
+                    now.getFullYear(),
+                    now.getMonth(),
+                    1,
+                  );
+                  const lastDay = new Date(
+                    now.getFullYear(),
+                    now.getMonth() + 1,
+                    0,
+                  );
+                  const fromDateStr = formatDateForAPI(firstDay);
+                  const toDateStr = formatDateForAPI(lastDay);
+                  setFromDate(fromDateStr);
+                  setToDate(toDateStr);
+                  dispatch(setActiveDashboardBranchId(""));
+                  dispatch(setActiveDashboardBranch(""));
+                  dispatch(setActiveDashboardType(""));
+                  dispatch(setActiveDashboardTypeId(""));
+                  const branchObj = controls.find(
+                    (item) => item.fieldtitle === "Branch",
+                  );
+                  const typeObj = controls.find(
+                    (item) => item.fieldtitle === "Type",
+                  );
 
-                const res = await dispatch(
-                  getDDLThunk({
-                    dtlid: branchObj?.dtlid,
-                    where: `UserID in (${user?.id}, -1) AND selected = 1`,
-                  }),
-                ).unwrap();
+                  const res = await dispatch(
+                    getDDLThunk({
+                      dtlid: branchObj?.dtlid,
+                      where: `UserID in (${user?.id}, -1) AND selected = 1`,
+                    }),
+                  ).unwrap();
 
-                const data = res?.data ?? [];
-                // setPreSelectedBranch(data);
-                dispatch(
-                  setActiveDashboardBranchId(data[0]?.value?.toString()),
-                );
-                dispatch(setActiveDashboardBranch(data[0]?.name));
+                  const data = res?.data ?? [];
+                  // setPreSelectedBranch(data);
+                  dispatch(
+                    setActiveDashboardBranchId(data[0]?.value?.toString()),
+                  );
+                  dispatch(setActiveDashboardBranch(data[0]?.name));
 
-                // const res1 = await dispatch(
-                //   getDDLThunk({
-                //     dtlid: typeObj?.dtlid,
-                //     where: `UserID in (${user?.id}, -1) AND selected = 1`,
-                //   }),
-                // ).unwrap();
-                // const data1 = res1?.data ?? [];
-                // console.log(
-                //   "--------------------------------------------DDLres1 Data:",
-                //   res1,
-                // );
-                // dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString()));
-                // dispatch(setActiveDashboardType(data1[0]?.name));
-                dispatch(getERPAppConfigMenuThunk());
+                  // const res1 = await dispatch(
+                  //   getDDLThunk({
+                  //     dtlid: typeObj?.dtlid,
+                  //     where: `UserID in (${user?.id}, -1) AND selected = 1`,
+                  //   }),
+                  // ).unwrap();
+                  // const data1 = res1?.data ?? [];
+                  // console.log(
+                  //   "--------------------------------------------DDLres1 Data:",
+                  //   res1,
+                  // );
+                  // dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString()));
+                  // dispatch(setActiveDashboardType(data1[0]?.name));
+                  dispatch(getERPAppConfigMenuThunk());
 
-                const params = {
-                  branch: data[0]?.value?.toString() || "",
-                  type: "",
-                  fd: fromDate,
-                  td: toDate,
-                };
-                dispatch(getERPDashboardThunk(params));
+                  const params = {
+                    branch: data[0]?.value?.toString() || "",
+                    type: "",
+                    fd: fromDate,
+                    td: toDate,
+                  };
+                  dispatch(getERPDashboardThunk(params));
 
-                const timer = setTimeout(() => {
-                  setActionLoader(false);
-                  setControlsLoader(false);
-                  dispatch(setDashboardLoading(false));
-                }, 4000);
+                  const timer = setTimeout(() => {
+                    setActionLoader(false);
+                    setControlsLoader(false);
+                    dispatch(setDashboardLoading(false));
+                  }, 4000);
 
-                return () => clearTimeout(timer);
-                  
+                  return () => clearTimeout(timer);
                 } catch (error) {
                   console.log("Error during refresh:", error);
                 }
-            }}
+              }}
               isLoading={actionLoader}
             />
 
@@ -476,39 +483,39 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     controls,
   ]);
 
-  useFocusEffect(
-    useCallback(() => {
-      let timer;
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     let timer;
 
-      if (isAuthenticated) {
-        setLoadingPageId(true);
-        try {
-          dispatch(getERPAppConfigMenuThunk());
-        } catch (error) {
-          dispatch(updateAppMenuList([])); // Clear menu on error
-          console.log("Error fetching app config menu:", error);
-        }
-        const params = {
-          branch: auth?.dashboardBranchId.trim() || "",
-          type: auth?.dashboardBranchId.trim() || "",
-          fd: fromDate,
-          td: toDate,
-        };
+  //     if (isAuthenticated) {
+  //       setLoadingPageId(true);
+  //       try {
+  //         dispatch(getERPAppConfigMenuThunk());
+  //       } catch (error) {
+  //         dispatch(updateAppMenuList([])); // Clear menu on error
+  //         console.log("Error fetching app config menu:", error);
+  //       }
+  //       const params = {
+  //         branch: auth?.dashboardBranchId.trim() || "",
+  //         type: auth?.dashboardBranchId.trim() || "",
+  //         fd: fromDate,
+  //         td: toDate,
+  //       };
 
-        dispatch(getERPDashboardThunk(params));
-        dispatch(getERPMenuThunk());
-        timer = setTimeout(() => {
-          dispatch(setDashboardLoading(false));
-        }, 4000);
-      }
-      // ✅ single cleanup function
-      return () => {
-        if (timer) {
-          clearTimeout(timer);
-        }
-      };
-    }, [isAuthenticated, dispatch, fromDate, toDate]),
-  );
+  //       dispatch(getERPDashboardThunk(params));
+  //       dispatch(getERPMenuThunk());
+  //       timer = setTimeout(() => {
+  //         dispatch(setDashboardLoading(false));
+  //       }, 4000);
+  //     }
+  //     // ✅ single cleanup function
+  //     return () => {
+  //       if (timer) {
+  //         clearTimeout(timer);
+  //       }
+  //     };
+  //   }, [isAuthenticated, dispatch, fromDate, toDate]),
+  // );
 
   const accentColors = [
     "#4C6FFF",
@@ -721,7 +728,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
-  const getCurrentMonthRange = useCallback(() => {
+  const getCurrentMonthRange = () => {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -729,13 +736,9 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     const toDateStr = formatDateForAPI(lastDay);
     setFromDate(fromDateStr);
     setToDate(toDateStr);
-    return { fromDate: fromDateStr, toDate: toDateStr };
-  }, []);
+    fetchPageData();
 
-  useEffect(() => {
-    const { fromDate: initialFromDate, toDate: initialToDate } =
-      getCurrentMonthRange();
-  }, [getCurrentMonthRange]);
+  };
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
     if (event?.type === "dismissed" || !selectedDate) {
@@ -800,10 +803,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    fetchPageData();
-  }, []);
-
-  useEffect(() => {
     dispatch(
       getERPDashboardThunk({
         branch: auth?.dashboardBranchId.trim() || "",
@@ -824,31 +823,9 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     fromDate,
     toDate,
     controls,
+    reLoading
   ]);
 
-  //   {
-  //     "dtlid": 500018877,
-  //     "id": 100000223,
-  //     "seqno": 1,
-  //     "field": "branchid",
-  //     "dfield": "",
-  //     "fieldtitle": "Branch",
-  //     "title": "Branch",
-  //     "text": 1,
-  //     "dtext": "",
-  //     "defaultvalue": "#branchid",
-  //     "tooltip": "BranchName",
-  //     "size": "",
-  //     "ctltype": "INT",
-  //     "ddl": "ViewUserBranch-BranchID,BranchName",
-  //     "ddlfield": "BranchName",
-  //     "ddlwhere": "UserID in ($UID,-1)",
-  //     "ajax": 0,
-  //     "visible": "0",
-  //     "refcol": 0,
-  //     "mandatory": "1",
-  //     "disabled": "0"
-  // }
   const fetchData = async () => {
     try {
       console.log(
@@ -887,14 +864,16 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         "--------------------------------------------DDL Data:",
         data1,
       );
+
+
     } catch (error) {
       console.log("-------------------------------------DDL Error:", error);
     }
   };
 
   useEffect(() => {
-    fetchData();
-  }, [controls, isRefresh]);
+    getCurrentMonthRange();
+  }, []);
 
   if (isDashboardLoading) return <FullViewLoader isShowTop={false} />;
   if (!actionLoader && filteredDashboard?.length === 0) {

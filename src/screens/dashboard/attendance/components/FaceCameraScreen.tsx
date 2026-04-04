@@ -25,6 +25,8 @@ import { useAppSelector } from "../../../../store/hooks";
 import CustomAlert from "../../../../components/alert/CustomAlert";
 
 const FaceCameraScreen = ({ navigation, route }: any) => {
+  let ATTENDANCE_LEVEL = 2;
+
   const { onCapture } = route.params;
   const camera = useRef(null);
   const { user } = useAppSelector((state) => state.auth);
@@ -63,7 +65,7 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
     const faces = detectFaces(frame);
     updateFacesJS(faces);
   }, []);
- 
+
   const [loading, setLoading] = useState(false);
   const verifyFace = async (capturedImageUri) => {
     try {
@@ -76,9 +78,7 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
       // Image 1 → your reference image (URL)
       formData.append(
         "image_url1",
-        `${baseLink}/FileUpload/1/UserMaster/${
-                    user?.id
-                  }/profileimage.jpeg`,
+        `${baseLink}/FileUpload/1/UserMaster/${user?.id}/profileimage.jpeg`,
       );
 
       // Image 2 → captured image (local file)
@@ -104,24 +104,24 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
 
       return data;
     } catch (err) {
-      setAlertVisible(true)
+      setAlertVisible(true);
       setAlertConfig({
-          title: "Error",
-          message: `${err}`,
-          type: "error",
-        });
+        title: "Error",
+        message: `${err}`,
+        type: "error",
+      });
       console.log("❌ API ERROR:", err);
       return null;
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
- const takePhotov2 = async () => {
-  try {
-    setLoading(true); // loader start
+  const takePhotov2 = async () => {
+    try {
+      setLoading(true); // loader start
 
-    const photo = await camera?.current?.takePhoto({
+      const photo = await camera?.current?.takePhoto({
         qualityPrioritization: "speed",
         flash: "off",
         enableAutoRedEyeReduction: true,
@@ -130,79 +130,80 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
         quality: 0.8,
         width: 800,
         height: 800,
-    });
+      });
 
-    const photoPath = photo?.path;
+      const photoPath = photo?.path;
 
-    console.log("📸 Original Path:", photoPath);
+      console.log("📸 Original Path:", photoPath);
 
-    // 🔥 Compression
-    let compressedImage;
+      // 🔥 Compression
+      let compressedImage;
 
-    try {
-      compressedImage = await ImageResizer.createResizedImage(
-        photoPath,
-        800,
-        800,
-        "JPEG",
-        60,
-        0,
-        undefined,
-        false,
-        { mode: "contain" }
-      );
-    } catch (err) {
-      console.log("⚠️ Primary compression failed, fallback...");
+      try {
+        compressedImage = await ImageResizer.createResizedImage(
+          photoPath,
+          800,
+          800,
+          "JPEG",
+          60,
+          0,
+          undefined,
+          false,
+          { mode: "contain" },
+        );
+      } catch (err) {
+        console.log("⚠️ Primary compression failed, fallback...");
 
-      compressedImage = await ImageResizer.createResizedImage(
-        photoPath,
-        800,
-        800,
-        "JPEG",
-        50,
-        0
-      );
-    }
+        compressedImage = await ImageResizer.createResizedImage(
+          photoPath,
+          800,
+          800,
+          "JPEG",
+          50,
+          0,
+        );
+      }
 
-    // 🔥 Safe path
-    const compressedUri =
-      Platform.OS === "android"
-        ? "file://" + compressedImage.uri.replace("file://", "")
-        : compressedImage.uri;
+      // 🔥 Safe path
+      const compressedUri =
+        Platform.OS === "android"
+          ? "file://" + compressedImage.uri.replace("file://", "")
+          : compressedImage.uri;
 
-    console.log("🗜️ Compressed Image:", compressedUri);
+      console.log("🗜️ Compressed Image:", compressedUri);
 
-    // 🔥 API CALL (compressed image)
-    const result = await verifyFace(compressedUri);
+      // 🔥 API CALL (compressed image)
+      const result = await verifyFace(compressedUri);
 
-    if (!result) {
-      Alert.alert("Error", "Face verification failed");
-      return;
-    }
+      if (!result) {
+        Alert.alert("Error", "Face verification failed");
+        return;
+      }
 
-    const confidence = result.confidence;
+      const confidence = result.confidence;
 
-    console.log("🎯 Confidence:", confidence);
+      console.log("🎯 Confidence:", confidence);
 
-    if (confidence > 84.975) {
-      onCapture(compressedUri);
-      navigation.goBack();
-    } else {
-      setAlertVisible(true)
-      setAlertConfig({
+      if (confidence > 75) {
+        
+        onCapture(compressedUri);
+        navigation.goBack();
+      } else {
+        setAlertVisible(true);
+        setAlertConfig({
           title: "Face not matched ",
-          message: `The captured face does not match your profile image. Please try again.`,
+          message: `The captured face does not match with your profile image. Please try again.`,
           type: "error",
         });
+      }
+    } catch (error) {
+      console.log("❌ Error:", error);
+    } finally {
+      setLoading(false); // loader stop
     }
-  } catch (error) {
-    console.log("❌ Error:", error);
-  } finally {
-    setLoading(false); // loader stop
-  }
-};
+  };
 
-   const takePhoto = async () => {
+  const takePhoto = async () => {
     try {
       const photo = await camera?.current?.takePhoto({
         qualityPrioritization: "speed",
@@ -227,7 +228,7 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
           0,
           undefined,
           false,
-          { mode: "contain" }
+          { mode: "contain" },
         );
       } catch (err) {
         console.log("⚠️ Primary compression failed, fallback...");
@@ -238,7 +239,7 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
           400,
           "JPEG",
           50,
-          0
+          0,
         );
       }
 
@@ -275,7 +276,9 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
       {loading && (
         <View style={styles.loaderContainer}>
           <ActivityIndicator size="large" color="#fff" />
-          <Text style={{ color: "#fff", marginTop: 10 }}>Face verifying...</Text>
+          <Text style={{ color: "#fff", marginTop: 10 }}>
+            Face verifying...
+          </Text>
         </View>
       )}
 
@@ -336,7 +339,7 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
       <View style={styles.bottomContainer}>
         <TouchableOpacity
           disabled={!faceDetected}
-          onPress={takePhoto}
+          onPress={ATTENDANCE_LEVEL === 1 ? takePhoto : takePhotov2}
           style={[styles.captureOuter, { opacity: faceDetected ? 1 : 0.4 }]}
         >
           <View style={styles.captureInner} />
@@ -344,17 +347,16 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
       </View>
 
       <CustomAlert
-          visible={alertVisible}
-          title={alertConfig.title}
-          message={alertConfig.message}
-          type={alertConfig.type}
-          onClose={() => {
-             setAlertVisible(false);
-          }}
-          actionLoader={undefined}
-          closeHide={undefined}
-        />
-
+        visible={alertVisible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+        onClose={() => {
+          setAlertVisible(false);
+        }}
+        actionLoader={undefined}
+        closeHide={undefined}
+      />
     </View>
   );
 };
