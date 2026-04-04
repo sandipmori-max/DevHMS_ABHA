@@ -295,6 +295,7 @@ const authSlice = createSlice({
             children: menu?.Datas || [],
             module: menu?.Module || '',
             materialIcon: menu?.MaterialIcon || '',
+            moduleMaterialIcon: menu?.ModuleMaterialIcon || '',
             title: menu?.Title || '',
             isReport: menu?.IsReport,
           }));
@@ -332,8 +333,11 @@ const authSlice = createSlice({
           state.error = null;
           state.isMenuLoading = false;
         } catch (error) {
-          state.menu = [];
-          state.isMenuLoading = false;
+          state.error = action.payload as string;
+          state.appBottomMenuList = [];
+          state.appDrawerMenuList = [];
+          setERPAppColor('#251d50');
+          state.appColorCode = '#251d50';
         }
       })
       .addCase(getERPAppConfigMenuThunk.rejected, (state, action) => {
@@ -343,6 +347,7 @@ const authSlice = createSlice({
         state.appDrawerMenuList = [];
         setERPAppColor('#251d50');
         state.appColorCode = '#251d50';
+        state.isMenuLoading = false;
 
       })
 

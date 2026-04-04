@@ -153,6 +153,8 @@ const WebScreen = () => {
         <>
           <WebView
             ref={webviewRef}
+             originWhitelist={["*"]}
+  mixedContentMode="always"
             source={{ uri: isFromChart ? url : targetUrl }}
             startInLoadingState={true}
             javaScriptEnabled={true}
@@ -191,6 +193,7 @@ const WebScreen = () => {
             textZoom={100}
             allowsLinkPreview={false}
             onError={(syntheticEvent) => {
+              console.log("syntheticEvent:", syntheticEvent);
               const { nativeEvent } = syntheticEvent;
               setIsReloading(false);
             }}

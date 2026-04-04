@@ -105,7 +105,7 @@ const CustomPicker = ({
     }
   }, [dispatch, item?.dtlid, item?.ddlwhere, open]);
 
-  const filtered = options.filter(item => item.value !== -1);
+  // const filtered = options.filter(item => item.value !== -1);
 
   return (
     <View style={{ marginBottom: 16 }}>
@@ -275,8 +275,8 @@ const CustomPicker = ({
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
             >
-              {filtered.length > 0 ? (
-                filtered.map((opt: any, i: number) => (
+              {options.length > 0 ? (
+                options.map((opt: any, i: number) => (
                   <TouchableOpacity
                     key={i}
                     style={[

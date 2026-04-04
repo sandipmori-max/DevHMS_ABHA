@@ -60,7 +60,7 @@ import {
 import TranslatedText from "./TranslatedText";
 import GreetingBottomSheet from "./GreetingBottomSheet";
 import { getDDLThunk } from "../../../../store/slices/dropdown/thunk";
- import CustomAlert from "../../../../components/alert/CustomAlert";
+import CustomAlert from "../../../../components/alert/CustomAlert";
 
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;
@@ -88,7 +88,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     error,
     user,
     attendanceDone,
-    menu
+    menu,
   } = useAppSelector((state) => state.auth);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -111,7 +111,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       if (e?.message?.includes("Quota")) {
         setTimeout(() => {
           runAI();
-        }, 60000);
+        }, 40000);
       }
     }
   };
@@ -314,23 +314,66 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
             </Animated.View>
             <ERPIcon
               name="refresh"
-              onPress={() => {
-                if(appBottomMenuList.length === 0){
-                  setAlertVisible(true)
-                }else{
-                  setAlertVisible(false)
+              onPress={async () => {
+                
+                try {
+              if (appBottomMenuList.length === 0) {
+                  setAlertVisible(true);
+                } else {
+                  setAlertVisible(false);
                 }
                 setControlsLoader(true);
                 setActionLoader(true);
                 setIsRefresh(!isRefresh);
-                getCurrentMonthRange();
-                dispatch(getERPAppConfigMenuThunk());
+                const now = new Date();
+                const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+                const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                const fromDateStr = formatDateForAPI(firstDay);
+                const toDateStr = formatDateForAPI(lastDay);
+                setFromDate(fromDateStr);
+                setToDate(toDateStr);
                 dispatch(setActiveDashboardBranchId(""));
                 dispatch(setActiveDashboardBranch(""));
                 dispatch(setActiveDashboardType(""));
                 dispatch(setActiveDashboardTypeId(""));
+                const branchObj = controls.find(
+                  (item) => item.fieldtitle === "Branch",
+                );
+                const typeObj = controls.find(
+                  (item) => item.fieldtitle === "Type",
+                );
+
+                const res = await dispatch(
+                  getDDLThunk({
+                    dtlid: branchObj?.dtlid,
+                    where: `UserID in (${user?.id}, -1) AND selected = 1`,
+                  }),
+                ).unwrap();
+
+                const data = res?.data ?? [];
+                // setPreSelectedBranch(data);
+                dispatch(
+                  setActiveDashboardBranchId(data[0]?.value?.toString()),
+                );
+                dispatch(setActiveDashboardBranch(data[0]?.name));
+
+                // const res1 = await dispatch(
+                //   getDDLThunk({
+                //     dtlid: typeObj?.dtlid,
+                //     where: `UserID in (${user?.id}, -1) AND selected = 1`,
+                //   }),
+                // ).unwrap();
+                // const data1 = res1?.data ?? [];
+                // console.log(
+                //   "--------------------------------------------DDLres1 Data:",
+                //   res1,
+                // );
+                // dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString()));
+                // dispatch(setActiveDashboardType(data1[0]?.name));
+                dispatch(getERPAppConfigMenuThunk());
+
                 const params = {
-                  branch: "",
+                  branch: data[0]?.value?.toString() || "",
                   type: "",
                   fd: fromDate,
                   td: toDate,
@@ -341,10 +384,14 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                   setActionLoader(false);
                   setControlsLoader(false);
                   dispatch(setDashboardLoading(false));
-                }, 6000);
+                }, 4000);
 
                 return () => clearTimeout(timer);
-              }}
+                  
+                } catch (error) {
+                  console.log("Error during refresh:", error);
+                }
+            }}
               isLoading={actionLoader}
             />
 
@@ -426,7 +473,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     isFilterVisible,
     hideTab,
     isLandscape,
-    controls
+    controls,
   ]);
 
   useFocusEffect(
@@ -436,17 +483,23 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       if (isAuthenticated) {
         setLoadingPageId(true);
         try {
-               dispatch(getERPAppConfigMenuThunk());
-             } catch (error) {
-              dispatch(updateAppMenuList([])); // Clear menu on error
-                console.log("Error fetching app config menu:", error);
-             }
-        const params = { branch: "", type: "", fd: fromDate, td: toDate };
+          dispatch(getERPAppConfigMenuThunk());
+        } catch (error) {
+          dispatch(updateAppMenuList([])); // Clear menu on error
+          console.log("Error fetching app config menu:", error);
+        }
+        const params = {
+          branch: auth?.dashboardBranchId.trim() || "",
+          type: auth?.dashboardBranchId.trim() || "",
+          fd: fromDate,
+          td: toDate,
+        };
+
         dispatch(getERPDashboardThunk(params));
         dispatch(getERPMenuThunk());
         timer = setTimeout(() => {
           dispatch(setDashboardLoading(false));
-        }, 6000);
+        }, 4000);
       }
       // ✅ single cleanup function
       return () => {
@@ -735,6 +788,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         mandatory: String(c?.mandatory ?? "0"),
       }));
       setControls(normalizedControls);
+      fetchData();
       setControlsLoader(false);
     } catch (e: any) {
     } finally {
@@ -760,7 +814,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     );
     const timer = setTimeout(() => {
       dispatch(setDashboardLoading(false));
-    }, 6000);
+    }, 4000);
     return () => clearTimeout(timer);
   }, [
     auth.dashboardBranch,
@@ -795,56 +849,54 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   //     "mandatory": "1",
   //     "disabled": "0"
   // }
+  const fetchData = async () => {
+    try {
+      console.log(
+        "--------------------------------------------controls +++++++++++++++ controls:",
+        controls,
+      );
+      const branchObj = controls.find((item) => item.fieldtitle === "Branch");
+      const typeObj = controls.find((item) => item.fieldtitle === "Type");
+
+      const res = await dispatch(
+        getDDLThunk({
+          dtlid: branchObj?.dtlid,
+          where: `UserID in (${user?.id}, -1) AND selected = 1`,
+        }),
+      ).unwrap();
+
+      const data = res?.data ?? [];
+      // setPreSelectedBranch(data);
+      dispatch(setActiveDashboardBranchId(data[0]?.value?.toString()));
+      dispatch(setActiveDashboardBranch(data[0]?.name));
+
+      const res1 = await dispatch(
+        getDDLThunk({
+          dtlid: typeObj?.dtlid,
+          where: `UserID in (${user?.id}, -1) AND selected = 1`,
+        }),
+      ).unwrap();
+      const data1 = res1?.data ?? [];
+      console.log(
+        "--------------------------------------------DDLres1 Data:",
+        res1,
+      );
+      dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString()));
+      dispatch(setActiveDashboardType(data1[0]?.name));
+      console.log(
+        "--------------------------------------------DDL Data:",
+        data1,
+      );
+    } catch (error) {
+      console.log("-------------------------------------DDL Error:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        console.log(
-          "--------------------------------------------controls +++++++++++++++ controls:",
-          controls,
-        );
-        const branchObj = controls.find((item) => item.fieldtitle === "Branch");
-        const typeObj = controls.find((item) => item.fieldtitle === "Type");
-
-        const res = await dispatch(
-          getDDLThunk({
-            dtlid: branchObj?.dtlid,
-            where: `UserID in (${user?.id}, -1) AND selected = 1`,
-          }),
-        ).unwrap();
-
-        const data = res?.data ?? [];
-        // setPreSelectedBranch(data);
-        dispatch(setActiveDashboardBranchId(data[0]?.value?.toString()));
-        dispatch(setActiveDashboardBranch(data[0]?.name));
-
-        const res1 = await dispatch(
-          getDDLThunk({
-            dtlid: typeObj?.dtlid,
-            where: `UserID in (${user?.id}, -1) AND selected = 1`,
-          }),
-        ).unwrap();
-        const data1 = res1?.data ?? [];
-        console.log(
-          "--------------------------------------------DDLres1 Data:",
-          res1,
-        );
-        dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString()));
-        dispatch(setActiveDashboardType(data1[0]?.name));
-        console.log(
-          "--------------------------------------------DDL Data:",
-          data1,
-        );
-      } catch (error) {
-        console.log("-------------------------------------DDL Error:", error);
-      }
-    };
-
     fetchData();
   }, [controls, isRefresh]);
 
-  if (isDashboardLoading)
-    return <FullViewLoader isShowTop={theme === "dark" ? false : true} />;
+  if (isDashboardLoading) return <FullViewLoader isShowTop={false} />;
   if (!actionLoader && filteredDashboard?.length === 0) {
     return (
       <View
@@ -1142,7 +1194,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       </View>
     );
   }
-
 
   return (
     <View
@@ -1554,7 +1605,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                     backgroundColor: theme === "dark" ? "black" : "white",
                   }}
                 >
-                  <FullViewLoader />
+                  <FullViewLoader isShowTop={false} />
                 </View>
               ) : error ? (
                 <View
@@ -1699,22 +1750,21 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         }}
       />
 
-      {
-        appBottomMenuList.length === 0 && alertVisible && <CustomAlert
+      {appBottomMenuList.length === 0 && alertVisible && (
+        <CustomAlert
           visible={alertVisible}
-          title={'No menu available'}
-          message={'Please contact your administrator.'}
-          type={'error'}
+          title={"No menu available"}
+          message={"Please contact your administrator."}
+          type={"error"}
           onClose={() => {
-            setAlertVisible(false)
+            setAlertVisible(false);
           }}
           isSettingVisible={false}
           actionLoader={undefined}
           closeHide={false}
         />
-      }
+      )}
 
- 
       <GreetingBottomSheet
         visible={visibleAI}
         message={aiMessage}

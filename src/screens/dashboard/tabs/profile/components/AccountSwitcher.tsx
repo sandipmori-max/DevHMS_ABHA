@@ -234,7 +234,10 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
         <TouchableOpacity
           style={[
             styles.accountItem,
-            isActive && styles.activeAccount,
+            isActive && {
+              borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+              backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+            },
             theme === "dark" && {
               backgroundColor: "black",
               borderWidth: 1,

@@ -149,6 +149,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
             fromDate: fromDateStr,
             toDate: toDateStr,
             param: "",
+            branch: "",
           }),
         ).unwrap();
         const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;

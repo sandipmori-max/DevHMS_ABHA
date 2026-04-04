@@ -92,7 +92,9 @@ const ProfileSection = ({ baseLink, user, onEditPress }: any) => {
                   },
                 ]}
               >
-                <Text style={styles.roleText}>
+                <Text style={[styles.roleText, {
+                  color: theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+                }]}>
                   {user?.rolename || "User Role"}
                 </Text>
               </View>

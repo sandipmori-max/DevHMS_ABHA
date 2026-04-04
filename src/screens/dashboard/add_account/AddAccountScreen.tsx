@@ -19,7 +19,7 @@ import {
 import { Formik } from "formik";
 
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { loginUserThunk } from "../../../store/slices/auth/thunk";
+import { getERPAppConfigMenuThunk, loginUserThunk } from "../../../store/slices/auth/thunk";
 
 import { styles } from "./add_account_style";
 import { erpAddAccountValidationSchema } from "../../../utils/validations/add_accounts";
@@ -39,6 +39,7 @@ import {
   clearAuthState,
   setDashboard,
   setEmptyMenu,
+  updateAppMenuList,
 } from "../../../store/slices/auth/authSlice";
 import { resetAjaxState } from "../../../store/slices/ajax/ajaxSlice";
 import { resetAttendanceState } from "../../../store/slices/attendance/attendanceSlice";
@@ -329,6 +330,13 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
       setAlertVisible(true);
       onClose();
       setLoader(false);
+      try {
+             dispatch(getERPAppConfigMenuThunk());
+           } catch (error) {
+            dispatch(updateAppMenuList([])); // Clear menu on error
+              console.log("Error fetching app config menu:", error);
+           }
+
       setTimeout(() => {
         dispatch(setReloadApp());
       }, 1000);

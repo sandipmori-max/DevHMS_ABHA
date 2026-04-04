@@ -502,17 +502,25 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   const { user } = useAppSelector((state) => state.auth);
   const theme = useAppSelector((state) => state.theme.mode);
   const baseLink = useBaseLink();
+  const { appDrawerMenuList } = useAppSelector((state) => state?.auth);
 
   /* ================= SAFE CURRENT ROUTE ================= */
   const currentRoute = useNavigationState((state) => {
     const route = state.routes[state.index];
     return route?.name;
   });
+  const menuAnimRef = useRef<Animated.Value[]>([]);
 
   /* ================= ANIMATION VALUES ================= */
-  const menuAnim = useRef(
-    ERP_DRAWER_LIST.map(() => new Animated.Value(-40)),
-  ).current;
+  const list =
+    appDrawerMenuList.length > 0 ? appDrawerMenuList : ERP_DRAWER_LIST;
+
+  useEffect(() => {
+    // recreate animation array whenever list changes
+    menuAnimRef.current = list.map(() => new Animated.Value(-40));
+  }, [list]);
+
+  const menuAnim = menuAnimRef.current;
 
   const footerTranslateY = useRef(new Animated.Value(40)).current;
   const footerOpacity = useRef(new Animated.Value(0)).current;
@@ -520,7 +528,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   /* ================= HEADER ANIMATION ================= */
   const headerTranslateY = useRef(new Animated.Value(-60)).current;
   const headerOpacity = useRef(new Animated.Value(0)).current;
-  const { appDrawerMenuList } = useAppSelector((state) => state?.auth);
   /* ================= RUN ON EVERY DRAWER OPEN ================= */
   useEffect(() => {
     if (drawerStatus !== "open") return;
@@ -736,193 +743,100 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
             },
           ]}
         >
-          {appDrawerMenuList.map((item, index) => {
-            const isActive = currentRoute === item.name;
-            return (
-              <Animated.View
-                key={item.name}
-                style={{ transform: [{ translateX: menuAnim[index] }] }}
-              >
-                <TouchableOpacity
-                  style={[
-                    styles.drawerItem,
-                    isActive && styles.activeItemBackground,
-                    isActive && {
-                      backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-                    },
-                    isActive &&
-                      theme === "dark" && { backgroundColor: "black" },
-                  ]}
-                  onPress={() => {
-                    if (item?.link === "AboutUs") {
-                      setShowAbout(true);
-                      return;
-                    }
-                    if (item?.link === "AppRatting") {
-                      handleReview();
-                      return;
-                    }
-                    ////// APP LIST NAVIGATE -------
-                    // isAppLink  + title  + url + isFromBusinessCard + isFromAlertCard
-                    if (item?.isAppLink === "true") {
-                      props?.navigation.navigate("List", {
-                        item: {
-                          title: item?.name,
-                          name: item?.name,
-                          url: item?.url,
-                          isFromBusinessCard: item?.isFromBusinessCard || false,
-                          isFromAlertCard: item?.isFromAlertCard || false,
-                          id: "0",
-                        },
-                      });
-                      props?.navigation.closeDrawer();
-                      return;
-                    }
-                    ////// -----------
-
-                    if (item?.link === "Attendance") {
-                      props?.navigation.closeDrawer();
-                      navigation.navigate(item?.name, { isFor: "Attendance" });
-                      return;
-                    }
-                    if (item?.link === "MyAttendance") {
-                      props?.navigation.closeDrawer();
-                      navigation.navigate(item?.link, {
-                        isFor: "MyAttendance",
-                      });
-                      return;
-                    }
-                    if (item?.link === "home") {
-                      props?.navigation.navigate("Home", { screen: "Home" });
-                      props?.navigation.closeDrawer();
-                      return;
-                    } else {
-                      props?.navigation.closeDrawer();
-                      navigation.navigate(item?.name as never);
-                    }
-                  }}
-                >
-                  <View style={styles.itemRow}>
-                    <MaterialIcons
-                      name={item.iconname.toLowerCase().trim()}
-                      size={20}
-                      color={
-                        theme === "dark"
-                          ? "#FFF"
-                          : isActive
-                          ? "#FFF"
-                          : ERP_COLOR_CODE.ERP_APP_COLOR
-                      }
-                    />
-                    <TranslatedText
-                      style={[
-                        styles.itemLabel,
-                        isActive && styles.activeText,
-                        {
-                          color:
-                            theme === "dark"
-                              ? "white"
-                              : isActive
-                              ? "#FFF"
-                              : "#000",
-                        },
-                      ]}
-                      numberOfLines={1}
-                      text={item.name}
-                    ></TranslatedText>
-                  </View>
-                </TouchableOpacity>
-              </Animated.View>
-            );
-          })}
-
-          {appDrawerMenuList.length === 0 &&
-            ERP_DRAWER_LIST.map((item, index) => {
-              const isActive = currentRoute === item.route;
-
+          {appDrawerMenuList.length > 0 &&
+            appDrawerMenuList.map((item, index) => {
+              console.log(
+                "Rendering menu item:",
+                item,
+                "Current route:",
+                currentRoute,
+              );
+              const isActive = currentRoute === item.name;
               return (
                 <Animated.View
-                  key={item.route}
-                  style={{ transform: [{ translateX: menuAnim[index] }] }}
+                  key={item.name}
+                  style={{
+                    transform: [
+                      { translateX: menuAnim[index] || new Animated.Value(0) },
+                    ],
+                  }}
                 >
                   <TouchableOpacity
                     style={[
                       styles.drawerItem,
                       isActive && styles.activeItemBackground,
+                      isActive && {
+                        backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                      },
                       isActive &&
                         theme === "dark" && { backgroundColor: "black" },
                     ]}
                     onPress={() => {
-                      if (item?.route === "AboutUs") {
+                      if (item?.link === "AboutUs") {
                         setShowAbout(true);
                         return;
                       }
-                      if (item?.route === "AppRatting") {
+                      if (item?.link === "AppRatting") {
                         handleReview();
                         return;
                       }
-                      if (item?.route === "Alert") {
-                        props?.navigation.navigate("List", {
-                          item: {
-                            title: "Notification",
-                            name: "Notification",
-                            url: "DEVNOTIFY",
-                            isFromBusinessCard: false,
-                            isFromAlertCard: true,
-                            id: "0",
-                          },
-                        });
+                      ////// APP LIST NAVIGATE -------
+                      if (item?.name === "Attendance") {
                         props?.navigation.closeDrawer();
-                        return;
-                      }
-                      if (item?.route === "List") {
-                        props?.navigation.navigate("List", {
-                          item: {
-                            title: "Business Card",
-                            name: "Business Card",
-                            url: "BusinessCardMst",
-                            isFromBusinessCard: true,
-                            id: "0",
-                          },
-                        });
-                        props?.navigation.closeDrawer();
-                        return;
-                      }
-                      if (item?.route === "Attendance") {
-                        // NativeModules.OrientationModule.enableLandscape();
-                        props?.navigation.closeDrawer();
-                        navigation.navigate(item?.route, {
+                        navigation.navigate(item?.name, {
                           isFor: "Attendance",
                         });
                         return;
                       }
-                      if (item?.route === "MyAttendance") {
+                      if (item?.name === "My Attendance") {
                         props?.navigation.closeDrawer();
-                        navigation.navigate(item?.route, {
+                        navigation.navigate("MyAttendance", {
                           isFor: "MyAttendance",
                         });
                         return;
                       }
-                      if (item?.route === "Home") {
+
+                      // isAppLink  + title  + url + isFromBusinessCard + isFromAlertCard
+                      if (
+                        item?.isAppLink === "true" ||
+                        item?.isAppLink === true
+                      ) {
+                        props?.navigation.navigate("List", {
+                          item: {
+                            title: item?.name,
+                            name: item?.name,
+                            url: item?.url,
+                            isFromBusinessCard:
+                              item?.isFromBusinessCard || false,
+                            isFromAlertCard: item?.isFromAlertCard || false,
+                            id: "0",
+                          },
+                        });
+                        props?.navigation.closeDrawer();
+                        return;
+                      }
+                      ////// -----------
+
+                      if (item?.link === "home") {
                         props?.navigation.navigate("Home", { screen: "Home" });
                         props?.navigation.closeDrawer();
                         return;
                       } else {
                         props?.navigation.closeDrawer();
-                        navigation.navigate(item?.route as never);
+                        navigation.navigate(item?.name as never);
                       }
                     }}
                   >
                     <View style={styles.itemRow}>
                       <MaterialIcons
-                        name={item.icon}
+                        name={item.iconname.toLowerCase().trim()}
                         size={20}
                         color={
                           theme === "dark"
                             ? "#FFF"
                             : isActive
                             ? "#FFF"
-                            : ERP_COLOR_CODE.ERP_APP_COLOR
+                            : 'gray'
                         }
                       />
                       <TranslatedText
@@ -939,7 +853,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                           },
                         ]}
                         numberOfLines={1}
-                        text={item.label}
+                        text={item.name}
                       ></TranslatedText>
                     </View>
                   </TouchableOpacity>
@@ -977,7 +891,9 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
           />
         </View>
 
-        <View style={styles.logoutButton}>
+        <View style={[styles.logoutButton, {
+           borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+        }]}>
           <Text
             style={[
               styles.logoutText,
@@ -1002,6 +918,9 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
             <Text
               style={[
                 styles.logoutText,
+                {
+                  color: ERP_COLOR_CODE.ERP_APP_COLOR,
+                },
                 theme === "dark" && { color: "white" },
                 {
                   marginLeft: 8,

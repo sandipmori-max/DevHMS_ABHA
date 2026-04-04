@@ -428,6 +428,7 @@ const MenuTab = ({
       if (!acc[moduleName]) {
         acc[moduleName] = {
           title: moduleName,
+          moduleMaterialIcon: item.moduleMaterialIcon || '',
           data: [],
         };
       }
@@ -654,12 +655,12 @@ const MenuTab = ({
                     flexDirection: "row",
                   }}
                 >
-                  <MaterialIcons name={"widgets"} color={"black"} size={18} />
+                  <MaterialIcons name={ section?.moduleMaterialIcon || "widgets"} color={"black"} size={18} />
                   <Text
                     style={{
                       marginLeft: 6,
                       fontWeight: "600",
-                      color: ERP_COLOR_CODE.ERP_APP_COLOR,
+                      color: ERP_COLOR_CODE.ERP_BLACK,
                     }}
                   >
                     {section?.title}
@@ -693,7 +694,8 @@ const MenuTab = ({
               if (index % chunkSize !== 0) return null;
               const rowItems = items.slice(index, index + chunkSize);
               return (
-                <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                <View style={{  
+                  flexDirection: "row", flexWrap: "wrap" }}>
                   {rowItems.map((child, childIndex) => (
                     <View
                       key={childIndex}
