@@ -342,10 +342,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                   const toDateStr = formatDateForAPI(lastDay);
                   setFromDate(fromDateStr);
                   setToDate(toDateStr);
-                  dispatch(setActiveDashboardBranchId(""));
-                  dispatch(setActiveDashboardBranch(""));
-                  dispatch(setActiveDashboardType(""));
-                  dispatch(setActiveDashboardTypeId(""));
+                
                   const branchObj = controls.find(
                     (item) => item.fieldtitle === "Branch",
                   );
@@ -387,9 +384,9 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
                   const params = {
                     branch: data[0]?.value?.toString() || "",
-                    type: "",
-                    fd: fromDate,
-                    td: toDate,
+                    type: data1[0]?.value?.toString()|| "",
+                    fd: fromDateStr,
+                    td: toDateStr,
                   };
                   dispatch(getERPDashboardThunk(params));
 
@@ -808,6 +805,12 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   }, [dispatch]);
 
   useEffect(() => {
+    console.log("--------------------------------------------Dashboard Params:", {
+      branch: auth?.dashboardBranchId.trim() || "",
+      type: auth?.dashboardTypeId.trim() || "",
+      fd: auth?.dashboardFromDate.trim() || fromDate,
+      td: auth?.dashboardToDate.trim() || toDate,
+    });
     dispatch(
       getERPDashboardThunk({
         branch: auth?.dashboardBranchId.trim() || "",
@@ -871,7 +874,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         data1,
       );
 
-      dispatch(
+    dispatch(
       getERPDashboardThunk({
         branch: data[0]?.value?.toString() || "",
         type: data1[0]?.value?.toString()|| "",

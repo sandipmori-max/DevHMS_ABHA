@@ -153,6 +153,8 @@ const WebScreen = () => {
         <>
           <WebView
             ref={webviewRef}
+            originWhitelist={["*"]}
+            mixedContentMode="always"
             source={{ uri: isFromChart ? url : targetUrl }}
             startInLoadingState={true}
             javaScriptEnabled={true}

@@ -350,6 +350,7 @@ export const getERPDashboardThunk = createAsyncThunk(
     try {
       console.log("dashboard-----------", branch, type, fd, td )
       const dashboard = await DevERPService.getDashboard(branch, type, fd, td);
+      console.log("dashboard-----------response----------",  branch, type, fd, td , "-------", dashboard)
       return dashboard;
     } catch (error: any) {
       console.log("dashboard-----------error----------", error);
