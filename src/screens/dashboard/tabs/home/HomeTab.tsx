@@ -93,6 +93,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   } = useAppSelector((state) => state.auth);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
+  console.log("user", user)
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: showFull ? 1 : 0,
@@ -317,6 +318,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
               name="refresh"
               onPress={async () => {
                 try {
+                  dispatch(getERPAppConfigMenuThunk());
                   if (appBottomMenuList.length === 0) {
                     setAlertVisible(true);
                   } else {
@@ -360,25 +362,28 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
                   const data = res?.data ?? [];
                   // setPreSelectedBranch(data);
+                   console.log(
+                    "--------------------------------------------data +++++++++++ -----------  Data:",
+                    data,
+                  );
                   dispatch(
                     setActiveDashboardBranchId(data[0]?.value?.toString()),
                   );
                   dispatch(setActiveDashboardBranch(data[0]?.name));
 
-                  // const res1 = await dispatch(
-                  //   getDDLThunk({
-                  //     dtlid: typeObj?.dtlid,
-                  //     where: `UserID in (${user?.id}, -1) AND selected = 1`,
-                  //   }),
-                  // ).unwrap();
-                  // const data1 = res1?.data ?? [];
-                  // console.log(
-                  //   "--------------------------------------------DDLres1 Data:",
-                  //   res1,
-                  // );
-                  // dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString()));
-                  // dispatch(setActiveDashboardType(data1[0]?.name));
-                  dispatch(getERPAppConfigMenuThunk());
+                  const res1 = await dispatch(
+                    getDDLThunk({
+                      dtlid: typeObj?.dtlid,
+                      where: `UserID in (${user?.id}, -1)`,
+                    }),
+                  ).unwrap();
+                  const data1 = res1?.data ?? [];
+                  console.log(
+                    "--------------------------------------------DDLres1 Data:",
+                    res1,
+                  );
+                  dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString()));
+                  dispatch(setActiveDashboardType(data1[0]?.name));
 
                   const params = {
                     branch: data[0]?.value?.toString() || "",
@@ -736,7 +741,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     const toDateStr = formatDateForAPI(lastDay);
     setFromDate(fromDateStr);
     setToDate(toDateStr);
-    fetchPageData();
+    fetchPageData(fromDateStr, toDateStr);
 
   };
 
@@ -775,7 +780,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     setShowDatePicker(null);
   };
 
-  const fetchPageData = useCallback(async () => {
+  const fetchPageData = useCallback(async (fromDate: string, toDate: string) => {
     try {
       setControlsLoader(true);
       const parsed = await dispatch(
@@ -791,7 +796,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         mandatory: String(c?.mandatory ?? "0"),
       }));
       setControls(normalizedControls);
-      fetchData();
+      fetchData(normalizedControls, fromDate, toDate);
       setControlsLoader(false);
     } catch (e: any) {
     } finally {
@@ -826,14 +831,15 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     reLoading
   ]);
 
-  const fetchData = async () => {
+  const fetchData = async (normalizedControls, fromDate, toDate) => {
     try {
       console.log(
         "--------------------------------------------controls +++++++++++++++ controls:",
-        controls,
+        normalizedControls,
       );
-      const branchObj = controls.find((item) => item.fieldtitle === "Branch");
-      const typeObj = controls.find((item) => item.fieldtitle === "Type");
+      if(normalizedControls.length === 0) return;
+       const branchObj = normalizedControls.find((item) => item.fieldtitle === "Branch");
+      const typeObj = normalizedControls.find((item) => item.fieldtitle === "Type");
 
       const res = await dispatch(
         getDDLThunk({
@@ -850,7 +856,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       const res1 = await dispatch(
         getDDLThunk({
           dtlid: typeObj?.dtlid,
-          where: `UserID in (${user?.id}, -1) AND selected = 1`,
+          where: `UserID in (${user?.id}, -1)`,
         }),
       ).unwrap();
       const data1 = res1?.data ?? [];
@@ -865,6 +871,14 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         data1,
       );
 
+      dispatch(
+      getERPDashboardThunk({
+        branch: data[0]?.value?.toString() || "",
+        type: data1[0]?.value?.toString()|| "",
+        fd: fromDate,
+        td: toDate,
+      }),
+    );
 
     } catch (error) {
       console.log("-------------------------------------DDL Error:", error);

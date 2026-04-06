@@ -745,12 +745,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
         >
           {appDrawerMenuList.length > 0 &&
             appDrawerMenuList.map((item, index) => {
-              console.log(
-                "Rendering menu item:",
-                item,
-                "Current route:",
-                currentRoute,
-              );
+               
               const isActive = currentRoute === item.name;
               return (
                 <Animated.View

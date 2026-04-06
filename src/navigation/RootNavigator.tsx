@@ -176,16 +176,7 @@ const RootNavigator = () => {
   }, [isAuthenticated, reLoading]);
   const app_id = user?.app_id;
 
-  useEffect(() => {
-    if (isAuthenticated) {
-     try {
-       dispatch(getERPAppConfigMenuThunk());
-     } catch (error) {
-      dispatch(updateAppMenuList([])); // Clear menu on error
-        console.log("Error fetching app config menu:", error);
-     }
-    }
-  }, [isAuthenticated]);
+ 
 
   useEffect(() => {
     const fetchDeviceName = async () => {
@@ -252,6 +243,12 @@ const RootNavigator = () => {
     await AsyncStorage.setItem("device", name);
     await DevERPService.initialize();
     await dispatch(checkAuthStateThunk());
+     try {
+       dispatch(getERPAppConfigMenuThunk());
+     } catch (error) {
+      dispatch(updateAppMenuList([])); // Clear menu on error
+        console.log("Error fetching app config menu:", error);
+     }
   };
 
   // ------------------------- Check Location -------------------------
@@ -376,8 +373,7 @@ const RootNavigator = () => {
       return () => clearTimeout(timer);
     }
   }, [isAuthenticated, reLoading]);
-
-  // ------------------------- Render -------------------------
+   // ------------------------- Render -------------------------
   if (isLoading) return <FullViewLoader />;
 
   return (

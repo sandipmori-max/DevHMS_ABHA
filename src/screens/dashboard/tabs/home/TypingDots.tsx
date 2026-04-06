@@ -11,7 +11,7 @@ const TypingLoading = ({ text = "...", speed = 400, visible = true }) => {
     const interval = setInterval(() => {
       setDisplayed(text.slice(0, index + 1));
       index++;
-      if (index === text.length) index = 0; // loop animation
+      if (index === text.length) index = 0;
     }, speed);
 
     return () => clearInterval(interval);
