@@ -1686,7 +1686,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                 <View
                                   style={{
                                     marginTop: 12,
-                                    marginBottom: 8,
+                                    marginBottom: 2,
                                     backgroundColor: ERP_COLOR_CODE.ERP_eee,
                                     flexDirection: "row",
                                     justifyContent: "space-between",
@@ -1768,7 +1768,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                 style={{
                                   opacity: 0.6,
                                   padding: 4,
-                                  paddingHorizontal: 8,
+                                  paddingHorizontal: 6,
                                   justifyContent: "center",
                                   alignItems: "center",
                                   backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,

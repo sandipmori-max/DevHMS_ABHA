@@ -340,6 +340,7 @@ const authSlice = createSlice({
           state.appDrawerMenuList = [];
           setERPAppColor('#251d50');
           state.appColorCode = '#251d50';
+          state.attendanceSecurityLevel = '0';
         }
       })
       .addCase(getERPAppConfigMenuThunk.rejected, (state, action) => {
@@ -350,6 +351,7 @@ const authSlice = createSlice({
         setERPAppColor('#251d50');
         state.appColorCode = '#251d50';
         state.isMenuLoading = false;
+        state.attendanceSecurityLevel = '0';
 
       })
 
