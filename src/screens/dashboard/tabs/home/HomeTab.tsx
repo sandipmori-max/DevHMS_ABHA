@@ -61,6 +61,7 @@ import TranslatedText from "./TranslatedText";
 import GreetingBottomSheet from "./GreetingBottomSheet";
 import { getDDLThunk } from "../../../../store/slices/dropdown/thunk";
 import CustomAlert from "../../../../components/alert/CustomAlert";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;
@@ -93,7 +94,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   } = useAppSelector((state) => state.auth);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  console.log("user", user)
+  console.log("user", user);
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: showFull ? 1 : 0,
@@ -164,6 +165,11 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
   const textItems = filteredDashboard.filter(
     (item) => item.data && !hasHtmlContent(item.data),
+  );
+
+  console.log(
+    "Dashboard Data: filteredDashboard ------+++++ ",
+    filteredDashboard,
   );
 
   useEffect(() => {
@@ -342,7 +348,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                   const toDateStr = formatDateForAPI(lastDay);
                   setFromDate(fromDateStr);
                   setToDate(toDateStr);
-                
+
                   const branchObj = controls.find(
                     (item) => item.fieldtitle === "Branch",
                   );
@@ -359,7 +365,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
                   const data = res?.data ?? [];
                   // setPreSelectedBranch(data);
-                   console.log(
+                  console.log(
                     "--------------------------------------------data +++++++++++ -----------  Data:",
                     data,
                   );
@@ -379,12 +385,14 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                     "--------------------------------------------DDLres1 Data:",
                     res1,
                   );
-                  dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString()));
+                  dispatch(
+                    setActiveDashboardTypeId(data1[0]?.value?.toString()),
+                  );
                   dispatch(setActiveDashboardType(data1[0]?.name));
 
                   const params = {
                     branch: data[0]?.value?.toString() || "",
-                    type: data1[0]?.value?.toString()|| "",
+                    type: data1[0]?.value?.toString() || "",
                     fd: fromDateStr,
                     td: toDateStr,
                   };
@@ -608,11 +616,22 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                     },
                   ]}
                 >
-                  <MaterialIcons
-                    name={item?.image || "widgets"}
-                    color={"white"}
-                    size={18}
-                  />
+                  {item.icon?.includes("fa fa-") ? (
+                    <FontAwesome
+                      name={item.icon.replace("fa fa-", "")}
+                      color={theme === "dark" ? "white" : "gray"}
+                      size={20}
+                    />
+                  ) : item?.materialIcon ? (
+                    <MaterialIcons
+                      name={item.materialIcon || "widgets"}
+                      color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                      size={22}
+                    />
+                  ) : (
+                    <MaterialIcons name={"widgets"} color="white" size={18} />
+                  )}
+
                   {/* <Text style={styles.iconText}>{getInitials(item?.name)}</Text> */}
                 </View>
                 <View style={styles.headerTextWrap}>
@@ -689,7 +708,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
               ) : (
                 <View style={styles.dataContainer}>
                   <Text style={styles.dashboardItemData} numberOfLines={2}>
-                    {"-"}
+                    {"---"}
                   </Text>
                 </View>
               )}
@@ -712,7 +731,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                   color: accentColors[index % accentColors.length],
                 }}
               >
-                {"-"}
+                {"---"}
               </Text>
             )}
             {item?.footer || item.data ? (
@@ -739,7 +758,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     setFromDate(fromDateStr);
     setToDate(toDateStr);
     fetchPageData(fromDateStr, toDateStr);
-
   };
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
@@ -777,40 +795,46 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     setShowDatePicker(null);
   };
 
-  const fetchPageData = useCallback(async (fromDate: string, toDate: string) => {
-    try {
-      setControlsLoader(true);
-      const parsed = await dispatch(
-        getERPPageThunk({ page: "Dashboard", id: "" }),
-      ).unwrap();
-      const pageControls = Array.isArray(parsed?.pagectl)
-        ? parsed?.pagectl
-        : [];
-      const normalizedControls = pageControls?.map((c) => ({
-        ...c,
-        disabled: String(c?.disabled ?? "0"),
-        visible: String(c?.visible ?? "1"),
-        mandatory: String(c?.mandatory ?? "0"),
-      }));
-      setControls(normalizedControls);
-      fetchData(normalizedControls, fromDate, toDate);
-      setControlsLoader(false);
-    } catch (e: any) {
-    } finally {
-      setLoadingPageId(null);
-      setTimeout(() => {
-        setActionLoader(false);
-      }, 10);
-    }
-  }, [dispatch]);
+  const fetchPageData = useCallback(
+    async (fromDate: string, toDate: string) => {
+      try {
+        setControlsLoader(true);
+        const parsed = await dispatch(
+          getERPPageThunk({ page: "Dashboard", id: "" }),
+        ).unwrap();
+        const pageControls = Array.isArray(parsed?.pagectl)
+          ? parsed?.pagectl
+          : [];
+        const normalizedControls = pageControls?.map((c) => ({
+          ...c,
+          disabled: String(c?.disabled ?? "0"),
+          visible: String(c?.visible ?? "1"),
+          mandatory: String(c?.mandatory ?? "0"),
+        }));
+        setControls(normalizedControls);
+        fetchData(normalizedControls, fromDate, toDate);
+        setControlsLoader(false);
+      } catch (e: any) {
+      } finally {
+        setLoadingPageId(null);
+        setTimeout(() => {
+          setActionLoader(false);
+        }, 10);
+      }
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
-    console.log("--------------------------------------------Dashboard Params:", {
-      branch: auth?.dashboardBranchId.trim() || "",
-      type: auth?.dashboardTypeId.trim() || "",
-      fd: auth?.dashboardFromDate.trim() || fromDate,
-      td: auth?.dashboardToDate.trim() || toDate,
-    });
+    console.log(
+      "--------------------------------------------Dashboard Params:",
+      {
+        branch: auth?.dashboardBranchId.trim() || "",
+        type: auth?.dashboardTypeId.trim() || "",
+        fd: auth?.dashboardFromDate.trim() || fromDate,
+        td: auth?.dashboardToDate.trim() || toDate,
+      },
+    );
     dispatch(
       getERPDashboardThunk({
         branch: auth?.dashboardBranchId.trim() || "",
@@ -824,6 +848,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     }, 4000);
     return () => clearTimeout(timer);
   }, [
+    user,
     auth.dashboardBranch,
     auth.dashboardType,
     auth.dashboardFromDate,
@@ -831,7 +856,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     fromDate,
     toDate,
     controls,
-    reLoading
+    reLoading,
   ]);
 
   const fetchData = async (normalizedControls, fromDate, toDate) => {
@@ -840,9 +865,13 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         "--------------------------------------------controls +++++++++++++++ controls:",
         normalizedControls,
       );
-      if(normalizedControls.length === 0) return;
-       const branchObj = normalizedControls.find((item) => item.fieldtitle === "Branch");
-      const typeObj = normalizedControls.find((item) => item.fieldtitle === "Type");
+      if (normalizedControls.length === 0) return;
+      const branchObj = normalizedControls.find(
+        (item) => item.fieldtitle === "Branch",
+      );
+      const typeObj = normalizedControls.find(
+        (item) => item.fieldtitle === "Type",
+      );
 
       const res = await dispatch(
         getDDLThunk({
@@ -874,15 +903,14 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         data1,
       );
 
-    dispatch(
-      getERPDashboardThunk({
-        branch: data[0]?.value?.toString() || "",
-        type: data1[0]?.value?.toString()|| "",
-        fd: fromDate,
-        td: toDate,
-      }),
-    );
-
+      dispatch(
+        getERPDashboardThunk({
+          branch: data[0]?.value?.toString() || "",
+          type: data1[0]?.value?.toString() || "",
+          fd: fromDate,
+          td: toDate,
+        }),
+      );
     } catch (error) {
       console.log("-------------------------------------DDL Error:", error);
     }
@@ -1654,11 +1682,57 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                         >
                           <View>
                             {pieChartData.length > 0 && (
-                              <PieChartSection
-                                pieChartData={pieChartData}
-                                navigation={navigation}
-                                t={t}
-                              />
+                              <>
+                                <View
+                                  style={{
+                                    marginTop: 12,
+                                    marginBottom: 8,
+                                    backgroundColor: ERP_COLOR_CODE.ERP_eee,
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    padding: 8,
+                                    borderRadius: 4,
+                                    alignItems: "center",
+                                    marginHorizontal: 8,
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      color: "black",
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                    Chart Data
+                                  </Text>
+
+                                  <View
+                                    style={{
+                                      opacity: 0.6,
+                                      padding: 4,
+                                      width: 24,
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      backgroundColor:
+                                        ERP_COLOR_CODE.ERP_APP_COLOR,
+                                      borderRadius: 4,
+                                    }}
+                                  >
+                                    <Text
+                                      style={{
+                                        color: "white",
+                                        fontWeight: "600",
+                                      }}
+                                    >
+                                      {pieChartData?.length || 0}
+                                    </Text>
+                                  </View>
+                                </View>
+                                <PieChartSection
+                                  pieChartData={pieChartData}
+                                  navigation={navigation}
+                                  t={t}
+                                />
+                              </>
                             )}
                             {pieChartData.length === 0 && (
                               <View style={{ marginTop: 12 }} />
@@ -1669,29 +1743,70 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                               styles.dashboardSection,
                               {
                                 marginLeft: 2,
-                                marginRight: 12,
+                                marginRight: 8,
                               },
                             ]}
                           >
-                            <FlatList
-                              key={
-                                isLandscape
-                                  ? `${isHorizontal}-landscape3`
-                                  : `${isHorizontal}-portrait3`
-                              }
-                              keyboardShouldPersistTaps="handled"
-                              data={htmlItems}
-                              keyExtractor={(item, index) => index.toString()}
-                              renderItem={({ item, index }) =>
-                                renderDashboardItem({
-                                  item,
-                                  index,
-                                  isFromHtml: true,
-                                  isFromMenu: true,
-                                })
-                              }
-                              showsVerticalScrollIndicator={false}
-                            />
+                            <View
+                              style={{
+                                marginBottom: 8,
+                                backgroundColor: ERP_COLOR_CODE.ERP_eee,
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                padding: 8,
+                                borderRadius: 4,
+                                alignItems: "center",
+                              }}
+                            >
+                              <Text
+                                style={{ color: "black", fontWeight: "600" }}
+                              >
+                                Dashboard
+                              </Text>
+
+                              <View
+                                style={{
+                                  opacity: 0.6,
+                                  padding: 4,
+                                  paddingHorizontal: 8,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                                  borderRadius: 4,
+                                }}
+                              >
+                                <Text
+                                  style={{ color: "white", fontWeight: "600" }}
+                                >
+                                  {filteredDashboard?.length || 0}
+                                </Text>
+                              </View>
+                            </View>
+                            <View
+                              style={{
+                                marginRight: 8,
+                              }}
+                            >
+                              <FlatList
+                                key={
+                                  isLandscape
+                                    ? `${isHorizontal}-landscape3`
+                                    : `${isHorizontal}-portrait3`
+                                }
+                                keyboardShouldPersistTaps="handled"
+                                data={htmlItems}
+                                keyExtractor={(item, index) => index.toString()}
+                                renderItem={({ item, index }) =>
+                                  renderDashboardItem({
+                                    item,
+                                    index,
+                                    isFromHtml: true,
+                                    isFromMenu: true,
+                                  })
+                                }
+                                showsVerticalScrollIndicator={false}
+                              />
+                            </View>
                           </View>
 
                           <View

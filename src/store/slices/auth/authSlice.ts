@@ -383,6 +383,7 @@ const authSlice = createSlice({
               }
             } catch (innerParseError) {}
           }
+          console.log("Dashboard Items:---------", dashboardItems);
           state.dashboard =
             dashboardItems.length > 0
               ? dashboardItems?.map((item: any, index: number) => ({
@@ -393,6 +394,8 @@ const authSlice = createSlice({
                   title: item?.Title || '',
                   isReport: item.IsReport || '',
                   footer: item?.footer || '',
+                  icon: item?.icon || '',
+                  materialIcon: item?.MaterialIcon || '',
                 }))
               : [];
           state.error = null;

@@ -38,6 +38,7 @@ import ErrorMessage from "../../../../components/error/Error";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import Toast from "../../../../components/Toast/Toast";
+import { FontAwesome } from '@react-native-vector-icons/fontawesome';
 
 import { useTranslation } from "react-i18next";
 import { setMenuLoading } from "../../../../store/slices/auth/authSlice";
@@ -478,8 +479,7 @@ const MenuTab = ({
   };
 
   const renderItem = ({ item, index }: any) => {
-    const backgroundColor = accentColors[index];
-
+  const backgroundColor = accentColors[index % accentColors.length];
     return (
       <TouchableOpacity
         style={[
@@ -494,6 +494,7 @@ const MenuTab = ({
             paddingHorizontal: 8,
             marginBottom: 8,
           },
+         
         ]}
         onPress={async () => {
           const db = await getDBConnection();
@@ -552,11 +553,20 @@ const MenuTab = ({
             },
           ]}
         >
-          {item?.materialIcon ? (
+
+          {
+            item.icon.includes('fa fa-') ? (
+              <FontAwesome
+                name={item.icon.replace('fa fa-', '')}
+                color={theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR}
+                size={18}
+              />
+            ) : <>
+            {item?.materialIcon ? (
             <MaterialIcons
               name={item?.materialIcon || "widgets"}
               color={ERP_COLOR_CODE.ERP_APP_COLOR}
-              size={22}
+              size={18}
             />
           ) : (
             <TranslatedText
@@ -568,8 +578,9 @@ const MenuTab = ({
               ]}
             ></TranslatedText>
           )}
-
-          {/**/}
+            </>
+          }
+          
         </View>
 
         <View
@@ -631,9 +642,7 @@ const MenuTab = ({
         }}
       ></View>
 
-      {!isHorizontal && list.length > 8 ? (
-        <>
-          <SectionList
+   <SectionList
             sections={sectionListData}
             keyboardShouldPersistTaps="handled"
             keyExtractor={(item, index) => index.toString()}
@@ -729,37 +738,7 @@ const MenuTab = ({
               );
             }}
           />
-        </>
-      ) : (
-        <>
-          <FlatList
-            key={
-              isLandscape
-                ? `${isHorizontal}-${showBookmarksOnly}-${searchText}-landscape`
-                : `${isHorizontal}-${showBookmarksOnly}-${searchText}-portrait`
-            }
-            data={list}
-            keyboardShouldPersistTaps="handled"
-            renderItem={renderItem}
-            numColumns={
-              isLandscape
-                ? isHorizontal
-                  ? 2
-                  : 4
-                : isHorizontal
-                ? 1
-                : list.length > 8
-                ? 4
-                : 2
-            }
-            columnWrapperStyle={
-              !isHorizontal ? styles.columnWrapper : undefined
-            }
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-          />
-        </>
-      )}
+          
 
       <Toast
         visible={toast.visible}
