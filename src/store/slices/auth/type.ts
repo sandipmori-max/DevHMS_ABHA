@@ -62,5 +62,6 @@ export interface AuthState {
   selectedBranches: [],
   fromDate: string;
   toDate: string;
-  selectedBranchIds: ""
+  selectedBranchIds: "",
+  attendanceSecurityLevel: string;
 }

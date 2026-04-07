@@ -41,15 +41,16 @@ import ImageResizer from "@bam.tech/react-native-image-resizer";
 import { launchCamera } from "react-native-image-picker";
 
 const AttendanceForm = ({ setBlockAction, resData }: any) => {
-  let ATTENDANCE_LEVEL = 1;
+   const { user, attendanceDone: isAttendanceDone, attendanceSecurityLevel } = useAppSelector(
+    (state) => state?.auth,
+  );
+  let ATTENDANCE_LEVEL = attendanceSecurityLevel ? parseInt(attendanceSecurityLevel) : 0;
   const { t } = useTranslations();
   const [showModal, setShowModal] = useState(false);
   const [img, setImg] = useState("");
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
-  const { user, attendanceDone: isAttendanceDone } = useAppSelector(
-    (state) => state?.auth,
-  );
+ 
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const baseLink = useBaseLink();
@@ -160,10 +161,11 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
       },
     });
   };
- const openCameraV2 = (
-    setFieldValue: (field: keyof AttendanceFormValues, value: any) => void,
-    handleSubmit: () => void,
-  ) => {
+const openCameraV2 = (
+  setFieldValue: (field: keyof AttendanceFormValues, value: any) => void,
+  handleSubmit: () => void,
+) => {
+  setTimeout(() => {
     launchCamera(
       {
         mediaType: "photo",
@@ -177,9 +179,14 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
           setBlockAction(false);
           return;
         }
-        const photoUri = response?.assets?.[0]?.uri;
+
         const asset = response?.assets?.[0];
+        const photoUri = asset?.uri;
+
         if (!photoUri) return;
+
+        setStatusImage(photoUri);
+
         if (asset?.base64) {
           setFieldValue(
             "imageBase64",
@@ -190,13 +197,14 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
             }; data:${asset?.type};base64,${asset?.base64}`,
           );
         }
-        setStatusImage(photoUri);
+
         setTimeout(() => {
           handleSubmit();
         }, 1000);
       },
     );
-  };
+  }, 800); // 🔥 300–700ms ideal
+};
   const handleStatusToggle = async (
     setFieldValue: (field: keyof AttendanceFormValues, value: any) => void,
     handleSubmit: () => void,

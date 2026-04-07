@@ -381,7 +381,7 @@ export const getERPListDataThunk = createAsyncThunk(
       toDate,
       param,
       branch
-    }: { page: string; fromDate: string; toDate: string; param?: string, branch?: string},
+    }: { page: string; fromDate: string; toDate: string; param: string, branch: string},
     { rejectWithValue },
   ) => {
     try {

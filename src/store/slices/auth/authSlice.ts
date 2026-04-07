@@ -41,6 +41,7 @@ const initialState: AuthState = {
   selectedBranchIds: "",
   fromDate: '',
   toDate: '',
+  attendanceSecurityLevel: '',
 };
 
 const authSlice = createSlice({
@@ -327,6 +328,7 @@ const authSlice = createSlice({
           state.appBottomMenuList = menuData?.bottom;
           state.appDrawerMenuList = menuData?.drawer;
           state.appColorCode = menuData?.hexacolor;
+          state.attendanceSecurityLevel = menuData?.attendancesecuritylevel || '';
           if (menuData?.hexacolor) {
             setERPAppColor(menuData.hexacolor);
           }

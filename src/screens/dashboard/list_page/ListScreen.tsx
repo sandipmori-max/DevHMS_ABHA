@@ -36,7 +36,6 @@ import { formatDateForAPI, parseCustomDate } from "../../../utils/helpers";
 import FullViewLoader from "../../../components/loader/FullViewLoader";
 import { ListRouteParams } from "./types";
 import ErrorMessage from "../../../components/error/Error";
-import TableView from "./components/TableView";
 import ReadableView from "./components/ReadableView";
 import ERPIcon from "../../../components/icon/ERPIcon";
 import CustomAlert from "../../../components/alert/CustomAlert";
@@ -48,13 +47,14 @@ import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ERP_COLOR_CODE } from "../../../utils/constants";
 import useTranslations from "../../../hooks/useTranslations";
 import TranslatedText from "../tabs/home/TranslatedText";
-import CustomPicker from "../page/components/CustomPicker";
 import CustomMultiplePicker from "../page/components/CustomMultiplePicker";
 import { updateSelectedBranchesState, updateSelectedBranchIdsState, updateSelectedFromDateState, updateSelectedToDateState } from "../../../store/slices/auth/authSlice";
 import { getDDLThunk } from "../../../store/slices/dropdown/thunk";
-import NoData from "../../../components/no_data/NoData";
 
 const ListScreen = () => {
+  const route = useRoute<RouteProp<ListRouteParams, "List">>();
+  const { item, parsedConfig } = route?.params;
+  
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const {
@@ -70,13 +70,10 @@ const ListScreen = () => {
   const { user, fromDate, toDate,selectedBranchIds  } = useAppSelector((state) => state.auth);
   const [error, setError] = useState<string | null>(null);
 
-  console.log("user", user, fromDate, toDate);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false);
   const [isTableView, setIsTableView] = useState<boolean>(false);
-
   const [filteredData, setFilteredData] = useState<any[]>([]);
-
   const [alertVisible, setAlertVisible] = useState(false);
   const [actionLoaders, setActionLoader] = useState(false);
   const [parsedError, setParsedError] = useState<any>();
@@ -104,8 +101,7 @@ const ListScreen = () => {
     show: boolean;
   }>(null);
 
-  const route = useRoute<RouteProp<ListRouteParams, "List">>();
-  const { item, parsedConfig } = route?.params;
+  
   const theme = useAppSelector((state) => state?.theme.mode);
 
   const pageTitle = item?.title || item?.name || "List Data";

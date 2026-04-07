@@ -25,11 +25,10 @@ import { useAppSelector } from "../../../../store/hooks";
 import CustomAlert from "../../../../components/alert/CustomAlert";
 
 const FaceCameraScreen = ({ navigation, route }: any) => {
-  let ATTENDANCE_LEVEL = 2;
-
+  const { user , attendanceSecurityLevel} = useAppSelector((state) => state.auth);
+  let ATTENDANCE_LEVEL = attendanceSecurityLevel ? parseInt(attendanceSecurityLevel) : 0;
   const { onCapture } = route.params;
   const camera = useRef(null);
-  const { user } = useAppSelector((state) => state.auth);
 
   const device = useCameraDevice("front");
   const baseLink = useBaseLink();
