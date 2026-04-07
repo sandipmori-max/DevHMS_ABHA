@@ -25,7 +25,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
   const theme = useAppSelector((state) => state?.theme.mode);
 
   const [isVisibleFullMode, setIsVisibleFullMode] = useState(false);
-  const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
 
   return (
@@ -37,13 +37,13 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
           borderWidth: 0.5,
           borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
           marginBottom: 8,
-            marginRight: 12,
+          marginRight: 12,
         }}
       >
         <View
           style={{
             flexDirection: "row",
-            height: isLandscape ?  height * 0.48 :  height * 0.22,
+            height: isLandscape ? height * 0.48 : height * 0.22,
           }}
         >
           {/* Pie Chart */}
@@ -93,160 +93,159 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
             >
               <View
                 style={{
-                alignContent: "center",
-                  width:  "100%",
-                  flexDirection:'row',
+                  alignContent: "center",
+                  width: "100%",
+                  flexDirection: "row",
 
-                  height:isLandscape ? height * 0.48 : height * 0.22,
+                  height: isLandscape ? height * 0.48 : height * 0.22,
                 }}
               >
-                <View 
-                style={{
-                   width:isLandscape ? "40%":"80%", 
-                   justifyContent:'center',
-                   alignContent:'center',
-                  //  alignItems:'center'
-                }}
+                <View
+                  style={{
+                    width: isLandscape ? "40%" : "80%",
+                    justifyContent: "center",
+                    alignContent: "center",
+                    //  alignItems:'center'
+                  }}
                 >
                   <View
-                  style={{
-                    marginVertical: 4,
-                    alignContent: "center",
-                    alignItems: "center",
-                  }}
-                ></View>
-                <FlatList
-                  data={firstList}
-                  key={isLandscape ? "landscape" : "portrait"}    
-                  showsHorizontalScrollIndicator={false}
-                  showsVerticalScrollIndicator={false}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={({ item }) => (
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        marginBottom: 4,
+                    style={{
+                      marginVertical: 4,
+                      alignContent: "center",
+                      alignItems: "center",
+                    }}
+                  ></View>
+                  <FlatList
+                    data={firstList}
+                    key={isLandscape ? "landscape" : "portrait"}
+                    showsHorizontalScrollIndicator={false}
+                    showsVerticalScrollIndicator={false}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item }) => (
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          marginBottom: 4,
+                        }}
+                      >
+                        <View
+                          style={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: 8,
+                            backgroundColor: item.color,
+                            marginRight: 6,
+                            flexDirection: "row",
+                            gap: 4,
+                          }}
+                        />
+                        <TranslatedText
+                          numberOfLines={1}
+                          style={{
+                            width: isLandscape ? "48%" : "26%",
+                            fontWeight: "400",
+                            maxWidth: 110,
+                            color: theme === "dark" ? "#fff" : "#000",
+                          }}
+                          text={item.text}
+                        ></TranslatedText>
+                        <TranslatedText
+                          style={{
+                            marginLeft: 8,
+                            width: isLandscape ? "80%" : "80%",
+                            fontSize: 14,
+                            color: item.color,
+                            fontWeight: "500",
+                          }}
+                          numberOfLines={1}
+                          text={`:- ${item.value}`}
+                        ></TranslatedText>
+                      </View>
+                    )}
+                  />
+                  {
+                    <TouchableOpacity
+                      onPress={() => {
+                        setIsVisibleFullMode(true);
                       }}
                     >
                       <View
                         style={{
-                          width: 12,
-                          height: 12,
-                          borderRadius: 8,
-                          backgroundColor: item.color,
-                          marginRight: 6,
-                          flexDirection: "row",
-                          gap: 4,
-                        }}
-                      />
-                      <TranslatedText
-                        numberOfLines={1}
-                        style={{
-                          width: isLandscape ? "48%" :"26%",
-                          fontWeight: "400",
-                          maxWidth: 110,
-                          color: theme === "dark" ? "#fff" : "#000",
-                        }}
-                        text={item.text}
-                      ></TranslatedText>
-                      <TranslatedText
-                        style={{
-                          marginLeft: 8,
-                          width: isLandscape ?  "80%" : "80%",
-                          fontSize: 14,
-                          color: item.color,
-                          fontWeight: "500",
-                        }}
-                        numberOfLines={1}
-                        text={`:- ${item.value}`}
-                      ></TranslatedText>
-                    </View>
-                  )}
-                />
-                { (
-                  <TouchableOpacity
-                    onPress={() => {
-                      setIsVisibleFullMode(true);
-                    }}
-                  >
-                    <View
-                      style={{
-                        marginVertical: 4,
-                        alignContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: "gray",
-                          fontSize: 12,
+                          marginVertical: 4,
+                          alignContent: "center",
+                          alignItems: "center",
                         }}
                       >
-                        View full mode
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                )}
-               
-                  </View>
-{
-  isLandscape &&  <View style={{
-                   width:'50%', 
-                   justifyContent:'center',
-                   top: -10
-                }}> 
-                    <FlatList
-                showsHorizontalScrollIndicator={false}
-                showsVerticalScrollIndicator={false}
-                horizontal={isLandscape ? false : true}
-                keyExtractor={(item, index) => index.toString()}
-                data={secondList}
-                renderItem={({ item }) => (
+                        <Text
+                          style={{
+                            color: "gray",
+                            fontSize: 12,
+                          }}
+                        >
+                          View full mode
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  }
+                </View>
+                {isLandscape && (
                   <View
-                    style={{ 
-                      flexDirection: "row", 
-                      marginBottom: 4,
+                    style={{
+                      width: "50%",
+                      justifyContent: "center",
+                      top: -10,
                     }}
                   >
-                    <View
-                      style={{
-                        width: 12,
-                        height: 12,
-                        borderRadius: 8,
-                        backgroundColor: item.color,
-                        marginRight: 6,
-                        flexDirection: "row",
-                        gap: 4,
-                      }}
+                    <FlatList
+                      showsHorizontalScrollIndicator={false}
+                      showsVerticalScrollIndicator={false}
+                      horizontal={isLandscape ? false : true}
+                      keyExtractor={(item, index) => index.toString()}
+                      data={secondList}
+                      renderItem={({ item }) => (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            marginBottom: 4,
+                          }}
+                        >
+                          <View
+                            style={{
+                              width: 12,
+                              height: 12,
+                              borderRadius: 8,
+                              backgroundColor: item.color,
+                              marginRight: 6,
+                              flexDirection: "row",
+                              gap: 4,
+                            }}
+                          />
+                          <TranslatedText
+                            text={item.text}
+                            numberOfLines={1}
+                            style={[
+                              { maxWidth: 90 },
+                              {
+                                width: isLandscape ? "48%" : "26%",
+                              },
+                            ]}
+                          ></TranslatedText>
+                          <TranslatedText
+                            numberOfLines={1}
+                            text={`:- ${item.value}`}
+                            style={{
+                              marginLeft: 8,
+                              fontSize: 14,
+                              color: item.color,
+                              fontWeight: "800",
+                            }}
+                          ></TranslatedText>
+                        </View>
+                      )}
                     />
-                    <TranslatedText
-                      text={item.text}
-                      numberOfLines={1}
-                      style={[{ maxWidth: 90 },
-{
-   width: isLandscape ? "48%" :"26%",
-}
-                        
-                      ]}
-                    ></TranslatedText>
-                    <TranslatedText
-                      numberOfLines={1}
-                      text={`:- ${item.value}`}
-                      style={{
-                        marginLeft: 8,
-                        fontSize: 14,
-                        color: item.color,
-                        fontWeight: "800",
-                      }}
-                    ></TranslatedText>
                   </View>
                 )}
-              />
-                  </View>
-}
-                
-                  
               </View>
             </View>
           )}
@@ -260,7 +259,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
           >
             <View>
               <FlatList
-              key={isLandscape ? "landscape" : "portrait"}    
+                key={isLandscape ? "landscape" : "portrait"}
                 showsHorizontalScrollIndicator={false}
                 showsVerticalScrollIndicator={false}
                 horizontal={true}

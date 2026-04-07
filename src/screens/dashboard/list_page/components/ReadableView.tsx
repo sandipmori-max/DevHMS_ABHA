@@ -224,7 +224,7 @@ const ReadableView = ({
             paddingTop: 6,
             borderWidth: 1,
             borderColor: ERP_COLOR_CODE.ERP_ddd,
-            width: isLandscape ? '48%' : '98%'
+            width: isLandscape ? '48%' : '96%'
           }}
         >
           {/* main touchable */}

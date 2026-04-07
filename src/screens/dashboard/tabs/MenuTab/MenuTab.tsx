@@ -601,7 +601,7 @@ const MenuTab = ({
               theme === "dark" && { color: "white" },
             ]}
           ></TranslatedText>
-          {item.title !== item.name && (
+          {!isHorizontal && item.title !== item.name && (
             <TranslatedText
               text={item.title}
               numberOfLines={2}
@@ -642,7 +642,9 @@ const MenuTab = ({
         }}
       ></View>
 
-   <SectionList
+      {!isHorizontal  ? (
+        <>
+          <SectionList
             sections={sectionListData}
             keyboardShouldPersistTaps="handled"
             keyExtractor={(item, index) => index.toString()}
@@ -738,7 +740,37 @@ const MenuTab = ({
               );
             }}
           />
-          
+        </>
+      ) : (
+        <>
+          <FlatList
+            key={
+              isLandscape
+                ? `${isHorizontal}-${showBookmarksOnly}-${searchText}-landscape`
+                : `${isHorizontal}-${showBookmarksOnly}-${searchText}-portrait`
+            }
+            data={list}
+            keyboardShouldPersistTaps="handled"
+            renderItem={renderItem}
+            numColumns={
+              isLandscape
+                ? isHorizontal
+                  ? 2
+                  : 4
+                : isHorizontal
+                ? 1
+                : list.length > 8
+                ? 4
+                : 2
+            }
+            columnWrapperStyle={
+              !isHorizontal ? styles.columnWrapper : undefined
+            }
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+          />
+        </>
+      )}
 
       <Toast
         visible={toast.visible}
