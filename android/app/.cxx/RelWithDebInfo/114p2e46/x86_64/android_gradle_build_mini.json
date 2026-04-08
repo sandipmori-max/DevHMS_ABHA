@@ -6,6 +6,7 @@
     "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/@react-native-community/geolocation/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/@react-native-documents/picker/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/@react-native-vector-icons/fontawesome/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/@react-native-vector-icons/material-icons/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-config/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-gesture-handler/android/build/generated/source/codegen/jni/CMakeLists.txt",
@@ -156,6 +157,11 @@
     },
     "react_codegen_RNImageResizerSpec::@781b039b46879c00d842": {
       "artifactName": "react_codegen_RNImageResizerSpec",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_VectorIconsFontAwesome::@f56ae3024d8db5b6b904": {
+      "artifactName": "react_codegen_VectorIconsFontAwesome",
       "abi": "x86_64",
       "runtimeFiles": []
     }

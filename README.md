@@ -2116,3 +2116,5 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
 };
 
 export default AttendanceForm;
+
+//https://azure.microsoft.com/en-in/pricing/free-services/

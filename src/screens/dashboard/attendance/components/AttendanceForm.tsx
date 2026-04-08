@@ -149,7 +149,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
             setStatusImage(photoUri);
 
             setTimeout(() => {
-              // handleSubmit();
+              handleSubmit();
             }, 1000);
           } catch (error) {
             console.log("---------------------11", error);
