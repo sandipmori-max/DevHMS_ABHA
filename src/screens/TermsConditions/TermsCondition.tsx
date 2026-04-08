@@ -69,7 +69,9 @@ const TermsAndConsent = ({ onAccept }: any) => {
             <View style={{ width: "48%" }}>
             
 
-              <Text style={styles.sectionTitle}>1. Introduction</Text>
+              <Text style={[styles.sectionTitle,{
+                marginTop: 4
+              }]}>1. Introduction</Text>
               <Text style={styles.text}>
                 Welcome to DevERP. These Terms & Conditions govern your use of
                 our mobile application (“Service”). By using the Service, you
@@ -207,7 +209,9 @@ const TermsAndConsent = ({ onAccept }: any) => {
         ) : (
           <>
 
-            <Text style={styles.sectionTitle}>1. Introduction</Text>
+            <Text style={[styles.sectionTitle, {
+              marginTop: 4
+            }]}>1. Introduction</Text>
             <Text style={styles.text}>
               Welcome to DevERP. These Terms & Conditions govern your use of our
               mobile application (“Service”). By using the Service, you agree to

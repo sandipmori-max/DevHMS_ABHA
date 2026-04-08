@@ -12,7 +12,7 @@ import {
 import AccountSwitcher from "./components/AccountSwitcher";
 import { styles } from "./profile_style";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { useAppSelector } from "../../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { formatDateHr } from "../../../../utils/helpers";
 import AddAccountScreen from "../../add_account/AddAccountScreen";
 import ERPIcon from "../../../../components/icon/ERPIcon";
@@ -22,11 +22,13 @@ import { useTranslation } from "react-i18next";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import ProfileSection from "./ProfileSection";
 import TranslatedText from "../home/TranslatedText";
+import { updateSelectedFromDateState, updateSelectedToDateState } from "../../../../store/slices/auth/authSlice";
 
 const ProfileTab = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
     const { reLoading } = useAppSelector((state) => state.reloadApp);
+    const dispatch = useAppDispatch();
   
   const { user, accounts, menu } = useAppSelector((state) => state?.auth);
   const [showAccountSwitcher, setShowAccountSwitcher] = useState(false);
@@ -54,6 +56,7 @@ const ProfileTab = () => {
 
   useFocusEffect(
     useCallback(() => {
+   
       setTapLoader(false);
       return () => {};
     }, [navigation]),
@@ -61,6 +64,7 @@ const ProfileTab = () => {
 
   useFocusEffect(
     useCallback(() => {
+
       // Reset animation values
       profileAnim.setValue(0);
       accountAnim.setValue(0);

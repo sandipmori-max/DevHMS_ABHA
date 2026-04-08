@@ -22,6 +22,7 @@ const WebScreen = () => {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const { item, isFromChart } = route.params;
+  console.log("item:", item, "isFromChart:", isFromChart);
   const [token, setToken] = useState<string>("");
   const [isHidden, setIsHidden] = useState(false);
   const [isReloading, setIsReloading] = useState(false);
@@ -95,7 +96,7 @@ const WebScreen = () => {
         >
           {isFromChart
             ? t("text.text52")
-            : item?.title || t("webScreen.details")}
+            : item?.name || t("webScreen.details")}
         </Text>
       ),
       headerBackTitle: "",

@@ -42,6 +42,8 @@ import {
   setActiveDashboardTypeId,
   setDashboardLoading,
   updateAppMenuList,
+  updateSelectedFromDateState,
+  updateSelectedToDateState,
 } from "../../../../store/slices/auth/authSlice";
 import {
   View,
@@ -195,6 +197,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
   useFocusEffect(
     useCallback(() => {
+        
       // dispatch(setActiveDashboardBranchId(""));
       // dispatch(setActiveDashboardBranch(""));
       // dispatch(setActiveDashboardType(""));
@@ -416,7 +419,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
               <ERPIcon name="search" onPress={() => setShowSearch(true)} />
             )}
 
-            {attendanceDone && (
+            {/* {attendanceDone && (
               <ERPIcon
                 color={"green"}
                 name={"location-on"}
@@ -424,7 +427,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                   navigation.navigate("LocationTrack");
                 }}
               />
-            )}
+            )} */}
             {isLandscape && (
               <>
                 <ERPIcon
@@ -835,6 +838,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         td: auth?.dashboardToDate.trim() || toDate,
       },
     );
+    
     dispatch(
       getERPDashboardThunk({
         branch: auth?.dashboardBranchId.trim() || "",

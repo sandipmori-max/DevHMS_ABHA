@@ -67,7 +67,7 @@ const ListScreen = () => {
   const [loadingListId, setLoadingListId] = useState<string | null>(null);
   const [listData, setListData] = useState<any[]>([]);
   const [configData, setConfigData] = useState<any[]>([]);
-  const { user, fromDate, toDate,selectedBranchIds  } = useAppSelector((state) => state.auth);
+  const { user, fromDate, toDate, selectedBranchIds } = useAppSelector((state) => state.auth);
   const [error, setError] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -183,6 +183,8 @@ const ListScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      // dispatch(updateSelectedFromDateState(""));
+      // dispatch(updateSelectedToDateState(""));
       // dispatch(updateSelectedBranchesState([]));
       setTapLoader(false);
       return () => {};
@@ -268,6 +270,7 @@ const ListScreen = () => {
       }));
       setControls(normalizedControls);
 
+     
       const branchObj = normalizedControls.find(
         (item) => item.fieldtitle === "Branch",
       );
@@ -295,9 +298,9 @@ const ListScreen = () => {
     }
   }
 
-  // useEffect(() => {
-    // fetchPageData();
-  // }, [navigation]);
+  useEffect(() => {
+    fetchPageData();
+  }, [navigation]);
 
   const getCurrentMonthRange = () =>{
      const now = new Date();
@@ -307,7 +310,12 @@ const ListScreen = () => {
     const toDateStr = formatDateForAPI(lastDay);
     dispatch(updateSelectedFromDateState(fromDateStr));
     dispatch(updateSelectedToDateState(toDateStr));
-    fetchPageData();
+    if(parsedConfig?.branchwise === 1 || parsedConfig?.branchwise === "1"){
+      fetchPageData();
+    }else {
+         fetchListData();
+    }
+    
   }
 
   const debouncedSearch = useCallback(
@@ -421,6 +429,7 @@ const ListScreen = () => {
 
   const fetchListData = async () => {
     try {
+      
       setError(null);
       setLoadingListId(item?.id || 0);
 
@@ -428,10 +437,10 @@ const ListScreen = () => {
       const raw = await dispatch(
         getERPListDataThunk({
           page: item?.url,
-          fromDate: fromDate,
-          toDate: toDate,
+          fromDate:  parsedConfig?.period === 1 || parsedConfig?.period === "1" ? fromDate : "",
+          toDate: parsedConfig?.period === 1 || parsedConfig?.period === "1" ? toDate : "",
           param: "",
-          branch: `${selectedBranchIds}` || "",
+          branch: parsedConfig?.branchwise === 1 || parsedConfig?.branchwise === "1" ? `${selectedBranchIds}` || "" : "",
         }),
       ).unwrap();
       const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
@@ -470,23 +479,17 @@ const ListScreen = () => {
     }
   };
 
-  useEffect(() => {
-    getCurrentMonthRange();
-  }, []);
+  // useEffect(() => {
+  //   getCurrentMonthRange();
+  // }, []);
 
   console.log("selectedBranch", selectedBranchIds, toDate, fromDate);
   
-  // useEffect(() => {
-  //   if (fromDate && toDate) {
-  //     fetchListData(fromDate, toDate);
-  //   }
-  // }, [fromDate, toDate]);
+  useEffect(() => {
+     fetchListData();
+  }, [selectedBranchIds, toDate, fromDate]);
 
- useFocusEffect(
-  useCallback(() => {
-    fetchListData();
-  }, [fromDate, toDate, selectedBranchIds])
-);
+ 
   const handleItemPressed = (item, page, pageTitle = "") => {
     setIsFilterVisible(false);
     setSearchQuery("");
@@ -1004,6 +1007,9 @@ const ListScreen = () => {
                   borderWidth: 1,
                   borderColor: "white",
                 },
+                {
+                   backgroundColor:   theme === "dark"  ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, 
+                }
               ]}
               onPressIn={onPressIn}
               onPressOut={onPressOut}

@@ -14,7 +14,7 @@ import {
   Platform,
   PermissionsAndroid,
   AppState,
-  useWindowDimensions
+  useWindowDimensions,
 } from "react-native";
 import {
   RouteProp,
@@ -24,7 +24,10 @@ import {
 } from "@react-navigation/native";
 import Animated, { FadeInUp, Layout } from "react-native-reanimated";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getERPAppConfigMenuThunk, getERPPageThunk } from "../../../store/slices/auth/thunk";
+import {
+  getERPAppConfigMenuThunk,
+  getERPPageThunk,
+} from "../../../store/slices/auth/thunk";
 import { savePageThunk } from "../../../store/slices/page/thunk";
 import FullViewLoader from "../../../components/loader/FullViewLoader";
 import NoData from "../../../components/no_data/NoData";
@@ -116,7 +119,7 @@ export async function requestLocationPermissions(): Promise<
 }
 
 const PageScreen = () => {
-  const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
@@ -164,9 +167,7 @@ const PageScreen = () => {
   const [locationEnabled, setLocationEnabled] = useState<boolean | null>(null);
   const [modalClose, setModalClose] = useState(false);
   const [isSettingVisible, setIsSettingVisible] = useState(false);
-  const [myScript, setMyScript] = useState(
-  []
-);
+  const [myScript, setMyScript] = useState([]);
 
   // [
   // {
@@ -489,7 +490,7 @@ const PageScreen = () => {
                     const { actions, messages } = evaluateRulesWithActions(
                       rules,
                       formValues,
-                    ); 
+                    );
                     const hasButtonSaveEnable = actions.some(
                       (item) => item?.field === "buttonSave",
                     );
@@ -595,15 +596,15 @@ const PageScreen = () => {
                       setLoader(false);
                       setIsValidate(false);
                       try {
-                             dispatch(getERPAppConfigMenuThunk());
-                           } catch (error) {
-                            dispatch(updateAppMenuList([])); // Clear menu on error
-                              console.log("Error fetching app config menu:", error);
-                           }
-                      if(isFromProfile){
-                         setTimeout(() => {
-                               dispatch(setReloadApp());
-                             }, 1000);
+                        dispatch(getERPAppConfigMenuThunk());
+                      } catch (error) {
+                        dispatch(updateAppMenuList([])); // Clear menu on error
+                        console.log("Error fetching app config menu:", error);
+                      }
+                      if (isFromProfile) {
+                        setTimeout(() => {
+                          dispatch(setReloadApp());
+                        }, 1000);
                       }
                       fetchPageData();
                       setAlertConfig({
@@ -747,7 +748,6 @@ const PageScreen = () => {
 
   const handleDateTimeConfirm = (date: Date) => {
     if (activeDateTimeField) {
-      
       setFormValues((prev) => ({
         ...prev,
         [activeDateTimeField]: date.toISOString(),
@@ -759,60 +759,63 @@ const PageScreen = () => {
   const renderItem = useCallback(
     ({ item, index }: { item: any; index: number }) => {
       const setValue = (val) => {
-  console.log("SET VALUE START 👉", item?.field, val);
+        console.log("SET VALUE START 👉", item?.field, val);
 
-  setFormValues((prev) => { 
-    let updatedValues;
+        setFormValues((prev) => {
+          let updatedValues;
 
-    if (typeof val === "object" && val !== null) {
-      updatedValues = { ...prev, ...val };
-    } else {
-      updatedValues = { ...prev, [item.field]: val };
-    }
+          if (typeof val === "object" && val !== null) {
+            updatedValues = { ...prev, ...val };
+          } else {
+            updatedValues = { ...prev, [item.field]: val };
+          }
 
-    console.log("Updated Values (before rules):", updatedValues);
- 
-    const result = runDynamicRules(
-      myScript,          // 🔥 unified rules (formula + condition)
-      updatedValues,
-      item.field
-    );
+          console.log("Updated Values (before rules):", updatedValues);
 
-    console.log("After Rules Values 👉", result.values);
-    console.log("Actions 👉", result.actions);
-    console.log("Messages 👉", result.messages);
+          const result = runDynamicRules(
+            myScript, // 🔥 unified rules (formula + condition)
+            updatedValues,
+            item.field,
+          );
 
-    let finalValues = { ...result.values };
- 
-    result.actions.forEach((action) => {
-      if (action?.action === "setValue" && action?.field) {
-        finalValues[action.field] = action.value ?? "";
-        console.log(`📝 setValue → ${action.field} = ${action.value}`);
-      }
-    });
+          console.log("After Rules Values 👉", result.values);
+          console.log("Actions 👉", result.actions);
+          console.log("Messages 👉", result.messages);
 
-    //   ===
-    // 4️⃣ UPDATE CONTROLS
-    //   ===
-    if (result.actions?.length) {
-      const updatedControls = applyActionsToControls(controls, result.actions);
-      setControls(updatedControls);
-    }
+          let finalValues = { ...result.values };
 
-    //   ===
-    // 5️⃣ CLEAR ERROR
-    //   ===
-    setErrors((prevErr) => ({
-      ...prevErr,
-      [item.field]: "",
-    }));
+          result.actions.forEach((action) => {
+            if (action?.action === "setValue" && action?.field) {
+              finalValues[action.field] = action.value ?? "";
+              console.log(`📝 setValue → ${action.field} = ${action.value}`);
+            }
+          });
 
-    console.log("FINAL VALUES ✅", finalValues);
-    console.log("SET VALUE END  ==");
+          //   ===
+          // 4️⃣ UPDATE CONTROLS
+          //   ===
+          if (result.actions?.length) {
+            const updatedControls = applyActionsToControls(
+              controls,
+              result.actions,
+            );
+            setControls(updatedControls);
+          }
 
-    return finalValues;
-  });
-};
+          //   ===
+          // 5️⃣ CLEAR ERROR
+          //   ===
+          setErrors((prevErr) => ({
+            ...prevErr,
+            [item.field]: "",
+          }));
+
+          console.log("FINAL VALUES ✅", finalValues);
+          console.log("SET VALUE END  ==");
+
+          return finalValues;
+        });
+      };
 
       const value =
         formValues[item?.field] === "#location"
@@ -1022,11 +1025,13 @@ const PageScreen = () => {
         <Animated.View
           entering={FadeInUp.delay(index * 70).springify()}
           layout={Layout.springify()}
-          style={isLandscape && {
-            width: '100%',
-            flex: 1,
-            marginRight: 8,
-          }}
+          style={
+            isLandscape && {
+              width: "100%",
+              flex: 1,
+              marginRight: 8,
+            }
+          }
         >
           {content}
         </Animated.View>
@@ -1034,7 +1039,7 @@ const PageScreen = () => {
     },
     [formValues, errors, controls, locationEnabled, isLandscape],
   );
- 
+
   const showDatePicker = (field: string, date: any) => {
     setActiveDateField(field);
     setActiveDate(date);
@@ -1046,36 +1051,34 @@ const PageScreen = () => {
     setActiveDateField(null);
   };
 
- const handleConfirm = (date: Date) => {
-  if (!activeDateField) return;
-  if(myScript){
-setFormValues((prev) => {
-    const updatedValues = {
-      ...prev,
-      [activeDateField]: date.toISOString(),
-    };
-    const result = runDynamicRules(
-      myScript,
-      updatedValues,
-      activeDateField
-    );
+  const handleConfirm = (date: Date) => {
+    if (!activeDateField) return;
+    if (myScript) {
+      setFormValues((prev) => {
+        const updatedValues = {
+          ...prev,
+          [activeDateField]: date.toISOString(),
+        };
+        const result = runDynamicRules(
+          myScript,
+          updatedValues,
+          activeDateField,
+        );
 
-    return result.values;
-  });
+        return result.values;
+      });
 
-  hideDatePicker();
-  }else{
-    if (activeDateField) {
-      setFormValues((prev) => ({
-        ...prev,
-        [activeDateField]: date.toISOString(),
-      }));
+      hideDatePicker();
+    } else {
+      if (activeDateField) {
+        setFormValues((prev) => ({
+          ...prev,
+          [activeDateField]: date.toISOString(),
+        }));
+      }
+      hideDatePicker();
     }
-    hideDatePicker();
-  }
-  
-};
- 
+  };
 
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
@@ -1103,7 +1106,7 @@ setFormValues((prev) => {
       {theme !== "dark" && (
         <View
           style={{
-            height: Platform.OS === 'ios' ?  16  : 6,
+            height: Platform.OS === "ios" ? 16 : 6,
             width: "100%",
             backgroundColor:
               theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
@@ -1144,11 +1147,14 @@ setFormValues((prev) => {
                   theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE,
               }}
             >
-              <FlatList 
+              <FlatList
                 showsVerticalScrollIndicator={false}
                 data={controls}
-                    key={isLandscape ? `${isLandscape}-landscape` : `${isLandscape}-portrait`}
-
+                key={
+                  isLandscape
+                    ? `${isLandscape}-landscape`
+                    : `${isLandscape}-portrait`
+                }
                 ref={flatListRef}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={renderItem}

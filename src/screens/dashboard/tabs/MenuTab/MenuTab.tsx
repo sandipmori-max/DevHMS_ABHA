@@ -41,9 +41,10 @@ import Toast from "../../../../components/Toast/Toast";
 import { FontAwesome } from '@react-native-vector-icons/fontawesome';
 
 import { useTranslation } from "react-i18next";
-import { setMenuLoading } from "../../../../store/slices/auth/authSlice";
+import { setMenuLoading, updateSelectedFromDateState, updateSelectedToDateState } from "../../../../store/slices/auth/authSlice";
 import TranslatedText from "../home/TranslatedText";
 import { styles } from "./style";
+import { formatDateForAPI } from "../../../../utils/helpers";
 const accentColors = [
   "#dbe0f5ff",
   "#c8f3edff",
@@ -375,6 +376,7 @@ const MenuTab = ({
 
   useFocusEffect(
     useCallback(() => {
+   
       setSearchText("");
       setShowSearch(false);
       setIsHorizontal(false);
@@ -497,6 +499,17 @@ const MenuTab = ({
          
         ]}
         onPress={async () => {
+          dispatch(updateSelectedFromDateState(""));
+          dispatch(updateSelectedToDateState(""));
+
+           const now = new Date();
+              const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+              const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+              const fromDateStr = formatDateForAPI(firstDay);
+              const toDateStr = formatDateForAPI(lastDay);
+              dispatch(updateSelectedFromDateState(fromDateStr));
+              dispatch(updateSelectedToDateState(toDateStr));
+
           const db = await getDBConnection();
           let raw = null;
           try {

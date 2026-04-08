@@ -2118,3 +2118,13 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
 export default AttendanceForm;
 
 //https://azure.microsoft.com/en-in/pricing/free-services/
+svg - onboarding screen
+two times load - list page
+sometime show NoData - on first load
+list back - 
+  search result 
+  add new
+  come back
+   -- entered search clean - keep value
+Update app version number - android and ios
+web site load fail - ios
