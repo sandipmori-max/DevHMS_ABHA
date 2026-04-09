@@ -479,14 +479,77 @@ const ListScreen = () => {
     }
   };
 
+
+  const fetchListDataV2 = useCallback(async () => {
+  try {
+    setError(null);
+    setLoadingListId(item?.id || 0);
+
+    console.log("LATEST ✅+++++++++++++++++++++++++++++", fromDate, toDate, selectedBranchIds);
+
+    const raw = await dispatch(
+         getERPListDataThunk({
+          page: item?.url,
+          fromDate:  parsedConfig?.period === 1 || parsedConfig?.period === "1" ? fromDate : "",
+          toDate: parsedConfig?.period === 1 || parsedConfig?.period === "1" ? toDate : "",
+          param: "",
+          branch: parsedConfig?.branchwise === 1 || parsedConfig?.branchwise === "1" ? `${selectedBranchIds}` || "" : "",
+        }),
+    ).unwrap();
+
+    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+
+    let dataArray = [];
+    let configArray = [];
+
+    if (Array.isArray(parsed)) {
+      dataArray = parsed;
+    } else if (Array.isArray(parsed?.data)) {
+      dataArray = parsed.data;
+      configArray = parsed.config || [];
+    } else if (Array.isArray(parsed?.list)) {
+      dataArray = parsed.list;
+      configArray = parsed.config || [];
+    } else if (parsed && typeof parsed === "object") {
+      const keys = Object.keys(parsed).filter((key) => !isNaN(Number(key)));
+      if (keys.length > 0) {
+        dataArray = keys.map((key) => parsed[key]);
+        configArray = parsed.config || [];
+      }
+    }
+
+    setConfigData(configArray);
+    setListData(dataArray);
+    setFilteredData(dataArray);
+  } catch (e) {
+    setError(e || "Failed to load list data");
+    setParsedError(e);
+  } finally {
+    setLoadingListId(null);
+    setTimeout(() => setActionLoader(false), 10);
+  }
+}, [
+  fromDate,
+  toDate,
+  selectedBranchIds,
+  item?.url,
+  parsedConfig?.period,
+  parsedConfig?.branchwise,
+]);
   // useEffect(() => {
   //   getCurrentMonthRange();
   // }, []);
 
-  console.log("selectedBranch", selectedBranchIds, toDate, fromDate);
+  console.log("selectedBranch++++++++++++++++++++++++++++++++++++++++++++++++++++", selectedBranchIds, toDate, fromDate);
   
+   useFocusEffect(
+      useCallback(() => {
+        fetchListDataV2();
+      }, [fetchListDataV2, selectedBranchIds, toDate, fromDate])
+    );
+
   useEffect(() => {
-     fetchListData();
+    //  fetchListData();
   }, [selectedBranchIds, toDate, fromDate]);
 
  
@@ -501,7 +564,8 @@ const ListScreen = () => {
         url: pageName,
         pageTitle: pageTitle,
         isFromBusinessCard: isFromBusinessCard,
-        isFromProfile: false,
+        isFromProfile: false
+        
       });
     }
   };

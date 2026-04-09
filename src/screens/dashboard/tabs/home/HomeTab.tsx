@@ -156,9 +156,8 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [filteredDashboard, setFilteredDashboard] = useState(dashboard);
-  const searchTimeout = useRef<NodeJS.Timeout | null>(null);
-
-  const [preSelectedBranch, setPreSelectedBranch] = useState();
+  const searchTimeout = useRef<any>(null);
+ 
   const translateX = useRef(new Animated.Value(width)).current;
 
   const htmlItems = filteredDashboard.filter((item) =>
