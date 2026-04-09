@@ -156,49 +156,10 @@ const CustomMultiplePicker = ({
     <View style={{ marginVertical: 6 }}>
       {/* LABEL */}
 
-      {/* CHIPS */}
-      {isForMultipleSelection && selectedBranches.length > 0 && (
-        <View
-          style={{ flexDirection: "row", flexWrap: "wrap", marginVertical: 6 }}
-        >
-          {selectedBranches.map((opt, i) => (
-            <View
-              key={i}
-              style={{
-                flexDirection: "row",
-                backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-                paddingHorizontal: 8,
-                paddingVertical: 4,
-                borderRadius: 20,
-                margin: 2,
-                alignItems: "center",
-                borderWidth: 1,
-                borderColor: "white",
-              }}
-            >
-              <Text style={{ color: "white", marginRight: 4 }}>
-                {opt?.name}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  const updatedOptions = selectedBranches.filter(
-                    (o) => o.value !== opt.value,
-                  ); 
-                  const branchValues = updatedOptions.map((item) => item.value).join(",");
-                  dispatch(updateSelectedBranchIdsState(branchValues));
-                  dispatch(updateSelectedBranchesState(updatedOptions));
-                }}
-              >
-                <MaterialIcons name="close" size={14} color="white" />
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
-      )}
-
+     
       {/* PICKER */}
       <TouchableOpacity
-        style={[styles.pickerBox]}
+        style={[styles.pickerBox1]}
         onPress={() => {
           if (item?.disabled !== "1") handleOpen();
         }}
@@ -207,7 +168,7 @@ const CustomMultiplePicker = ({
           text={
             isForMultipleSelection
               ? selectedBranches.length > 0
-                ? `${selectedBranches.length} selected`
+                ? `${selectedBranches.map((opt, i) => opt.name).join(", ")}`
                 : `Select ${label}`
               : selectedOption || `Select ${label}`
           }

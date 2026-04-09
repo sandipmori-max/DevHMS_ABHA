@@ -68,9 +68,9 @@ export const styles = StyleSheet.create({
   },
   dateButton: {
     // backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    borderRadius: 4,
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
     alignItems: "center",
@@ -246,6 +246,7 @@ export const styles = StyleSheet.create({
   },
   dataContainer: {
     marginBottom: 0,
+    // overflow:'hidden'
   },
   dataLabel: {
     fontSize: 12,

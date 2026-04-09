@@ -31,7 +31,8 @@ const CustomPicker = ({
   errors,
   dtext,
   isForceOpen,
-  isForMultipleSelection = false
+  isForMultipleSelection = false,
+  isFromDashboard=false,
 }: any) => {
   const { t } = useTranslations();
   const { height, width } = useWindowDimensions();  
@@ -108,9 +109,9 @@ const CustomPicker = ({
   // const filtered = options.filter(item => item.value !== -1);
 
   return (
-    <View style={{ marginBottom: 16 }}>
+    <View style={{ marginBottom : isFromDashboard ? 2 : 16 }}>
       {/* Label */}
-      {!isForceOpen && (
+      {!isFromDashboard && !isForceOpen && (
         <TranslatedText
           numberOfLines={1}
           text={label}
@@ -174,6 +175,10 @@ const CustomPicker = ({
             theme === "dark" && {
               backgroundColor:  ERP_COLOR_CODE.ERP_APP_COLOR,
             },
+          isFromDashboard && {
+            paddingVertical: 6,
+            borderRadius: 4,
+          }
         ]}
         onPress={() => {
           if (item?.disabled !== "1") handleOpen();

@@ -64,6 +64,17 @@ export const styles = StyleSheet.create({
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     color: "black",
   },
+    pickerBox1: {
+    borderWidth: 1,
+    borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+    borderRadius: 4,
+    padding: 8,
+    backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignContent: "center",
+    alignItems: "center",
+  },
   pickerBox: {
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,

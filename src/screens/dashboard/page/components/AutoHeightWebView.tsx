@@ -1,8 +1,9 @@
 import React, { useState, useRef } from 'react';
-import { View, useWindowDimensions } from 'react-native';
+import { Dimensions, View, useWindowDimensions } from 'react-native';
 import WebView from 'react-native-webview';
 import RenderHTML from 'react-native-render-html';
 import { useAppSelector } from '../../../../store/hooks';
+import FontAwesome from '@react-native-vector-icons/fontawesome';
 
 const AutoHeightWebView = ({
   html,
@@ -33,6 +34,8 @@ const AutoHeightWebView = ({
   const TH_BG = isDark ? "#1A1A1A" : "#f1f1f1";
   const EVEN_ROW = isDark ? "#111" : "#fafafa";
  
+ 
+
   const defaultCSS = `
     <style>
       html, body {
@@ -77,6 +80,7 @@ const AutoHeightWebView = ({
   .replace(/<h[1-6]>\s*<table/gi, "<table")
   .replace(/<\/table>\s*<\/h[1-6]>/gi, "</table>");
 
+  console.log("Cleaned HTML:", cleanedHTML);
   const formattedHTML = `
     <!DOCTYPE html>
     <html>
@@ -110,10 +114,34 @@ const AutoHeightWebView = ({
     true;
   `;
 
+
+  const renderers = {
+  i: ({ tnode }) => {
+    const className = tnode?.domNode?.attribs?.class || "";
+    const match = className.match(/fa fa-([a-z-]+)/);
+
+    if (match) {
+      const iconName = match[1];
+
+      return (
+         <FontAwesome
+          name={iconName}
+          size={20}
+          color={iconName.includes("down") ? "red" : "green"}
+          style={{ marginHorizontal: 4 }}
+        />
+      );
+    }
+
+    return null;
+  },
+};
+
+
   return (
     <View
       style={{
-        overflow: 'scroll',
+        overflow: 'hidden',
         width:  isLandscape ?  width - 150 : width - 40,
         backgroundColor: BG,
         marginVertical:4
@@ -139,18 +167,20 @@ const AutoHeightWebView = ({
         />
       ) : (
         <RenderHTML
-          contentWidth={width}
+          contentWidth={width }
           source={{ html }}
+            baseStyle={{  
+              borderRadius: 6, 
+              width: isLandscape ? width / 5.5 : isFromMenu ? '80%' : isHorizontal ? '100%' : width / 2.5,
+            }}
           tagsStyles={{
             p: {
-              fontWeight: 'bold',
               flexDirection: 'row',
               overflow: 'hidden',
               color: isFromMenu ? textColor : TEXT,
               maxWidth: isFromMenu ? '80%' : isHorizontal ? '100%' : 100,
             },
             b: {
-              fontWeight: 'bold',
               flexDirection: 'row',
               overflow: 'hidden',
               color: isFromMenu ? textColor : TEXT,
@@ -172,6 +202,7 @@ const AutoHeightWebView = ({
               color: isFromMenu ? textColor : TEXT,
             },
           }}
+           renderers={renderers}
         />
       )}
     </View>

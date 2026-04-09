@@ -2128,3 +2128,6 @@ list back -
    -- entered search clean - keep value
 Update app version number - android and ios
 web site load fail - ios
+
+// same page config 
+// --

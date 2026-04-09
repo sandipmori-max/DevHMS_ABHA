@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -717,7 +718,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
               )}
             </View>
             {item?.footer ? (
-              <View style={{ marginTop: 1 }}>
+              <View style={{ marginTop: 1, overflow: "hidden" }}>
                 <Footer
                   textColor={accentColors[index % accentColors.length]}
                   isFromMenu={isFromMenu}
@@ -841,8 +842,8 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     
     dispatch(
       getERPDashboardThunk({
-        branch: auth?.dashboardBranchId.trim() || "",
-        type: auth?.dashboardTypeId.trim() || "",
+        branch: auth?.dashboardBranchId.trim() === '-1' ? '-1' : auth?.dashboardBranchId.trim() || "",
+        type: (auth?.dashboardTypeId.trim() === 'all' || auth?.dashboardTypeId.trim() === 'ALL') ? '' : auth?.dashboardTypeId.trim() || "",
         fd: auth?.dashboardFromDate.trim() || fromDate,
         td: auth?.dashboardToDate.trim() || toDate,
       }),
@@ -922,7 +923,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
   useEffect(() => {
     getCurrentMonthRange();
-  }, []);
+  }, [user, reLoading]);
 
   if (isDashboardLoading) return <FullViewLoader isShowTop={false} />;
   if (!actionLoader && filteredDashboard?.length === 0) {
@@ -1113,6 +1114,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                               item={item}
                               errors={null}
                               formValues={null}
+                              isFromDashboard={true}
                             />
                           </View>
                         </>
@@ -1278,7 +1280,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                   marginHorizontal: 4,
                 },
                 {
-                  width: "50%",
+                  width: "48%",
                 },
               ]}
             >
@@ -1295,9 +1297,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                         },
                       ]}
                     >
-                      <Text style={{ marginBottom: 12, color: "white" }}>
-                        {item?.field}
-                      </Text>
+                       
                       <TouchableOpacity
                         onPress={() =>
                           setShowDatePicker({
@@ -1346,7 +1346,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
-                    marginTop: 4,
+                    marginTop: 8,
                     marginHorizontal: 4,
                   }}
                 >
@@ -1365,6 +1365,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                 ? auth?.dashboardBranch || item.dtext
                                 : auth.dashboardType || item?.dtext
                             }
+                            isFromDashboard={true}
                             onValueChange={(i) => {
                               if (item?.title === "Branch") {
                                 dispatch(
@@ -1501,6 +1502,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                           item={item}
                           errors={null}
                           formValues={null}
+                          isFromDashboard={true}
                         />
                       </View>
                     </>

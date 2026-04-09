@@ -38,10 +38,14 @@ import ErrorMessage from "../../../../components/error/Error";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import Toast from "../../../../components/Toast/Toast";
-import { FontAwesome } from '@react-native-vector-icons/fontawesome';
+import { FontAwesome } from "@react-native-vector-icons/fontawesome";
 
 import { useTranslation } from "react-i18next";
-import { setMenuLoading, updateSelectedFromDateState, updateSelectedToDateState } from "../../../../store/slices/auth/authSlice";
+import {
+  setMenuLoading,
+  updateSelectedFromDateState,
+  updateSelectedToDateState,
+} from "../../../../store/slices/auth/authSlice";
 import TranslatedText from "../home/TranslatedText";
 import { styles } from "./style";
 import { formatDateForAPI } from "../../../../utils/helpers";
@@ -376,7 +380,6 @@ const MenuTab = ({
 
   useFocusEffect(
     useCallback(() => {
-   
       setSearchText("");
       setShowSearch(false);
       setIsHorizontal(false);
@@ -481,7 +484,7 @@ const MenuTab = ({
   };
 
   const renderItem = ({ item, index }: any) => {
-  const backgroundColor = accentColors[index % accentColors.length];
+    const backgroundColor = accentColors[index % accentColors.length];
     return (
       <TouchableOpacity
         style={[
@@ -496,49 +499,49 @@ const MenuTab = ({
             paddingHorizontal: 8,
             marginBottom: 8,
           },
-         
         ]}
         onPress={async () => {
-          dispatch(updateSelectedFromDateState(""));
-          dispatch(updateSelectedToDateState(""));
+          if (!item.url.includes(".")) {
+            dispatch(updateSelectedFromDateState(""));
+            dispatch(updateSelectedToDateState(""));
 
-           const now = new Date();
-              const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-              const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-              const fromDateStr = formatDateForAPI(firstDay);
-              const toDateStr = formatDateForAPI(lastDay);
-              dispatch(updateSelectedFromDateState(fromDateStr));
-              dispatch(updateSelectedToDateState(toDateStr));
+            const now = new Date();
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const fromDateStr = formatDateForAPI(firstDay);
+            const toDateStr = formatDateForAPI(lastDay);
+            dispatch(updateSelectedFromDateState(fromDateStr));
+            dispatch(updateSelectedToDateState(toDateStr));
 
-          const db = await getDBConnection();
-          let raw = null;
-          try {
-            raw = await dispatch(
-              getERPConfigDataThunk({
-                page: item?.url,
-              }),
-            ).unwrap();
+            const db = await getDBConnection();
+            let raw = null;
+            try {
+              raw = await dispatch(
+                getERPConfigDataThunk({
+                  page: item?.url,
+                }),
+              ).unwrap();
 
-            console.log("++++++++++++++++++++++++++++++++++++++raw", raw);
-          } catch (error) {
-            console.log("++++++++++++++++++++++++++++++++++++++error", error);
-          }
+              console.log("++++++++++++++++++++++++++++++++++++++raw", raw);
+            } catch (error) {
+              console.log("++++++++++++++++++++++++++++++++++++++error", error);
+            }
 
-          const parsedConfig = extractConfig(raw);
+            const parsedConfig = extractConfig(raw);
 
-          console.log("FINAL CONFIG:", parsedConfig);
-          console.log("parsedConfig:", parsedConfig);
-          console.log(
-            "+++++++++++++++++parsedConfig+++++++++++++++++++++parsedConfig",
-            parsedConfig,
-          );
+            console.log("FINAL CONFIG:", parsedConfig);
+            console.log("parsedConfig:", parsedConfig);
+            console.log(
+              "+++++++++++++++++parsedConfig+++++++++++++++++++++parsedConfig",
+              parsedConfig,
+            );
 
-          await increaseTapCount(db, item.id, user?.id);
-
-          if (item.url.includes(".")) {
-            navigation.navigate("Web", { item, parsedConfig });
-          } else {
+            await increaseTapCount(db, item.id, user?.id);
             navigation.navigate("List", { item, parsedConfig });
+          } else {
+            const db = await getDBConnection();
+            await increaseTapCount(db, item.id, user?.id);
+            navigation.navigate("Web", { item });
           }
         }}
       >
@@ -566,34 +569,32 @@ const MenuTab = ({
             },
           ]}
         >
-
-          {
-            item.icon.includes('fa fa-') ? (
-              <FontAwesome
-                name={item.icon.replace('fa fa-', '')}
-                color={theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR}
-                size={18}
-              />
-            ) : <>
-            {item?.materialIcon ? (
-            <MaterialIcons
-              name={item?.materialIcon || "widgets"}
-              color={ERP_COLOR_CODE.ERP_APP_COLOR}
+          {item.icon.includes("fa fa-") ? (
+            <FontAwesome
+              name={item.icon.replace("fa fa-", "")}
+              color={theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR}
               size={18}
             />
           ) : (
-            <TranslatedText
-              numberOfLines={1}
-              text={item.icon || getInitials(item?.name)}
-              style={[
-                styles.iconTextV2,
-                theme === "dark" && { color: "black" },
-              ]}
-            ></TranslatedText>
-          )}
+            <>
+              {item?.materialIcon ? (
+                <MaterialIcons
+                  name={item?.materialIcon || "widgets"}
+                  color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                  size={18}
+                />
+              ) : (
+                <TranslatedText
+                  numberOfLines={1}
+                  text={item.icon || getInitials(item?.name)}
+                  style={[
+                    styles.iconTextV2,
+                    theme === "dark" && { color: "black" },
+                  ]}
+                ></TranslatedText>
+              )}
             </>
-          }
-          
+          )}
         </View>
 
         <View
@@ -639,9 +640,10 @@ const MenuTab = ({
 
   return (
     <View
-      style={{ 
-      
-        flex: 1, backgroundColor: theme === "dark" ? "black" : "white" }}
+      style={{
+        flex: 1,
+        backgroundColor: theme === "dark" ? "black" : "white",
+      }}
     >
       <View
         style={{
@@ -655,7 +657,7 @@ const MenuTab = ({
         }}
       ></View>
 
-      {!isHorizontal  ? (
+      {!isHorizontal && list.length > 8 ? (
         <>
           <SectionList
             sections={sectionListData}
@@ -679,7 +681,7 @@ const MenuTab = ({
                 <View
                   style={{
                     flexDirection: "row",
-                    marginLeft: 6
+                    marginLeft: 6,
                   }}
                 >
                   <MaterialIcons
@@ -730,8 +732,8 @@ const MenuTab = ({
                 <View
                   style={{
                     flexDirection: "row",
-                    flexWrap: "wrap", 
-                   }}
+                    flexWrap: "wrap",
+                  }}
                 >
                   {rowItems.map((child, childIndex) => {
                     const globalIndex = index + childIndex;
@@ -741,8 +743,6 @@ const MenuTab = ({
                         key={childIndex}
                         style={{
                           width: isLandscape ? "25%" : "33%",
-                         
-
                         }}
                       >
                         {renderItem({ item: child, index: globalIndex })}

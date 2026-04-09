@@ -35,9 +35,15 @@ import FastImage from "react-native-fast-image";
 import { ERP_COLOR_CODE } from "../../../../../utils/constants";
 import {
   clearAuthState,
+  setActiveDashboardBranch,
+  setActiveDashboardBranchId,
+  setActiveDashboardType,
+  setActiveDashboardTypeId,
   setDashboard,
   setEmptyMenu,
   updateAppMenuList,
+  updateSelectedFromDateState,
+  updateSelectedToDateState,
 } from "../../../../../store/slices/auth/authSlice";
 import { resetAjaxState } from "../../../../../store/slices/ajax/ajaxSlice";
 import { resetAttendanceState } from "../../../../../store/slices/attendance/attendanceSlice";
@@ -248,6 +254,12 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
           onPressOut={onPressItemOut}
           onPress={async () => {
             // setTimeout(async ()=>{
+            dispatch(updateSelectedFromDateState(""));
+            dispatch(updateSelectedToDateState(""));
+            dispatch(setActiveDashboardBranchId(""));
+            dispatch(setActiveDashboardBranch(""));
+            dispatch(setActiveDashboardType(""));
+            dispatch(setActiveDashboardTypeId(""));
             dispatch(setDashboard([]));
             dispatch(setEmptyMenu([]));
             dispatch(resetAjaxState());

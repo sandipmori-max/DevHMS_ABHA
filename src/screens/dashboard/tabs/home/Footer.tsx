@@ -45,7 +45,7 @@ const Footer = ({
   textColor,
   isFromListPage,
 }) => {
-  const isHTML = typeof footer === "string" && footer.trim().startsWith("<");
+  const isHTML = typeof footer === "string" && /<[^>]+>/.test(footer);
   const isMarquee = footer.includes("<marquee");
 
 
