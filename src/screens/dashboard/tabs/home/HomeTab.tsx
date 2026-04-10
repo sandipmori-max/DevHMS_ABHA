@@ -17,6 +17,7 @@ import ERPIcon from "../../../../components/icon/ERPIcon";
 import {
   getERPAppConfigMenuThunk,
   getERPDashboardThunk,
+  getERPListDataThunk,
   getERPMenuThunk,
   getERPPageThunk,
 } from "../../../../store/slices/auth/thunk";
@@ -29,6 +30,8 @@ import PieChartSection from "./chartData";
 import {
   formatDateForAPI,
   getDashboardAI,
+  getWorkedHours,
+  isLatePunchIn,
   parseCustomDate,
 } from "../../../../utils/helpers";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -65,6 +68,7 @@ import GreetingBottomSheet from "./GreetingBottomSheet";
 import { getDDLThunk } from "../../../../store/slices/dropdown/thunk";
 import CustomAlert from "../../../../components/alert/CustomAlert";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
+import { getLastPunchInThunk } from "../../../../store/slices/attendance/thunk";
 
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;
@@ -85,7 +89,8 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   const [aiMessage, setAiMessage] = useState("");
   const [visibleAI, setVisibleAI] = useState(false);
   const [showFull, setShowFull] = useState(false);
-
+  const [attendance, setAttendance] = useState<any>(null);
+  const [workingTime, setWorkingTime] = useState("00:00:00");
   const {
     dashboard,
     isDashboardLoading,
@@ -157,7 +162,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   const [searchText, setSearchText] = useState("");
   const [filteredDashboard, setFilteredDashboard] = useState(dashboard);
   const searchTimeout = useRef<any>(null);
- 
+
   const translateX = useRef(new Animated.Value(width)).current;
 
   const htmlItems = filteredDashboard.filter((item) =>
@@ -197,7 +202,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
   useFocusEffect(
     useCallback(() => {
-        
       // dispatch(setActiveDashboardBranchId(""));
       // dispatch(setActiveDashboardBranch(""));
       // dispatch(setActiveDashboardType(""));
@@ -406,6 +410,20 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                     setControlsLoader(false);
                     dispatch(setDashboardLoading(false));
                   }, 4000);
+
+                  dispatch(getLastPunchInThunk())
+                    .unwrap()
+                    .then((res) => {
+                      if (res?.id !== "0" || res?.id !== 0) {
+                        setAttendance(res);
+                      } else {
+                        setAttendance(null);
+                      }
+                      setAttendance(res);
+                    })
+                    .catch((err) => {
+                      setAttendance(null);
+                    });
 
                   return () => clearTimeout(timer);
                 } catch (error) {
@@ -838,11 +856,18 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         td: auth?.dashboardToDate.trim() || toDate,
       },
     );
-    
+
     dispatch(
       getERPDashboardThunk({
-        branch: auth?.dashboardBranchId.trim() === '-1' ? '-1' : auth?.dashboardBranchId.trim() || "",
-        type: (auth?.dashboardTypeId.trim() === 'all' || auth?.dashboardTypeId.trim() === 'ALL') ? '' : auth?.dashboardTypeId.trim() || "",
+        branch:
+          auth?.dashboardBranchId.trim() === "-1"
+            ? "-1"
+            : auth?.dashboardBranchId.trim() || "",
+        type:
+          auth?.dashboardTypeId.trim() === "all" ||
+          auth?.dashboardTypeId.trim() === "ALL"
+            ? ""
+            : auth?.dashboardTypeId.trim() || "",
         fd: auth?.dashboardFromDate.trim() || fromDate,
         td: auth?.dashboardToDate.trim() || toDate,
       }),
@@ -919,10 +944,141 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       console.log("-------------------------------------DDL Error:", error);
     }
   };
+  const [listData, setListData] = useState<any[]>([]);
+
+  const uniqueByDate =
+    listData.length > 0
+      ? Object.values(
+          listData.reduce((acc, item) => {
+            const key = item.date;
+
+            // priority logic (jo rakhna hai wo decide karo)
+            if (!acc[key]) {
+              acc[key] = item;
+            } else {
+              // Prefer FullDay > Half > Working > Leave
+              const priority = {
+                FullDay: 4,
+                Half: 3,
+                Working: 2,
+                "Punch Missing": 1,
+                Leave: 0,
+              };
+
+              if (
+                (priority[item.status] || 0) > (priority[acc[key].status] || 0)
+              ) {
+                acc[key] = item;
+              }
+            }
+
+            return acc;
+          }, {}),
+        )
+      : [];
+  const leave = uniqueByDate?.filter(
+    (i) => i?.status?.toLowerCase() === "leave",
+  ).length;
+
+  const late = uniqueByDate.filter(
+    (i) => i?.intime && isLatePunchIn(i?.intime),
+  ).length;
+
+  const lessHours = uniqueByDate.filter(
+    (i) =>
+      i?.intime && i?.outtime && getWorkedHours(i?.intime, i?.outtime) < 8.5,
+  ).length;
+
+  const present = uniqueByDate.length - leave;
 
   useEffect(() => {
     getCurrentMonthRange();
   }, [user, reLoading]);
+
+  console.log("attendance", attendance);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Punch In Data
+        const res = await dispatch(getLastPunchInThunk()).unwrap();
+
+        if (res?.id !== "0" && res?.id !== 0) {
+          setAttendance(res);
+        } else {
+          setAttendance(null);
+        }
+
+        // ERP List Data
+        const raw = await dispatch(
+          getERPListDataThunk({
+            page: "PunchIn",
+            fromDate: fromDate,
+            toDate: toDate,
+            param: "",
+            branch: "",
+          }),
+        ).unwrap();
+
+        const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+        const final = parsed?.d ? JSON.parse(parsed?.d) : parsed;
+
+        console.log(
+          "--------------------------------------------List Data:",
+          final,
+        );
+
+        setListData(final?.data || final || []);
+      } catch (err) {
+        console.log("Error:", err);
+        setAttendance(null);
+        setListData([]);
+      }
+    };
+
+    fetchData();
+  }, [dashboard, reLoading, fromDate, toDate]);
+
+  useEffect(() => {
+    if (!attendance) {
+      return;
+    }
+    const interval = setInterval(() => {
+      const now = new Date();
+
+      // 👉 intime ko date me convert karo
+      const [hours, minutes] = attendance?.intime.split(":").map(Number);
+
+      const inTimeDate = new Date();
+      inTimeDate.setHours(hours);
+      inTimeDate.setMinutes(minutes);
+      inTimeDate.setSeconds(0);
+
+      // 👉 difference in ms
+      const diff = now.getTime() - inTimeDate.getTime();
+
+      if (diff < 0) {
+        setWorkingTime("00:00:00");
+        return;
+      }
+
+      // 👉 convert to HH:MM:SS
+      const hrs = Math.floor(diff / (1000 * 60 * 60));
+      const mins = Math.floor((diff / (1000 * 60)) % 60);
+      const secs = Math.floor((diff / 1000) % 60);
+
+      const formatted =
+        String(hrs).padStart(2, "0") +
+        ":" +
+        String(mins).padStart(2, "0") +
+        ":" +
+        String(secs).padStart(2, "0");
+
+      setWorkingTime(formatted);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [attendance, fromDate, toDate]);
 
   if (isDashboardLoading) return <FullViewLoader isShowTop={false} />;
   if (!actionLoader && filteredDashboard?.length === 0) {
@@ -1296,7 +1452,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                         },
                       ]}
                     >
-                       
                       <TouchableOpacity
                         onPress={() =>
                           setShowDatePicker({
@@ -1692,7 +1847,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                   style={{
                                     marginTop: 12,
                                     marginBottom: 2,
-                                    backgroundColor: ERP_COLOR_CODE.ERP_eee,
+                                    backgroundColor: "#f5f5f5",
                                     flexDirection: "row",
                                     justifyContent: "space-between",
                                     padding: 8,
@@ -1709,28 +1864,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                   >
                                     Chart Data
                                   </Text>
-
-                                  <View
-                                    style={{
-                                      opacity: 0.6,
-                                      padding: 4,
-                                      width: 24,
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                      backgroundColor:
-                                        ERP_COLOR_CODE.ERP_APP_COLOR,
-                                      borderRadius: 4,
-                                    }}
-                                  >
-                                    <Text
-                                      style={{
-                                        color: "white",
-                                        fontWeight: "600",
-                                      }}
-                                    >
-                                      {pieChartData?.length || 0}
-                                    </Text>
-                                  </View>
                                 </View>
                                 <PieChartSection
                                   pieChartData={pieChartData}
@@ -1755,7 +1888,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                             <View
                               style={{
                                 marginBottom: 8,
-                                backgroundColor: ERP_COLOR_CODE.ERP_eee,
+                                backgroundColor: "#f5f5f5",
                                 flexDirection: "row",
                                 justifyContent: "space-between",
                                 padding: 8,
@@ -1768,24 +1901,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                               >
                                 Dashboard
                               </Text>
-
-                              <View
-                                style={{
-                                  opacity: 0.6,
-                                  padding: 4,
-                                  paddingHorizontal: 6,
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-                                  borderRadius: 4,
-                                }}
-                              >
-                                <Text
-                                  style={{ color: "white", fontWeight: "600" }}
-                                >
-                                  {filteredDashboard?.length || 0}
-                                </Text>
-                              </View>
                             </View>
                             <View
                               style={{
@@ -1855,6 +1970,375 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                               showsVerticalScrollIndicator={false}
                             />
                           </View>
+
+                          {attendance?.intime && (
+                            <>
+                              <View
+                                style={{
+                                  marginTop: 2,
+                                  marginBottom: 2,
+                                  backgroundColor: "#f5f5f5",
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
+                                  padding: 8,
+                                  borderRadius: 4,
+                                  alignItems: "center",
+                                  marginHorizontal: 8,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    color: "black",
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  Today Attendance
+                                </Text>
+
+                                <View
+                                  style={{
+                                    opacity: 0.6,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    borderRadius: 4,
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      color: "gray",
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                    {new Date().toLocaleDateString()}
+                                  </Text>
+                                </View>
+                              </View>
+                            </>
+                          )}
+
+                          {attendance?.intime && (
+                            <>
+                              <View style={styles.timeContainer}>
+                                {/* Clock In */}
+                                <View style={styles.timeItem}>
+                                  <View style={styles.iconTimeContainer}>
+                                    <MaterialIcons
+                                      name="login"
+                                      size={22}
+                                      color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                                    />
+                                  </View>
+                                  <Text
+                                    style={[
+                                      styles.timeText,
+                                      {
+                                        color: ERP_COLOR_CODE.ERP_APP_COLOR,
+                                      },
+                                    ]}
+                                  >
+                                    {attendance.intime || "-"}
+                                  </Text>
+                                  <Text
+                                    style={[
+                                      styles.labelText,
+                                      {
+                                        color: ERP_COLOR_CODE.ERP_APP_COLOR,
+                                      },
+                                    ]}
+                                  >
+                                    Check In
+                                  </Text>
+                                </View>
+                                <View style={styles.timeItem}>
+                                  <View style={styles.iconTimeContainer}>
+                                    <MaterialIcons
+                                      name="access-time"
+                                      size={22}
+                                      color={ERP_COLOR_CODE.ERP_green}
+                                    />
+                                  </View>
+                                  <Text
+                                    style={[
+                                      styles.timeText,
+                                      {
+                                        color: ERP_COLOR_CODE.ERP_green,
+                                      },
+                                    ]}
+                                  >
+                                    {workingTime}
+                                  </Text>
+                                  <Text
+                                    style={[
+                                      styles.labelText,
+                                      {
+                                        color: ERP_COLOR_CODE.ERP_green,
+                                      },
+                                    ]}
+                                  >
+                                    Working Hrs
+                                  </Text>
+                                </View>
+                                {/* Clock Out */}
+                                <TouchableOpacity
+                                  onPress={() => {
+                                    navigation.navigate("Attendance", {
+                                      isFor: "Attendance",
+                                      isFromDashboard: true,
+                                    });
+                                  }}
+                                  style={styles.timeItem}
+                                >
+                                  <View style={styles.iconTimeContainer}>
+                                    <MaterialIcons
+                                      name="logout"
+                                      size={22}
+                                      color={ERP_COLOR_CODE.ERP_ERROR}
+                                    />
+                                  </View>
+                                  <Text style={styles.timeText}>-</Text>
+                                  <Text
+                                    style={[
+                                      styles.labelText,
+                                      {
+                                        color: ERP_COLOR_CODE.ERP_ERROR,
+                                      },
+                                    ]}
+                                  >
+                                    Check Out
+                                  </Text>
+                                </TouchableOpacity>
+                              </View>
+                            </>
+                          )}
+                          {attendance?.intime && (
+                            <View
+                              style={{
+                                // backgroundColor: "#f5f5f5",
+                                borderRadius: 4,
+                                marginTop: 2,
+                                marginBottom: 2,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 4,
+                                width: "94%",
+                                marginLeft: 12,
+                                paddingVertical: 4,
+                                borderWidth: 0.4,
+                                borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+                              }}
+                            >
+                              <View
+                                style={[
+                                  styles.iconTimeContainer,
+                                  { backgroundColor: ERP_COLOR_CODE.ERP_green },
+                                  {
+                                    marginLeft: 4,
+                                  },
+                                ]}
+                              >
+                                <MaterialIcons
+                                  name="location-on"
+                                  size={22}
+                                  color={ERP_COLOR_CODE.ERP_ERROR}
+                                />
+                              </View>
+                              <View style={{ width: "88%" }}>
+                                <Text>
+                                  Gormoh Hotel, nr. Judges Bungalow Cross Road,
+                                  Bodakdev, Ahmedabad,
+                                </Text>
+                              </View>
+                            </View>
+                          )}
+                          {attendance?.intime && (
+                            <>
+                              <View
+                                style={{
+                                  marginTop: 2,
+                                  marginBottom: 2,
+                                  backgroundColor: "#f5f5f5",
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
+                                  padding: 8,
+                                  borderRadius: 4,
+                                  alignItems: "center",
+                                  marginHorizontal: 8,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    color: "black",
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  Summary
+                                </Text>
+
+                                <TouchableOpacity
+                                  onPress={() => {
+                                    navigation.navigate("MyAttendance", {
+                                      isFor: "MyAttendance",
+                                    });
+                                  }}
+                                  style={{
+                                    opacity: 0.6,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    borderRadius: 4,
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      color: "gray",
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                    View all
+                                  </Text>
+                                </TouchableOpacity>
+                              </View>
+                            </>
+                          )}
+
+                          {attendance?.intime && (
+                            <>
+                              <View style={styles.timeContainer}>
+                                {/* Clock In */}
+                                <View
+                                  style={[styles.timeItem, { width: "23%" }]}
+                                >
+                                  <View style={styles.iconTimeContainer}>
+                                    <MaterialIcons
+                                      name="co-present"
+                                      size={22}
+                                      color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                                    />
+                                  </View>
+                                  <Text
+                                    style={[
+                                      styles.timeText,
+                                      {
+                                        color: ERP_COLOR_CODE.ERP_APP_COLOR,
+                                      },
+                                    ]}
+                                  >
+                                    {present}
+                                  </Text>
+                                  <Text
+                                    style={[
+                                      styles.labelText,
+                                      {
+                                        color: ERP_COLOR_CODE.ERP_APP_COLOR,
+                                      },
+                                    ]}
+                                  >
+                                    Present
+                                  </Text>
+                                </View>
+                                <View
+                                  style={[
+                                    styles.timeItem,
+                                    {
+                                      width: "23%",
+                                    },
+                                  ]}
+                                >
+                                  <View style={styles.iconTimeContainer}>
+                                    <MaterialIcons
+                                      name="access-time"
+                                      size={22}
+                                      color={ERP_COLOR_CODE.ERP_green}
+                                    />
+                                  </View>
+                                  <Text
+                                    style={[
+                                      styles.timeText,
+                                      {
+                                        color: ERP_COLOR_CODE.ERP_green,
+                                      },
+                                    ]}
+                                  >
+                                    {leave}
+                                  </Text>
+                                  <Text
+                                    style={[
+                                      styles.labelText,
+                                      {
+                                        color: ERP_COLOR_CODE.ERP_green,
+                                      },
+                                    ]}
+                                  >
+                                    Absents
+                                  </Text>
+                                </View>
+                                {/* Clock Out */}
+                                <TouchableOpacity
+                                  style={[
+                                    styles.timeItem,
+                                    {
+                                      width: "23%",
+                                    },
+                                  ]}
+                                >
+                                  <View style={styles.iconTimeContainer}>
+                                    <MaterialIcons
+                                      name="access-alarm"
+                                      size={22}
+                                      color={ERP_COLOR_CODE.ERP_ERROR}
+                                    />
+                                  </View>
+                                  <Text style={styles.timeText}>{late}</Text>
+                                  <Text
+                                    style={[
+                                      styles.labelText,
+                                      {
+                                        color: ERP_COLOR_CODE.ERP_ERROR,
+                                      },
+                                    ]}
+                                  >
+                                    Late
+                                  </Text>
+                                </TouchableOpacity>
+
+                                <View
+                                  style={[
+                                    styles.timeItem,
+                                    {
+                                      width: "23%",
+                                    },
+                                  ]}
+                                >
+                                  <View style={styles.iconTimeContainer}>
+                                    <MaterialIcons
+                                      name="access-time"
+                                      size={22}
+                                      color={ERP_COLOR_CODE.ERP_green}
+                                    />
+                                  </View>
+                                  <Text
+                                    style={[
+                                      styles.timeText,
+                                      {
+                                        color: ERP_COLOR_CODE.ERP_green,
+                                      },
+                                    ]}
+                                  >
+                                    {leave}
+                                  </Text>
+                                  <Text
+                                    style={[
+                                      styles.labelText,
+                                      {
+                                        color: ERP_COLOR_CODE.ERP_green,
+                                      },
+                                    ]}
+                                  >
+                                    Less-Hr
+                                  </Text>
+                                </View>
+                              </View>
+                            </>
+                          )}
                         </View>
                       )}
                     />

@@ -43,7 +43,7 @@ import TranslatedText from "../tabs/home/TranslatedText";
 
 const AttendanceScreen = () => {
   const route = useRoute();
-  const { isFor } = route?.params || "";
+  const { isFor, isFromDashboard } = route?.params || "";
   const navigation = useNavigation<any>();
   const [isListVisible, setIsListVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -503,6 +503,7 @@ const { height, width } = useWindowDimensions();
                   <AttendanceForm
                     setBlockAction={setBlockAction}
                     resData={resData}
+                    isFromDashboard={isFromDashboard || false}
                   />
                 </>
               </ScrollView>

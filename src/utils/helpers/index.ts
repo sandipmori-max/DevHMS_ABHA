@@ -1069,7 +1069,7 @@ export const evaluateFormula = (formula, values) => {
 };
 
 export const runDynamicRules = (
-  ruleBlocks: any[],
+  ruleBlocks: any,
   values: Record<string, any>,
   changedField: string
 ) => {

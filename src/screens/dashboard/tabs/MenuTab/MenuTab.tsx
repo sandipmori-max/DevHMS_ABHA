@@ -615,7 +615,7 @@ const MenuTab = ({
               theme === "dark" && { color: "white" },
             ]}
           ></TranslatedText>
-          {!isHorizontal && item.title !== item.name && (
+          { item.title &&
             <TranslatedText
               text={item.title}
               numberOfLines={2}
@@ -626,8 +626,8 @@ const MenuTab = ({
                   textAlign: "center",
                 },
               ]}
-            ></TranslatedText>
-          )}
+            ></TranslatedText> 
+          }
         </View>
       </TouchableOpacity>
     );
@@ -657,7 +657,7 @@ const MenuTab = ({
         }}
       ></View>
 
-      {!isHorizontal && list.length > 8 ? (
+      {!isHorizontal ? (
         <>
           <SectionList
             sections={sectionListData}

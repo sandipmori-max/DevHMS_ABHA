@@ -167,59 +167,9 @@ const PageScreen = () => {
   const [locationEnabled, setLocationEnabled] = useState<boolean | null>(null);
   const [modalClose, setModalClose] = useState(false);
   const [isSettingVisible, setIsSettingVisible] = useState(false);
-  const [myScript, setMyScript] = useState([]);
-
-  // [
-  // {
-  //   logic: "AND",
-  //   rules: [
-  //     {
-  //       type: "formula",
-  //       formulaType: "dateDiff",
-  //       fieldName: "noofdays",
-  //       fromField: "fromdate",
-  //       toField: "todate",
-  //       inclusive: true,
-  //       triggerFields: ["fromdate", "todate"],
-  //     },
-  //   ],
-  // },
-
-  // {
-  //   logic: "AND",
-  //   rules: [
-  //     {
-  //       type: "formula",
-  //       fieldName: "totalexpense",
-  //       formula:
-  //         "servicecharge + travelexpense + localexpense + accexpense",
-  //       minusField: "cashreceived",
-  //       triggerFields: [
-  //         "servicecharge",
-  //         "travelexpense",
-  //         "localexpense",
-  //         "accexpense",
-  //         "cashreceived",
-  //       ],
-  //     },
-  //   ],
-  // },
-
-  // {
-  //   logic: "AND",
-  //   rules: [
-  //     {
-  //       left: "doctorlocation",
-  //       operator: "locationWithin",
-  //       right: "inlocation",
-  //       meters: 100,
-  //       message: "Doctor Location and InLocation Not Match",
-  //     },
-  //   ],
-  //   validActions: [{ field: "buttonSave", action: "enable" }],
-  //   invalidActions: [{ field: "buttonSave", action: "disable" }],
-  // },
-  // ]
+  const [myScript, setMyScript] = useState();
+  
+ 
   const [backgroundDeniedModal, setBackgroundDeniedModal] = useState(false);
 
   const isCheckingPermission = useRef(false);
@@ -665,6 +615,19 @@ const PageScreen = () => {
     error,
   ]);
 
+  const parseBackendScript = (str) => {
+  if (!str) return [];
+
+  try {
+    let cleaned = str.replace(/\n/g, "");
+    cleaned = cleaned.replace(/,\s*([}\]])/g, "$1");
+    return new Function(`return ${cleaned}`)();
+  } catch (e) {
+    console.log("❌ Parsing failed:", e);
+    return [];
+  }
+};
+
   const fetchPageData = useCallback(async () => {
     try {
       setError(null);
@@ -672,12 +635,12 @@ const PageScreen = () => {
       const parsed = await dispatch(
         getERPPageThunk({ page: url, id: isFromNew ? 0 : id }),
       ).unwrap();
+       console.log("script---++++++------------------++++++++++---",parsed)
       if (
-        parsed?.script &&
-        typeof parsed.script === "object" &&
-        !Array.isArray(parsed.script)
+        parsed?.script 
       ) {
-        setMyScript(parsed.script);
+        console.log("script---++++++++++++++++---",parsed?.script)
+        setMyScript(parsed?.script);
       }
 
       if (!isFromNew) {
@@ -756,6 +719,23 @@ const PageScreen = () => {
     hideDateTimePicker();
   };
 
+  const safeParse = (data) => {
+  if (!data) return [];
+
+  if (typeof data === "object") return data; // already parsed ✅
+
+  if (typeof data === "string") {
+    try {
+      return JSON.parse(data);
+    } catch (e) {
+      console.log("❌ Invalid JSON:", data);
+      return [];
+    }
+  }
+
+  return [];
+};
+
   const renderItem = useCallback(
     ({ item, index }: { item: any; index: number }) => {
       const setValue = (val) => {
@@ -770,13 +750,18 @@ const PageScreen = () => {
             updatedValues = { ...prev, [item.field]: val };
           }
 
-          console.log("Updated Values (before rules):", updatedValues);
+          console.log("Updated Values (before rules):", myScript , typeof myScript);
+       const parsed = safeParse(myScript);
+console.log("parsed-----------------", parsed)
 
-          const result = runDynamicRules(
-            myScript, // 🔥 unified rules (formula + condition)
-            updatedValues,
-            item.field,
-          );
+const safeRules = Array.isArray(parsed) ? parsed : [parsed];
+
+console.log("safeRules-----------------", safeRules)
+const result = runDynamicRules(
+  safeRules,
+  updatedValues,
+  item.field
+);
 
           console.log("After Rules Values 👉", result.values);
           console.log("Actions 👉", result.actions);
@@ -1059,8 +1044,19 @@ const PageScreen = () => {
           ...prev,
           [activeDateField]: date.toISOString(),
         };
+
+              const parsed = safeParse(myScript);
+
+const safeRules = Array.isArray(parsed) ? parsed : [parsed];
+
+// const result = runDynamicRules(
+//   safeRules,
+//   updatedValues,
+//   item.field
+// );
+
         const result = runDynamicRules(
-          myScript,
+          safeRules,
           updatedValues,
           activeDateField,
         );

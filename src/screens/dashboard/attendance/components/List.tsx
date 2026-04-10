@@ -210,18 +210,47 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
     records: groupedData[date],
   }));
 
+  const uniqueByDate = Object.values(
+    listData.reduce((acc, item) => {
+      const key = item.date;
+
+      // priority logic (jo rakhna hai wo decide karo)
+      if (!acc[key]) {
+        acc[key] = item;
+      } else {
+        // Prefer FullDay > Half > Working > Leave
+        const priority = {
+          FullDay: 4,
+          Half: 3,
+          Working: 2,
+          "Punch Missing": 1,
+          Leave: 0,
+        };
+
+        if ((priority[item.status] || 0) > (priority[acc[key].status] || 0)) {
+          acc[key] = item;
+        }
+      }
+
+      return acc;
+    }, {}),
+  );
+
   const total = listData?.length;
-  const leave = listData?.filter(
+  const leave = uniqueByDate.filter(
     (i) => i?.status?.toLowerCase() === "leave",
   ).length;
-  const late = listData?.filter(
+
+  const late = uniqueByDate.filter(
     (i) => i?.intime && isLatePunchIn(i?.intime),
   ).length;
-  const lessHours = listData?.filter(
+
+  const lessHours = uniqueByDate.filter(
     (i) =>
       i?.intime && i?.outtime && getWorkedHours(i?.intime, i?.outtime) < 8.5,
   ).length;
-  const present = total - leave;
+
+  const present = uniqueByDate.length - leave;
 
   const chartData = [
     { value: present, color: "#4caf50", text: t("text.text14") },
@@ -366,50 +395,48 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
               <View style={{ flexDirection: "row" }}>
                 <View
                   style={{
-                    width: "50%", 
-                    alignContent:'center',
-                    alignItems:'center',
-                    justifyContent:'center'
+                    width: "50%",
+                    alignContent: "center",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
-                   <ScrollView 
-                   showsHorizontalScrollIndicator={false}
-                   showsVerticalScrollIndicator={false}
-                   >
+                  <ScrollView
+                    showsHorizontalScrollIndicator={false}
+                    showsVerticalScrollIndicator={false}
+                  >
                     <Calendar
-                          style={{
-                            width: Dimensions.get("window").width * 0.4,
-                            borderRadius: 8,
-                            elevation: 2,
-                            backgroundColor:
-                              theme === "dark" ? "black" : "white",
-                            borderColor: theme === "dark" ? "white" : "black",
-                          }}
-                          monthFormat={"MMMM yyyy"}
-                          hideExtraDays={false}
-                          firstDay={1}
-                          onDayPress={(day) => {
-                            const selectedData = listData?.find(
-                              (d) => normalizeDate(d?.date) === day?.dateString,
-                            );
-                            openDetails(selectedData);
-                          }}
-                          markingType={"custom"}
-                          markedDates={markedDates}
-                          theme={{
-                            textDayFontWeight: "600",
-                            todayTextColor:
-                              theme === "dark"
-                                ? "#fff"
-                                : ERP_COLOR_CODE.ERP_APP_COLOR,
-                            arrowColor:
-                              theme === "dark"
-                                ? "white"
-                                : ERP_COLOR_CODE.ERP_APP_COLOR,
-                          }}
-                        />
-                   </ScrollView>
- 
+                      style={{
+                        width: Dimensions.get("window").width * 0.4,
+                        borderRadius: 8,
+                        elevation: 2,
+                        backgroundColor: theme === "dark" ? "black" : "white",
+                        borderColor: theme === "dark" ? "white" : "black",
+                      }}
+                      monthFormat={"MMMM yyyy"}
+                      hideExtraDays={false}
+                      firstDay={1}
+                      onDayPress={(day) => {
+                        const selectedData = listData?.find(
+                          (d) => normalizeDate(d?.date) === day?.dateString,
+                        );
+                        openDetails(selectedData);
+                      }}
+                      markingType={"custom"}
+                      markedDates={markedDates}
+                      theme={{
+                        textDayFontWeight: "600",
+                        todayTextColor:
+                          theme === "dark"
+                            ? "#fff"
+                            : ERP_COLOR_CODE.ERP_APP_COLOR,
+                        arrowColor:
+                          theme === "dark"
+                            ? "white"
+                            : ERP_COLOR_CODE.ERP_APP_COLOR,
+                      }}
+                    />
+                  </ScrollView>
                 </View>
 
                 <View style={{ width: "50%" }}>
@@ -896,7 +923,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                 fontWeight: "600",
                               }}
                             >
-                              {total + `\n`}
+                              {uniqueByDate.length + `\n`}
                               {t("text.text18")}
                             </Text>
                           )}

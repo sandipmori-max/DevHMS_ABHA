@@ -33,7 +33,10 @@ const SlideButtonIOS: React.FC<Props> = ({
       style={styles.container}
       activeOpacity={0.7}
     >
-      <View style={[styles.sliderContainer, { borderColor: successColor },
+      <View style={[styles.sliderContainer, { 
+        borderColor: successColor, 
+        backgroundColor: successColor
+      },
 
         isLandscape ? {
           width: '100%'
@@ -41,11 +44,15 @@ const SlideButtonIOS: React.FC<Props> = ({
           width: width - 20
         }
       ]}>
-        <Text style={styles.label}>
-          {loading ? t("text.text22") : completed ? t('text.text23') : label}
+
+        {
+          loading ?   <ActivityIndicator color={ERP_COLOR_CODE.ERP_WHITE} /> :  <Text style={styles.label}>
+          {loading ? t("text.text22") : completed ? t('text.text23').toUpperCase() : label.toUpperCase() }
         </Text>
 
-        <View style={[styles.slider, { backgroundColor: successColor }]}>
+        }
+       
+        {/* <View style={[styles.slider, { backgroundColor: successColor }]}>
           {loading ? (
             <ActivityIndicator color={ERP_COLOR_CODE.ERP_WHITE} />
           ) : (
@@ -55,24 +62,24 @@ const SlideButtonIOS: React.FC<Props> = ({
               size={22}
             />
           )}
-        </View>
+        </View> */}
       </View>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { alignItems: 'center', marginVertical: 20 },
+  container: { 
+    alignItems: 'center', marginVertical: 20 },
   sliderContainer: {
     width: SLIDE_WIDTH,
     height: SLIDER_SIZE,
     borderRadius: 6,
-    borderWidth: 2,
-    backgroundColor: '#f2f2f2',
+    borderWidth: 2, 
     justifyContent: 'center',
     overflow: 'hidden',
   },
-  label: { position: 'absolute', alignSelf: 'center', fontWeight: '600', color: ERP_COLOR_CODE.ERP_555 },
+  label: { position: 'absolute', alignSelf: 'center', fontWeight: '600', color: ERP_COLOR_CODE.ERP_WHITE },
   slider: { width: SLIDER_SIZE, height: SLIDER_SIZE, borderRadius: 6, justifyContent: 'center', alignItems: 'center', position: 'absolute', left: 0, top: 0 },
 });
 

@@ -157,7 +157,12 @@ const StackNavigator = () => {
         name="LocationTrack"
         component={LocationTrackScreen}
       />
-      <Stack.Screen name="FaceCameraScreen" component={FaceCameraScreen} />
+      <Stack.Screen 
+      
+      options={{  // ❌ hide back button (iOS)
+    gestureEnabled: false,    // ❌ disable swipe back (iOS)
+  }}
+      name="FaceCameraScreen" component={FaceCameraScreen} />
       {/* <Stack.Screen
         name="Tasks"
         component={DisplayScreen}

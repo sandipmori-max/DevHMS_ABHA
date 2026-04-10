@@ -25,9 +25,13 @@ import { useAppSelector } from "../../../../store/hooks";
 import CustomAlert from "../../../../components/alert/CustomAlert";
 
 const FaceCameraScreen = ({ navigation, route }: any) => {
-  const { user , attendanceSecurityLevel} = useAppSelector((state) => state.auth);
-  let ATTENDANCE_LEVEL = attendanceSecurityLevel ? parseInt(attendanceSecurityLevel) : 0;
-  const { onCapture } = route.params;
+  const { user, attendanceSecurityLevel } = useAppSelector(
+    (state) => state.auth,
+  );
+  let ATTENDANCE_LEVEL = attendanceSecurityLevel
+    ? parseInt(attendanceSecurityLevel)
+    : 0;
+  const { onCapture, isFromDashboard } = route.params;
   const camera = useRef(null);
 
   const device = useCameraDevice("front");
@@ -184,7 +188,6 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
       console.log("🎯 Confidence:", confidence);
 
       if (confidence > 75) {
-        
         onCapture(compressedUri);
         navigation.goBack();
       } else {
@@ -301,7 +304,21 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
           },
         ]}
       >
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          onPress={() => {
+            if (isFromDashboard) {
+              navigation.goBack();
+
+              setTimeout(() => {
+                if (navigation.canGoBack()) {
+                  navigation.goBack();
+                }
+              }, 1);
+            } else {
+              navigation.goBack();
+            }
+          }}
+        >
           <MaterialIcons name="arrow-back" size={26} color="#fff" />
         </TouchableOpacity>
 

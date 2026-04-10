@@ -40,7 +40,8 @@ import RNFS from "react-native-fs";
 import ImageResizer from "@bam.tech/react-native-image-resizer";
 import { launchCamera } from "react-native-image-picker";
 
-const AttendanceForm = ({ setBlockAction, resData }: any) => {
+const AttendanceForm = ({ setBlockAction, resData, isFromDashboard }: any) => {
+  console.log("isFromDashboard", isFromDashboard)
    const { user, attendanceDone: isAttendanceDone, attendanceSecurityLevel } = useAppSelector(
     (state) => state?.auth,
   );
@@ -50,7 +51,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
   const [img, setImg] = useState("");
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
- 
+ const formikRef = useRef(null);
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const baseLink = useBaseLink();
@@ -107,6 +108,16 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
     return () => subscription.remove();
   }, []);
 
+useEffect(() => {
+  const handleCamera = async () => {
+    if (!isFromDashboard || !formikRef.current) return;
+    const { setFieldValue, handleSubmit } = formikRef.current;
+     handleStatusToggle(setFieldValue, handleSubmit);
+  };
+
+  handleCamera();
+}, [isFromDashboard]);
+
   const openCamera = (setFieldValue, handleSubmit) => {
     setLocationLoading(false);
     setBlockAction(false);
@@ -159,6 +170,7 @@ const AttendanceForm = ({ setBlockAction, resData }: any) => {
           }
         }, 300);
       },
+      isFromDashboard: isFromDashboard
     });
   };
 const openCameraV2 = (
@@ -376,6 +388,7 @@ const openCameraV2 = (
       }}
     >
       <Formik
+      innerRef={formikRef}
         initialValues={{
           name: user?.name,
           latitude: userLocation ? String(userLocation?.latitude) : "",
@@ -437,7 +450,7 @@ const openCameraV2 = (
 
                  setTimeout(() => {
                     setAlertMapVisible(false);
-                       dispatch(setReloadApp());
+                    dispatch(setReloadApp());
                     navigation.goBack();
                   }, 1500);
               }, 1100);

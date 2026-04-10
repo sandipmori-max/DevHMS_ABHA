@@ -475,4 +475,43 @@ export const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#eee",
   },
+  timeContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+   
+  },
+
+  timeItem: {
+    width: "32%",
+    alignItems: "center",
+    borderRadius: 4,
+    borderWidth: 0.4,
+     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+  },
+
+  iconTimeContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 6,
+    borderColor: "gray",
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 6,
+    backgroundColor: "#f5f5f5",
+  },
+
+  timeText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#000",
+  },
+
+  labelText: {
+    fontSize: 12,
+    color: "#777",
+    marginTop: 2,
+    marginBottom: 8
+  },
 });

@@ -25,10 +25,7 @@ const PrivacyPolicyScreen = () => {
   const title = route?.params?.titlePage || ""
 
   // Default URL (same as existing)
-  const defaultUrl =
-    Platform.OS === 'ios'
-      ? 'https://www.deverp.com/index.aspx?q=deverp_privacy_policy'
-      : 'http://www.deverp.com/index.aspx?q=deverp_privacy_policy';
+  const defaultUrl =  'http://www.deverp.com/index.aspx?q=deverp_privacy_policy';
 
   const finalUrl = passedUrl ?? defaultUrl;
 

@@ -54,7 +54,7 @@ import { getDDLThunk } from "../../../store/slices/dropdown/thunk";
 const ListScreen = () => {
   const route = useRoute<RouteProp<ListRouteParams, "List">>();
   const { item, parsedConfig } = route?.params;
-  
+  console.log("parsedConfig", parsedConfig)
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const {
@@ -554,6 +554,10 @@ const ListScreen = () => {
 
  
   const handleItemPressed = (item, page, pageTitle = "") => {
+    console.log("parsedConfig++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", parsedConfig)
+    if(!parsedConfig){
+      return;
+    }
     setIsFilterVisible(false);
     setSearchQuery("");
     if (parsedConfig?.editentry === 1 || parsedConfig?.editentry === "1") {
@@ -1033,6 +1037,7 @@ const ListScreen = () => {
                     isFromBusinessCard={isFromBusinessCard}
                     pageParamsName={pageParamsName}
                     handleItemPressed={handleItemPressed}
+                    parsedConfig={parsedConfig}
                     pageName={pageName}
                     setIsFilterVisible={setIsFilterVisible}
                     setSearchQuery={setSearchQuery}

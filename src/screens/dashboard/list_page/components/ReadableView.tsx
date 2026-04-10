@@ -111,6 +111,7 @@ const ReadableView = ({
   handleDeleteNotification,
   loadMore,
   isLoadingMore,
+  parsedConfig
 }: any) => {
   const { t } = useTranslations();
   const navigation = useNavigation();
@@ -239,8 +240,11 @@ const ReadableView = ({
               },
             ]}
             onPress={async () => {
+              if(!parsedConfig){
+                return;
+              }
               if (authUser) return;
-              if (item?.id !== undefined) {
+              if (parsedConfig?.editentry === 1 || parsedConfig?.editentry === "1") {
                 setIsFilterVisible(false);
                 setSearchQuery("");
                 navigation.navigate("Page", {
@@ -381,8 +385,11 @@ const ReadableView = ({
 
           <TouchableOpacity
             onPress={async () => {
+              if(!parsedConfig){
+                return;
+              }
               if (authUser) return;
-              if (item?.id !== undefined) {
+              if (parsedConfig?.editentry === 1 || parsedConfig?.editentry === "1") {
                 navigation.navigate("Page", {
                   item,
                   title: pageParamsName,

@@ -262,7 +262,7 @@ const SettingsScreen = () => {
           navigation.navigate("Privacy Policy", {
             url:
               Platform.OS === "ios"
-                ? "https://deverp.com/index.aspx?q=contact_us"
+                ? "http://deverp.com/index.aspx?q=contact_us"
                 : "http://deverp.com/index.aspx?q=contact_us",
             titlePage: t("settings.helpSupport"),
           });
