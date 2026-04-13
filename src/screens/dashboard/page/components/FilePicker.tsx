@@ -14,6 +14,8 @@ import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import RNFS from "react-native-fs";
 import { Linking } from "react-native";
 import useTranslations from "../../../../hooks/useTranslations";
+import { useAppSelector } from "../../../../store/hooks";
+import InputError from "../../../../components/error/InputError";
 
 interface FileType {
   name: string;
@@ -29,6 +31,7 @@ const FilePickerRow = ({
   infoData,
   isFromFileManager = false,
   onFilePicked,
+  errors
 }: any) => {
   const { t } = useTranslations();
   const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
@@ -44,58 +47,73 @@ const FilePickerRow = ({
     "xls",
     "xlsx",
   ];
+  const theme = useAppSelector((state) => state?.theme.mode);
 
   const base = `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${item?.text}`;
   const [selectedFiles, setSelectedFiles] = useState<FileType[]>([]);
 
-  const openFilePicker = async () => {
-    try {
-      const files = await pick({
-        type: [types.allFiles],
-      });
-      setSelectedFiles((prev) => [...prev, ...files]);
-      const file = files[0];
+ const openFilePicker = async () => {
+  try {
+    const files = await pick({
+      type: [types.allFiles],
+      allowMultiSelection: true,
+    });
 
-      let filePath = files[0].uri;
+    const validFiles: FileType[] = [];
+    const attachments: string[] = []; // ✅ base64 array
+
+    for (let file of files) {
       const extension = file.name?.split(".").pop()?.toLowerCase();
 
       if (!extension || !ALLOWED_EXTENSIONS.includes(extension)) {
         Alert.alert(
           t("title.title1"),
-          t("Selected file type is not supported"),
+          `${file.name} - ${t("Selected file type is not supported")}`,
         );
-        return;
+        continue;
       }
+
       if (file.size && file.size > MAX_FILE_SIZE) {
         Alert.alert(
           t("title.title1"),
-          t("File size must be less than or equal to 25MB"),
+          `${file.name} - ${t("File size must be less than or equal to 25MB")}`,
         );
-        return;
+        continue;
       }
-      if (Platform.OS === "android" && files[0].uri.startsWith("content://")) {
-        const destPath = `${RNFS.TemporaryDirectoryPath}/${files[0].name}`;
-        await RNFS.copyFile(files[0].uri, destPath);
+
+      let filePath = file.uri;
+
+      if (Platform.OS === "android" && file.uri.startsWith("content://")) {
+        const destPath = `${RNFS.TemporaryDirectoryPath}/${file.name}`;
+        await RNFS.copyFile(file.uri, destPath);
         filePath = destPath;
       }
+
       if (isFromFileManager && onFilePicked) {
-        onFilePicked(files[0]);
-        return;
+        onFilePicked(file);
+        continue;
       }
+
       const fileBase64 = await RNFS.readFile(filePath, "base64");
-
-      handleAttachment(
-        `${files[0].name}; data:${files[0].nativeType};base64,${fileBase64}`,
-        item.field,
+      attachments.push(
+        `${file.name}; data:${file.type};base64,${fileBase64}`,
       );
-    } catch (err: any) {
-      if (err.code === "USER_CANCELED") {
-      } else {
-        Alert.alert(t("title.title1"), t("msg.msg12"));
-      }
+      validFiles.push(file);
     }
-  };
 
+    if (attachments.length > 0) {
+      handleAttachment(attachments, item.field);
+    }
+
+    if (validFiles.length > 0) {
+      setSelectedFiles((prev) => [...prev, ...validFiles]);
+    }
+  } catch (err: any) {
+    if (err.code === "USER_CANCELED") return;
+
+    Alert.alert(t("title.title1"), t("msg.msg12"));
+  }
+};
   const removeFile = (index: number) => {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
@@ -137,142 +155,193 @@ const FilePickerRow = ({
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>{item?.fieldtitle}</Text>
-      {!isFromFileManager && selectedFiles.length === 0 && (
-        <>
-          {item?.text !== "" && (
-            <View style={{ marginBottom: 8 }}>
-              <TouchableOpacity
-                onPress={() => {
-                  if (base) {
-                    Linking.openURL(base).catch((err) =>
-                      console.error("Failed to open link:", err),
-                    );
-                  }
-                }}
-              >
-                <Text
-                  style={{ color: "blue", textDecorationLine: "underline" }}
-                >
-                  {base}
-                </Text>
-              </TouchableOpacity>
-            </View>
+ <View style={styles.container}>
+  <View style={{ flexDirection: "row" }}>
+          <Text
+            style={[
+              styles.label,
+              theme === "dark" && {
+                color: "white",
+              },
+            ]}
+          >
+            {item?.fieldtitle}
+          </Text>
+          {item?.tooltip !== item?.fieldtitle && (
+            <Text
+              style={[
+                styles.label,
+                theme === "dark" && {
+                  color: "white",
+                },
+              ]}
+            >
+              {" "}
+              - ( {item?.tooltip} ){" "}
+            </Text>
           )}
+          {item?.mandatory === "1" && (
+            <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
+          )}
+        </View>
+
+  {/* Upload Area */}
+  {selectedFiles.length === 0 && (
+    <TouchableOpacity style={styles.uploadBox} onPress={openFilePicker}>
+      <MaterialIcons name="cloud-upload" size={36} color="#4c6ef5" />
+      <Text style={styles.uploadTitle}>Upload File</Text>
+      <Text style={styles.uploadSub}>Tap to browse files</Text>
+    </TouchableOpacity>
+  )}
+
+  {/* File List */}
+  {selectedFiles.map((file, index) => (
+    <View key={index} style={styles.fileItem}>
+      <View style={styles.fileLeft}>
+        <View style={styles.iconBox}>
+          <MaterialIcons
+            name={getFileIcon(file.name)}
+            size={22}
+            color="#4c6ef5"
+          />
+        </View>
+
+        <View style={{ flex: 1 }}>
+          <Text numberOfLines={1} style={styles.fileName}>
+            {file.name}
+          </Text>
+          <Text style={styles.fileMeta}>
+            {(file.size / 1024).toFixed(1)} KB
+          </Text>
+        </View>
+      </View>
+
+      <TouchableOpacity
+        style={styles.deleteBtn}
+        onPress={() => removeFile(index)}
+      >
+        <MaterialIcons name="close" size={18} color="#fff" />
+      </TouchableOpacity>
+    </View>
+  ))}
+
+ { selectedFiles.length === 0 && errors[item?.field] && (
+        <>
+          <InputError error={errors[item?.field]} />
+          <View style={{ height: 8 }} />
         </>
       )}
-
-      <ScrollView showsHorizontalScrollIndicator={false}>
-        {!isFromFileManager &&
-          selectedFiles.map((file, index) => (
-            <View key={index} style={styles.fileRow}>
-              <View style={{ flexDirection: "row" }}>
-                <MaterialIcons
-                  name={getFileIcon(file.name)}
-                  size={24}
-                  color={ERP_COLOR_CODE.ERP_555}
-                  style={{ marginRight: 6 }}
-                />
-                <Text style={styles.fileName} numberOfLines={1}>
-                  {file.name}
-                </Text>
-              </View>
-
-              <View style={{ flexDirection: "row" }}>
-                <TouchableOpacity
-                  style={styles.updateBtn}
-                  onPress={() => updateFile(index)}
-                >
-                  <MaterialIcons name="edit" size={18} color="#000" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.removeBtn}
-                  onPress={() => removeFile(index)}
-                >
-                  <MaterialIcons name="delete" size={18} color="#000" />
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
-        {!isFromFileManager && selectedFiles.length === 0 && (
-          <TouchableOpacity style={styles.addBtn} onPress={openFilePicker}>
-            <MaterialIcons
-              name="add"
-              size={20}
-              color={ERP_COLOR_CODE.ERP_WHITE}
-            />
-            <Text style={[styles.btnText, { marginLeft: 4 }]}>
-              {t("text.text36")}
-            </Text>
-          </TouchableOpacity>
-        )}
-        {isFromFileManager && (
-          <TouchableOpacity style={styles.addBtn} onPress={openFilePicker}>
-            <MaterialIcons
-              name="add"
-              size={20}
-              color={ERP_COLOR_CODE.ERP_WHITE}
-            />
-            <Text style={[styles.btnText, { marginLeft: 4 }]}>
-              {t("text.text36")}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </ScrollView>
-    </View>
+  {/* Add More */}
+  {selectedFiles.length > 0 && (
+    <TouchableOpacity style={styles.addMore} onPress={openFilePicker}>
+      <MaterialIcons name="add" size={18} color="#4c6ef5" />
+      <Text style={styles.addMoreText}>Add more files</Text>
+    </TouchableOpacity>
+  )}
+</View>
   );
 };
 
 export default FilePickerRow;
-
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 8,
-    backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
-  },
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    marginBottom: 4
+   },
+
   label: {
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 12,
+    color: "#222",
   },
-  addBtn: {
-    flexDirection: "row",
-    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 8,
+
+  /* Upload Box */
+  uploadBox: {
+    borderWidth: 1.5,
+    borderStyle: "dashed",
+    borderColor: "#4c6ef5",
+    borderRadius: 14,
+    paddingVertical: 30,
     alignItems: "center",
-    marginRight: 8,
+    justifyContent: "center",
+    backgroundColor: "#f8f9ff",
   },
-  updateBtn: {
-    padding: 6,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    marginHorizontal: 4,
+
+  uploadTitle: {
+    marginTop: 8,
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#333",
   },
-  removeBtn: {
-    padding: 6,
-    paddingHorizontal: 10,
-    borderRadius: 8,
+
+  uploadSub: {
+    fontSize: 12,
+    color: "#777",
+    marginTop: 2,
   },
-  fileRow: {
+
+  /* File Item */
+  fileItem: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginRight: 8,
-    paddingHorizontal: 6,
-    paddingVertical: 6,
-    backgroundColor: "#e9ecef",
-    borderRadius: 8,
+    backgroundColor: "#f8f9fa",
+    padding: 10,
+    borderRadius: 12,
+    marginBottom: 10,
   },
+
+  fileLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+
+  iconBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: "#edf2ff",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+  },
+
   fileName: {
-    maxWidth: 120,
     fontSize: 14,
-    marginRight: 8,
+    fontWeight: "500",
+    color: "#222",
   },
-  btnText: {
-    color: ERP_COLOR_CODE.ERP_WHITE,
+
+  fileMeta: {
+    fontSize: 11,
+    color: "#777",
+    marginTop: 2,
+  },
+
+  deleteBtn: {
+    backgroundColor: "#ff4d4f",
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  /* Add More */
+  addMore: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 6,
+    paddingVertical: 8,
+  },
+
+  addMoreText: {
+    marginLeft: 4,
+    color: "#4c6ef5",
     fontWeight: "600",
   },
 });

@@ -1,4 +1,4 @@
-import { Platform, SafeAreaView, StatusBar, Text, View } from "react-native";
+import { Platform, SafeAreaView, StatusBar, Text, useWindowDimensions, View } from "react-native";
 import React, {
   useEffect,
   useLayoutEffect,
@@ -29,7 +29,8 @@ const WebScreen = () => {
   const webviewRef = useRef<WebView>(null);
   const baseLink = useBaseLink();
   const theme = useAppSelector((state) => state?.theme.mode);
-
+  const { height, width } = useWindowDimensions();
+  const isLandscape = width > height;
   const url = isFromChart
     ? `${baseLink}app/index.html?dashboard/0/&token=${token}`
     : "";
@@ -75,12 +76,17 @@ const WebScreen = () => {
     setWebKey(Date.now());
 
     setIsReloading(true);
+    setIsHidden(false);
     try {
       webviewRef.current?.clearCache(true);
       // webviewRef.current?.clearHistory();
     } catch (e) {}
     webviewRef.current?.reload();
   };
+
+  useEffect(() =>{
+    reloadWebView();
+  }, [isLandscape])
 
   useLayoutEffect(() => {
     navigation.setOptions({

@@ -687,6 +687,7 @@ const PageScreen = () => {
   }, [fetchPageData]);
 
   const handleAttachment = (base64: string, val: any) => {
+    console.log("base64", base64)
     setFormValues((prev) => {
       return { ...prev, [val]: base64 };
     });
@@ -848,6 +849,7 @@ const result = runDynamicRules(
             infoData={infoData}
             item={item}
             handleAttachment={handleAttachment}
+            errors={errors}
           />
         );
       }

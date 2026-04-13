@@ -484,7 +484,7 @@ const MenuTab = ({
   };
 
   const renderItem = ({ item, index }: any) => {
-    const backgroundColor = accentColors[index % accentColors.length];
+     const backgroundColor = accentColors[index % accentColors.length];
     return (
       <TouchableOpacity
         style={[
@@ -615,9 +615,9 @@ const MenuTab = ({
               theme === "dark" && { color: "white" },
             ]}
           ></TranslatedText>
-          { item.title &&
+          {item?.title &&
             <TranslatedText
-              text={item.title}
+              text={item?.title}
               numberOfLines={2}
               style={[
                 list.length > 8 ? styles.subtitleV2 : styles.subtitle,
@@ -672,16 +672,19 @@ const MenuTab = ({
                   alignContent: "center",
                   alignItems: "center",
                   marginBottom: 6,
-                  backgroundColor: "#fff9f9",
+                  backgroundColor: "#fffcfc",
                   width: "98%",
                   justifyContent: "space-between",
                   padding: 4,
+                  borderWidth: 0.2,
+                  borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+                  marginLeft: 4
                 }}
               >
                 <View
                   style={{
                     flexDirection: "row",
-                    marginLeft: 6,
+                    marginLeft: 2,
                   }}
                 >
                   <MaterialIcons

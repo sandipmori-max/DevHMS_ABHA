@@ -346,7 +346,7 @@ const SettingsScreen = () => {
         >
           <MaterialIcons
             name={item?.icon}
-            color={theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR}
+            color={theme === "dark" ? "white" : item?.action === "Logout" ? ERP_COLOR_CODE.ERP_ERROR :  ERP_COLOR_CODE.ERP_APP_COLOR}
             size={22}
           />
         </View>
@@ -357,11 +357,16 @@ const SettingsScreen = () => {
               theme === "dark" && {
                 color: "white",
               },
+              {
+                color: item?.action === "Logout" ? ERP_COLOR_CODE.ERP_ERROR : 'black'
+              }
             ]}
           >
             {item?.title}
           </Text>
-          <Text style={styles.settingSubtitle}>{item?.subtitle}</Text>
+          <Text style={[styles.settingSubtitle,  {
+                color: item?.action === "Logout" ? ERP_COLOR_CODE.ERP_ERROR : 'black'
+              }]}>{item?.subtitle}</Text>
         </View>
         {item.type === "toggle" ? (
           <Switch
@@ -778,7 +783,7 @@ const SettingsScreen = () => {
               {t("settings.account")}
             </Text>
             <FlatList
-            key={isLandscape ? "landscape" : "portrait"}    
+              key={isLandscape ? "landscape" : "portrait"}    
               keyboardShouldPersistTaps="handled"
               data={settings.filter((item) => item.id === "9")}
               renderItem={renderSettingItem}

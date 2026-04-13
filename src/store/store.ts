@@ -24,6 +24,8 @@ const authPersistConfig = {
     "appColorCode",
     "accounts",
     "locationLogs",
+    "dashboardBranchId",
+    "dashboardTypeId"
   ],
 };
 

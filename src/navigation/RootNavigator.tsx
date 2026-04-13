@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
   PermissionsAndroid,
   Platform,
@@ -30,11 +30,16 @@ import { request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import { getLastPunchInThunk } from "../store/slices/attendance/thunk";
 import { setReloadApp } from "../store/slices/reloadApp/reloadAppSlice";
 import {
+  setActiveDashboardBranch,
+  setActiveDashboardBranchId,
+  setActiveDashboardType,
+  setActiveDashboardTypeId,
   updateAppMenuList,
   updateAttendanceState,
   updatePinVerifyLoadedState,
 } from "../store/slices/auth/authSlice";
 import { useTranslation } from "react-i18next";
+import { useFocusEffect } from "@react-navigation/native";
 
 // ------------------------- Location Permission Helper -------------------------
 export async function requestLocationPermissions(): Promise<
@@ -139,6 +144,17 @@ const RootNavigator = () => {
       setAlertVisible(false);
     }
   };
+
+  //  useFocusEffect(
+  //       useCallback(() => {
+  //         dispatch(setActiveDashboardBranchId(""));
+  //         dispatch(setActiveDashboardBranch(""));
+  //         dispatch(setActiveDashboardType(""));
+  //         dispatch(setActiveDashboardTypeId(""));
+          
+  //         return () => {};
+  //       }, []),
+  //     );
 
   useEffect(() => {
     if (!isAuthenticated) return;

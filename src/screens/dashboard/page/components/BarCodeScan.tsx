@@ -23,8 +23,7 @@ const BarCodeScan = ({ item }: any) => {
   const [scannedValue, setScannedValue] = useState('');
   const theme = useAppSelector(state => state?.theme.mode);
 
-  // Handle Back Button
-  function handleBackButtonClick() {
+  const handleBackButtonClick = () => {
     if (cameraShown) {
       setCameraShown(false);
       return true;

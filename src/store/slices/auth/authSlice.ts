@@ -288,6 +288,8 @@ const authSlice = createSlice({
             }
           }
 
+          console.log("menus", menus)
+
           state.menu = menus.map((menu: any, index: number) => ({
             id: `menu_${index}`,
             name: menu?.Name || '',

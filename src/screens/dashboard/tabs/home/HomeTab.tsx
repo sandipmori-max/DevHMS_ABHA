@@ -2,7 +2,6 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -18,7 +17,6 @@ import {
   getERPAppConfigMenuThunk,
   getERPDashboardThunk,
   getERPListDataThunk,
-  getERPMenuThunk,
   getERPPageThunk,
 } from "../../../../store/slices/auth/thunk";
 import ErrorMessage from "../../../../components/error/Error";
@@ -45,9 +43,6 @@ import {
   setActiveDashboardType,
   setActiveDashboardTypeId,
   setDashboardLoading,
-  updateAppMenuList,
-  updateSelectedFromDateState,
-  updateSelectedToDateState,
 } from "../../../../store/slices/auth/authSlice";
 import {
   View,
@@ -91,6 +86,11 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   const [showFull, setShowFull] = useState(false);
   const [attendance, setAttendance] = useState<any>(null);
   const [workingTime, setWorkingTime] = useState("00:00:00");
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const translateX = useRef(new Animated.Value(width)).current;
+  const [listData, setListData] = useState<any[]>([]);
+
   const {
     dashboard,
     isDashboardLoading,
@@ -98,18 +98,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     error,
     user,
     attendanceDone,
-    menu,
   } = useAppSelector((state) => state.auth);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  console.log("user", user);
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: showFull ? 1 : 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [showFull]);
 
   const runAI = async () => {
     try {
@@ -129,15 +118,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
   const aiCalled = useRef(false);
 
-  useEffect(() => {
-    if (!dashboard || aiCalled.current) return;
-    const timer = setTimeout(() => {
-      runAI();
-      aiCalled.current = true;
-    }, 19000);
-
-    return () => clearTimeout(timer);
-  }, [dashboard]);
   const [loadingPageId, setLoadingPageId] = useState<any>(null);
   const [isRefresh, setIsRefresh] = useState<boolean>(false);
   const [fromDate, setFromDate] = useState<string>("");
@@ -150,8 +130,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     show: boolean;
   }>(null);
 
-  const [visible, setVisible] = useState(false);
-  const slideAnim = useRef(new Animated.Value(0)).current;
   const { appBottomMenuList } = useAppSelector((state) => state?.auth);
   const theme = useAppSelector((state) => state?.theme.mode);
   const [actionLoader, setActionLoader] = useState(false);
@@ -163,7 +141,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   const [filteredDashboard, setFilteredDashboard] = useState(dashboard);
   const searchTimeout = useRef<any>(null);
 
-  const translateX = useRef(new Animated.Value(width)).current;
 
   const htmlItems = filteredDashboard.filter((item) =>
     hasHtmlContent(item.data),
@@ -174,14 +151,26 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     (item) => item.data && !hasHtmlContent(item.data),
   );
 
-  console.log(
-    "Dashboard Data: filteredDashboard ------+++++ ",
-    filteredDashboard,
-  );
+  useEffect(() => {
+    if (!dashboard || aiCalled.current) return;
+    const timer = setTimeout(() => {
+      runAI();
+      aiCalled.current = true;
+    }, 19000);
+
+    return () => clearTimeout(timer);
+  }, [dashboard]);
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: showFull ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [showFull]);
 
   useEffect(() => {
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
-
     searchTimeout.current = setTimeout(() => {
       const filtered = dashboard.filter((item) => {
         const text = searchText?.toLowerCase();
@@ -212,6 +201,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       return () => {};
     }, [isAuthenticated, navigation, isLandscape]),
   );
+
   useEffect(() => {
     Animated.loop(
       Animated.timing(translateX, {
@@ -514,40 +504,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     controls,
   ]);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     let timer;
-
-  //     if (isAuthenticated) {
-  //       setLoadingPageId(true);
-  //       try {
-  //         dispatch(getERPAppConfigMenuThunk());
-  //       } catch (error) {
-  //         dispatch(updateAppMenuList([])); // Clear menu on error
-  //         console.log("Error fetching app config menu:", error);
-  //       }
-  //       const params = {
-  //         branch: auth?.dashboardBranchId.trim() || "",
-  //         type: auth?.dashboardBranchId.trim() || "",
-  //         fd: fromDate,
-  //         td: toDate,
-  //       };
-
-  //       dispatch(getERPDashboardThunk(params));
-  //       dispatch(getERPMenuThunk());
-  //       timer = setTimeout(() => {
-  //         dispatch(setDashboardLoading(false));
-  //       }, 4000);
-  //     }
-  //     // ✅ single cleanup function
-  //     return () => {
-  //       if (timer) {
-  //         clearTimeout(timer);
-  //       }
-  //     };
-  //   }, [isAuthenticated, dispatch, fromDate, toDate]),
-  // );
-
   const accentColors = [
     "#4C6FFF",
     "#00C2A8",
@@ -572,16 +528,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       color: accentColors[index % accentColors.length],
       text: item?.title,
     }));
-
-  useEffect(() => {
-    if (visible) {
-      Animated.timing(slideAnim, {
-        toValue: 1,
-        duration: 250,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [visible]);
 
   const renderDashboardItem = ({
     item,
@@ -768,8 +714,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     );
   };
 
-  const scrollY = useRef(new Animated.Value(0)).current;
-
   const getCurrentMonthRange = () => {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -884,7 +828,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     auth.dashboardToDate,
     fromDate,
     toDate,
-    controls,
     reLoading,
   ]);
 
@@ -944,7 +887,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       console.log("-------------------------------------DDL Error:", error);
     }
   };
-  const [listData, setListData] = useState<any[]>([]);
+
 
   const uniqueByDate =
     listData.length > 0
@@ -976,6 +919,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
           }, {}),
         )
       : [];
+
   const leave = uniqueByDate?.filter(
     (i) => i?.status?.toLowerCase() === "leave",
   ).length;
@@ -995,21 +939,16 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     getCurrentMonthRange();
   }, [user, reLoading]);
 
-  console.log("attendance", attendance);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Punch In Data
         const res = await dispatch(getLastPunchInThunk()).unwrap();
-
         if (res?.id !== "0" && res?.id !== 0) {
           setAttendance(res);
         } else {
           setAttendance(null);
         }
 
-        // ERP List Data
         const raw = await dispatch(
           getERPListDataThunk({
             page: "PunchIn",
@@ -1081,6 +1020,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   }, [attendance, fromDate, toDate]);
 
   if (isDashboardLoading) return <FullViewLoader isShowTop={false} />;
+
   if (!actionLoader && filteredDashboard?.length === 0) {
     return (
       <View
@@ -1425,6 +1365,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
             ></TranslatedText>
           </Animated.View>
         )}
+
         {isLandscape && isFilterVisible && (
           <View style={{ flexDirection: "row" }}>
             <View
@@ -1550,6 +1491,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
             </View>
           </View>
         )}
+
         {!isLandscape && isFilterVisible && (
           <>
             <View
@@ -1769,6 +1711,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
           />
         )}
       </View>
+
       <FlatList
         data={[""]}
         key={
@@ -2312,24 +2255,24 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                     <MaterialIcons
                                       name="access-time"
                                       size={22}
-                                      color={ERP_COLOR_CODE.ERP_green}
+                                      color={'#ff9800'}
                                     />
                                   </View>
                                   <Text
                                     style={[
                                       styles.timeText,
                                       {
-                                        color: ERP_COLOR_CODE.ERP_green,
+                                        color: '#ff9800',
                                       },
                                     ]}
                                   >
-                                    {leave}
+                                    {lessHours}
                                   </Text>
                                   <Text
                                     style={[
                                       styles.labelText,
                                       {
-                                        color: ERP_COLOR_CODE.ERP_green,
+                                        color: '#ff9800',
                                       },
                                     ]}
                                   >

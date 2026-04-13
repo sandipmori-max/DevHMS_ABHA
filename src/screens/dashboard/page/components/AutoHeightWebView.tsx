@@ -55,7 +55,7 @@ const AutoHeightWebView = ({
       body > *:last-child { margin-bottom: 0 !important; }
       table {
         height: 100% !important;
-        width: ${isFromListPage ? '92%' :  isFromPage ? '92%' : isLandscape ? '82%' :'88%'} !important;
+        width: ${isFromListPage ?  isLandscape ? '40%' : '88%' :  isFromPage ? '92%' : isLandscape ? '82%' :'88%'} !important;
         border-collapse: collapse !important;
         table-layout: fixed !important;
         word-break: break-word !important;

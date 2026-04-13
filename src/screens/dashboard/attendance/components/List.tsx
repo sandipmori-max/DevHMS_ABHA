@@ -53,34 +53,19 @@ const styles = StyleSheet.create({
   },
   recordPunchTime: { fontSize: 14, color: ERP_COLOR_CODE.ERP_333 },
   statusBadgeRed: {
-    backgroundColor: ERP_COLOR_CODE.ERP_ERROR,
-    color: ERP_COLOR_CODE.ERP_WHITE,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
+    color: ERP_COLOR_CODE.ERP_ERROR,
     fontSize: 12,
     fontWeight: "bold",
-    marginTop: 8,
   },
   statusBadgeBlue: {
-    backgroundColor: "#a6bfc9ff",
-    color: ERP_COLOR_CODE.ERP_WHITE,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
+    color: "#a6bfc9ff",
     fontSize: 12,
     fontWeight: "bold",
-    marginTop: 8,
   },
   statusBadgeGrey: {
     backgroundColor: "#dad1d1",
     color: ERP_COLOR_CODE.ERP_BLACK,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-    fontSize: 12,
     fontWeight: "bold",
-    marginTop: 8,
   },
 });
 
@@ -154,6 +139,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
         ).unwrap();
         const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
         const final = parsed?.d ? JSON.parse(parsed?.d) : parsed;
+        console.log("final", final);
         setListData(final?.data || final || []);
         setTimeout(() => {
           setIsLoading(false);
@@ -209,24 +195,32 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
     date,
     records: groupedData[date],
   }));
+  const [expandedItems, setExpandedItems] = useState({});
+
+  const toggleRecords = (index) => {
+    setExpandedItems((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
+
+  const priority = {
+    "LWP-Approved": 6,
+    "LWP-Apply": 6,
+    Leave: 5,
+    Half: 4,
+    "Punch Missing": 3,
+    Working: 2,
+    FullDay: 1,
+  };
 
   const uniqueByDate = Object.values(
     listData.reduce((acc, item) => {
       const key = item.date;
 
-      // priority logic (jo rakhna hai wo decide karo)
       if (!acc[key]) {
         acc[key] = item;
       } else {
-        // Prefer FullDay > Half > Working > Leave
-        const priority = {
-          FullDay: 4,
-          Half: 3,
-          Working: 2,
-          "Punch Missing": 1,
-          Leave: 0,
-        };
-
         if ((priority[item.status] || 0) > (priority[acc[key].status] || 0)) {
           acc[key] = item;
         }
@@ -235,10 +229,14 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
       return acc;
     }, {}),
   );
-
-  const total = listData?.length;
   const leave = uniqueByDate.filter(
-    (i) => i?.status?.toLowerCase() === "leave",
+    (i) =>
+      i?.status?.toLowerCase() === "leave" ||
+      i?.status?.toLowerCase() === "lwp-approved",
+  ).length;
+
+  const lwpPending = uniqueByDate.filter(
+    (i) => i?.status?.toLowerCase() === "lwp-apply",
   ).length;
 
   const late = uniqueByDate.filter(
@@ -250,13 +248,34 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
       i?.intime && i?.outtime && getWorkedHours(i?.intime, i?.outtime) < 8.5,
   ).length;
 
-  const present = uniqueByDate.length - leave;
+  const present = uniqueByDate.length - leave - lwpPending;
 
   const chartData = [
-    { value: present, color: "#4caf50", text: t("text.text14") },
-    { value: leave, color: ERP_COLOR_CODE.ERP_ERROR, text: t("text.text15") },
-    { value: late, color: "#a6bfc9ff", text: t("text.text16") },
-    { value: lessHours, color: "#ff9800", text: t("text.text17") },
+    {
+      value: present,
+      color: "#4caf50", // working / full day
+      text: t("text.text14"),
+    },
+    {
+      value: leave,
+      color: ERP_COLOR_CODE.ERP_ERROR, // red
+      text: t("text.text15"),
+    },
+    {
+      value: lwpPending,
+      color: "#ffc107", // yellow (LWP Apply)
+      text: "LWP Pending",
+    },
+    {
+      value: late,
+      color: "#a6bfc9ff", // same as your existing
+      text: t("text.text16"),
+    },
+    {
+      value: lessHours,
+      color: "#ff9800", // orange
+      text: t("text.text17"),
+    },
   ];
 
   if (parsedError) {
@@ -274,38 +293,58 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
       </View>
     );
   }
+  const getStatusPriority = (status) => {
+    const s = status?.toLowerCase();
 
-  const markedDates =
-    listData?.length > 0 &&
-    listData?.reduce((acc, item) => {
-      const dateStr = item?.date && normalizeDate(item?.date);
-      let color = ERP_COLOR_CODE.ERP_APP_COLOR;
+    if (s === "lwp-apply" || s === "lwp-approved") return 6;
+    if (s === "leave") return 5;
+    if (s === "half") return 4;
+    if (s === "punch missing") return 3;
+    if (s === "working") return 2;
+    if (s === "fullday") return 1;
 
-      if (item?.status?.toLowerCase() === "leave") {
-        color = ERP_COLOR_CODE.ERP_ERROR;
-      } else if (
-        item?.status?.toLowerCase() === "leave_first_half" ||
-        item?.status?.toLowerCase() === "leave_second_half"
-      ) {
-        color = "#ff9800";
-      } else if (item?.status?.toLowerCase() === "working") {
-        color = ERP_COLOR_CODE.ERP_BORDER_LINE;
-      }
+    return 0;
+  };
 
+  const getColor = (status) => {
+    const s = status?.toLowerCase();
+    if (s === "lwp-approved") return "#f41010";
+    if (s === "lwp-apply" || s === "lwp-approved") return "#f41010"; // black
+    if (s === "leave") return ERP_COLOR_CODE.ERP_ERROR; // red
+    if (s === "half") return "#ff9800"; // orange
+    if (s === "punch missing") return "#9e9e9e"; // grey
+    if (s === "working") return "#4caf50"; // green-ish
+    if (s === "fullday") return "#4caf50";
+
+    return ERP_COLOR_CODE.ERP_APP_COLOR;
+  };
+
+  const markedDates = listData?.reduce((acc, item) => {
+    const dateStr = item?.date && normalizeDate(item?.date);
+    if (!dateStr) return acc;
+
+    const newPriority = getStatusPriority(item?.status);
+
+    if (!acc[dateStr] || newPriority > acc[dateStr].priority) {
       acc[dateStr] = {
+        priority: newPriority,
         selected: true,
-        selectedColor: color,
+        selectedColor: getColor(item?.status),
         customStyles: {
-          container: { backgroundColor: color, borderRadius: 6 },
+          container: {
+            backgroundColor: getColor(item?.status),
+            borderRadius: 6,
+          },
           text: {
             color: theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_WHITE,
             fontWeight: "600",
           },
         },
       };
+    }
 
-      return acc;
-    }, {});
+    return acc;
+  }, {});
 
   const openDetails = (item: any) => {
     setSelectedItem(item);
@@ -572,7 +611,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                             alignItems: "center",
                                           }}
                                         >
-                                          {rec?.image && (
+                                          {rec?.image && rec?.image != "" && (
                                             <TouchableOpacity
                                               onPress={() => {
                                                 setImg(
@@ -594,7 +633,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                               />
                                             </TouchableOpacity>
                                           )}
-                                          {rec?.image2 && (
+                                          {rec?.image2 && rec?.image2 != "" && (
                                             <TouchableOpacity
                                               onPress={() => {
                                                 setImg(
@@ -1081,194 +1120,207 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                         data={timelineData}
                         keyExtractor={(item, index) => index.toString()}
                         showsVerticalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                          <View
-                            style={{
-                              marginBottom: 8,
+                        renderItem={({ item, index }) => {
+                          const visibleRecords = expandedItems[index]
+                            ? item.records
+                            : item.records.slice(0, 1);
 
-                              backgroundColor:
-                                theme === "dark" ? "black" : "white",
-                            }}
-                          >
-                            {/* <Text style={{ 
-                        backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-                        paddingHorizontal: 12,
-                        paddingVertical: 4,
-                        // opacity: 0.5,
-                        color: ERP_COLOR_CODE.ERP_WHITE,
-                        fontSize: 14, fontWeight: 'bold', marginBottom: 8 }}>
-                        {item.date}
-                      </Text> */}
+                          return (
+                            <View
+                              style={{
+                                marginBottom: 2,
+                                backgroundColor:
+                                  theme === "dark" ? "black" : "white",
+                              }}
+                            >
+                              {/* Timeline Records */}
+                              {visibleRecords.map((rec, idx) => {
+                                const isLeaveFull =
+                                  rec?.status?.toLowerCase() === "leave";
 
-                            {/* Timeline Records */}
-                            {item.records.map((rec, idx) => {
-                              const isLeaveFull =
-                                rec?.status?.toLowerCase() === "leave";
-                              const workedHours =
-                                !rec?.intime || !rec?.outtime
-                                  ? 0
-                                  : getWorkedHours(rec?.intime, rec?.outtime);
-                              const isLessThanRequired =
-                                !isLeaveFull && workedHours < 8.5;
-                              const isLate =
-                                !isLeaveFull &&
-                                rec?.intime &&
-                                isLatePunchIn(rec?.intime);
+                                const workedHours =
+                                  !rec?.intime || !rec?.outtime
+                                    ? 0
+                                    : getWorkedHours(rec?.intime, rec?.outtime);
 
-                              return (
-                                <View
-                                  key={rec.id}
-                                  style={{
-                                    flexDirection: "row",
-                                    marginBottom: 0,
-                                  }}
-                                >
-                                  {item.records.length > 1 && (
-                                    <View
-                                      style={{ alignItems: "center", width: 8 }}
-                                    >
-                                      <View
-                                        style={{
-                                          width: 12,
-                                          height: 12,
-                                          borderRadius: 6,
-                                          backgroundColor:
-                                            ERP_COLOR_CODE.ERP_APP_COLOR,
-                                        }}
-                                      />
-                                      <View
-                                        style={{
-                                          width: 2,
-                                          flex: 1,
-                                          backgroundColor:
-                                            ERP_COLOR_CODE.ERP_BLACK,
-                                        }}
-                                      />
-                                    </View>
-                                  )}
+                                const isLessThanRequired =
+                                  !isLeaveFull && workedHours < 8.5;
 
-                                  <TouchableOpacity
-                                    onPress={() => openDetails(rec)}
+                                const isLate =
+                                  !isLeaveFull &&
+                                  rec?.intime &&
+                                  isLatePunchIn(rec?.intime);
+
+                                return (
+                                  <View
+                                    key={rec.id}
                                     style={{
-                                      right: 10,
-                                      flex: 1,
-                                      marginTop:
-                                        item.records.length > 1 ? 12 : 0,
+                                      flexDirection: "row",
+                                      marginBottom: 0,
                                     }}
                                   >
-                                    <View
-                                      style={[
-                                        styles.recordCard,
-                                        theme === "dark" && {
-                                          borderColor: "white",
-                                          borderWidth: 1,
-                                          backgroundColor: "black",
-                                        },
-                                      ]}
-                                    >
-                                      <View
-                                        style={{
-                                          flexDirection: "row",
-                                          justifyContent: "center",
-                                        }}
-                                      >
-                                        {/* Images */}
+                                    {expandedItems[index] &&
+                                      item.records.length > 1 && (
                                         <View
                                           style={{
-                                            flexDirection: "row",
                                             alignItems: "center",
+                                            width: 8,
                                           }}
-                                        >
-                                          {rec?.image && (
-                                            <TouchableOpacity
-                                              onPress={() => {
-                                                setImg(
-                                                  `${baseLink}/${rec?.image}`,
-                                                );
-                                                setShowImgModal(true);
-                                              }}
-                                            >
-                                              <FastImage
-                                                source={{
-                                                  uri:
-                                                    baseLink + "/" + rec?.image,
-                                                  priority:
-                                                    FastImage.priority.normal,
-                                                  cache:
-                                                    FastImage.cacheControl.web,
-                                                }}
-                                                style={styles.recordAvatar}
-                                              />
-                                            </TouchableOpacity>
-                                          )}
-                                          {rec?.image2 && (
-                                            <TouchableOpacity
-                                              onPress={() => {
-                                                setImg(
-                                                  `${baseLink}/${rec?.image2}`,
-                                                );
-                                                setShowImgModal(true);
-                                              }}
-                                            >
-                                              <FastImage
-                                                source={{
-                                                  uri:
-                                                    baseLink +
-                                                    "/" +
-                                                    rec?.image2,
-                                                  priority:
-                                                    FastImage.priority.normal,
-                                                  cache:
-                                                    FastImage.cacheControl.web,
-                                                }}
-                                                style={[
-                                                  styles.recordAvatar,
-                                                  {
-                                                    marginLeft: -28,
-                                                    borderWidth: 2,
-                                                    borderColor:
-                                                      ERP_COLOR_CODE.ERP_WHITE,
-                                                  },
-                                                ]}
-                                              />
-                                            </TouchableOpacity>
-                                          )}
-                                        </View>
-
-                                        {/* Details */}
-                                        <View
-                                          style={{ flex: 1, marginLeft: 12 }}
                                         >
                                           <View
                                             style={{
+                                              width: 12,
+                                              height: 12,
+                                              borderRadius: 6,
+                                              backgroundColor:
+                                                ERP_COLOR_CODE.ERP_APP_COLOR,
+                                            }}
+                                          />
+                                          <View
+                                            style={{
+                                              width: 2,
+                                              flex: 1,
+                                              backgroundColor:
+                                                ERP_COLOR_CODE.ERP_BLACK,
+                                            }}
+                                          />
+                                        </View>
+                                      )}
+
+                                    <TouchableOpacity
+                                      onPress={() => openDetails(rec)}
+                                      style={{
+                                        right: 10,
+                                        flex: 1,
+                                        marginTop: 2
+                                      }}
+                                    >
+                                      <View
+                                        style={[
+                                          styles.recordCard,
+                                          theme === "dark" && {
+                                            borderColor: "white",
+                                            borderWidth: 0.4,
+                                            backgroundColor: "black",
+                                          },
+                                          {
+                                            borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+                                            borderWidth: 0.6,
+                                          }
+                                        ]}
+                                      >
+                                        <View
+                                          style={{
+                                            flexDirection: "row",
+                                            justifyContent: "center",
+                                          }}
+                                        >
+                                          {/* Images */}
+                                          <View
+                                            style={{
                                               flexDirection: "row",
-                                              justifyContent: "space-between",
-                                              marginBottom: 4,
+                                              alignItems: "center",
                                             }}
                                           >
-                                            <TranslatedText
-                                              numberOfLines={1}
-                                              text={rec?.employee}
-                                              style={[
-                                                styles.recordName,
-                                                theme === "dark" && {
-                                                  color: "white",
-                                                },
-                                              ]}
-                                            ></TranslatedText>
-                                            <TranslatedText
-                                              numberOfLines={1}
-                                              text={rec?.date}
-                                              style={[
-                                                styles.recordDateTime,
-                                                theme === "dark" && {
-                                                  color: "white",
-                                                },
-                                              ]}
-                                            ></TranslatedText>
+                                            {rec?.image &&
+                                              rec?.image !== "" && (
+                                                <TouchableOpacity
+                                                  onPress={() => {
+                                                    setImg(
+                                                      `${baseLink}/${rec?.image}`,
+                                                    );
+                                                    setShowImgModal(true);
+                                                  }}
+                                                >
+                                                  <FastImage
+                                                    source={{
+                                                      uri:
+                                                        baseLink +
+                                                        "/" +
+                                                        rec?.image,
+                                                      priority:
+                                                        FastImage.priority
+                                                          .normal,
+                                                      cache:
+                                                        FastImage.cacheControl
+                                                          .web,
+                                                    }}
+                                                    style={styles.recordAvatar}
+                                                  />
+                                                </TouchableOpacity>
+                                              )}
+
+                                            {rec?.image2 &&
+                                              rec?.image2 !== "" && (
+                                                <TouchableOpacity
+                                                  onPress={() => {
+                                                    setImg(
+                                                      `${baseLink}/${rec?.image2}`,
+                                                    );
+                                                    setShowImgModal(true);
+                                                  }}
+                                                >
+                                                  <FastImage
+                                                    source={{
+                                                      uri:
+                                                        baseLink +
+                                                        "/" +
+                                                        rec?.image2,
+                                                      priority:
+                                                        FastImage.priority
+                                                          .normal,
+                                                      cache:
+                                                        FastImage.cacheControl
+                                                          .web,
+                                                    }}
+                                                    style={[
+                                                      styles.recordAvatar,
+                                                      {
+                                                        marginLeft: -28,
+                                                        borderWidth: 2,
+                                                        borderColor:
+                                                          ERP_COLOR_CODE.ERP_WHITE,
+                                                      },
+                                                    ]}
+                                                  />
+                                                </TouchableOpacity>
+                                              )}
                                           </View>
 
-                                          {
+                                          {/* Details */}
+                                          <View
+                                            style={{ flex: 1, marginLeft: 12 }}
+                                          >
+                                            <View
+                                              style={{
+                                                flexDirection: "row",
+                                                justifyContent: "space-between",
+                                                marginBottom: 4,
+                                              }}
+                                            >
+                                              <TranslatedText
+                                                numberOfLines={1}
+                                                text={rec?.employee}
+                                                style={[
+                                                  styles.recordName,
+                                                  theme === "dark" && {
+                                                    color: "white",
+                                                  },
+                                                ]}
+                                              />
+                                              <TranslatedText
+                                                numberOfLines={1}
+                                                text={rec?.date}
+                                                style={[
+                                                  styles.recordDateTime,
+                                                  theme === "dark" && {
+                                                    color: "white",
+                                                  },
+                                                ]}
+                                              />
+                                            </View>
+
+                                            {/* Time Row */}
                                             <View
                                               style={{
                                                 flexDirection: "row",
@@ -1279,7 +1331,6 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                               <View
                                                 style={{
                                                   flexDirection: "row",
-                                                  alignItems: "center",
                                                   gap: 4,
                                                 }}
                                               >
@@ -1295,10 +1346,8 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                                       rec?.intime,
                                                     ) || "--"
                                                   }
-                                                  style={[
-                                                    styles.recordPunchTime,
-                                                  ]}
-                                                ></TranslatedText>
+                                                  style={styles.recordPunchTime}
+                                                />
                                               </View>
 
                                               {rec?.status?.toLowerCase() ===
@@ -1306,7 +1355,6 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                                 <View
                                                   style={{
                                                     flexDirection: "row",
-                                                    alignItems: "center",
                                                     gap: 4,
                                                   }}
                                                 >
@@ -1323,47 +1371,26 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                                     style={
                                                       styles.recordPunchTime
                                                     }
-                                                  ></TranslatedText>
+                                                  />
                                                 </View>
                                               ) : (
-                                                <>
-                                                  {rec?.outtime &&
-                                                    rec?.status?.toLowerCase() !==
-                                                      "working" &&
-                                                    rec?.status?.toLowerCase() !==
-                                                      "leave" && (
-                                                      <View
-                                                        style={{
-                                                          flexDirection: "row",
-                                                          alignItems: "center",
-                                                          gap: 4,
-                                                        }}
-                                                      >
-                                                        {/* <MaterialIcons
-                                                    color={ERP_COLOR_CODE.ERP_666}
-                                                    size={14}
-                                                    name="timeline"
-                                                  /> */}
-                                                        <Text
-                                                          style={[
-                                                            styles.recordPunchTime,
-                                                            {
-                                                              color:
-                                                                getWorkedHours(
-                                                                  rec?.intime,
-                                                                  rec?.outtime,
-                                                                ) < 9.5
-                                                                  ? ERP_COLOR_CODE.ERP_ERROR
-                                                                  : ERP_COLOR_CODE.ERP_666,
-                                                            },
-                                                          ]}
-                                                        >
-                                                          -
-                                                          {/* {getWorkedHours2(rec?.intime, rec?.outtime)} */}
-                                                        </Text>
-                                                      </View>
-                                                    )}
-                                                </>
+                                                rec?.outtime &&
+                                                rec?.status?.toLowerCase() !==
+                                                  "leave" && (
+                                                  <Text
+                                                    style={[
+                                                      styles.recordPunchTime,
+                                                      {
+                                                        color:
+                                                          workedHours < 9.5
+                                                            ? ERP_COLOR_CODE.ERP_ERROR
+                                                            : ERP_COLOR_CODE.ERP_666,
+                                                      },
+                                                    ]}
+                                                  >
+                                                    -
+                                                  </Text>
+                                                )
                                               )}
 
                                               {rec?.status?.toLowerCase() !==
@@ -1371,7 +1398,6 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                                 <View
                                                   style={{
                                                     flexDirection: "row",
-                                                    alignItems: "center",
                                                     gap: 4,
                                                   }}
                                                 >
@@ -1392,74 +1418,95 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                                     style={
                                                       styles.recordPunchTime
                                                     }
-                                                  ></TranslatedText>
+                                                  />
                                                 </View>
                                               )}
                                             </View>
-                                          }
 
-                                          {isLeaveFull && (
-                                            <Text style={styles.statusBadgeRed}>
-                                              {t("text.text10")}
-                                            </Text>
-                                          )}
-                                          {isLate && (
-                                            <Text
-                                              style={styles.statusBadgeBlue}
-                                            >
-                                              {t("text.text16")}
-                                            </Text>
-                                          )}
-                                          {rec?.outTime &&
-                                            rec?.status?.toLowerCase() !==
-                                              "working" &&
-                                            isLessThanRequired && (
-                                              <View
-                                                style={{
-                                                  flexDirection: "row",
-                                                  justifyContent:
-                                                    "space-between",
-                                                }}
+                                            {/* Status */}
+                                            {isLeaveFull && (
+                                              <Text
+                                                style={styles.statusBadgeRed}
                                               >
-                                                <Text
-                                                  style={styles.statusBadgeGrey}
-                                                >
-                                                  {t("text.text21")}
-                                                </Text>
-                                                <Text
-                                                  style={styles.statusBadgeGrey}
-                                                >
-                                                  {/* ({workedHours.toFixed(2)} hrs) */}
-                                                  -
-                                                </Text>
-                                              </View>
+                                                {t("text.text10")}
+                                              </Text>
                                             )}
 
-                                          {/* <View
-                                        style={{
-                                          alignContent: 'center',
-                                          alignItems: 'center',
-                                          flexDirection: 'row',
-                                          gap: 4,
-                                          marginTop: 4,
-                                        }}
-                                      >
-                                        <MaterialIcons
-                                          size={16}
-                                          color={ERP_COLOR_CODE.ERP_ERROR}
-                                          name="location-on"
-                                        />
-                                        <Text>{rec?.location || 'Dummy location'} </Text>
-                                      </View> */}
+                                            {isLate && (
+                                              <Text
+                                                style={styles.statusBadgeBlue}
+                                              >
+                                                {t("text.text16")}
+                                              </Text>
+                                            )}
+
+                                            {rec?.outTime &&
+                                              rec?.status?.toLowerCase() !==
+                                                "working" &&
+                                              isLessThanRequired && (
+                                                <View
+                                                  style={{
+                                                    flexDirection: "row",
+                                                    justifyContent:
+                                                      "space-between",
+                                                  }}
+                                                >
+                                                  <Text
+                                                    style={
+                                                      styles.statusBadgeGrey
+                                                    }
+                                                  >
+                                                    {t("text.text21")}
+                                                  </Text>
+                                                  <Text
+                                                    style={
+                                                      styles.statusBadgeGrey
+                                                    }
+                                                  >
+                                                    -
+                                                  </Text>
+                                                </View>
+                                              )}
+                                          </View>
                                         </View>
                                       </View>
-                                    </View>
-                                  </TouchableOpacity>
-                                </View>
-                              );
-                            })}
-                          </View>
-                        )}
+                                    </TouchableOpacity>
+                                    { idx === 0 && item.records.length > 1 && (
+                                        <View
+                                          style={{
+                                            alignSelf: "center",
+                                            width: 24,
+                                            marginLeft: 4,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <TouchableOpacity
+                                            onPress={() => toggleRecords(index)}
+                                            style={{
+                                              alignItems: "center",
+                                              paddingVertical: 1,
+                                              marginVertical: 4,
+                                            }}
+                                          >
+                                            <MaterialIcons
+                                              size={24}
+                                              color={ERP_COLOR_CODE.ERP_BORDER_LINE}
+                                              name={!expandedItems[index] ? "expand-more" : "expand-less"}
+                                            />
+                                          </TouchableOpacity>
+                                        </View>
+                                        )}
+                                  }
+                                   
+                                  </View>
+                                );
+                              })}
+
+                              {/* View All / Show Less Button */}
+                            </View>
+                          );
+                        }}
                       />
                     </View>
                   )}

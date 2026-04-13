@@ -225,7 +225,8 @@ const ReadableView = ({
             paddingTop: 6,
             borderWidth: 1,
             borderColor: ERP_COLOR_CODE.ERP_ddd,
-            width: isLandscape ? '48%' : '96%'
+            width: isLandscape ? '48%' : '96%',
+            overflow:'hidden'
           }}
         >
           {/* main touchable */}
@@ -585,11 +586,7 @@ const ReadableView = ({
               </View>
             )}
         </View>
-        <ImageBottomSheetModal
-          visible={showModal}
-          onClose={() => setShowModal(false)}
-          imageUrl={img}
-        />
+        
       </>
     );
 
@@ -602,6 +599,14 @@ const ReadableView = ({
         ) : (
           <>{card}</>
         )}
+
+        <ImageBottomSheetModal
+          visible={showModal}
+          onClose={() => {
+            setShowModal(false)
+          }}
+          imageUrl={img}
+        />
       </>
     );
   };
