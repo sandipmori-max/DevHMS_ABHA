@@ -170,6 +170,7 @@ const PageScreen = () => {
   const [myScript, setMyScript] = useState();
   
  
+  console.log("myScript", myScript)
   const [backgroundDeniedModal, setBackgroundDeniedModal] = useState(false);
 
   const isCheckingPermission = useRef(false);

@@ -319,31 +319,48 @@ const authSlice = createSlice({
         state.menu = [];
       })
       .addCase(getERPAppConfigMenuThunk.fulfilled, (state, action) => {
-        try {
-          let menuData;
-          if (typeof action.payload === 'string') {
-            menuData = JSON.parse(action.payload);
-          } else {
-            menuData = action.payload;
-          }
-          console.log('menuData', menuData);
-          state.appBottomMenuList = menuData?.bottom;
-          state.appDrawerMenuList = menuData?.drawer;
-          state.appColorCode = menuData?.hexacolor;
-          state.attendanceSecurityLevel = menuData?.attendancesecuritylevel || '';
-          if (menuData?.hexacolor) {
-            setERPAppColor(menuData.hexacolor);
-          }
-          state.error = null;
-          state.isMenuLoading = false;
-        } catch (error) {
-          state.error = action.payload as string;
-          state.appBottomMenuList = [];
-          state.appDrawerMenuList = [];
-          setERPAppColor('#251d50');
-          state.appColorCode = '#251d50';
-          state.attendanceSecurityLevel = '0';
-        }
+       try {
+  let menuData;
+
+  if (typeof action.payload === 'string') {
+    menuData = JSON.parse(action.payload);
+  } else {
+    menuData = action.payload;
+  }
+
+  // 🔥 FIX: merge broken success + message
+  if (menuData?.success && menuData?.message) {
+    const fixedString = (menuData.success + menuData.message)
+      .replace(/,\s*}/g, '}') // remove invalid commas
+      .replace(/:\s*,/g, ': null,'); // fix empty values
+
+    menuData = JSON.parse(fixedString);
+  }
+
+  console.log('FIXED menuData =>', menuData);
+
+  state.appBottomMenuList = menuData?.bottom || [];
+  state.appDrawerMenuList = menuData?.drawer || [];
+  state.appColorCode = menuData?.hexacolor;
+  state.attendanceSecurityLevel = menuData?.attendancesecuritylevel || '';
+
+  if (menuData?.hexacolor) {
+    setERPAppColor(menuData.hexacolor);
+  }
+
+  state.error = null;
+  state.isMenuLoading = false;
+
+} catch (error) {
+  console.log('ERROR =>', error);
+
+  state.error = action.payload as string;
+  state.appBottomMenuList = [];
+  state.appDrawerMenuList = [];
+  setERPAppColor('#251d50');
+  state.appColorCode = '#251d50';
+  state.attendanceSecurityLevel = '0';
+}
       })
       .addCase(getERPAppConfigMenuThunk.rejected, (state, action) => {
         // state.isMenuLoading = false;

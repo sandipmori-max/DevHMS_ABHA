@@ -978,46 +978,55 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     fetchData();
   }, [dashboard, reLoading, fromDate, toDate]);
 
-  useEffect(() => {
-    if (!attendance) {
+useEffect(() => {
+  if (!attendance) return;
+
+  const interval = setInterval(() => {
+    const now = new Date();
+
+    const breakStart = new Date();
+    breakStart.setHours(13, 30, 0);
+
+    const breakEnd = new Date();
+    breakEnd.setHours(14, 30, 0);
+
+    const [hours, minutes] = attendance?.intime.split(":").map(Number);
+
+    const inTimeDate = new Date();
+    inTimeDate.setHours(hours, minutes, 0);
+
+    if (now >= breakStart && now < breakEnd) {
+      setWorkingTime("Break Time");
       return;
     }
-    const interval = setInterval(() => {
-      const now = new Date();
 
-      // 👉 intime ko date me convert karo
-      const [hours, minutes] = attendance?.intime.split(":").map(Number);
+    let diff = now.getTime() - inTimeDate.getTime();
 
-      const inTimeDate = new Date();
-      inTimeDate.setHours(hours);
-      inTimeDate.setMinutes(minutes);
-      inTimeDate.setSeconds(0);
+     if (now >= breakEnd) {
+      diff = diff - 60 * 60 * 1000;
+    }
 
-      // 👉 difference in ms
-      const diff = now.getTime() - inTimeDate.getTime();
+    if (diff < 0) {
+      setWorkingTime("00:00:00");
+      return;
+    }
 
-      if (diff < 0) {
-        setWorkingTime("00:00:00");
-        return;
-      }
+    const hrs = Math.floor(diff / (1000 * 60 * 60));
+    const mins = Math.floor((diff / (1000 * 60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
 
-      // 👉 convert to HH:MM:SS
-      const hrs = Math.floor(diff / (1000 * 60 * 60));
-      const mins = Math.floor((diff / (1000 * 60)) % 60);
-      const secs = Math.floor((diff / 1000) % 60);
+    const formatted =
+      String(hrs).padStart(2, "0") +
+      ":" +
+      String(mins).padStart(2, "0") +
+      ":" +
+      String(secs).padStart(2, "0");
 
-      const formatted =
-        String(hrs).padStart(2, "0") +
-        ":" +
-        String(mins).padStart(2, "0") +
-        ":" +
-        String(secs).padStart(2, "0");
+    setWorkingTime(formatted);
+  }, 1000);
 
-      setWorkingTime(formatted);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [attendance, fromDate, toDate]);
+  return () => clearInterval(interval);
+}, [attendance, fromDate, toDate]);
 
   if (isDashboardLoading) return <FullViewLoader isShowTop={false} />;
 

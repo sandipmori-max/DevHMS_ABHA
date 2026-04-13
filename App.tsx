@@ -66,9 +66,10 @@ const AppContent = () => {
 
   const isConnected = useNetworkStatus();
   const theme = useAppSelector((state) => state?.theme?.mode);
+  const user = useAppSelector((state) => state?.auth);
 
-  const statusBarColor =
-    theme === "dark" ? "#000000" : ERP_COLOR_CODE.ERP_APP_COLOR;
+
+  const [statusBarColor, setStatusBarColor]= useState(theme === "dark" ? "#000000" : ERP_COLOR_CODE.ERP_APP_COLOR)
 
   const barStyle = "light-content";
 
@@ -83,6 +84,10 @@ const AppContent = () => {
   const appOpacity = useRef(new Animated.Value(0)).current;
   const appTranslateY = useRef(new Animated.Value(120)).current;
 
+
+  useEffect(() => {
+    setStatusBarColor(theme === "dark" ? "#000000" : ERP_COLOR_CODE.ERP_APP_COLOR)
+  }, [user])
   // 🔹 Check Terms
   useEffect(() => {
     const checkAcceptance = async () => {
@@ -165,7 +170,7 @@ const AppContent = () => {
 
   return (
     <>
-      <StatusBar backgroundColor={theme === "dark" ? "#000000" : ERP_COLOR_CODE.ERP_APP_COLOR} barStyle={barStyle} />
+      <StatusBar backgroundColor={statusBarColor} barStyle={barStyle} />
 
       {/* 🔥 MAIN APP */}
       <Animated.View

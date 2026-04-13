@@ -9,6 +9,7 @@ import {
   useWindowDimensions,
   Alert,
   ActivityIndicator,
+  BackHandler,
 } from "react-native";
 import {
   Camera,
@@ -67,6 +68,19 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
     "worklet";
     const faces = detectFaces(frame);
     updateFacesJS(faces);
+  }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction,
+    );
+
+    return () => backHandler.remove();
   }, []);
 
   const [loading, setLoading] = useState(false);

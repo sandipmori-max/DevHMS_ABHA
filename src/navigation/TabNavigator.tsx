@@ -149,8 +149,7 @@ const TabNavigator = () => {
   const { appBottomMenuList } = useAppSelector((state) => state?.auth);
   const { t } = useTranslations();
   const [hidden, setHidden] = useState(false);
-
-  console.log("Bottom Menu List:", appBottomMenuList);
+ 
   const navigationItems = (appBottomMenuList || []).map((item) => ({
     name: item?.name,
     type: item?.code,
