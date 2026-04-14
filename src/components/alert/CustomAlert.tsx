@@ -45,7 +45,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   const alertStyles = getAlertStyles(type);
   const gifSource = getGifSource(type);
   const theme = useAppSelector((state) => state?.theme.mode);
-const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const [remarks, setRemarks] = useState("");
   const [error, setError] = useState("");

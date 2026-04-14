@@ -1,9 +1,4 @@
-import {
-  View,
-  Animated,
-  Easing,
-  Platform,
-} from "react-native";
+import { View, Animated, Easing, Platform } from "react-native";
 import React, { useEffect, useRef } from "react";
 import FastImage from "react-native-fast-image";
 
@@ -50,7 +45,7 @@ const FullViewLoader = ({ isShowTop = true }) => {
           useNativeDriver: true,
         }).start();
       });
-    }, 2000); 
+    }, 2000);
 
     return () => clearInterval(interval);
   }, []);

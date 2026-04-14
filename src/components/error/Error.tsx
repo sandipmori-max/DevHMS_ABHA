@@ -1,15 +1,26 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Text, Image, Animated, View, Platform, useWindowDimensions } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Text,
+  Image,
+  Animated,
+  View,
+  Platform,
+  useWindowDimensions,
+} from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 
-import { ERP_GIF, ERP_ICON } from '../../assets';
-import { styles } from './error_style';
-import { ErrorMessageProps } from '../types';
-import { useAppSelector } from '../../store/hooks';
-import { ERP_COLOR_CODE } from '../../utils/constants';
+import { ERP_GIF, ERP_ICON } from "../../assets";
+import { styles } from "./error_style";
+import { ErrorMessageProps } from "../types";
+import { useAppSelector } from "../../store/hooks";
+import { ERP_COLOR_CODE } from "../../utils/constants";
 
-const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, visible = true , isShowTop = true}) => {
-  const theme = useAppSelector(state => state?.theme.mode);
+const ErrorMessage: React.FC<ErrorMessageProps> = ({
+  message,
+  visible = true,
+  isShowTop = true,
+}) => {
+  const theme = useAppSelector((state) => state?.theme.mode);
 
   const opacity = useRef(new Animated.Value(0)).current;
   const imageTranslateX = useRef(new Animated.Value(-15)).current;
@@ -25,7 +36,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, visible = true , i
       return () => {
         setShouldRender(false);
       };
-    }, [])
+    }, []),
   );
 
   // 🎬 Animate on visible/message change
@@ -72,75 +83,91 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, visible = true , i
       });
     }
   }, [visible, message]);
- const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   if (!shouldRender) return null;
 
   return (
-  <>
-  {
-    isShowTop && <View style={{
-      
-                        height: Platform.OS === 'ios' ?  16  : 6
-      , width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
-    
-  }
-  
-    <Animated.View
-      style={[
-        styles.container,
-        theme === 'dark' && { backgroundColor: 'black' },
-        { opacity },
-      ]}
-    >
-      {
-        isLandscape ? <>
-        <View style={{flexDirection:'row'}}>
-          <View style={{width: '50%',     justifyContent: "center",
-                  alignContent: "center",
-                  alignItems: "center",}}>
- <Animated.Image
-        source={ERP_ICON.ERROR_ICON}
+    <>
+      {isShowTop && (
+        <View
+          style={{
+            height: Platform.OS === "ios" ? 16 : 6,
+            width: "100%",
+            backgroundColor:
+              theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+            borderBottomLeftRadius: 12,
+            borderBottomRightRadius: 12,
+          }}
+        ></View>
+      )}
+
+      <Animated.View
         style={[
-          styles.errorImage,
-          { transform: [{ translateX: imageTranslateX }] },
-        ]}
-      />
-          </View>
-          <View style={{width: '50%',     justifyContent: "center",
-                  alignContent: "center",
-                  alignItems: "center",}}>
-<Animated.Text
-        style={[
-          styles.errorText,
-          { transform: [{ translateX: textTranslateX }] },
+          styles.container,
+          theme === "dark" && { backgroundColor: "black" },
+          { opacity },
         ]}
       >
-        {message}
-      </Animated.Text>
-          </View>
-        </View>
-        </> : <>
-        
-        <Animated.Image
-        source={ERP_ICON.ERROR_ICON}
-        style={[
-          styles.errorImage,
-          { transform: [{ translateX: imageTranslateX }] },
-        ]}
-      />
-      <Animated.Text
-        style={[
-          styles.errorText,
-          { transform: [{ translateX: textTranslateX }] },
-        ]}
-      >
-        {message}
-      </Animated.Text></>
-      }
-      
-    </Animated.View>
-  </>
+        {isLandscape ? (
+          <>
+            <View style={{ flexDirection: "row" }}>
+              <View
+                style={{
+                  width: "50%",
+                  justifyContent: "center",
+                  alignContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Animated.Image
+                  source={ERP_ICON.ERROR_ICON}
+                  style={[
+                    styles.errorImage,
+                    { transform: [{ translateX: imageTranslateX }] },
+                  ]}
+                />
+              </View>
+              <View
+                style={{
+                  width: "50%",
+                  justifyContent: "center",
+                  alignContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Animated.Text
+                  style={[
+                    styles.errorText,
+                    { transform: [{ translateX: textTranslateX }] },
+                  ]}
+                >
+                  {message}
+                </Animated.Text>
+              </View>
+            </View>
+          </>
+        ) : (
+          <>
+            <Animated.Image
+              source={ERP_ICON.ERROR_ICON}
+              style={[
+                styles.errorImage,
+                { transform: [{ translateX: imageTranslateX }] },
+              ]}
+            />
+            <Animated.Text
+              style={[
+                styles.errorText,
+                { transform: [{ translateX: textTranslateX }] },
+              ]}
+            >
+              {message}
+            </Animated.Text>
+          </>
+        )}
+      </Animated.View>
+    </>
   );
 };
 

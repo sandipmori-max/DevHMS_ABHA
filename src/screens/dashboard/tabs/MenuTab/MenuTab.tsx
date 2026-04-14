@@ -657,7 +657,7 @@ const MenuTab = ({
         }}
       ></View>
 
-      {!isHorizontal ? (
+      {!isHorizontal && list.length > 8  ? (
         <>
           <SectionList
             sections={sectionListData}

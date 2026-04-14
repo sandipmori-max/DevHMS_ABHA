@@ -24,11 +24,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { useAppStateListener } from "../../hooks/useAppStateListener";
 import { ICameraScannerProps } from "../../utils/helpers/types";
 
-import {
-  getWindowHeight,
-  getWindowWidth,
-  isIos,
-} from "../../utils/helpers";
+import { getWindowHeight, getWindowWidth, isIos } from "../../utils/helpers";
 
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { useTranslation } from "react-i18next";
@@ -38,12 +34,12 @@ export const BarCodeCameraScanner = ({
   setIsCameraShown,
   onReadCode,
 }: ICameraScannerProps) => {
-  const {t} = useTranslation()
+  const { t } = useTranslation();
   const device = useCameraDevice("back");
   const camera = useRef<Camera>(null);
   const isFocused = useIsFocused();
   const { appState } = useAppStateListener();
-const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const [isCameraInitialized, setIsCameraInitialized] = useState(isIos);
   const [isActive, setIsActive] = useState(isIos);
@@ -115,10 +111,13 @@ const { height, width } = useWindowDimensions();
   if (!isFocused) return null;
 
   return (
-    <SafeAreaView style={styles.safeArea} >
-      <Modal presentationStyle="fullScreen" supportedOrientations={["portrait", "landscape"]}animationType="slide">
+    <SafeAreaView style={styles.safeArea}>
+      <Modal
+        presentationStyle="fullScreen"
+        supportedOrientations={["portrait", "landscape"]}
+        animationType="slide"
+      >
         <View style={{ flex: 1 }}>
-
           {/* CAMERA */}
           <Camera
             torch={flash}
@@ -142,7 +141,7 @@ const { height, width } = useWindowDimensions();
             holes={[
               {
                 x: getWindowWidth() * 0.05,
-                y: getWindowHeight() * 0.30,
+                y: getWindowHeight() * 0.3,
                 width: getWindowWidth() * 0.9,
                 height: getWindowHeight() * 0.25,
                 borderRadius: 8,
@@ -161,16 +160,13 @@ const { height, width } = useWindowDimensions();
 
           {/* DESCRIPTION */}
           <View style={ui.descriptionBox}>
-            <Text style={ui.descriptionText}>
-              {t('test17')}
-            </Text>
+            <Text style={ui.descriptionText}>{t("test17")}</Text>
           </View>
 
           {/* BOTTOM PANEL */}
           <View style={ui.bottomPanel}>
-            <Text style={ui.bottomText}>{t('test18')}</Text>
+            <Text style={ui.bottomText}>{t("test18")}</Text>
           </View>
-
         </View>
       </Modal>
     </SafeAreaView>

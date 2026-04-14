@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import TranslatedText from "./TranslatedText";
 
-const HTMLTable = ({ html }) => {
+const HTMLTable = ({ html }: any) => {
   const rows = Array.from(html.matchAll(/<tr>(.*?)<\/tr>/g)).map((r) =>
     Array.from(r[1].matchAll(/<t[dh][^>]*>(.*?)<\/t[dh]>/g)).map((c) =>
       c[1].replace(/<[^>]+>/g, "").trim(),

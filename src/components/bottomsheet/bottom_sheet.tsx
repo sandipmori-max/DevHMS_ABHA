@@ -1,14 +1,27 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Animated,
+  Dimensions,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 
-import { BottomSheetProps } from './type';
-import { styles } from './bottomsheet_style';
+import { BottomSheetProps } from "./type";
+import { styles } from "./bottomsheet_style";
 
-const { height: screenHeight } = Dimensions.get('window');
+const { height: screenHeight } = Dimensions.get("window");
 
-const BottomSheet = ({ visible, onClose, children, heightRatio = 0.6 }: BottomSheetProps) => {
+const BottomSheet = ({
+  visible,
+  onClose,
+  children,
+  heightRatio = 0.6,
+}: BottomSheetProps) => {
   const translateY = useRef(new Animated.Value(screenHeight)).current;
-  const [contentHeight, setContentHeight] = useState(screenHeight * heightRatio);
+  const [contentHeight, setContentHeight] = useState(
+    screenHeight * heightRatio,
+  );
 
   useEffect(() => {
     if (visible) {
@@ -27,7 +40,10 @@ const BottomSheet = ({ visible, onClose, children, heightRatio = 0.6 }: BottomSh
   }, [visible, contentHeight]);
 
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents={visible ? 'auto' : 'none'}>
+    <View
+      style={StyleSheet.absoluteFill}
+      pointerEvents={visible ? "auto" : "none"}
+    >
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={[styles.backdrop, { opacity: visible ? 0.5 : 0 }]} />
       </TouchableWithoutFeedback>

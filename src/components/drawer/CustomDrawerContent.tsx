@@ -745,7 +745,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
         >
           {appDrawerMenuList.length > 0 &&
             appDrawerMenuList.map((item, index) => {
-               
               const isActive = currentRoute === item.name;
               return (
                 <Animated.View
@@ -827,11 +826,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                         name={item.iconname.toLowerCase().trim()}
                         size={20}
                         color={
-                          theme === "dark"
-                            ? "#FFF"
-                            : isActive
-                            ? "#FFF"
-                            : 'gray'
+                          theme === "dark" ? "#FFF" : isActive ? "#FFF" : "gray"
                         }
                       />
                       <TranslatedText
@@ -886,9 +881,14 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
           />
         </View>
 
-        <View style={[styles.logoutButton, {
-           borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-        }]}>
+        <View
+          style={[
+            styles.logoutButton,
+            {
+              borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+            },
+          ]}
+        >
           <Text
             style={[
               styles.logoutText,

@@ -18,6 +18,8 @@ import {
   getERPDashboardThunk,
   getERPListDataThunk,
   getERPPageThunk,
+  logoutUserThunk,
+  switchAccountThunk,
 } from "../../../../store/slices/auth/thunk";
 import ErrorMessage from "../../../../components/error/Error";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
@@ -30,19 +32,23 @@ import {
   getDashboardAI,
   getWorkedHours,
   isLatePunchIn,
+  isTokenValid,
   parseCustomDate,
 } from "../../../../utils/helpers";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 import CustomPicker from "../../page/components/CustomPicker";
 import {
+  clearAuthState,
   setActiveDashboardBranch,
   setActiveDashboardBranchId,
   setActiveDashboardFromDate,
   setActiveDashboardToDate,
   setActiveDashboardType,
   setActiveDashboardTypeId,
+  setDashboard,
   setDashboardLoading,
+  setEmptyMenu,
 } from "../../../../store/slices/auth/authSlice";
 import {
   View,
@@ -64,6 +70,14 @@ import { getDDLThunk } from "../../../../store/slices/dropdown/thunk";
 import CustomAlert from "../../../../components/alert/CustomAlert";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import { getLastPunchInThunk } from "../../../../store/slices/attendance/thunk";
+import { createAccountsTable, getActiveAccount, getDBConnection, logoutUser } from "../../../../utils/sqlite";
+import { DevERPService } from "../../../../services/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useApi } from "../../../../hooks/useApi";
+import { resetAjaxState } from "../../../../store/slices/ajax/ajaxSlice";
+import { resetAttendanceState } from "../../../../store/slices/attendance/attendanceSlice";
+import { resetDropdownState } from "../../../../store/slices/dropdown/dropdownSlice";
+import { resetSyncLocationState } from "../../../../store/slices/location/syncLocationSlice";
 
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;
@@ -116,6 +130,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     }
   };
 
+  console.log("dashboard store error -------- ", error);
   const aiCalled = useRef(false);
 
   const [loadingPageId, setLoadingPageId] = useState<any>(null);
@@ -140,7 +155,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   const [searchText, setSearchText] = useState("");
   const [filteredDashboard, setFilteredDashboard] = useState(dashboard);
   const searchTimeout = useRef<any>(null);
-
 
   const htmlItems = filteredDashboard.filter((item) =>
     hasHtmlContent(item.data),
@@ -505,7 +519,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   ]);
 
   const accentColors = [
-    "#4C6FFF",
+    ERP_COLOR_CODE.ERP_APP_COLOR,
     "#00C2A8",
     "#FFB020",
     "#FF6B6B",
@@ -888,7 +902,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     }
   };
 
-
   const uniqueByDate =
     listData.length > 0
       ? Object.values(
@@ -978,58 +991,133 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     fetchData();
   }, [dashboard, reLoading, fromDate, toDate]);
 
+  useEffect(() => {
+    if (!attendance) return;
+
+    const interval = setInterval(() => {
+      const now = new Date();
+
+      const breakStart = new Date();
+      breakStart.setHours(13, 30, 0);
+
+      const breakEnd = new Date();
+      breakEnd.setHours(14, 30, 0);
+
+      const [hours, minutes] = attendance?.intime.split(":").map(Number);
+
+      const inTimeDate = new Date();
+      inTimeDate.setHours(hours, minutes, 0);
+
+      if (now >= breakStart && now < breakEnd) {
+        setWorkingTime("Break Time");
+        return;
+      }
+
+      let diff = now.getTime() - inTimeDate.getTime();
+
+      if (now >= breakEnd) {
+        diff = diff - 60 * 60 * 1000;
+      }
+
+      if (diff < 0) {
+        setWorkingTime("00:00:00");
+        return;
+      }
+
+      const hrs = Math.floor(diff / (1000 * 60 * 60));
+      const mins = Math.floor((diff / (1000 * 60)) % 60);
+      const secs = Math.floor((diff / 1000) % 60);
+
+      const formatted =
+        String(hrs).padStart(2, "0") +
+        ":" +
+        String(mins).padStart(2, "0") +
+        ":" +
+        String(secs).padStart(2, "0");
+
+      setWorkingTime(formatted);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [attendance, fromDate, toDate]);
+
+  const { execute: validateCompanyCode } = useApi();
+
 useEffect(() => {
-  if (!attendance) return;
+  const handleTokenExpire = async () => {
+    if (error === 'Token Expire' || error === 'Invalid Token') {
+      const db = await getDBConnection();
+      await createAccountsTable(db);
 
-  const interval = setInterval(() => {
-    const now = new Date();
+      const activeUser = await getActiveAccount(db);
 
-    const breakStart = new Date();
-    breakStart.setHours(13, 30, 0);
+      if (activeUser) {
+        const newActiveUser = await logoutUser(db, activeUser?.id);
 
-    const breakEnd = new Date();
-    breakEnd.setHours(14, 30, 0);
+        if (newActiveUser) {
+          if (isTokenValid(newActiveUser?.user?.tokenValidTill)) {
+            DevERPService.setToken(newActiveUser?.user?.token || "");
 
-    const [hours, minutes] = attendance?.intime.split(":").map(Number);
+            await AsyncStorage.setItem("erp_token", newActiveUser?.user?.token || "");
+            await AsyncStorage.setItem("auth_token", newActiveUser?.user?.token || "");
+            await AsyncStorage.setItem(
+              "erp_token_valid_till",
+              newActiveUser?.user?.tokenValidTill || ""
+            );
 
-    const inTimeDate = new Date();
-    inTimeDate.setHours(hours, minutes, 0);
+            const validation = await validateCompanyCode(() =>
+              DevERPService.validateCompanyCode(
+                newActiveUser?.user?.company_code
+              )
+            );
 
-    if (now >= breakStart && now < breakEnd) {
-      setWorkingTime("Break Time");
-      return;
+            if (!validation?.isValid) return;
+
+            dispatch(switchAccountThunk(newActiveUser?.id));
+          } else {
+            const validation = await validateCompanyCode(() =>
+              DevERPService.validateCompanyCode(
+                newActiveUser?.user?.company_code
+              )
+            );
+
+            if (!validation?.isValid) return;
+
+            dispatch(switchAccountThunk(newActiveUser?.id));
+          }
+        } else {
+          dispatch(setDashboard([]));
+          dispatch(setEmptyMenu([]));
+          dispatch(resetAjaxState());
+          dispatch(resetAttendanceState());
+          dispatch(clearAuthState());
+          dispatch(resetDropdownState());
+          dispatch(resetSyncLocationState());
+          dispatch(resetAttendanceState());
+          dispatch(logoutUserThunk());
+        }
+      }
     }
+  };
 
-    let diff = now.getTime() - inTimeDate.getTime();
-
-     if (now >= breakEnd) {
-      diff = diff - 60 * 60 * 1000;
-    }
-
-    if (diff < 0) {
-      setWorkingTime("00:00:00");
-      return;
-    }
-
-    const hrs = Math.floor(diff / (1000 * 60 * 60));
-    const mins = Math.floor((diff / (1000 * 60)) % 60);
-    const secs = Math.floor((diff / 1000) % 60);
-
-    const formatted =
-      String(hrs).padStart(2, "0") +
-      ":" +
-      String(mins).padStart(2, "0") +
-      ":" +
-      String(secs).padStart(2, "0");
-
-    setWorkingTime(formatted);
-  }, 1000);
-
-  return () => clearInterval(interval);
-}, [attendance, fromDate, toDate]);
-
+  handleTokenExpire();
+}, [error]);
+  
   if (isDashboardLoading) return <FullViewLoader isShowTop={false} />;
-
+  if (error) {
+      return (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: theme === "dark" ? "black" : "white",
+          }}
+        >
+          <ErrorMessage message={error} isShowTop={false} />{" "}
+        </View>
+      );
+    }
   if (!actionLoader && filteredDashboard?.length === 0) {
     return (
       <View
@@ -1808,14 +1896,29 @@ useEffect(() => {
                                     marginHorizontal: 8,
                                   }}
                                 >
-                                  <Text
+                                  <View
                                     style={{
-                                      color: "black",
-                                      fontWeight: "600",
+                                      justifyContent: "center",
+                                      alignContent: "center",
+                                      alignItems: "center",
+                                      flexDirection: "row",
+                                      gap: 4,
                                     }}
                                   >
-                                    Chart Data
-                                  </Text>
+                                    <MaterialIcons
+                                      size={14}
+                                      color={"gray"}
+                                      name="donut-large"
+                                    />
+                                    <Text
+                                      style={{
+                                        color: "black",
+                                        fontWeight: "600",
+                                      }}
+                                    >
+                                      Chart Data
+                                    </Text>
+                                  </View>
                                 </View>
                                 <PieChartSection
                                   pieChartData={pieChartData}
@@ -1848,11 +1951,29 @@ useEffect(() => {
                                 alignItems: "center",
                               }}
                             >
-                              <Text
-                                style={{ color: "black", fontWeight: "600" }}
+                              <View
+                                style={{
+                                  justifyContent: "center",
+                                  alignContent: "center",
+                                  alignItems: "center",
+                                  flexDirection: "row",
+                                  gap: 4,
+                                }}
                               >
-                                Dashboard
-                              </Text>
+                                <MaterialIcons
+                                  size={14}
+                                  color={"gray"}
+                                  name="dashboard"
+                                />
+                                <Text
+                                  style={{
+                                    color: "black",
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  Dashboard
+                                </Text>
+                              </View>
                             </View>
                             <View
                               style={{
@@ -1938,14 +2059,29 @@ useEffect(() => {
                                   marginHorizontal: 8,
                                 }}
                               >
-                                <Text
+                                <View
                                   style={{
-                                    color: "black",
-                                    fontWeight: "600",
+                                    justifyContent: "center",
+                                    alignContent: "center",
+                                    alignItems: "center",
+                                    flexDirection: "row",
+                                    gap: 4,
                                   }}
                                 >
-                                  Today Attendance
-                                </Text>
+                                  <MaterialIcons
+                                    size={14}
+                                    color={"gray"}
+                                    name="dashboard"
+                                  />
+                                  <Text
+                                    style={{
+                                      color: "black",
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                    Today Attendance
+                                  </Text>
+                                </View>
 
                                 <View
                                   style={{
@@ -1971,7 +2107,6 @@ useEffect(() => {
                           {attendance?.intime && (
                             <>
                               <View style={styles.timeContainer}>
-                                {/* Clock In */}
                                 <View style={styles.timeItem}>
                                   <View style={styles.iconTimeContainer}>
                                     <MaterialIcons
@@ -2117,14 +2252,29 @@ useEffect(() => {
                                   marginHorizontal: 8,
                                 }}
                               >
-                                <Text
+                                <View
                                   style={{
-                                    color: "black",
-                                    fontWeight: "600",
+                                    justifyContent: "center",
+                                    alignContent: "center",
+                                    alignItems: "center",
+                                    flexDirection: "row",
+                                    gap: 4,
                                   }}
                                 >
-                                  Summary
-                                </Text>
+                                  <MaterialIcons
+                                    size={14}
+                                    color={"gray"}
+                                    name="dashboard"
+                                  />
+                                  <Text
+                                    style={{
+                                      color: "black",
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                    Summary
+                                  </Text>
+                                </View>
 
                                 <TouchableOpacity
                                   onPress={() => {
@@ -2264,14 +2414,14 @@ useEffect(() => {
                                     <MaterialIcons
                                       name="access-time"
                                       size={22}
-                                      color={'#ff9800'}
+                                      color={"#ff9800"}
                                     />
                                   </View>
                                   <Text
                                     style={[
                                       styles.timeText,
                                       {
-                                        color: '#ff9800',
+                                        color: "#ff9800",
                                       },
                                     ]}
                                   >
@@ -2281,7 +2431,7 @@ useEffect(() => {
                                     style={[
                                       styles.labelText,
                                       {
-                                        color: '#ff9800',
+                                        color: "#ff9800",
                                       },
                                     ]}
                                   >

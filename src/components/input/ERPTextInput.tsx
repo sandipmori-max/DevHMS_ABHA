@@ -1,11 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Animated } from 'react-native';
-import { ERPTextInputProps } from './type';
-import { styles } from './input_style';
-import MaterialIcons from '@react-native-vector-icons/material-icons';
-import { ERP_COLOR_CODE } from '../../utils/constants';
-import { Easing } from 'react-native';
-import TranslatedText from '../../screens/dashboard/tabs/home/TranslatedText';
+import React, { useEffect, useRef, useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Animated,
+} from "react-native";
+import { ERPTextInputProps } from "./type";
+import { styles } from "./input_style";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
+import { ERP_COLOR_CODE } from "../../utils/constants";
+import { Easing } from "react-native";
+import TranslatedText from "../../screens/dashboard/tabs/home/TranslatedText";
 
 const ERPTextInput: React.FC<ERPTextInputProps> = ({
   label,
@@ -26,7 +32,7 @@ const ERPTextInput: React.FC<ERPTextInputProps> = ({
   ...rest
 }) => {
   const [showPassword, setShowPassword] = useState(!secureTextEntry);
- const errorAnim = useRef(new Animated.Value(0)).current;
+  const errorAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (touched && error) {
@@ -41,40 +47,52 @@ const ERPTextInput: React.FC<ERPTextInputProps> = ({
   }, [touched, error]);
   return (
     <View style={[styles.inputContainer, containerStyle, ,]}>
-      {label ? <TranslatedText 
-      text={label}
-      numberOfLines={1}
-      style={[styles.inputLabel, labelStyle]}></TranslatedText> : null}
+      {label ? (
+        <TranslatedText
+          text={label}
+          numberOfLines={1}
+          style={[styles.inputLabel, labelStyle]}
+        ></TranslatedText>
+      ) : null}
 
       <View style={styles.inputWrapper}>
         <View
           style={[
             styles.inputContainer,
             {
-              alignContent: 'center',
-              flexDirection: 'row',
-              alignItems: 'center',
+              alignContent: "center",
+              flexDirection: "row",
+              alignItems: "center",
               borderRadius: 8,
               borderWidth: 1,
               borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
               paddingLeft: 12,
             },
-            touched && !!error && {
-              borderColor: ERP_COLOR_CODE.ERP_ERROR,
-              borderWidth: 0.8,
-            },
+            touched &&
+              !!error && {
+                borderColor: ERP_COLOR_CODE.ERP_ERROR,
+                borderWidth: 0.8,
+              },
             isInputEdit && {
-              borderColor: '#81b5e4',
+              borderColor: "#81b5e4",
               borderWidth: 0.8,
             },
             value && {
-              borderColor: 'green',
-            }
+              borderColor: "green",
+            },
           ]}
         >
-          <MaterialIcons name={
-            field === 'company_code' ? 'closed-caption-off' : field === 'user' ? 'person' : 'password'
-          } size={20} color={ERP_COLOR_CODE.ERP_999} />
+          <MaterialIcons
+            name={
+              field === "company_code"
+                ? "closed-caption-off"
+                : field === "user"
+                ? "person"
+                : "password"
+            }
+            size={20}
+            color={ERP_COLOR_CODE.ERP_999}
+          />
 
           <TextInput
             style={[
@@ -89,12 +107,14 @@ const ERPTextInput: React.FC<ERPTextInputProps> = ({
 
         {showToggle && secureTextEntry && (
           <TouchableOpacity
-            onPress={() => setShowPassword(s => !s)}
+            onPress={() => setShowPassword((s) => !s)}
             style={styles.toggleButton}
-            accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+            accessibilityLabel={
+              showPassword ? "Hide password" : "Show password"
+            }
           >
             <MaterialIcons
-              name={!showPassword ? 'visibility-off' : 'visibility'}
+              name={!showPassword ? "visibility-off" : "visibility"}
               color={ERP_COLOR_CODE.ERP_999}
               size={20}
             />
@@ -104,14 +124,14 @@ const ERPTextInput: React.FC<ERPTextInputProps> = ({
         {icon}
       </View>
 
-      
-
-      {helperText && !error && <TranslatedText 
-      text={helperText}
-      numberOfLines={1}
-    
-      style={[styles.helperText, helperStyle]}></TranslatedText>}
-       {touched && !!error && (
+      {helperText && !error && (
+        <TranslatedText
+          text={helperText}
+          numberOfLines={1}
+          style={[styles.helperText, helperStyle]}
+        ></TranslatedText>
+      )}
+      {touched && !!error && (
         <Animated.Text
           style={[
             styles.errorText,

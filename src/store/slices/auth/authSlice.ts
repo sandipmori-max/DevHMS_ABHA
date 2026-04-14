@@ -420,11 +420,14 @@ const authSlice = createSlice({
                 }))
               : [];
           state.error = null;
+           state.isDashboardLoading = false;
         } catch (error) {
+          state.isDashboardLoading = false;
           state.dashboard = [];
         }
       })
       .addCase(getERPDashboardThunk.rejected, (state, action) => {
+        state.isDashboardLoading = false;
         state.error = action.payload as string;
       });
   },

@@ -5,7 +5,8 @@ import TranslatedText from "./TranslatedText";
 
 const { width } = Dimensions.get("screen");
 
-const MarqueeFooter = ({ html }) => {
+const MarqueeFooter = ({ html }: any) => {
+  console.log(" html -------- MarqueeFooter -------------- ", html);
   const translateX = useRef(new Animated.Value(width)).current;
 
   useEffect(() => {
@@ -44,10 +45,9 @@ const Footer = ({
   isFromMenu,
   textColor,
   isFromListPage,
-}) => {
+}: any) => {
   const isHTML = typeof footer === "string" && /<[^>]+>/.test(footer);
   const isMarquee = footer.includes("<marquee");
-
 
   if (isMarquee) {
     return <MarqueeFooter html={footer} />;

@@ -1,6 +1,3 @@
-/* eslint-disable react/no-unstable-nested-components */
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable react-native/no-inline-styles */
 import React, { useState, useRef, useEffect } from "react";
 import {
   View,
@@ -20,7 +17,6 @@ import { useNavigation } from "@react-navigation/native";
 
 import {
   formatDateList,
-  formatDateToDDMMMYYYY,
 } from "../../../../utils/helpers";
 import { styles } from "../list_page_style";
 import NoData from "../../../../components/no_data/NoData";
@@ -28,12 +24,10 @@ import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
  import { useAppSelector } from "../../../../store/hooks";
 import useTranslations from "../../../../hooks/useTranslations";
-import { Easing } from "react-native";
 import ImageBottomSheetModal from "../../../../components/bottomsheet/ImageBottomSheetModal";
 import RemarksView from "./RemarksView";
 import MemoizedFooterView from "./MemoizedFooterView";
 
-// enable LayoutAnimation on Android
 if (
   Platform.OS === "android" &&
   UIManager.setLayoutAnimationEnabledExperimental
@@ -41,8 +35,7 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-/** SWIPEABLE ROW **/
-const SwipeableRow = ({ children, onDelete, id }) => {
+const SwipeableRow = ({ children, onDelete, id }: any) => {
   const translateX = useRef(new Animated.Value(0)).current;
   const rowWidth = useRef(0);
   const DISMISS_THRESHOLD = -120;
@@ -93,7 +86,6 @@ const SwipeableRow = ({ children, onDelete, id }) => {
     </View>
   );
 };
-/** END SWIPEABLE ROW **/
 
 const ReadableView = ({
   configData,
@@ -217,7 +209,7 @@ const ReadableView = ({
                 : isFromAlertCard
                 ? "#f8fff8ff"
                 : ERP_COLOR_CODE.ERP_WHITE,
-            borderRadius: 8,
+            borderRadius: 6,
             paddingHorizontal: 8,
             paddingBottom: 6,
             marginVertical: 2.5,
@@ -262,7 +254,7 @@ const ReadableView = ({
               style={{
                 width: 40,
                 height: 40,
-                borderRadius: 12,
+                borderRadius: 6,
                 backgroundColor: bgColor,
                 justifyContent: "center",
                 alignItems: "center",
