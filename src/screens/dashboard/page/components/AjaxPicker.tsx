@@ -170,7 +170,7 @@ const { height, width } = useWindowDimensions();
           },
           item?.disabled == "1" &&
             theme === "dark" && {
-              backgroundColor:  ERP_COLOR_CODE.ERP_APP_COLOR,
+              backgroundColor: 'gray',
             },
         ]}
         onPress={() => {

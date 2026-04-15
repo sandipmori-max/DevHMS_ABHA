@@ -187,19 +187,18 @@ const TabNavigator = () => {
         
         tabBarActiveTintColor:
           theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR,
-        tabBarInactiveTintColor:
-          theme === "dark" ? "black" : 'gray',
+        tabBarInactiveTintColor: 'gray',
         tabBarStyle: {
           display: hidden ? "none" : "flex",
           backgroundColor:
-            theme === "dark" ? DARK_COLOR : ERP_COLOR_CODE.ERP_WHITE,
-          height: Platform.OS === "ios" ? 60 : 70,
+            theme === "dark" ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
+          height: Platform.OS === "ios" ? theme === "dark" ? 70 : 60 : 70,
           paddingBottom: 5,
           paddingTop: 5,
         },
         headerStyle: {
           backgroundColor:
-            theme === "dark" ? DARK_COLOR : ERP_COLOR_CODE.ERP_APP_COLOR,
+            theme === "dark" ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
         },
         headerTintColor: "white", 
       }}

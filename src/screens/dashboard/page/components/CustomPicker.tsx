@@ -45,6 +45,7 @@ const CustomPicker = ({
   const [selectedOption, setSelectedOption] = useState("");
   const theme = useAppSelector((state) => state?.theme.mode);
   const { user } = useAppSelector((state) => state?.auth);
+  console.log("ite+++++m", item?.title)
 
   const optionsCache = useRef<{ [key: string]: any[] }>({});
  
@@ -146,7 +147,7 @@ const CustomPicker = ({
           item?.disabled === "1" && styles.disabledBox,
           item?.disabled === "1" &&
             theme === "dark" && {
-              backgroundColor:  ERP_COLOR_CODE.ERP_APP_COLOR,
+              backgroundColor:  'gray',
               borderWidth: 1,
             },
           isForceOpen &&
@@ -162,7 +163,7 @@ const CustomPicker = ({
             },
           isForceOpen &&
             theme === "dark" && {
-              backgroundColor:  ERP_COLOR_CODE.ERP_APP_COLOR,
+              backgroundColor:  'gray',
             },
           item?.background && {
             backgroundColor: item?.background,
@@ -173,7 +174,7 @@ const CustomPicker = ({
 
           item?.disabled == "1" &&
             theme === "dark" && {
-              backgroundColor:  ERP_COLOR_CODE.ERP_APP_COLOR,
+              backgroundColor: 'gray',
             },
           isFromDashboard && {
             paddingVertical: 6,

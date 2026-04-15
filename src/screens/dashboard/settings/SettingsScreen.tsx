@@ -52,6 +52,7 @@ import { resetDropdownState } from "../../../store/slices/dropdown/dropdownSlice
 import { resetSyncLocationState } from "../../../store/slices/location/syncLocationSlice";
 import { Easing } from "react-native";
 import { ERP_APP_VERSION } from "../../../constants";
+import { setReloadApp } from "../../../store/slices/reloadApp/reloadAppSlice";
 
 interface SettingItem {
   id: string;
@@ -358,14 +359,14 @@ const SettingsScreen = () => {
                 color: "white",
               },
               {
-                color: item?.action === "Logout" ? ERP_COLOR_CODE.ERP_ERROR : 'black'
+                color: item?.action === "Logout" ? ERP_COLOR_CODE.ERP_ERROR :  theme === "dark" ? 'white' : 'black'
               }
             ]}
           >
             {item?.title}
           </Text>
           <Text style={[styles.settingSubtitle,  {
-                color: item?.action === "Logout" ? ERP_COLOR_CODE.ERP_ERROR : 'black'
+                color: item?.action === "Logout" ? ERP_COLOR_CODE.ERP_ERROR :  theme === "dark" ? 'white' :'black'
               }]}>{item?.subtitle}</Text>
         </View>
         {item.type === "toggle" ? (
@@ -381,6 +382,9 @@ const SettingsScreen = () => {
                 const newTheme = theme === "dark" ? "light" : "dark";
                 setERPTheme(newTheme);
                 dispatch(setTheme(newTheme));
+                setTimeout(() => {
+                        dispatch(setReloadApp());
+                }, 1000);
               }
             }}
             trackColor={{

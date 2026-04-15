@@ -384,7 +384,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
       onRequestClose={handleClose}
     >
       <ImageBackground
-        source={theme === "dark" ? "" : ERP_GIF.BACK_IMG}
+        source={theme === "dark" ? "black" : ERP_GIF.BACK_IMG}
         style={{
           height: Dimensions.get("screen").height,
         }}

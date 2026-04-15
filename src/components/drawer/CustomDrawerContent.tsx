@@ -603,7 +603,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
       contentContainerStyle={{
         flexGrow: 1,
         backgroundColor:
-          theme === "dark" ? ERP_COLOR_CODE.ERP_APP_COLOR : "white",
+          theme === "dark" ? 'black' : "white",
       }}
     >
       {/* ================= HEADER ================= */}
@@ -620,7 +620,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
             {
               backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
             },
-            theme === "dark" && { backgroundColor: "black" },
+            theme === "dark" && { backgroundColor: "gray" },
           ]}
         >
           <View>
@@ -763,7 +763,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                         backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
                       },
                       isActive &&
-                        theme === "dark" && { backgroundColor: "black" },
+                        theme === "dark" && { backgroundColor: "gray" },
                     ]}
                     onPress={() => {
                       if (item?.link === "AboutUs") {
@@ -826,7 +826,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                         name={item.iconname.toLowerCase().trim()}
                         size={20}
                         color={
-                          theme === "dark" ? "#FFF" : isActive ? "#FFF" : "gray"
+                          theme === "dark" ?  isActive ? 'white' : "gray"  : isActive ? "#FFF" : "#000"
                         }
                       />
                       <TranslatedText
@@ -835,11 +835,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                           isActive && styles.activeText,
                           {
                             color:
-                              theme === "dark"
-                                ? "white"
-                                : isActive
-                                ? "#FFF"
-                                : "#000",
+                              theme === "dark" ?  isActive ? 'white' : "gray"  : isActive ? "#FFF" : "#000",
                           },
                         ]}
                         numberOfLines={1}
@@ -885,7 +881,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
           style={[
             styles.logoutButton,
             {
-              borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+              borderColor: theme === 'dark' ? 'gray' : ERP_COLOR_CODE.ERP_APP_COLOR,
             },
           ]}
         >
@@ -896,7 +892,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                 fontSize: 12,
                 color: ERP_COLOR_CODE.ERP_777,
               },
-              theme === "dark" && { color: "white" },
+              theme === "dark" && { color: "gray" },
             ]}
           >
             {t("test24")}
@@ -916,7 +912,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                 {
                   color: ERP_COLOR_CODE.ERP_APP_COLOR,
                 },
-                theme === "dark" && { color: "white" },
+                theme === "dark" && { color: "gray" },
                 {
                   marginLeft: 8,
                 },

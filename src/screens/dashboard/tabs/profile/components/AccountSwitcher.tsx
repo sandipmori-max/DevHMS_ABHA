@@ -407,7 +407,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
               <Text
                 style={[
                   styles.removeButtonText,
-                  theme === "dark" && { color: "black" },
+                  theme === "dark" && { color: "white" },
                 ]}
               >
                 ✕

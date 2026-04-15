@@ -33,7 +33,7 @@ const BoolInput = ({ value, onChange, label }: BoolInputProps) => {
         flexDirection: 'row', alignItems: 'center' }}>
         <View style={{flexDirection:'row', width:'40%', alignContent:'center', alignItems:'center'}}>
           <TouchableOpacity
-          style={[styles.radio, value && styles.radioSelected]}
+          style={[styles.radio, value && styles.radioSelected, ]}
           onPress={() => onChange(true)}
         >
           {value && <View style={styles.radioInner} />}
@@ -46,7 +46,7 @@ const BoolInput = ({ value, onChange, label }: BoolInputProps) => {
           value ?
           {
             fontWeight: '600',
-            color: 'black'
+          color: theme === 'dark' ? ERP_COLOR_CODE.ERP_APP_COLOR : 'black'
           } :  {
              color: 'gray'
           }
@@ -72,7 +72,7 @@ const BoolInput = ({ value, onChange, label }: BoolInputProps) => {
            !value ?
           {
             fontWeight: '600',
-            color: 'black'
+            color: theme === 'dark' ? ERP_COLOR_CODE.ERP_APP_COLOR : 'black'
           } :  {
              color: 'gray'
           }

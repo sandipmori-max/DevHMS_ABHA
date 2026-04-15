@@ -1093,7 +1093,7 @@ const ListScreen = () => {
                 <MaterialIcons
                   size={32}
                   name="add"
-                  color={theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE}
+                  color={'white'}
                 />
               )}
             </TouchableOpacity>

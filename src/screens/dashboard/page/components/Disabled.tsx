@@ -9,6 +9,7 @@ import { useAppSelector } from "../../../../store/hooks";
 import ShortAction from "./ShortAction";
 
 const Disabled = ({ item, value, type }: any) => {
+  console.log("item", item?.title)
   const theme = useAppSelector((state) => state?.theme.mode);
 
   const getDisplayValue = () => {
@@ -69,7 +70,7 @@ const Disabled = ({ item, value, type }: any) => {
         style={[
           styles.disabledBox,
           theme === "dark" && {
-            backgroundColor:  ERP_COLOR_CODE.ERP_APP_COLOR,
+            backgroundColor: 'gray',
           },
         ]}
       >

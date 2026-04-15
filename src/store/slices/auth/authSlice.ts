@@ -420,9 +420,9 @@ const authSlice = createSlice({
                 }))
               : [];
           state.error = null;
-           state.isDashboardLoading = false;
+          //  state.isDashboardLoading = false;
         } catch (error) {
-          state.isDashboardLoading = false;
+          // state.isDashboardLoading = false;
           state.dashboard = [];
         }
       })

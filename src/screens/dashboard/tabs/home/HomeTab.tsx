@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -70,7 +71,12 @@ import { getDDLThunk } from "../../../../store/slices/dropdown/thunk";
 import CustomAlert from "../../../../components/alert/CustomAlert";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import { getLastPunchInThunk } from "../../../../store/slices/attendance/thunk";
-import { createAccountsTable, getActiveAccount, getDBConnection, logoutUser } from "../../../../utils/sqlite";
+import {
+  createAccountsTable,
+  getActiveAccount,
+  getDBConnection,
+  logoutUser,
+} from "../../../../utils/sqlite";
 import { DevERPService } from "../../../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useApi } from "../../../../hooks/useApi";
@@ -114,6 +120,13 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     attendanceDone,
   } = useAppSelector((state) => state.auth);
 
+  const loadDashboard = useCallback(
+    (params) => {
+      dispatch(getERPDashboardThunk(params));
+    },
+    [dispatch],
+  );
+
   const runAI = async () => {
     try {
       const message = await getDashboardAI(dashboard);
@@ -153,8 +166,16 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [filteredDashboard, setFilteredDashboard] = useState(dashboard);
-  const searchTimeout = useRef<any>(null);
+  const filteredDashboard = useMemo(() => {
+    const text = searchText.toLowerCase();
+
+    return dashboard.filter(
+      (item) =>
+        (item?.name || "").toLowerCase().includes(text) ||
+        (item?.title || "").toLowerCase().includes(text) ||
+        (item?.data || "").toLowerCase().includes(text),
+    );
+  }, [searchText, dashboard]);
 
   const htmlItems = filteredDashboard.filter((item) =>
     hasHtmlContent(item.data),
@@ -183,26 +204,6 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     }).start();
   }, [showFull]);
 
-  useEffect(() => {
-    if (searchTimeout.current) clearTimeout(searchTimeout.current);
-    searchTimeout.current = setTimeout(() => {
-      const filtered = dashboard.filter((item) => {
-        const text = searchText?.toLowerCase();
-        return (
-          (item?.name || "").toLowerCase().includes(text) ||
-          (item?.title || "").toLowerCase().includes(text) ||
-          (item?.data || "").toLowerCase().includes(text)
-        );
-      });
-
-      setFilteredDashboard(filtered);
-    }, 300);
-
-    return () => {
-      if (searchTimeout.current) clearTimeout(searchTimeout.current);
-    };
-  }, [searchText, dashboard]);
-
   useFocusEffect(
     useCallback(() => {
       // dispatch(setActiveDashboardBranchId(""));
@@ -217,13 +218,17 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
   );
 
   useEffect(() => {
-    Animated.loop(
+    const animation = Animated.loop(
       Animated.timing(translateX, {
         toValue: -350,
         duration: 10000,
         useNativeDriver: true,
       }),
-    ).start();
+    );
+
+    animation.start();
+
+    return () => animation.stop();
   }, []);
 
   useLayoutEffect(() => {
@@ -407,7 +412,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                     fd: fromDateStr,
                     td: toDateStr,
                   };
-                  dispatch(getERPDashboardThunk(params));
+                  loadDashboard(params);
 
                   const timer = setTimeout(() => {
                     setActionLoader(false);
@@ -418,7 +423,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                   dispatch(getLastPunchInThunk())
                     .unwrap()
                     .then((res) => {
-                      if (res?.id !== "0" || res?.id !== 0) {
+                      if (res?.id !== "0" && res?.id !== 0) {
                         setAttendance(res);
                       } else {
                         setAttendance(null);
@@ -728,77 +733,85 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     );
   };
 
-  const getCurrentMonthRange = () => {
+  const getCurrentMonthRange = useCallback(() => {
     const now = new Date();
+
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    const fromDateStr = formatDateForAPI(firstDay);
-    const toDateStr = formatDateForAPI(lastDay);
-    setFromDate(fromDateStr);
-    setToDate(toDateStr);
-    fetchPageData(fromDateStr, toDateStr);
-  };
 
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    if (event?.type === "dismissed" || !selectedDate) {
+    const from = formatDateForAPI(firstDay);
+    const to = formatDateForAPI(lastDay);
+
+    setFromDate(from);
+    setToDate(to);
+
+    fetchPageData(from, to);
+  }, []);
+
+  const handleDateChange = useCallback(
+    (event: any, selectedDate?: Date) => {
+      if (event?.type === "dismissed" || !selectedDate) {
+        setShowDatePicker(null);
+        return;
+      }
+
+      const { type } = showDatePicker!;
+      const formatted = formatDateForAPI(selectedDate);
+
+      if (type === "to") {
+        if (fromDate) {
+          const from = new Date(fromDate.split("-").reverse().join("-"));
+
+          if (selectedDate < from) {
+            Alert.alert(t("text86"), t("text87"), [{ text: t("text88") }]);
+            return;
+          }
+        }
+
+        setToDate(formatted);
+        dispatch(setActiveDashboardToDate(formatted));
+      } else {
+        setFromDate(formatted);
+        dispatch(setActiveDashboardFromDate(formatted));
+
+        if (toDate) {
+          const to = new Date(toDate.split("-").reverse().join("-"));
+          if (selectedDate > to) {
+            setToDate("");
+          }
+        }
+      }
+
       setShowDatePicker(null);
-      return;
-    }
-    const { type } = showDatePicker!;
-    const formattedDate = formatDateForAPI(selectedDate);
-
-    if (type === "to") {
-      const today = new Date();
-      today.setHours(23, 59, 59, 999);
-
-      if (fromDate) {
-        const fromDateObj = new Date(fromDate.split("-").reverse().join("-"));
-        if (selectedDate < fromDateObj) {
-          Alert.alert(t("text86"), t("text87"), [{ text: t("text88") }]);
-          setShowDatePicker(null);
-          return;
-        }
-      }
-      setToDate(formattedDate);
-      dispatch(setActiveDashboardToDate(formattedDate));
-    } else {
-      setFromDate(formattedDate);
-      dispatch(setActiveDashboardFromDate(formattedDate));
-      if (toDate) {
-        const toDateObj = new Date(toDate.split("-").reverse().join("-"));
-        if (selectedDate > toDateObj) {
-          setToDate("");
-        }
-      }
-    }
-    setShowDatePicker(null);
-  };
+    },
+    [fromDate, toDate, showDatePicker],
+  );
 
   const fetchPageData = useCallback(
     async (fromDate: string, toDate: string) => {
       try {
         setControlsLoader(true);
+
         const parsed = await dispatch(
           getERPPageThunk({ page: "Dashboard", id: "" }),
         ).unwrap();
-        const pageControls = Array.isArray(parsed?.pagectl)
-          ? parsed?.pagectl
-          : [];
-        const normalizedControls = pageControls?.map((c) => ({
+
+        const normalizedControls = (parsed?.pagectl || []).map((c) => ({
           ...c,
           disabled: String(c?.disabled ?? "0"),
           visible: String(c?.visible ?? "1"),
           mandatory: String(c?.mandatory ?? "0"),
         }));
+
         setControls(normalizedControls);
-        fetchData(normalizedControls, fromDate, toDate);
-        setControlsLoader(false);
-      } catch (e: any) {
+
+        await fetchData(normalizedControls, fromDate, toDate);
+      } catch (e) {
+        console.log("fetchPageData error:", e);
       } finally {
+        setControlsLoader(false);
         setLoadingPageId(null);
-        setTimeout(() => {
-          setActionLoader(false);
-        }, 10);
+        setActionLoader(false);
       }
     },
     [dispatch],
@@ -845,108 +858,112 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     reLoading,
   ]);
 
-  const fetchData = async (normalizedControls, fromDate, toDate) => {
-    try {
-      console.log(
-        "--------------------------------------------controls +++++++++++++++ controls:",
-        normalizedControls,
-      );
-      if (normalizedControls.length === 0) return;
-      const branchObj = normalizedControls.find(
-        (item) => item.fieldtitle === "Branch",
-      );
-      const typeObj = normalizedControls.find(
-        (item) => item.fieldtitle === "Type",
-      );
+  const fetchData = useCallback(
+    async (normalizedControls, fromDate, toDate) => {
+      try {
+        if (normalizedControls.length === 0) return;
 
-      const res = await dispatch(
-        getDDLThunk({
-          dtlid: branchObj?.dtlid,
-          where: `UserID in (${user?.id}, -1) AND selected = 1`,
-        }),
-      ).unwrap();
+        const branchObj = normalizedControls.find(
+          (item) => item.fieldtitle === "Branch",
+        );
 
-      const data = res?.data ?? [];
-      // setPreSelectedBranch(data);
-      dispatch(setActiveDashboardBranchId(data[0]?.value?.toString()));
-      dispatch(setActiveDashboardBranch(data[0]?.name));
+        const typeObj = normalizedControls.find(
+          (item) => item.fieldtitle === "Type",
+        );
 
-      const res1 = await dispatch(
-        getDDLThunk({
-          dtlid: typeObj?.dtlid,
-          where: `UserID in (${user?.id}, -1)`,
-        }),
-      ).unwrap();
-      const data1 = res1?.data ?? [];
-      console.log(
-        "--------------------------------------------DDLres1 Data:",
-        res1,
-      );
-      dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString()));
-      dispatch(setActiveDashboardType(data1[0]?.name));
-      console.log(
-        "--------------------------------------------DDL Data:",
-        data1,
-      );
+        const res = await dispatch(
+          getDDLThunk({
+            dtlid: branchObj?.dtlid,
+            where: `UserID in (${user?.id}, -1) AND selected = 1`,
+          }),
+        ).unwrap();
 
-      dispatch(
-        getERPDashboardThunk({
-          branch: data[0]?.value?.toString() || "",
-          type: data1[0]?.value?.toString() || "",
-          fd: fromDate,
-          td: toDate,
-        }),
-      );
-    } catch (error) {
-      console.log("-------------------------------------DDL Error:", error);
-    }
-  };
+        const data = res?.data ?? [];
 
-  const uniqueByDate =
-    listData.length > 0
-      ? Object.values(
-          listData.reduce((acc, item) => {
-            const key = item.date;
+        dispatch(setActiveDashboardBranchId(data[0]?.value?.toString()));
+        dispatch(setActiveDashboardBranch(data[0]?.name));
 
-            // priority logic (jo rakhna hai wo decide karo)
-            if (!acc[key]) {
-              acc[key] = item;
-            } else {
-              // Prefer FullDay > Half > Working > Leave
-              const priority = {
-                FullDay: 4,
-                Half: 3,
-                Working: 2,
-                "Punch Missing": 1,
-                Leave: 0,
-              };
+        const res1 = await dispatch(
+          getDDLThunk({
+            dtlid: typeObj?.dtlid,
+            where: `UserID in (${user?.id}, -1)`,
+          }),
+        ).unwrap();
 
-              if (
-                (priority[item.status] || 0) > (priority[acc[key].status] || 0)
-              ) {
-                acc[key] = item;
-              }
-            }
+        const data1 = res1?.data ?? [];
 
-            return acc;
-          }, {}),
-        )
-      : [];
+        dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString()));
+        dispatch(setActiveDashboardType(data1[0]?.name));
 
-  const leave = uniqueByDate?.filter(
-    (i) => i?.status?.toLowerCase() === "leave",
-  ).length;
+        dispatch(
+          getERPDashboardThunk({
+            branch: data[0]?.value?.toString() || "",
+            type: data1[0]?.value?.toString() || "",
+            fd: fromDate,
+            td: toDate,
+          }),
+        );
+      } catch (error) {
+        console.log("DDL Error:", error);
+      }
+    },
+    [dispatch, user?.id],
+  );
 
-  const late = uniqueByDate.filter(
-    (i) => i?.intime && isLatePunchIn(i?.intime),
-  ).length;
+  const uniqueByDate = useMemo(() => {
+    if (listData.length === 0) return [];
 
-  const lessHours = uniqueByDate.filter(
-    (i) =>
-      i?.intime && i?.outtime && getWorkedHours(i?.intime, i?.outtime) < 8.5,
-  ).length;
+    const priority = {
+      FullDay: 4,
+      Half: 3,
+      Working: 2,
+      "Punch Missing": 1,
+      Leave: 0,
+    };
 
-  const present = uniqueByDate.length - leave;
+    return Object.values(
+      listData.reduce((acc, item) => {
+        const key = item.date;
+
+        if (
+          !acc[key] ||
+          (priority[item.status] || 0) > (priority[acc[key].status] || 0)
+        ) {
+          acc[key] = item;
+        }
+
+        return acc;
+      }, {}),
+    );
+  }, [listData]);
+
+  const leave = useMemo(
+    () =>
+      uniqueByDate.filter((i) => i?.status?.toLowerCase() === "leave").length,
+    [uniqueByDate],
+  );
+
+  const late = useMemo(
+    () =>
+      uniqueByDate.filter((i) => i?.intime && isLatePunchIn(i?.intime)).length,
+    [uniqueByDate],
+  );
+
+  const lessHours = useMemo(
+    () =>
+      uniqueByDate.filter(
+        (i) =>
+          i?.intime &&
+          i?.outtime &&
+          getWorkedHours(i?.intime, i?.outtime) < 8.5,
+      ).length,
+    [uniqueByDate],
+  );
+
+  const present = useMemo(
+    () => uniqueByDate.length - leave,
+    [uniqueByDate, leave],
+  );
 
   useEffect(() => {
     getCurrentMonthRange();
@@ -991,22 +1008,24 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     fetchData();
   }, [dashboard, reLoading, fromDate, toDate]);
 
+  const intervalRef = useRef(null);
+
   useEffect(() => {
-    if (!attendance) return;
+    if (!attendance?.intime) return;
 
-    const interval = setInterval(() => {
+    const [hours, minutes] = attendance.intime.split(":").map(Number);
+
+    const inTimeDate = new Date();
+    inTimeDate.setHours(hours, minutes, 0, 0);
+
+    const breakStart = new Date();
+    breakStart.setHours(13, 30, 0, 0);
+
+    const breakEnd = new Date();
+    breakEnd.setHours(14, 30, 0, 0);
+
+    const updateWorkingTime = () => {
       const now = new Date();
-
-      const breakStart = new Date();
-      breakStart.setHours(13, 30, 0);
-
-      const breakEnd = new Date();
-      breakEnd.setHours(14, 30, 0);
-
-      const [hours, minutes] = attendance?.intime.split(":").map(Number);
-
-      const inTimeDate = new Date();
-      inTimeDate.setHours(hours, minutes, 0);
 
       if (now >= breakStart && now < breakEnd) {
         setWorkingTime("Break Time");
@@ -1016,10 +1035,10 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       let diff = now.getTime() - inTimeDate.getTime();
 
       if (now >= breakEnd) {
-        diff = diff - 60 * 60 * 1000;
+        diff -= 60 * 60 * 1000;
       }
 
-      if (diff < 0) {
+      if (diff <= 0) {
         setWorkingTime("00:00:00");
         return;
       }
@@ -1028,96 +1047,104 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       const mins = Math.floor((diff / (1000 * 60)) % 60);
       const secs = Math.floor((diff / 1000) % 60);
 
-      const formatted =
-        String(hrs).padStart(2, "0") +
-        ":" +
-        String(mins).padStart(2, "0") +
-        ":" +
-        String(secs).padStart(2, "0");
+      setWorkingTime(
+        `${String(hrs).padStart(2, "0")}:${String(mins).padStart(
+          2,
+          "0",
+        )}:${String(secs).padStart(2, "0")}`,
+      );
+    };
 
-      setWorkingTime(formatted);
-    }, 1000);
+    updateWorkingTime();
 
-    return () => clearInterval(interval);
-  }, [attendance, fromDate, toDate]);
+    intervalRef.current = setInterval(updateWorkingTime, 1000);
+
+    return () => clearInterval(intervalRef.current);
+  }, [attendance?.intime]);
 
   const { execute: validateCompanyCode } = useApi();
 
-useEffect(() => {
-  const handleTokenExpire = async () => {
-    if (error === 'Token Expire' || error === 'Invalid Token') {
-      const db = await getDBConnection();
-      await createAccountsTable(db);
+  useEffect(() => {
+    const handleTokenExpire = async () => {
+      if (error === "Token Expire" || error === "Invalid Token") {
+        const db = await getDBConnection();
+        await createAccountsTable(db);
 
-      const activeUser = await getActiveAccount(db);
+        const activeUser = await getActiveAccount(db);
 
-      if (activeUser) {
-        const newActiveUser = await logoutUser(db, activeUser?.id);
+        if (activeUser) {
+          const newActiveUser = await logoutUser(db, activeUser?.id);
 
-        if (newActiveUser) {
-          if (isTokenValid(newActiveUser?.user?.tokenValidTill)) {
-            DevERPService.setToken(newActiveUser?.user?.token || "");
+          if (newActiveUser) {
+            if (isTokenValid(newActiveUser?.user?.tokenValidTill)) {
+              DevERPService.setToken(newActiveUser?.user?.token || "");
 
-            await AsyncStorage.setItem("erp_token", newActiveUser?.user?.token || "");
-            await AsyncStorage.setItem("auth_token", newActiveUser?.user?.token || "");
-            await AsyncStorage.setItem(
-              "erp_token_valid_till",
-              newActiveUser?.user?.tokenValidTill || ""
-            );
+              await AsyncStorage.setItem(
+                "erp_token",
+                newActiveUser?.user?.token || "",
+              );
+              await AsyncStorage.setItem(
+                "auth_token",
+                newActiveUser?.user?.token || "",
+              );
+              await AsyncStorage.setItem(
+                "erp_token_valid_till",
+                newActiveUser?.user?.tokenValidTill || "",
+              );
 
-            const validation = await validateCompanyCode(() =>
-              DevERPService.validateCompanyCode(
-                newActiveUser?.user?.company_code
-              )
-            );
+              const validation = await validateCompanyCode(() =>
+                DevERPService.validateCompanyCode(
+                  newActiveUser?.user?.company_code,
+                ),
+              );
 
-            if (!validation?.isValid) return;
+              if (!validation?.isValid) return;
 
-            dispatch(switchAccountThunk(newActiveUser?.id));
+              dispatch(switchAccountThunk(newActiveUser?.id));
+            } else {
+              const validation = await validateCompanyCode(() =>
+                DevERPService.validateCompanyCode(
+                  newActiveUser?.user?.company_code,
+                ),
+              );
+
+              if (!validation?.isValid) return;
+
+              dispatch(switchAccountThunk(newActiveUser?.id));
+            }
           } else {
-            const validation = await validateCompanyCode(() =>
-              DevERPService.validateCompanyCode(
-                newActiveUser?.user?.company_code
-              )
-            );
-
-            if (!validation?.isValid) return;
-
-            dispatch(switchAccountThunk(newActiveUser?.id));
+            dispatch(setDashboard([]));
+            dispatch(setEmptyMenu([]));
+            dispatch(resetAjaxState());
+            dispatch(resetAttendanceState());
+            dispatch(clearAuthState());
+            dispatch(resetDropdownState());
+            dispatch(resetSyncLocationState());
+            dispatch(resetAttendanceState());
+            dispatch(logoutUserThunk());
           }
-        } else {
-          dispatch(setDashboard([]));
-          dispatch(setEmptyMenu([]));
-          dispatch(resetAjaxState());
-          dispatch(resetAttendanceState());
-          dispatch(clearAuthState());
-          dispatch(resetDropdownState());
-          dispatch(resetSyncLocationState());
-          dispatch(resetAttendanceState());
-          dispatch(logoutUserThunk());
         }
       }
-    }
-  };
+    };
 
-  handleTokenExpire();
-}, [error]);
-  
+    handleTokenExpire();
+  }, [error]);
+
   if (isDashboardLoading) return <FullViewLoader isShowTop={false} />;
   if (error) {
-      return (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: theme === "dark" ? "black" : "white",
-          }}
-        >
-          <ErrorMessage message={error} isShowTop={false} />{" "}
-        </View>
-      );
-    }
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: theme === "dark" ? "black" : "white",
+        }}
+      >
+        <ErrorMessage message={error} isShowTop={false} />{" "}
+      </View>
+    );
+  }
   if (!actionLoader && filteredDashboard?.length === 0) {
     return (
       <View
@@ -1887,7 +1914,8 @@ useEffect(() => {
                                   style={{
                                     marginTop: 12,
                                     marginBottom: 2,
-                                    backgroundColor: "#f5f5f5",
+                                    backgroundColor:
+                                      theme === "dark" ? "gray" : "#f5f5f5",
                                     flexDirection: "row",
                                     justifyContent: "space-between",
                                     padding: 8,
@@ -1907,12 +1935,15 @@ useEffect(() => {
                                   >
                                     <MaterialIcons
                                       size={14}
-                                      color={"gray"}
+                                      color={
+                                        theme === "dark" ? "white" : "gray"
+                                      }
                                       name="donut-large"
                                     />
                                     <Text
                                       style={{
-                                        color: "black",
+                                        color:
+                                          theme === "dark" ? "white" : "black",
                                         fontWeight: "600",
                                       }}
                                     >
@@ -1943,7 +1974,8 @@ useEffect(() => {
                             <View
                               style={{
                                 marginBottom: 8,
-                                backgroundColor: "#f5f5f5",
+                                backgroundColor:
+                                  theme === "dark" ? "gray" : "#f5f5f5",
                                 flexDirection: "row",
                                 justifyContent: "space-between",
                                 padding: 8,
@@ -1962,12 +1994,12 @@ useEffect(() => {
                               >
                                 <MaterialIcons
                                   size={14}
-                                  color={"gray"}
+                                  color={theme === "dark" ? "white" : "gray"}
                                   name="dashboard"
                                 />
                                 <Text
                                   style={{
-                                    color: "black",
+                                    color: theme === "dark" ? "white" : "black",
                                     fontWeight: "600",
                                   }}
                                 >
@@ -2050,7 +2082,8 @@ useEffect(() => {
                                 style={{
                                   marginTop: 2,
                                   marginBottom: 2,
-                                  backgroundColor: "#f5f5f5",
+                                  backgroundColor:
+                                    theme === "dark" ? "gray" : "#f5f5f5",
                                   flexDirection: "row",
                                   justifyContent: "space-between",
                                   padding: 8,
@@ -2070,12 +2103,13 @@ useEffect(() => {
                                 >
                                   <MaterialIcons
                                     size={14}
-                                    color={"gray"}
+                                    color={theme === "dark" ? "white" : "gray"}
                                     name="dashboard"
                                   />
                                   <Text
                                     style={{
-                                      color: "black",
+                                      color:
+                                        theme === "dark" ? "white" : "black",
                                       fontWeight: "600",
                                     }}
                                   >
@@ -2093,7 +2127,8 @@ useEffect(() => {
                                 >
                                   <Text
                                     style={{
-                                      color: "gray",
+                                      color:
+                                        theme === "dark" ? "white" : "gray",
                                       fontWeight: "600",
                                     }}
                                   >
@@ -2108,11 +2143,23 @@ useEffect(() => {
                             <>
                               <View style={styles.timeContainer}>
                                 <View style={styles.timeItem}>
-                                  <View style={styles.iconTimeContainer}>
+                                  <View
+                                    style={[
+                                      styles.iconTimeContainer,
+                                      {
+                                        backgroundColor:
+                                          theme === "dark" ? "gray" : "white",
+                                      },
+                                    ]}
+                                  >
                                     <MaterialIcons
                                       name="login"
                                       size={22}
-                                      color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                                      color={
+                                        theme === "dark"
+                                          ? "white"
+                                          : ERP_COLOR_CODE.ERP_APP_COLOR
+                                      }
                                     />
                                   </View>
                                   <Text
@@ -2137,18 +2184,33 @@ useEffect(() => {
                                   </Text>
                                 </View>
                                 <View style={styles.timeItem}>
-                                  <View style={styles.iconTimeContainer}>
+                                  <View
+                                    style={[
+                                      styles.iconTimeContainer,
+                                      {
+                                        backgroundColor:
+                                          theme === "dark" ? "gray" : "white",
+                                      },
+                                    ]}
+                                  >
                                     <MaterialIcons
                                       name="access-time"
                                       size={22}
-                                      color={ERP_COLOR_CODE.ERP_green}
+                                      color={
+                                        theme === "dark"
+                                          ? "white"
+                                          : ERP_COLOR_CODE.ERP_green
+                                      }
                                     />
                                   </View>
                                   <Text
                                     style={[
                                       styles.timeText,
                                       {
-                                        color: ERP_COLOR_CODE.ERP_green,
+                                        color:
+                                          theme === "dark"
+                                            ? "white"
+                                            : ERP_COLOR_CODE.ERP_green,
                                       },
                                     ]}
                                   >
@@ -2175,14 +2237,35 @@ useEffect(() => {
                                   }}
                                   style={styles.timeItem}
                                 >
-                                  <View style={styles.iconTimeContainer}>
+                                  <View
+                                    style={[
+                                      styles.iconTimeContainer,
+                                      {
+                                        backgroundColor:
+                                          theme === "dark" ? "gray" : "white",
+                                      },
+                                    ]}
+                                  >
                                     <MaterialIcons
                                       name="logout"
                                       size={22}
-                                      color={ERP_COLOR_CODE.ERP_ERROR}
+                                      color={
+                                        theme === "dark"
+                                          ? "white"
+                                          : ERP_COLOR_CODE.ERP_ERROR
+                                      }
                                     />
                                   </View>
-                                  <Text style={styles.timeText}>-</Text>
+                                  <Text
+                                    style={[
+                                      styles.timeText,
+                                      {
+                                        color: ERP_COLOR_CODE.ERP_ERROR,
+                                      },
+                                    ]}
+                                  >
+                                    -
+                                  </Text>
                                   <Text
                                     style={[
                                       styles.labelText,
@@ -2217,9 +2300,10 @@ useEffect(() => {
                               <View
                                 style={[
                                   styles.iconTimeContainer,
-                                  { backgroundColor: ERP_COLOR_CODE.ERP_green },
                                   {
                                     marginLeft: 4,
+                                    backgroundColor:
+                                      theme === "dark" ? "gray" : "white",
                                   },
                                 ]}
                               >
@@ -2230,7 +2314,11 @@ useEffect(() => {
                                 />
                               </View>
                               <View style={{ width: "88%" }}>
-                                <Text>
+                                <Text
+                                  style={{
+                                    color: theme === "dark" ? "white" : "black",
+                                  }}
+                                >
                                   Gormoh Hotel, nr. Judges Bungalow Cross Road,
                                   Bodakdev, Ahmedabad,
                                 </Text>
@@ -2243,7 +2331,8 @@ useEffect(() => {
                                 style={{
                                   marginTop: 2,
                                   marginBottom: 2,
-                                  backgroundColor: "#f5f5f5",
+                                  backgroundColor:
+                                    theme === "dark" ? "gray" : "#f5f5f5",
                                   flexDirection: "row",
                                   justifyContent: "space-between",
                                   padding: 8,
@@ -2263,12 +2352,13 @@ useEffect(() => {
                                 >
                                   <MaterialIcons
                                     size={14}
-                                    color={"gray"}
+                                    color={theme === "dark" ? "white" : "gray"}
                                     name="dashboard"
                                   />
                                   <Text
                                     style={{
-                                      color: "black",
+                                      color:
+                                        theme === "dark" ? "white" : "black",
                                       fontWeight: "600",
                                     }}
                                   >
@@ -2291,7 +2381,8 @@ useEffect(() => {
                                 >
                                   <Text
                                     style={{
-                                      color: "gray",
+                                      color:
+                                        theme === "dark" ? "white" : "gray",
                                       fontWeight: "600",
                                     }}
                                   >
@@ -2309,11 +2400,23 @@ useEffect(() => {
                                 <View
                                   style={[styles.timeItem, { width: "23%" }]}
                                 >
-                                  <View style={styles.iconTimeContainer}>
+                                  <View
+                                    style={[
+                                      styles.iconTimeContainer,
+                                      {
+                                        backgroundColor:
+                                          theme === "dark" ? "gray" : "white",
+                                      },
+                                    ]}
+                                  >
                                     <MaterialIcons
                                       name="co-present"
                                       size={22}
-                                      color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                                      color={
+                                        theme === "dark"
+                                          ? "white"
+                                          : ERP_COLOR_CODE.ERP_APP_COLOR
+                                      }
                                     />
                                   </View>
                                   <Text
@@ -2345,18 +2448,33 @@ useEffect(() => {
                                     },
                                   ]}
                                 >
-                                  <View style={styles.iconTimeContainer}>
+                                  <View
+                                    style={[
+                                      styles.iconTimeContainer,
+                                      {
+                                        backgroundColor:
+                                          theme === "dark" ? "gray" : "white",
+                                      },
+                                    ]}
+                                  >
                                     <MaterialIcons
                                       name="access-time"
                                       size={22}
-                                      color={ERP_COLOR_CODE.ERP_green}
+                                      color={
+                                        theme === "dark"
+                                          ? "white"
+                                          : ERP_COLOR_CODE.ERP_green
+                                      }
                                     />
                                   </View>
                                   <Text
                                     style={[
                                       styles.timeText,
                                       {
-                                        color: ERP_COLOR_CODE.ERP_green,
+                                        color:
+                                          theme === "dark"
+                                            ? "white"
+                                            : ERP_COLOR_CODE.ERP_ERROR,
                                       },
                                     ]}
                                   >
@@ -2366,7 +2484,7 @@ useEffect(() => {
                                     style={[
                                       styles.labelText,
                                       {
-                                        color: ERP_COLOR_CODE.ERP_green,
+                                        color: ERP_COLOR_CODE.ERP_ERROR,
                                       },
                                     ]}
                                   >
@@ -2382,14 +2500,35 @@ useEffect(() => {
                                     },
                                   ]}
                                 >
-                                  <View style={styles.iconTimeContainer}>
+                                  <View
+                                    style={[
+                                      styles.iconTimeContainer,
+                                      {
+                                        backgroundColor:
+                                          theme === "dark" ? "gray" : "white",
+                                      },
+                                    ]}
+                                  >
                                     <MaterialIcons
                                       name="access-alarm"
                                       size={22}
-                                      color={ERP_COLOR_CODE.ERP_ERROR}
+                                      color={
+                                        theme === "dark"
+                                          ? "white"
+                                          : ERP_COLOR_CODE.ERP_ERROR
+                                      }
                                     />
                                   </View>
-                                  <Text style={styles.timeText}>{late}</Text>
+                                  <Text
+                                    style={[
+                                      styles.timeText,
+                                      {
+                                        color: ERP_COLOR_CODE.ERP_ERROR,
+                                      },
+                                    ]}
+                                  >
+                                    {late}
+                                  </Text>
                                   <Text
                                     style={[
                                       styles.labelText,
@@ -2410,11 +2549,21 @@ useEffect(() => {
                                     },
                                   ]}
                                 >
-                                  <View style={styles.iconTimeContainer}>
+                                  <View
+                                    style={[
+                                      styles.iconTimeContainer,
+                                      {
+                                        backgroundColor:
+                                          theme === "dark" ? "gray" : "white",
+                                      },
+                                    ]}
+                                  >
                                     <MaterialIcons
                                       name="access-time"
                                       size={22}
-                                      color={"#ff9800"}
+                                      color={
+                                        theme === "dark" ? "white" : "#ff9800"
+                                      }
                                     />
                                   </View>
                                   <Text

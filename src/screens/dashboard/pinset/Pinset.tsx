@@ -523,7 +523,7 @@ const PinSetupScreen = () => {
       screenAnim.setValue(0);
       Animated.timing(screenAnim, {
         toValue: 1,
-        duration: 2500,
+        duration: theme === 'dark' ? 10: 2500,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
       }).start();
@@ -637,16 +637,18 @@ const PinSetupScreen = () => {
 
   return (
     <>
-      <View
+    {
+      theme !== "dark"  &&  <View
         style={{
           height: Platform.OS === 'ios' ?  16  : 6,
           width: "100%",
-          backgroundColor:
-            theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+          backgroundColor:  ERP_COLOR_CODE.ERP_APP_COLOR,
           borderBottomLeftRadius: 12,
           borderBottomRightRadius: 12,
         }}
       ></View>
+    }
+     
 
       <Animated.View
         style={[
@@ -757,7 +759,7 @@ const PinSetupScreen = () => {
                         ? "white"
                         : ERP_COLOR_CODE.ERP_APP_COLOR
                       : theme === "dark"
-                      ?  ERP_COLOR_CODE.ERP_APP_COLOR
+                      ?  'gray'
                       : "#e5e7eb",
 
                   transform: [
@@ -963,7 +965,7 @@ const PinSetupScreen = () => {
                         ? "white"
                         : ERP_COLOR_CODE.ERP_APP_COLOR
                       : theme === "dark"
-                      ?  ERP_COLOR_CODE.ERP_APP_COLOR
+                      ?  'gray'
                       : "#e5e7eb",
 
                   transform: [

@@ -188,7 +188,9 @@ const AppContent = () => {
 
         <SafeAreaView
           edges={["left", "right", "bottom"]}
-          style={[styles.safeArea]}
+          style={[styles.safeArea, {
+            backgroundColor : theme === 'dark' ? 'black' : 'white'
+          }]}
         >
           <NavigationContainer>
             <RootNavigator />

@@ -168,9 +168,8 @@ const PageScreen = () => {
   const [modalClose, setModalClose] = useState(false);
   const [isSettingVisible, setIsSettingVisible] = useState(false);
   const [myScript, setMyScript] = useState();
-  
- 
-  console.log("myScript", myScript)
+
+  console.log("myScript", myScript);
   const [backgroundDeniedModal, setBackgroundDeniedModal] = useState(false);
 
   const isCheckingPermission = useRef(false);
@@ -617,17 +616,17 @@ const PageScreen = () => {
   ]);
 
   const parseBackendScript = (str) => {
-  if (!str) return [];
+    if (!str) return [];
 
-  try {
-    let cleaned = str.replace(/\n/g, "");
-    cleaned = cleaned.replace(/,\s*([}\]])/g, "$1");
-    return new Function(`return ${cleaned}`)();
-  } catch (e) {
-    console.log("❌ Parsing failed:", e);
-    return [];
-  }
-};
+    try {
+      let cleaned = str.replace(/\n/g, "");
+      cleaned = cleaned.replace(/,\s*([}\]])/g, "$1");
+      return new Function(`return ${cleaned}`)();
+    } catch (e) {
+      console.log("❌ Parsing failed:", e);
+      return [];
+    }
+  };
 
   const fetchPageData = useCallback(async () => {
     try {
@@ -636,11 +635,9 @@ const PageScreen = () => {
       const parsed = await dispatch(
         getERPPageThunk({ page: url, id: isFromNew ? 0 : id }),
       ).unwrap();
-       console.log("script---++++++------------------++++++++++---",parsed)
-      if (
-        parsed?.script 
-      ) {
-        console.log("script---++++++++++++++++---",parsed?.script)
+      console.log("script---++++++------------------++++++++++---", parsed);
+      if (parsed?.script) {
+        console.log("script---++++++++++++++++---", parsed?.script);
         setMyScript(parsed?.script);
       }
 
@@ -688,7 +685,7 @@ const PageScreen = () => {
   }, [fetchPageData]);
 
   const handleAttachment = (base64: string, val: any) => {
-    console.log("base64", base64)
+    console.log("base64", base64);
     setFormValues((prev) => {
       return { ...prev, [val]: base64 };
     });
@@ -722,21 +719,21 @@ const PageScreen = () => {
   };
 
   const safeParse = (data) => {
-  if (!data) return [];
+    if (!data) return [];
 
-  if (typeof data === "object") return data; // already parsed ✅
+    if (typeof data === "object") return data; // already parsed ✅
 
-  if (typeof data === "string") {
-    try {
-      return JSON.parse(data);
-    } catch (e) {
-      console.log("❌ Invalid JSON:", data);
-      return [];
+    if (typeof data === "string") {
+      try {
+        return JSON.parse(data);
+      } catch (e) {
+        console.log("❌ Invalid JSON:", data);
+        return [];
+      }
     }
-  }
 
-  return [];
-};
+    return [];
+  };
 
   const renderItem = useCallback(
     ({ item, index }: { item: any; index: number }) => {
@@ -752,18 +749,18 @@ const PageScreen = () => {
             updatedValues = { ...prev, [item.field]: val };
           }
 
-          console.log("Updated Values (before rules):", myScript , typeof myScript);
-       const parsed = safeParse(myScript);
-console.log("parsed-----------------", parsed)
+          console.log(
+            "Updated Values (before rules):",
+            myScript,
+            typeof myScript,
+          );
+          const parsed = safeParse(myScript);
+          console.log("parsed-----------------", parsed);
 
-const safeRules = Array.isArray(parsed) ? parsed : [parsed];
+          const safeRules = Array.isArray(parsed) ? parsed : [parsed];
 
-console.log("safeRules-----------------", safeRules)
-const result = runDynamicRules(
-  safeRules,
-  updatedValues,
-  item.field
-);
+          console.log("safeRules-----------------", safeRules);
+          const result = runDynamicRules(safeRules, updatedValues, item.field);
 
           console.log("After Rules Values 👉", result.values);
           console.log("Actions 👉", result.actions);
@@ -809,6 +806,7 @@ const result = runDynamicRules(
           ? ""
           : formValues[item?.field] || formValues[item?.text] || "";
 
+          console.log("item 0000000 ", item)
       if (item?.visible === "1") return null;
 
       let content = null;
@@ -1048,15 +1046,15 @@ const result = runDynamicRules(
           [activeDateField]: date.toISOString(),
         };
 
-              const parsed = safeParse(myScript);
+        const parsed = safeParse(myScript);
 
-const safeRules = Array.isArray(parsed) ? parsed : [parsed];
+        const safeRules = Array.isArray(parsed) ? parsed : [parsed];
 
-// const result = runDynamicRules(
-//   safeRules,
-//   updatedValues,
-//   item.field
-// );
+        // const result = runDynamicRules(
+        //   safeRules,
+        //   updatedValues,
+        //   item.field
+        // );
 
         const result = runDynamicRules(
           safeRules,

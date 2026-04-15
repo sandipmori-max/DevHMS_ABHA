@@ -10,6 +10,7 @@ import {
   Easing,
   useWindowDimensions,
 } from "react-native";
+import { useAppSelector } from "../../../../store/hooks";
 
  
 export default function DashboardListSheet({
@@ -22,6 +23,7 @@ export default function DashboardListSheet({
   const sheetTranslateY = useRef(new Animated.Value(height)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const contentOpacity = useRef(new Animated.Value(0)).current;
+  const theme = useAppSelector((state) => state.theme.mode);
 
   useEffect(() => {
     if (visible) {
@@ -88,7 +90,7 @@ export default function DashboardListSheet({
             }}
           />
 
-          <Text style={{ fontSize: 15 }}>{item.text}</Text>
+          <Text style={{ fontSize: 15, color: theme === 'dark' ? 'gray' : 'black' }}>{item.text}</Text>
         </View>
 
         <Text style={{ fontWeight: "600", color: item.color }}>
@@ -111,12 +113,14 @@ export default function DashboardListSheet({
         <Animated.View
           style={{
             height: isLandscape ? height * 0.65 : height * 0.55,
-            backgroundColor: "#fff",
+            backgroundColor: theme === 'dark' ? 'black' : "#fff",
             borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
             padding: 16,
             transform: [{ translateY: sheetTranslateY }],
-            marginHorizontal: isLandscape ?  48 : 0
+            marginHorizontal: isLandscape ?  48 : 0,
+            borderWidth: 0.5,
+            borderColor: 'white'
           }}
         >
           {/* Header */}
@@ -129,7 +133,7 @@ export default function DashboardListSheet({
                 marginBottom: 10,
               }}
             >
-              <Text style={{ fontSize: 18, fontWeight: "600" }}>
+              <Text style={{ fontSize: 18, fontWeight: "600", color : theme === 'dark' ? 'gray' : 'black' }}>
                 Dashboard List
               </Text>
 

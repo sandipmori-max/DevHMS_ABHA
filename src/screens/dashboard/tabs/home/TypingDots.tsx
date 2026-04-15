@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useAppSelector } from "../../../../store/hooks";
 
 const TypingLoading = ({ text = "...", speed = 400, visible = true }) => {
   const [displayed, setDisplayed] = useState("");
+  const theme = useAppSelector((state) => state?.theme.mode);
 
   useEffect(() => {
     if (!visible) return;
@@ -27,8 +29,12 @@ const TypingLoading = ({ text = "...", speed = 400, visible = true }) => {
         alignItems: "center",
       }}
     >
-      <Text style={styles.text}>Loading</Text>
-      <Text style={styles.text}>{displayed}</Text>
+      <Text style={[styles.text, {
+        color: theme === "dark" ? "#aaa" : "#555",
+      }]}>Loading</Text>
+      <Text style={[styles.text,  {
+        color: theme === "dark" ? "#aaa" : "#555",
+      }]}>{displayed}</Text>
     </View>
   );
 };
