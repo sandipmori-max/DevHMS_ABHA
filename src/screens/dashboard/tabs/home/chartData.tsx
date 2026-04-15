@@ -202,7 +202,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                       showsVerticalScrollIndicator={false}
                       horizontal={isLandscape ? false : true}
                       keyExtractor={(item, index) => index.toString()}
-                      data={secondList}
+                      data={secondList.slice(0, 5)}
                       renderItem={({ item }) => (
                         <View
                           style={{
@@ -228,6 +228,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                               { maxWidth: 90 },
                               {
                                 width: isLandscape ? "48%" : "26%",
+                              color : theme === 'dark' ? 'white' : 'black'
                               },
                             ]}
                           ></TranslatedText>
@@ -288,7 +289,9 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                     <TranslatedText
                       text={item.text}
                       numberOfLines={1}
-                      style={{ maxWidth: 80 }}
+                      style={{ maxWidth: 80 ,
+                        color: theme === 'dark' ? 'white' : 'black'
+                      }}
                     ></TranslatedText>
                     <TranslatedText
                       numberOfLines={1}

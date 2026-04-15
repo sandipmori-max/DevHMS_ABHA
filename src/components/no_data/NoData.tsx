@@ -41,7 +41,7 @@ const NoData = ({ isShowTop = true }: any) => {
     Animated.parallel([
       Animated.timing(opacity, {
         toValue: 1,
-        duration: 420,
+        duration: theme === 'dark' ? 0 : 420,
         useNativeDriver: true,
       }),
       Animated.timing(imageTranslateY, {
@@ -66,13 +66,12 @@ const NoData = ({ isShowTop = true }: any) => {
 
   return (
     <>
-      {isShowTop && (
+      {isShowTop && theme !== 'dark' && (
         <View
           style={{
             height: Platform.OS === "ios" ? 16 : 6,
             width: "100%",
-            backgroundColor:
-              theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+            backgroundColor:  ERP_COLOR_CODE.ERP_APP_COLOR,
             borderBottomLeftRadius: 12,
             borderBottomRightRadius: 12,
           }}

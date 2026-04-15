@@ -2148,7 +2148,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                       styles.iconTimeContainer,
                                       {
                                         backgroundColor:
-                                          theme === "dark" ? "gray" : "white",
+                                          theme === "dark" ? "gray" : "#f5f5f5",
                                       },
                                     ]}
                                   >
@@ -2189,7 +2189,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                       styles.iconTimeContainer,
                                       {
                                         backgroundColor:
-                                          theme === "dark" ? "gray" : "white",
+                                          theme === "dark" ? "gray" : "#f5f5f5",
                                       },
                                     ]}
                                   >
@@ -2242,7 +2242,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                       styles.iconTimeContainer,
                                       {
                                         backgroundColor:
-                                          theme === "dark" ? "gray" : "white",
+                                          theme === "dark" ? "gray" : "#f5f5f5",
                                       },
                                     ]}
                                   >
@@ -2303,7 +2303,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                   {
                                     marginLeft: 4,
                                     backgroundColor:
-                                      theme === "dark" ? "gray" : "white",
+                                      theme === "dark" ? "gray" : "#f5f5f5",
                                   },
                                 ]}
                               >
@@ -2319,8 +2319,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                     color: theme === "dark" ? "white" : "black",
                                   }}
                                 >
-                                  Gormoh Hotel, nr. Judges Bungalow Cross Road,
-                                  Bodakdev, Ahmedabad,
+                                  ---
                                 </Text>
                               </View>
                             </View>
@@ -2405,7 +2404,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                       styles.iconTimeContainer,
                                       {
                                         backgroundColor:
-                                          theme === "dark" ? "gray" : "white",
+                                          theme === "dark" ? "gray" : "#f5f5f5",
                                       },
                                     ]}
                                   >
@@ -2453,7 +2452,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                       styles.iconTimeContainer,
                                       {
                                         backgroundColor:
-                                          theme === "dark" ? "gray" : "white",
+                                          theme === "dark" ? "gray" : "#f5f5f5",
                                       },
                                     ]}
                                   >
@@ -2505,7 +2504,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                       styles.iconTimeContainer,
                                       {
                                         backgroundColor:
-                                          theme === "dark" ? "gray" : "white",
+                                          theme === "dark" ? "gray" : "#f5f5f5",
                                       },
                                     ]}
                                   >
@@ -2554,7 +2553,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                       styles.iconTimeContainer,
                                       {
                                         backgroundColor:
-                                          theme === "dark" ? "gray" : "white",
+                                          theme === "dark" ? "gray" : "#f5f5f5",
                                       },
                                     ]}
                                   >
