@@ -1057,7 +1057,7 @@ const PageScreen = () => {
         // );
 
         const result = runDynamicRules(
-          myScript,
+          safeRules,
           updatedValues,
           activeDateField,
         );
