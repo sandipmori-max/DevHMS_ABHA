@@ -118,7 +118,7 @@ const { height, width } = useWindowDimensions();
   };
 
   return (
-    <View style={{ marginBottom: 16 }}>
+    <View style={{ marginBottom: 8 }}>
       <View style={{ flexDirection: "row" }}>
         <TranslatedText
           numberOfLines={1}

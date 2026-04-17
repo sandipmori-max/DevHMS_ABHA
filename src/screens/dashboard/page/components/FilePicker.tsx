@@ -52,62 +52,60 @@ const FilePickerRow = ({
   const base = `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${item?.text}`;
   const [selectedFiles, setSelectedFiles] = useState<FileType[]>([]);
 
- const openFilePicker = async () => {
+const openFilePicker = async () => {
   try {
     const files = await pick({
       type: [types.allFiles],
-      allowMultiSelection: true,
+      allowMultiSelection: false, 
     });
 
-    const validFiles: FileType[] = [];
-    const attachments: string[] = []; // ✅ base64 array
+    const file = files[0];
+    if (!file) return;
 
-    for (let file of files) {
-      const extension = file.name?.split(".").pop()?.toLowerCase();
+    const extension = file.name?.split(".").pop()?.toLowerCase();
 
-      if (!extension || !ALLOWED_EXTENSIONS.includes(extension)) {
-        Alert.alert(
-          t("title.title1"),
-          `${file.name} - ${t("Selected file type is not supported")}`,
-        );
-        continue;
-      }
-
-      if (file.size && file.size > MAX_FILE_SIZE) {
-        Alert.alert(
-          t("title.title1"),
-          `${file.name} - ${t("File size must be less than or equal to 25MB")}`,
-        );
-        continue;
-      }
-
-      let filePath = file.uri;
-
-      if (Platform.OS === "android" && file.uri.startsWith("content://")) {
-        const destPath = `${RNFS.TemporaryDirectoryPath}/${file.name}`;
-        await RNFS.copyFile(file.uri, destPath);
-        filePath = destPath;
-      }
-
-      if (isFromFileManager && onFilePicked) {
-        onFilePicked(file);
-        continue;
-      }
-
-      const fileBase64 = await RNFS.readFile(filePath, "base64");
-      attachments.push(
-        `${file.name}; data:${file.type};base64,${fileBase64}`,
+    if (!extension || !ALLOWED_EXTENSIONS.includes(extension)) {
+      Alert.alert(
+        t("title.title1"),
+        `${file.name} - ${t("Selected file type is not supported")}`,
       );
-      validFiles.push(file);
+      return;
     }
 
-    if (attachments.length > 0) {
-      handleAttachment(attachments, item.field);
+    if (file.size && file.size > MAX_FILE_SIZE) {
+      Alert.alert(
+        t("title.title1"),
+        `${file.name} - ${t("File size must be less than or equal to 25MB")}`,
+      );
+      return;
     }
 
-    if (validFiles.length > 0) {
-      setSelectedFiles((prev) => [...prev, ...validFiles]);
+    let filePath = file.uri;
+
+    // ✅ Fix for Android content:// URI
+    if (Platform.OS === "android" && file.uri.startsWith("content://")) {
+      const destPath = `${RNFS.TemporaryDirectoryPath}/${file.name}`;
+      await RNFS.copyFile(file.uri, destPath);
+      filePath = destPath;
     }
+
+    // ✅ If coming from file manager callback
+    if (isFromFileManager && onFilePicked) {
+      onFilePicked(file);
+      return;
+    }
+
+    // ✅ Convert to base64
+    const fileBase64 = await RNFS.readFile(filePath, "base64");
+
+    const attachment = `${file.name}; data:${file.type};base64,${fileBase64}`;
+
+    // ✅ Pass as array if your API expects array
+    handleAttachment([attachment], item.field);
+
+    // ✅ Store selected file
+    setSelectedFiles((prev) => [...prev, file]);
+
   } catch (err: any) {
     if (err.code === "USER_CANCELED") return;
 
@@ -187,8 +185,10 @@ const FilePickerRow = ({
 
   {/* Upload Area */}
   {selectedFiles.length === 0 && (
-    <TouchableOpacity style={styles.uploadBox} onPress={openFilePicker}>
-      <MaterialIcons name="cloud-upload" size={36} color="#4c6ef5" />
+    <TouchableOpacity style={[styles.uploadBox, {
+       borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+    }]} onPress={openFilePicker}>
+      <MaterialIcons name="cloud-upload" size={36} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
       <Text style={styles.uploadTitle}>Upload File</Text>
       <Text style={styles.uploadSub}>Tap to browse files</Text>
     </TouchableOpacity>
@@ -232,12 +232,7 @@ const FilePickerRow = ({
         </>
       )}
   {/* Add More */}
-  {selectedFiles.length > 0 && (
-    <TouchableOpacity style={styles.addMore} onPress={openFilePicker}>
-      <MaterialIcons name="add" size={18} color="#4c6ef5" />
-      <Text style={styles.addMoreText}>Add more files</Text>
-    </TouchableOpacity>
-  )}
+
 </View>
   );
 };

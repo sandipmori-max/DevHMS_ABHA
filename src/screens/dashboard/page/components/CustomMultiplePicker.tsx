@@ -153,7 +153,7 @@ const CustomMultiplePicker = ({
   }; 
  
   return (
-    <View style={{ marginVertical: 6 }}>
+    <View style={{ marginVertical: 8 }}>
       {/* LABEL */}
 
      

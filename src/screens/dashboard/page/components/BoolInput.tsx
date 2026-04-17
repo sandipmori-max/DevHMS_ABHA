@@ -16,7 +16,7 @@ const BoolInput = ({ value, onChange, label }: BoolInputProps) => {
   const { t } = useTranslations();
 
   return (
-    <View style={{ marginBottom: 10 }}>
+    <View style={{ marginBottom: 8 }}>
       {label && <TranslatedText
       
       style={[{  fontWeight: '600' }, theme === 'dark' && { color: 'white' }]}

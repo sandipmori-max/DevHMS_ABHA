@@ -79,7 +79,7 @@ const BarCodeScan = ({ item }: any) => {
   };
 
   return (
-    <View style={{ paddingVertical: 10 }}>
+    <View style={{ paddingVertical: 8 }}>
       
       {/* Title */}
       <Text style={[styles.label, theme === 'dark' && { color: 'white' }]}>

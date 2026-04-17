@@ -507,7 +507,7 @@ const MenuTab = ({
 
             const now = new Date();
             const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const lastDay = new Date();
             const fromDateStr = formatDateForAPI(firstDay);
             const toDateStr = formatDateForAPI(lastDay);
             dispatch(updateSelectedFromDateState(fromDateStr));

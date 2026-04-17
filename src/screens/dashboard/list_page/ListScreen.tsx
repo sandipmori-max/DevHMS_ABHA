@@ -48,13 +48,18 @@ import { ERP_COLOR_CODE } from "../../../utils/constants";
 import useTranslations from "../../../hooks/useTranslations";
 import TranslatedText from "../tabs/home/TranslatedText";
 import CustomMultiplePicker from "../page/components/CustomMultiplePicker";
-import { updateSelectedBranchesState, updateSelectedBranchIdsState, updateSelectedFromDateState, updateSelectedToDateState } from "../../../store/slices/auth/authSlice";
+import {
+  updateSelectedBranchesState,
+  updateSelectedBranchIdsState,
+  updateSelectedFromDateState,
+  updateSelectedToDateState,
+} from "../../../store/slices/auth/authSlice";
 import { getDDLThunk } from "../../../store/slices/dropdown/thunk";
 
 const ListScreen = () => {
   const route = useRoute<RouteProp<ListRouteParams, "List">>();
   const { item, parsedConfig } = route?.params;
-  console.log("parsedConfig", parsedConfig)
+  console.log("parsedConfig", parsedConfig);
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const {
@@ -67,7 +72,9 @@ const ListScreen = () => {
   const [loadingListId, setLoadingListId] = useState<string | null>(null);
   const [listData, setListData] = useState<any[]>([]);
   const [configData, setConfigData] = useState<any[]>([]);
-  const { user, fromDate, toDate, selectedBranchIds } = useAppSelector((state) => state.auth);
+  const { user, fromDate, toDate, selectedBranchIds } = useAppSelector(
+    (state) => state.auth,
+  );
   const [error, setError] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -101,7 +108,6 @@ const ListScreen = () => {
     show: boolean;
   }>(null);
 
-  
   const theme = useAppSelector((state) => state?.theme.mode);
 
   const pageTitle = item?.title || item?.name || "List Data";
@@ -254,7 +260,7 @@ const ListScreen = () => {
     error,
   ]);
 
-  const fetchPageData = async() => {
+  const fetchPageData = async () => {
     try {
       const parsed = await dispatch(
         getERPPageThunk({ page: "Dashboard", id: "" }),
@@ -270,7 +276,6 @@ const ListScreen = () => {
       }));
       setControls(normalizedControls);
 
-     
       const branchObj = normalizedControls.find(
         (item) => item.fieldtitle === "Branch",
       );
@@ -283,40 +288,40 @@ const ListScreen = () => {
       ).unwrap();
 
       const data = res?.data ?? [];
-      const filtered = data.filter(item => item.value !== -1);
+      const filtered = data.filter((item) => item.value !== -1);
       const branchValues = filtered.map((item) => item.value).join(",");
       dispatch(updateSelectedBranchIdsState(branchValues));
       dispatch(updateSelectedBranchesState(filtered));
       fetchListData();
-
     } catch (e: any) {
-
     } finally {
       setTimeout(() => {
         setActionLoader(false);
       }, 10);
     }
-  }
+  };
 
   useEffect(() => {
     fetchPageData();
   }, [navigation]);
 
-  const getCurrentMonthRange = () =>{
-     const now = new Date();
+  const getCurrentMonthRange = () => {
+    const now = new Date();
+
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    const fromDateStr = formatDateForAPI(firstDay);
-    const toDateStr = formatDateForAPI(lastDay);
-    dispatch(updateSelectedFromDateState(fromDateStr));
-    dispatch(updateSelectedToDateState(toDateStr));
-    if(parsedConfig?.branchwise === 1 || parsedConfig?.branchwise === "1"){
+    const lastDay = new Date();
+
+    const from = formatDateForAPI(firstDay);
+    const to = formatDateForAPI(lastDay);
+
+    dispatch(updateSelectedFromDateState(from));
+    dispatch(updateSelectedToDateState(to));
+    if (parsedConfig?.branchwise === 1 || parsedConfig?.branchwise === "1") {
       fetchPageData();
-    }else {
-         fetchListData();
+    } else {
+      fetchListData();
     }
-    
-  }
+  };
 
   const debouncedSearch = useCallback(
     useMemo(() => {
@@ -412,15 +417,14 @@ const ListScreen = () => {
           setShowDatePicker(null);
           return;
         }
-      } 
-    dispatch(updateSelectedToDateState(formattedDate));
-
-    } else { 
+      }
+      dispatch(updateSelectedToDateState(formattedDate));
+    } else {
       dispatch(updateSelectedFromDateState(formattedDate));
       if (toDate) {
         const toDateObj = new Date(toDate.split("-").reverse().join("-"));
         if (selectedDate > toDateObj) {
-           dispatch(updateSelectedToDateState(''));
+          dispatch(updateSelectedToDateState(""));
         }
       }
     }
@@ -429,18 +433,31 @@ const ListScreen = () => {
 
   const fetchListData = async () => {
     try {
-      
       setError(null);
       setLoadingListId(item?.id || 0);
 
-    console.log("API PARAMETERS ++++++++++++++++++++++++++++++ ----------", fromDate, toDate, selectedBranchIds);
+      console.log(
+        "API PARAMETERS ++++++++++++++++++++++++++++++ ----------",
+        fromDate,
+        toDate,
+        selectedBranchIds,
+      );
       const raw = await dispatch(
         getERPListDataThunk({
           page: item?.url,
-          fromDate:  parsedConfig?.period === 1 || parsedConfig?.period === "1" ? fromDate : "",
-          toDate: parsedConfig?.period === 1 || parsedConfig?.period === "1" ? toDate : "",
+          fromDate:
+            parsedConfig?.period === 1 || parsedConfig?.period === "1"
+              ? fromDate
+              : "",
+          toDate:
+            parsedConfig?.period === 1 || parsedConfig?.period === "1"
+              ? toDate
+              : "",
           param: "",
-          branch: parsedConfig?.branchwise === 1 || parsedConfig?.branchwise === "1" ? `${selectedBranchIds}` || "" : "",
+          branch:
+            parsedConfig?.branchwise === 1 || parsedConfig?.branchwise === "1"
+              ? `${selectedBranchIds}` || ""
+              : "",
         }),
       ).unwrap();
       const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
@@ -479,73 +496,89 @@ const ListScreen = () => {
     }
   };
 
-
   const fetchListDataV2 = useCallback(async () => {
-  try {
-    setError(null);
-    setLoadingListId(item?.id || 0);
+    try {
+      setError(null);
+      setLoadingListId(item?.id || 0);
 
-    console.log("LATEST ✅+++++++++++++++++++++++++++++", fromDate, toDate, selectedBranchIds);
+      console.log(
+        "LATEST ✅+++++++++++++++++++++++++++++",
+        fromDate,
+        toDate,
+        selectedBranchIds,
+      );
 
-    const raw = await dispatch(
-         getERPListDataThunk({
+      const raw = await dispatch(
+        getERPListDataThunk({
           page: item?.url,
-          fromDate:  parsedConfig?.period === 1 || parsedConfig?.period === "1" ? fromDate : "",
-          toDate: parsedConfig?.period === 1 || parsedConfig?.period === "1" ? toDate : "",
+          fromDate:
+            parsedConfig?.period === 1 || parsedConfig?.period === "1"
+              ? fromDate
+              : "",
+          toDate:
+            parsedConfig?.period === 1 || parsedConfig?.period === "1"
+              ? toDate
+              : "",
           param: "",
-          branch: parsedConfig?.branchwise === 1 || parsedConfig?.branchwise === "1" ? `${selectedBranchIds}` || "" : "",
+          branch:
+            parsedConfig?.branchwise === 1 || parsedConfig?.branchwise === "1"
+              ? `${selectedBranchIds}` || ""
+              : "",
         }),
-    ).unwrap();
+      ).unwrap();
 
-    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+      const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
 
-    let dataArray = [];
-    let configArray = [];
+      let dataArray = [];
+      let configArray = [];
 
-    if (Array.isArray(parsed)) {
-      dataArray = parsed;
-    } else if (Array.isArray(parsed?.data)) {
-      dataArray = parsed.data;
-      configArray = parsed.config || [];
-    } else if (Array.isArray(parsed?.list)) {
-      dataArray = parsed.list;
-      configArray = parsed.config || [];
-    } else if (parsed && typeof parsed === "object") {
-      const keys = Object.keys(parsed).filter((key) => !isNaN(Number(key)));
-      if (keys.length > 0) {
-        dataArray = keys.map((key) => parsed[key]);
+      if (Array.isArray(parsed)) {
+        dataArray = parsed;
+      } else if (Array.isArray(parsed?.data)) {
+        dataArray = parsed.data;
         configArray = parsed.config || [];
+      } else if (Array.isArray(parsed?.list)) {
+        dataArray = parsed.list;
+        configArray = parsed.config || [];
+      } else if (parsed && typeof parsed === "object") {
+        const keys = Object.keys(parsed).filter((key) => !isNaN(Number(key)));
+        if (keys.length > 0) {
+          dataArray = keys.map((key) => parsed[key]);
+          configArray = parsed.config || [];
+        }
       }
+
+      setConfigData(configArray);
+      setListData(dataArray);
+      setFilteredData(dataArray);
+    } catch (e) {
+      setError(e || "Failed to load list data");
+      setParsedError(e);
+    } finally {
+      setLoadingListId(null);
+      setTimeout(() => setActionLoader(false), 10);
     }
+  }, [
+    fromDate,
+    toDate,
+    selectedBranchIds,
+    item?.url,
+    parsedConfig?.period,
+    parsedConfig?.branchwise,
+  ]);
 
-    setConfigData(configArray);
-    setListData(dataArray);
-    setFilteredData(dataArray);
-  } catch (e) {
-    setError(e || "Failed to load list data");
-    setParsedError(e);
-  } finally {
-    setLoadingListId(null);
-    setTimeout(() => setActionLoader(false), 10);
-  }
-}, [
-  fromDate,
-  toDate,
-  selectedBranchIds,
-  item?.url,
-  parsedConfig?.period,
-  parsedConfig?.branchwise,
-]);
-
-   useFocusEffect(
-      useCallback(() => {
-        fetchListDataV2();
-      }, [fetchListDataV2, selectedBranchIds, toDate, fromDate])
-    );
+  useFocusEffect(
+    useCallback(() => {
+      fetchListDataV2();
+    }, [fetchListDataV2, selectedBranchIds, toDate, fromDate]),
+  );
 
   const handleItemPressed = (item, page, pageTitle = "") => {
-    console.log("parsedConfig++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", parsedConfig)
-    if(!parsedConfig){
+    console.log(
+      "parsedConfig++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++",
+      parsedConfig,
+    );
+    if (!parsedConfig) {
       return;
     }
     setIsFilterVisible(false);
@@ -558,8 +591,7 @@ const ListScreen = () => {
         url: pageName,
         pageTitle: pageTitle,
         isFromBusinessCard: isFromBusinessCard,
-        isFromProfile: false
-        
+        isFromProfile: false,
       });
     }
   };
@@ -874,8 +906,12 @@ const ListScreen = () => {
                             onValueChange={(i) => {
                               console.log("i-----------------", i);
                               i.map((item) => item.value).join(",");
-                               dispatch(updateSelectedBranchesState(i));
-                               dispatch(updateSelectedBranchIdsState(i.map((item) => item.value).join(",")));
+                              dispatch(updateSelectedBranchesState(i));
+                              dispatch(
+                                updateSelectedBranchIdsState(
+                                  i.map((item) => item.value).join(","),
+                                ),
+                              );
                               // if (item?.title === "Branch") {
                               //   dispatch(
                               //     setActiveDashboardBranchId(
@@ -1016,26 +1052,25 @@ const ListScreen = () => {
             <FullViewLoader />
           ) : (
             <>
-            <ReadableView
-                    handleDeleteNotification={handleDeleteNotification}
-                    isFromAlertCard={isFromAlertCard}
-                    configData={configData}
-                    filteredData={filteredData}
-                    loadingListId={loadingListId}
-                    totalAmount={totalAmount}
-                    totalQty={totalQty}
-                    isFromBusinessCard={isFromBusinessCard}
-                    pageParamsName={pageParamsName}
-                    handleItemPressed={handleItemPressed}
-                    parsedConfig={parsedConfig}
-                    pageName={pageName}
-                    setIsFilterVisible={setIsFilterVisible}
-                    setSearchQuery={setSearchQuery}
-                    handleActionButtonPressed={handleActionButtonPressed}
-                    isLoadingMore={isLoadingMore}
-                    loadMore={loadMore}
-                  />
-              
+              <ReadableView
+                handleDeleteNotification={handleDeleteNotification}
+                isFromAlertCard={isFromAlertCard}
+                configData={configData}
+                filteredData={filteredData}
+                loadingListId={loadingListId}
+                totalAmount={totalAmount}
+                totalQty={totalQty}
+                isFromBusinessCard={isFromBusinessCard}
+                pageParamsName={pageParamsName}
+                handleItemPressed={handleItemPressed}
+                parsedConfig={parsedConfig}
+                pageName={pageName}
+                setIsFilterVisible={setIsFilterVisible}
+                setSearchQuery={setSearchQuery}
+                handleActionButtonPressed={handleActionButtonPressed}
+                isLoadingMore={isLoadingMore}
+                loadMore={loadMore}
+              />
             </>
           )}
         </>
@@ -1067,8 +1102,9 @@ const ListScreen = () => {
                   borderColor: "white",
                 },
                 {
-                   backgroundColor:   theme === "dark"  ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, 
-                }
+                  backgroundColor:
+                    theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+                },
               ]}
               onPressIn={onPressIn}
               onPressOut={onPressOut}
@@ -1080,16 +1116,12 @@ const ListScreen = () => {
               {tapLoader ? (
                 <ActivityIndicator size={"large"} color={"#fff"} />
               ) : (
-                <MaterialIcons
-                  size={32}
-                  name="add"
-                  color={'white'}
-                />
+                <MaterialIcons size={32} name="add" color={"white"} />
               )}
             </TouchableOpacity>
           </Animated.View>
         )}
-     
+
       <CustomAlert
         visible={alertVisible}
         title={alertConfig.title}

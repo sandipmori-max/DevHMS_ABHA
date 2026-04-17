@@ -110,7 +110,7 @@ const CustomPicker = ({
   // const filtered = options.filter(item => item.value !== -1);
 
   return (
-    <View style={{ marginBottom : isFromDashboard ? 2 : 16 }}>
+    <View style={{ marginBottom : isFromDashboard ? 2 : 8 }}>
       {/* Label */}
       {!isFromDashboard && !isForceOpen && (
         <TranslatedText

@@ -355,11 +355,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                     now.getMonth(),
                     1,
                   );
-                  const lastDay = new Date(
-                    now.getFullYear(),
-                    now.getMonth() + 1,
-                    0,
-                  );
+                  const lastDay = new Date();
                   const fromDateStr = formatDateForAPI(firstDay);
                   const toDateStr = formatDateForAPI(lastDay);
                   setFromDate(fromDateStr);
@@ -737,7 +733,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     const now = new Date();
 
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const lastDay = new Date();
 
     const from = formatDateForAPI(firstDay);
     const to = formatDateForAPI(lastDay);

@@ -25,7 +25,7 @@ const Disabled = ({ item, value, type }: any) => {
   };
 
   return (
-    <View style={{ marginBottom: 16 }}>
+    <View style={{ marginBottom: 8 }}>
       <View
         style={{
           flexDirection: "row",

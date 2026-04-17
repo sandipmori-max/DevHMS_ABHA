@@ -387,10 +387,12 @@ const { height, width } = useWindowDimensions();
           styles.imageWrapper,
           !imageExists && {
             width: "100%",
-            borderWidth: 1,
+            borderWidth: 1.5,
             borderRadius: 12,
-            borderColor: ERP_COLOR_CODE.ERP_BORDER,
+            borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
             marginBottom: 8,
+            borderStyle: "dashed",
+             backgroundColor: "#f8f9ff",
           },
           errors[item?.field] && {
             borderColor: ERP_COLOR_CODE.ERP_ERROR,
@@ -424,7 +426,7 @@ const { height, width } = useWindowDimensions();
             >
               <MaterialIcons
                 name="add-photo-alternate"
-                color={theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_999}
+                color={theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR}
                 size={38}
               />
               <Text style={{ color: ERP_COLOR_CODE.ERP_999 }}>
@@ -664,6 +666,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 4,
+    
   },
 
   label: {
@@ -677,6 +680,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderWidth: 1,
+    borderRadius: 10
   },
 
   editBtn: {

@@ -11,7 +11,7 @@ const DateRow = ({ isValidate, item, errors, value, showDatePicker }: any) => {
   const theme = useAppSelector((state) => state?.theme.mode);
 
   return (
-    <View style={{ marginBottom: 16 }}>
+    <View style={{ marginBottom: 8 }}>
       <View style={{ flexDirection: "row" }}>
         <Text
           style={[

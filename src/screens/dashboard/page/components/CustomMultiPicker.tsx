@@ -85,7 +85,7 @@ const CustomMultiPicker = ({
   };
 
   return (
-    <View style={{ marginBottom: 16 }}>
+    <View style={{ marginBottom: 8 }}>
       <View style={{ flexDirection: "row" }}>
         <Text style={styles.label}>{label}</Text>
         {item?.tooltip !== label && <Text> - ( {item?.tooltip} ) </Text>}

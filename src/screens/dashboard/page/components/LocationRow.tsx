@@ -57,7 +57,7 @@ const LocationRow = ({
   }, [coords, loading, locationVisible, hookAddress, locationEnabled, error]);
 
   return (
-    <View style={{ marginBottom: 16 }}>
+    <View style={{ marginBottom: 8 }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View style={{ flexDirection: "row" }}>
           <Text
