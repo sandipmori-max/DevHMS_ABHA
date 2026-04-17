@@ -536,23 +536,13 @@ const ListScreen = () => {
   parsedConfig?.period,
   parsedConfig?.branchwise,
 ]);
-  // useEffect(() => {
-  //   getCurrentMonthRange();
-  // }, []);
 
-  console.log("selectedBranch++++++++++++++++++++++++++++++++++++++++++++++++++++", selectedBranchIds, toDate, fromDate);
-  
    useFocusEffect(
       useCallback(() => {
         fetchListDataV2();
       }, [fetchListDataV2, selectedBranchIds, toDate, fromDate])
     );
 
-  useEffect(() => {
-    //  fetchListData();
-  }, [selectedBranchIds, toDate, fromDate]);
-
- 
   const handleItemPressed = (item, page, pageTitle = "") => {
     console.log("parsedConfig++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", parsedConfig)
     if(!parsedConfig){

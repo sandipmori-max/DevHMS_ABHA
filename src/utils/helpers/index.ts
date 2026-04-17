@@ -1160,7 +1160,7 @@ export const extractFormulaRulesFromActions = (actions = []) => {
 
 export const applyFormula = (config, values) => {
   // 🔥 DATE DIFF
-  if (config.formulaType === "dateDiff") {
+  if (config.formulaType === "dateDiff" || config.formulaType === "datediff") {
     console.log("Date -------         ", config);
 
     const from = values[config.fromField];
