@@ -2,127 +2,119 @@ import MaterialIcons from "@react-native-vector-icons/material-icons";
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import FastImage from "react-native-fast-image";
-import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import { useAppSelector } from "../../../../store/hooks";
 import { firstLetterUpperCase } from "../../../../utils/helpers";
 import ImageBottomSheetModal from "../../../../components/bottomsheet/ImageBottomSheetModal";
+import { ERP_COLOR_CODE } from "../../../../utils/constants";
 
 const ProfileSection = ({ baseLink, user, onEditPress }: any) => {
   const theme = useAppSelector((state) => state?.theme.mode);
-  const [imageExists, setImageExists] = useState(true);
-
   const [showModal, setShowModal] = useState(false);
   const [img, setImg] = useState("");
 
   if (!user) return null;
+
+  const avatar = `${baseLink}/FileUpload/1/UserMaster/${
+    user?.id
+  }/profileimage.jpeg?ts=${Date.now()}`;
+
   return (
     <>
-      <TouchableOpacity
-        onPress={onEditPress}
+      <View
         style={[
-          styles.profileContainer,
-          theme === "dark" && {
-            borderColor: "white",
-            borderRadius: 8,
-            backgroundColor: "black",
-          },
+          styles.container,
+
+          theme === "dark" && { backgroundColor: "#0f0f0f" },
         ]}
       >
+        {/* TOP HEADER STRIP */}
         <View
           style={[
-            styles.profileCard,
-            theme === "dark" && {
-              backgroundColor: "black",
+            styles.header,
+            {
+              backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
             },
+            theme === "dark" && { backgroundColor: "#1a1a1a" },
+          ]}
+        />
+
+        {/* AVATAR FLOATING */}
+        <TouchableOpacity
+          activeOpacity={0.9}
+          style={styles.avatarWrapper}
+          onPress={() => {
+            setImg(avatar);
+            setShowModal(true);
+          }}
+        >
+          <FastImage source={{ uri: avatar }} style={styles.avatar} />
+        </TouchableOpacity>
+
+        {/* EDIT BUTTON */}
+        <TouchableOpacity
+          onPress={onEditPress}
+          style={[
+            styles.editBtn,
+            theme === "dark" && { backgroundColor: "#2a2a2a" },
           ]}
         >
-          <View style={styles.profileHeader}>
-            <TouchableOpacity
-              onPress={() => {
-                if (!imageExists) {
-                  return;
-                }
-                setImg(
-                  `${baseLink}/FileUpload/1/UserMaster/${
-                    user?.id
-                  }/d_profileimage.jpeg?ts=${new Date().getTime()}`,
-                );
-                setShowModal(true);
-              }}
-            >
-              <View style={styles.avatarContainer}>
-                <FastImage
-                  source={{
-                    uri: `${baseLink}/FileUpload/1/UserMaster/${
-                      user?.id
-                    }/profileimage.jpeg?ts=${new Date().getTime()}`,
-                    priority: FastImage.priority.normal,
-                    cache: FastImage.cacheControl.web,
-                  }}
-                  style={{ height: 56, width: 56, borderRadius: 46 }}
-                  onLoad={() => {
-                    setImageExists(true);
-                  }}
-                  onError={() => {
-                    setImageExists(false);
-                  }}
-                />
-              </View>
-            </TouchableOpacity>
+          <MaterialIcons name="edit" size={18} color="#fff" />
+        </TouchableOpacity>
 
-            <View style={styles.profileInfo}>
-              <Text
-                style={[
-                  styles.profileName,
-                  theme === "dark" && {
-                    color: "white",
-                  },
-                ]}
-              >
-                {firstLetterUpperCase(user?.name || "") || "User Name"}
-              </Text>
-              <Text style={styles.profileEmail}>
-                {user?.companyName || "Company"}
-              </Text>
-              <View
-                style={[
-                  styles.roleBadge,
-                  theme === "dark" && {
-                    backgroundColor: "white",
-                  },
-                ]}
-              >
-                <Text style={[styles.roleText, {
-                  color: theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-                }]}>
-                  {user?.rolename || "User Role"}
-                </Text>
-              </View>
-            </View>
+        {/* INFO */}
+        <View style={styles.info}>
+          <Text style={[styles.name, theme === "dark" && { color: "#fff" }]}>
+            {firstLetterUpperCase(user?.name || "User")}
+          </Text>
 
-            <TouchableOpacity
-              activeOpacity={0.7}
-              style={[
-                styles.editButton,
-                theme === "dark" && {
-                  backgroundColor: "black",
-                  borderWidth: 1,
-                  borderColor: "white",
-                },
-              ]}
-              onPress={onEditPress}
-            >
-              <MaterialIcons
-                name="edit"
-                size={20}
-                color={
-                  theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR
-                }
-              />
-            </TouchableOpacity>
+          <Text style={styles.company}>{user?.companyName || "Company"}</Text>
+        </View>
+        <View style={styles.rowCards}>
+          {/* EMAIL */}
+          <View
+            style={[
+              styles.infoCard,
+              theme === "dark" && {
+                backgroundColor: "#1a1a1a",
+                borderColor: "#2a2a2a",
+              },
+            ]}
+          >
+            <MaterialIcons name="email" size={18} color="#6366f1" />
+            <Text style={styles.cardValue} numberOfLines={2}>
+              {user?.emailid || "-"}
+            </Text>
+          </View>
+
+          {/* MOBILE */}
+          <View
+            style={[
+              styles.infoCard,
+              theme === "dark" && {
+                backgroundColor: "#1a1a1a",
+                borderColor: "#2a2a2a",
+              },
+            ]}
+          >
+            <MaterialIcons name="phone" size={18} color="#22c55e" />
+            <Text style={styles.cardValue}>{user?.mobileno || "-"}</Text>
+          </View>
+
+          {/* ROLE */}
+          <View
+            style={[
+              styles.infoCard,
+              theme === "dark" && {
+                backgroundColor: "#1a1a1a",
+                borderColor: "#2a2a2a",
+              },
+            ]}
+          >
+            <MaterialIcons name="badge" size={18} color="#f59e0b" />
+            <Text style={styles.cardValue}>{user?.rolename || "-"}</Text>
           </View>
         </View>
-      </TouchableOpacity>
+      </View>
 
       <ImageBottomSheetModal
         visible={showModal}
@@ -136,86 +128,119 @@ const ProfileSection = ({ baseLink, user, onEditPress }: any) => {
 export default ProfileSection;
 
 const styles = StyleSheet.create({
-  profileContainer: {
-    marginHorizontal: 16,
-    marginVertical: 12,
-  },
-  profileCard: {
-    backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 0.6,
-    borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-  },
-  profileHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  avatarContainer: {
-    height: 64,
-    width: 64,
-    borderRadius: 32,
-    backgroundColor: ERP_COLOR_CODE.ERP_f0f0f0,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 14,
-    overflow: "hidden",
-    borderWidth: 1.5,
-  },
-  profileAvatar: {
-    height: "100%",
-    width: "100%",
-    borderRadius: 32,
-  },
-  profileInfo: {
-    flex: 1,
-  },
-  profileName: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: ERP_COLOR_CODE.ERP_222,
-  },
-  profileEmail: {
-    fontSize: 14,
-    color: ERP_COLOR_CODE.ERP_666,
-    marginVertical: 2,
-  },
-  roleBadge: {
-    backgroundColor: `${ERP_COLOR_CODE.ERP_COLOR}15`,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    marginTop: 4,
-    alignSelf: "flex-start",
-  },
-  roleText: {
-    color: ERP_COLOR_CODE.ERP_APP_COLOR,
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  editButton: {
-    backgroundColor: "#F3F4F6",
-    borderRadius: 10,
-    padding: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  profileActions: {
+
+  rowCards: {
     flexDirection: "row",
     justifyContent: "space-between",
-    borderTopWidth: 0.6,
-    borderTopColor: ERP_COLOR_CODE.ERP_f0f0f0,
-    marginTop: 14,
-    paddingTop: 10,
+    marginTop: 10,
+    paddingHorizontal: 12,
   },
-  actionButton: {
-    flexDirection: "row",
+
+  infoCard: {
+    width: "32%",
+    backgroundColor: ERP_COLOR_CODE.ERP_f0f0f0,
+    borderRadius: 8,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#eee",
+    minHeight: 70,
+    justifyContent: "center",
+    alignContent: "center",
+    alignSelf: "center",
     alignItems: "center",
-    gap: 6,
   },
-  actionText: {
+
+  cardLabel: {
+    fontSize: 11,
+    color: "#888",
+    marginTop: 6,
+  },
+
+  cardValue: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#111",
+    marginTop: 10,
+  },
+
+  container: {
+    marginHorizontal: 16,
+    marginVertical: 14,
+    borderTopRightRadius: 12,
+    borderTopLeftRadius: 12,
+    paddingBottom: 16,
+    borderBottomEndRadius: 8,
+    borderBottomStartRadius: 8,
+    borderWidth: 0.4,
+    overflow: "hidden",
+  },
+
+  header: {
+    height: 70,
+    backgroundColor: "#4f46e5",
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+
+  avatarWrapper: {
+    position: "absolute",
+    top: 30,
+    left: 16,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: ERP_COLOR_CODE.ERP_BORDER,
+  },
+
+  avatar: {
+    width: 72,
+    height: 72,
+    borderRadius: 4,
+    backgroundColor: "gray",
+  },
+
+  editBtn: {
+    position: "absolute",
+    right: 16,
+    top: 16,
+    borderWidth: 1,
+    borderColor: "#fff",
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  info: {
+    marginTop: 42,
+    paddingHorizontal: 16,
+  },
+
+  name: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#111",
+  },
+
+  company: {
     fontSize: 13,
-    color: ERP_COLOR_CODE.ERP_555,
-    fontWeight: "500",
+    color: "#666",
+    marginTop: 4,
   },
+
+  pill: {
+    marginTop: 10,
+    alignSelf: "flex-start",
+    backgroundColor: "#eef2ff",
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 2,
+  },
+
+  pillText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#4f46e5",
+  },
+  
 });

@@ -110,7 +110,7 @@ export const styles = StyleSheet.create({
   settingIcon: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 12,
     backgroundColor: ERP_COLOR_CODE.ERP_f0f0f0,
     alignItems: 'center',
     justifyContent: 'center',

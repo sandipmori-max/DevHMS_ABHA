@@ -15,6 +15,7 @@ import {
   PermissionsAndroid,
   AppState,
   useWindowDimensions,
+  ActivityIndicator,
 } from "react-native";
 import {
   RouteProp,
@@ -68,6 +69,7 @@ import BarCodeScan from "./components/BarCodeScan";
 import TranslatedText from "../tabs/home/TranslatedText";
 import { setReloadApp } from "../../../store/slices/reloadApp/reloadAppSlice";
 import { updateAppMenuList } from "../../../store/slices/auth/authSlice";
+import FastImage from "react-native-fast-image";
 
 type PageRouteParams = { PageScreen: { item: any } };
 
@@ -134,7 +136,7 @@ const PageScreen = () => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [isValidate, setIsValidate] = useState(false);
 
-  console.log("controls++++++++++++++++++++", controls)
+  console.log("controls++++++++++++++++++++", controls);
   const [tapLoader, setTapLoader] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
@@ -807,7 +809,7 @@ const PageScreen = () => {
           ? ""
           : formValues[item?.field] || formValues[item?.text] || "";
 
-          console.log("item 0000000 ", item)
+      console.log("item 0000000 ", item);
       if (item?.visible === "1") return null;
 
       let content = null;
@@ -1101,6 +1103,40 @@ const PageScreen = () => {
   }
   return (
     <>
+      {tapLoader && (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: "rgba(0,0,0,0.4)",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 999,
+           
+          }}
+        >
+          <View
+            style={{ 
+              height: 180,
+              width: 180,
+              borderRadius: 10,
+              backgroundColor: "white",
+              justifyContent: "center",
+              alignContent: "center",
+              alignItems: "center",
+            }}
+          >
+             <FastImage
+            source={{
+              uri: `${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`,
+            }}
+            style={{ width: 80, height: 80 , marginBottom: 12}}
+            resizeMode="contain"
+          />
+
+            <ActivityIndicator size={"large"} />
+          </View>
+        </View>
+      )}
       {theme !== "dark" && (
         <View
           style={{
@@ -1162,7 +1198,7 @@ const PageScreen = () => {
               />
             </View>
             <CustomAlert
-              visible={tapLoader || alertVisible}
+              visible={alertVisible}
               title={alertConfig.title}
               message={alertConfig.message}
               type={alertConfig.type}
