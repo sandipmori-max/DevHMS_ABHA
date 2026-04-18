@@ -40,6 +40,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   isBottomButtonVisible,
   isSettingVisible,
   closeHide = false,
+  isForLoading = false
 }) => {
   const { t } = useTranslation();
   const alertStyles = getAlertStyles(type);
@@ -160,6 +161,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
                 },
               ],
             },
+             
           ]}
         >
           {/* Header */}
@@ -170,7 +172,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
                 text={title || ""}
                 style={alertStyles.title}
               ></TranslatedText>
-              {!closeHide && (
+              {!isForLoading && !closeHide && (
                 <TouchableOpacity
                   onPress={() => {
                     Animated.parallel([
@@ -197,8 +199,13 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
             </View>
           </Animated.View>
 
+              {
+                isForLoading && <View style={{marginVertical: 22}}>
+                <ActivityIndicator size={'large'} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
+                </View>
+              }
           {/* GIF */}
-          {!isFromButtonList && (
+          {!isForLoading && !isFromButtonList && (
             <Animated.View
               style={{
                 opacity: contentAnim,
@@ -214,7 +221,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
           )}
 
           {/* Message / Input */}
-          <Animated.View style={{ opacity: contentAnim }}>
+          {
+            !isForLoading &&  <Animated.View style={{ opacity: contentAnim }}>
             {isFromButtonList ? (
               <View style={{ width: "100%" }}>
                 <TranslatedText
@@ -257,8 +265,10 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
             )}
           </Animated.View>
 
+          }
+         
           {/* Buttons */}
-          {isBottomButtonVisible && (
+          {!isForLoading && isBottomButtonVisible && (
             <Animated.View
               style={{
                 opacity: buttonAnim,
@@ -325,7 +335,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
           )}
 
           {/* Settings */}
-          {isSettingVisible && (
+          {!isForLoading && isSettingVisible && (
             <Animated.View style={{ opacity: buttonAnim }}>
               <TouchableOpacity onPress={() => Linking.openSettings()}>
                 <View

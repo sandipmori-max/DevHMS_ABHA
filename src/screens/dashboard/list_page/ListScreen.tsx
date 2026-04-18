@@ -302,8 +302,10 @@ const ListScreen = () => {
   };
 
   useEffect(() => {
-    fetchPageData();
-  }, [navigation]);
+    if(parsedConfig?.branchwise === 1 || parsedConfig?.branchwise === "1") {
+      fetchPageData();
+    }
+  }, [navigation, parsedConfig]);
 
   const getCurrentMonthRange = () => {
     const now = new Date();

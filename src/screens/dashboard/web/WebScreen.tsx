@@ -102,7 +102,7 @@ const WebScreen = () => {
         >
           {isFromChart
             ? t("text.text52")
-            : item?.name || t("webScreen.details")}
+            : item?.title || t("webScreen.details")}
         </Text>
       ),
       headerBackTitle: "",

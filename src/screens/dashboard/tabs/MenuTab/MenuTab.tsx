@@ -484,7 +484,7 @@ const MenuTab = ({
   };
 
   const renderItem = ({ item, index }: any) => {
-     const backgroundColor = accentColors[index % accentColors.length];
+    const backgroundColor = accentColors[index % accentColors.length];
     return (
       <TouchableOpacity
         style={[
@@ -578,11 +578,21 @@ const MenuTab = ({
           ) : (
             <>
               {item?.materialIcon ? (
-                <MaterialIcons
-                  name={item?.materialIcon || "widgets"}
-                  color={ERP_COLOR_CODE.ERP_APP_COLOR}
-                  size={18}
-                />
+                <>
+                  {item?.materialIcon?.includes("fa fa-") ? (
+                    <FontAwesome
+                      name={item?.materialIcon.replace("fa fa-", "")}
+                      color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                      size={18}
+                    />
+                  ) : (
+                    <MaterialIcons
+                      name={item?.materialIcon || "widgets"}
+                      color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                      size={18}
+                    />
+                  )}
+                </>
               ) : (
                 <TranslatedText
                   numberOfLines={1}
@@ -615,7 +625,7 @@ const MenuTab = ({
               theme === "dark" && { color: "white" },
             ]}
           ></TranslatedText>
-          {item?.title &&
+          {item?.title && (
             <TranslatedText
               text={item?.title}
               numberOfLines={2}
@@ -626,8 +636,8 @@ const MenuTab = ({
                   textAlign: "center",
                 },
               ]}
-            ></TranslatedText> 
-          }
+            ></TranslatedText>
+          )}
         </View>
       </TouchableOpacity>
     );
@@ -657,7 +667,7 @@ const MenuTab = ({
         }}
       ></View>
 
-      {!isHorizontal && list.length > 6  ? (
+      {!isHorizontal && list.length > 6 ? (
         <>
           <SectionList
             sections={sectionListData}
@@ -678,7 +688,7 @@ const MenuTab = ({
                   padding: 4,
                   borderWidth: 0.2,
                   borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-                  marginLeft: 4
+                  marginLeft: 4,
                 }}
               >
                 <View

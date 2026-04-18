@@ -196,7 +196,9 @@ const RootNavigator = () => {
 
   useEffect(() => {
     const fetchDeviceName = async () => {
-      const name = await DeviceInfo.getDeviceName();
+      const name =  Platform.OS === 'ios' ? DeviceInfo.getModel() + " " + await DeviceInfo.getUniqueId() : await DeviceInfo.getDeviceName();
+
+      console.log("name", name)
       let appid = await AsyncStorage.getItem("appid");
       if (!appid) {
         appid = app_id;
@@ -255,7 +257,7 @@ const RootNavigator = () => {
 
   // ------------------------- Device Setup -------------------------
   const init = async () => {
-    const name = await DeviceInfo.getDeviceName();
+    const name = Platform.OS === 'ios' ? DeviceInfo.getModel() + " " + await DeviceInfo.getUniqueId()  : await DeviceInfo.getDeviceName();
     await AsyncStorage.setItem("device", name);
     await DevERPService.initialize();
     await dispatch(checkAuthStateThunk());

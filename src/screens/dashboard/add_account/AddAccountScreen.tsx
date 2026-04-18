@@ -101,7 +101,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
 
   useEffect(() => {
     const fetchDeviceName = async () => {
-      const name = await DeviceInfo.getDeviceName();
+      const name = Platform.OS === 'ios' ? DeviceInfo.getModel() + " " + await DeviceInfo.getUniqueId() : await DeviceInfo.getDeviceName();
       setDeviceId(name);
       AsyncStorage.setItem("device", name);
     };

@@ -339,7 +339,7 @@ const SettingsScreen = () => {
           style={[
             styles.settingIcon,
             {
-              backgroundColor: theme === "dark" ? "black" : "white",
+              backgroundColor: theme === "dark" ? "gray" : ERP_COLOR_CODE.ERP_f0f0f0,
               borderWidth: 1,
               borderColor: "white",
             },

@@ -21,6 +21,7 @@ export interface CustomAlertProps {
   isBottomButtonVisible?: any,
   isSettingVisible?: boolean,
   closeHide: any,
+  isForLoading?: boolean;
 }
 
 export type DrawerItemConfig = {

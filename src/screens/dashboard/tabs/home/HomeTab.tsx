@@ -119,13 +119,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
     user,
     attendanceDone,
   } = useAppSelector((state) => state.auth);
-
-  const loadDashboard = useCallback(
-    (params) => {
-      dispatch(getERPDashboardThunk(params));
-    },
-    [dispatch],
-  );
+ 
 
   const runAI = async () => {
     try {
@@ -408,8 +402,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                     fd: fromDateStr,
                     td: toDateStr,
                   };
-                  loadDashboard(params);
-
+                  dispatch(getERPDashboardThunk(params));
                   const timer = setTimeout(() => {
                     setActionLoader(false);
                     setControlsLoader(false);
@@ -824,27 +817,27 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       },
     );
 
-    dispatch(
-      getERPDashboardThunk({
-        branch:
-          auth?.dashboardBranchId.trim() === "-1"
-            ? "-1"
-            : auth?.dashboardBranchId.trim() || "",
-        type:
-          auth?.dashboardTypeId.trim() === "all" ||
-          auth?.dashboardTypeId.trim() === "ALL"
-            ? ""
-            : auth?.dashboardTypeId.trim() || "",
-        fd: auth?.dashboardFromDate.trim() || fromDate,
-        td: auth?.dashboardToDate.trim() || toDate,
-      }),
-    );
+      dispatch(
+            getERPDashboardThunk({
+              branch:
+                auth?.dashboardBranchId.trim() === "-1"
+                  ? "-1"
+                  : auth?.dashboardBranchId.trim() || "",
+              type:
+                auth?.dashboardTypeId.trim() === "all" ||
+                auth?.dashboardTypeId.trim() === "ALL"
+                  ? ""
+                  : auth?.dashboardTypeId.trim() || "",
+              fd: auth?.dashboardFromDate.trim() || fromDate,
+              td: auth?.dashboardToDate.trim() || toDate,
+            }),
+      );
+   
     const timer = setTimeout(() => {
       dispatch(setDashboardLoading(false));
     }, 4000);
     return () => clearTimeout(timer);
   }, [
-    user,
     auth.dashboardBranch,
     auth.dashboardType,
     auth.dashboardFromDate,
@@ -903,7 +896,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
         console.log("DDL Error:", error);
       }
     },
-    [dispatch, user?.id],
+    [],
   );
 
   const uniqueByDate = useMemo(() => {
@@ -1062,7 +1055,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
 
   useEffect(() => {
     const handleTokenExpire = async () => {
-      if (error === "Token Expire" || error === "Invalid Token") {
+      if (error === "Token Expire" || error === "Invalid Token" || error == 'Credential not match or User is not allowed for mobile application') {
         const db = await getDBConnection();
         await createAccountsTable(db);
 
@@ -1231,10 +1224,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                         <View
                           key={index}
                           style={[
-                            styles.dateRow,
-                            {
-                              width: "48%",
-                            },
+                            styles.dateRow, 
                           ]}
                         >
                           <TouchableOpacity
@@ -1630,10 +1620,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                     <View
                       key={index}
                       style={[
-                        styles.dateRow,
-                        {
-                          width: "48%",
-                        },
+                        styles.dateRow, 
                       ]}
                     >
                       <TouchableOpacity
@@ -1646,7 +1633,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                         style={[
                           styles.dateButton,
                           {
-                            width: "98%",
+                            width: "97.5%",
                           },
                         ]}
                       >
@@ -1908,7 +1895,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                               <>
                                 <View
                                   style={{
-                                    marginTop: 12,
+                                    marginTop: theme === 'light' ? 12 : 2,
                                     marginBottom: 2,
                                     backgroundColor:
                                       theme === "dark" ? "gray" : "#f5f5f5",
@@ -2276,7 +2263,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                               </View>
                             </>
                           )}
-                          {attendance?.intime && (
+                          {/* {attendance?.intime && (
                             <View
                               style={{
                                 // backgroundColor: "#f5f5f5",
@@ -2319,13 +2306,13 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                                 </Text>
                               </View>
                             </View>
-                          )}
+                          )} */}
                           {attendance?.intime && (
                             <>
                               <View
                                 style={{
-                                  marginTop: 2,
-                                  marginBottom: 2,
+                                  marginTop: 4,
+                                  marginBottom: 4,
                                   backgroundColor:
                                     theme === "dark" ? "gray" : "#f5f5f5",
                                   flexDirection: "row",

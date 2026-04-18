@@ -134,6 +134,7 @@ const PageScreen = () => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [isValidate, setIsValidate] = useState(false);
 
+  console.log("controls++++++++++++++++++++", controls)
   const [tapLoader, setTapLoader] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
@@ -1161,7 +1162,7 @@ const PageScreen = () => {
               />
             </View>
             <CustomAlert
-              visible={alertVisible}
+              visible={tapLoader || alertVisible}
               title={alertConfig.title}
               message={alertConfig.message}
               type={alertConfig.type}
@@ -1172,6 +1173,7 @@ const PageScreen = () => {
               actionLoader={undefined}
               isSettingVisible={isSettingVisible}
               closeHide={undefined}
+              isForLoading={tapLoader}
             />
             {loader && (
               <View
