@@ -57,7 +57,7 @@ export const styles = StyleSheet.create({
     backgroundColor: ERP_COLOR_CODE.ERP_e0e0e0,
     width: 50,
     height: 50,
-    borderRadius: 25,
+    borderRadius: 12,
     marginRight: 15,
   },
   accountInfo: {
