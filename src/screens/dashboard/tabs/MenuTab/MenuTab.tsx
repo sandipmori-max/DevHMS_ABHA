@@ -506,7 +506,6 @@ const MenuTab = ({
             dispatch(updateSelectedBranchIdsState(""));
             dispatch(updateSelectedFromDateState(""));
             dispatch(updateSelectedToDateState(""));
-
             const now = new Date();
             const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
             const lastDay = new Date();
