@@ -252,6 +252,7 @@ const TabNavigator = () => {
             <Tab.Screen
               key={index}
               name={item.name}
+     
               children={
                 Component
                   ? () => <Component hideTab={hidden} setHideTab={setHidden} />

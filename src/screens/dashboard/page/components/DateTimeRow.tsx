@@ -13,12 +13,14 @@ const DateTimeRow = ({
   errors,
   value,
   showDateTimePicker,
+  isFromChild = false
 }: any) => {
   const theme = useAppSelector((state) => state?.theme.mode);
 
   return (
     <View style={{ marginBottom: 8 }}>
-      <View style={{ flexDirection: "row" }}>
+      {
+        !isFromChild &&   <View style={{ flexDirection: "row" }}>
         <Text
           style={[
             styles.label,
@@ -46,6 +48,8 @@ const DateTimeRow = ({
           <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
         )}
       </View>
+      }
+    
       <TouchableOpacity
         style={[
           styles.dateBox,
@@ -59,6 +63,10 @@ const DateTimeRow = ({
           theme === "dark" && {
             backgroundColor: "black",
           },
+          isFromChild && {
+            padding : 6,
+            borderRadius: 4,
+          }
         ]}
         onPress={() => showDateTimePicker(item?.field, value)}
       >

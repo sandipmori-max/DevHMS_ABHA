@@ -285,6 +285,8 @@ const TableView = ({
         keyExtractor={(item, index) => index.toString()}
         renderItem={() => {
           return (
+            <>
+            <TableHeader />
             <FlatList
               keyExtractor={(item, index) => index.toString()}
               keyboardShouldPersistTaps="handled"
@@ -293,6 +295,8 @@ const TableView = ({
               renderItem={renderItem}
               contentContainerStyle={styles.listContent}
             />
+            </>
+            
           );
         }}
       ></FlatList>

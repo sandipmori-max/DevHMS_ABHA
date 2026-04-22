@@ -33,6 +33,7 @@ const CustomPicker = ({
   isForceOpen,
   isForMultipleSelection = false,
   isFromDashboard=false,
+  isFromChild = false
 }: any) => {
   const { t } = useTranslations();
   const { height, width } = useWindowDimensions();  
@@ -112,7 +113,7 @@ const CustomPicker = ({
   return (
     <View style={{ marginBottom : isFromDashboard ? 2 : 8 }}>
       {/* Label */}
-      {!isFromDashboard && !isForceOpen && (
+      {!isFromChild && !isFromDashboard && !isForceOpen && (
         <TranslatedText
           numberOfLines={1}
           text={label}
@@ -120,18 +121,24 @@ const CustomPicker = ({
         ></TranslatedText>
       )}
 
-      {isForceOpen && (
+      {!isFromChild &&  isForceOpen && (
         <View style={{ flexDirection: "row" }}>
           <TranslatedText
             numberOfLines={1}
             text={label}
-            style={[styles.label, theme === "dark" && { color: "white" }]}
+            style={[styles.label, theme === "dark" && { color: "white" }, 
+              {
+                  maxWidth: 120
+                }
+            ]}
           ></TranslatedText>
-          {item?.tooltip !== label && (
+          {(label.length > 40) && item?.tooltip !== label && (
             <TranslatedText
               numberOfLines={1}
               text={`- ( ${item?.tooltip} )`}
-              style={[styles.label, theme === "dark" && { color: "white" }]}
+              style={[styles.label, theme === "dark" && { color: "white" },  {
+                  maxWidth: 80
+                },]}
             ></TranslatedText>
           )}
           {item?.mandatory === "1" && (
@@ -178,6 +185,10 @@ const CustomPicker = ({
             },
           isFromDashboard && {
             paddingVertical: 6,
+            borderRadius: 4,
+          },
+          isFromChild && {
+            padding : 6,
             borderRadius: 4,
           }
         ]}

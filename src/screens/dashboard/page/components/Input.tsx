@@ -14,6 +14,7 @@ const Input = ({
   value,
   setValue,
   onFocus,
+  isFromChild = false
 }: any) => {
   const theme = useAppSelector((state) => state?.theme.mode);
 
@@ -24,7 +25,8 @@ const Input = ({
 
   return (
     <View style={{ marginBottom: 8 }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      {
+        !isFromChild && <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View style={{ flexDirection: "row" }}>
           <Text
             style={[
@@ -55,6 +57,8 @@ const Input = ({
         </View>
         <ShortAction item={item} value={value} />
       </View>
+      }
+      
       <TextInput
         id={id}
         multiline={
@@ -70,7 +74,7 @@ const Input = ({
         scrollEnabled
         style={[
           styles.textInput,
-          item?.size > 100 && { minHeight: 100, textAlignVertical: "top" },
+          item?.size > 100 && { minHeight: 80, textAlignVertical: "top" },
           errors[item.field] && { borderColor: ERP_COLOR_CODE.ERP_ERROR },
           value && {
             borderColor: "green",
@@ -96,6 +100,10 @@ const Input = ({
           item?.borderColor && {
             borderColor: item?.borderColor,
           },
+          isFromChild && {
+            padding : 6,
+            borderRadius: 4,
+          }
         ]}
         keyboardType={item?.ctltype === "NUMERIC" ? "number-pad" : "default"}
         value={value.toString()}

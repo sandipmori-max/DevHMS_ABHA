@@ -86,7 +86,7 @@ export const styles = StyleSheet.create({
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 24,
+    borderRadius: 4,
   },
   activeLabel: {
     color: ERP_COLOR_CODE.ERP_WHITE,

@@ -43,6 +43,7 @@ import { FontAwesome } from "@react-native-vector-icons/fontawesome";
 import { useTranslation } from "react-i18next";
 import {
   setMenuLoading,
+  updateSelectedBranchIdsState,
   updateSelectedFromDateState,
   updateSelectedToDateState,
 } from "../../../../store/slices/auth/authSlice";
@@ -502,6 +503,7 @@ const MenuTab = ({
         ]}
         onPress={async () => {
           if (!item.url.includes(".")) {
+            dispatch(updateSelectedBranchIdsState(""));
             dispatch(updateSelectedFromDateState(""));
             dispatch(updateSelectedToDateState(""));
 

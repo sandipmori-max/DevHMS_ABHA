@@ -59,7 +59,7 @@ export const styles = StyleSheet.create({
   textInput: {
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-    borderRadius: 10,
+    borderRadius: 8,
     padding: 10,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     color: "black",
@@ -78,8 +78,8 @@ export const styles = StyleSheet.create({
   pickerBox: {
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-    borderRadius: 10,
-    padding: 12,
+    borderRadius: 8,
+    padding: 8,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -88,7 +88,7 @@ export const styles = StyleSheet.create({
   },
   dropdownCard: {
     marginTop: 4,
-    borderRadius: 10,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
@@ -107,15 +107,15 @@ export const styles = StyleSheet.create({
   disabledBox: {
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-    borderRadius: 10,
-    padding: 12,
+    borderRadius: 8,
+    padding: 10,
     backgroundColor: "#f1f1f1",
   },
   dateBox: {
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-    borderRadius: 10,
-    padding: 12,
+    borderRadius: 8,
+    padding: 10,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     flexDirection: "row",
     justifyContent: "space-between",

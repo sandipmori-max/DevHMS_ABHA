@@ -9,15 +9,16 @@ type BoolInputProps = {
   value: any;
   onChange: (val: boolean) => void;
   label?: string;
+  isFromChild?: boolean
 };
 
-const BoolInput = ({ value, onChange, label }: BoolInputProps) => {
+const BoolInput = ({ value, onChange, label, isFromChild = false }: BoolInputProps) => {
   const theme = useAppSelector(state => state?.theme.mode);
   const { t } = useTranslations();
 
   return (
     <View style={{ marginBottom: 8 }}>
-      {label && <TranslatedText
+      { label && <TranslatedText
       
       style={[{  fontWeight: '600' }, theme === 'dark' && { color: 'white' }]}
       numberOfLines={1}
@@ -25,11 +26,11 @@ const BoolInput = ({ value, onChange, label }: BoolInputProps) => {
       
       ></TranslatedText>}
       <View style={{ 
-        padding: 12,
+        padding: 10,
         marginVertical: 4,
         borderWidth: 0.4,
         borderRadius: 8,
-        width:'60%',
+        width:'98%',
         flexDirection: 'row', alignItems: 'center' }}>
         <View style={{flexDirection:'row', width:'40%', alignContent:'center', alignItems:'center'}}>
           <TouchableOpacity

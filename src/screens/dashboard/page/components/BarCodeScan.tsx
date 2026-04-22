@@ -17,7 +17,7 @@ import { useAppSelector } from '../../../../store/hooks';
 import { BarCodeCameraScanner } from '../../../../components/CameraScanner/BarCodeCameraScanner';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 
-const BarCodeScan = ({ item }: any) => {
+const BarCodeScan = ({ item , isFromChild = false}: any) => {
   const { askPermissions } = usePermissions(EPermissionTypes.CAMERA);
   const [cameraShown, setCameraShown] = useState(false);
   const [scannedValue, setScannedValue] = useState('');

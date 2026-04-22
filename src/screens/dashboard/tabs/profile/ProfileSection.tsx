@@ -24,7 +24,7 @@ const ProfileSection = ({ baseLink, user, onEditPress }: any) => {
         style={[
           styles.container,
 
-          theme === "dark" && { backgroundColor: "#0f0f0f" },
+          theme === "dark" && { backgroundColor: "#0f0f0f", borderColor : 'white', borderWidth: 0.8 },
         ]}
       >
         {/* TOP HEADER STRIP */}
@@ -76,12 +76,14 @@ const ProfileSection = ({ baseLink, user, onEditPress }: any) => {
               styles.infoCard,
               theme === "dark" && {
                 backgroundColor: "#1a1a1a",
-                borderColor: "#2a2a2a",
+                borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
               },
             ]}
           >
             <MaterialIcons name="email" size={18} color="#6366f1" />
-            <Text style={styles.cardValue} numberOfLines={2}>
+            <Text style={[styles.cardValue, {
+              color: theme === "dark" ? 'white' : 'black'
+            }]} numberOfLines={2}>
               {user?.emailid || "-"}
             </Text>
           </View>
@@ -92,12 +94,14 @@ const ProfileSection = ({ baseLink, user, onEditPress }: any) => {
               styles.infoCard,
               theme === "dark" && {
                 backgroundColor: "#1a1a1a",
-                borderColor: "#2a2a2a",
+               borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
               },
             ]}
           >
             <MaterialIcons name="phone" size={18} color="#22c55e" />
-            <Text style={styles.cardValue}>{user?.mobileno || "-"}</Text>
+            <Text style={[styles.cardValue, {
+              color: theme === "dark" ? 'white' : 'black'
+            }]}>{user?.mobileno || "-"}</Text>
           </View>
 
           {/* ROLE */}
@@ -106,12 +110,14 @@ const ProfileSection = ({ baseLink, user, onEditPress }: any) => {
               styles.infoCard,
               theme === "dark" && {
                 backgroundColor: "#1a1a1a",
-                borderColor: "#2a2a2a",
+               borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
               },
             ]}
           >
             <MaterialIcons name="badge" size={18} color="#f59e0b" />
-            <Text style={styles.cardValue}>{user?.rolename || "-"}</Text>
+            <Text style={[styles.cardValue, {
+              color: theme === "dark" ? 'white' : 'black'
+            }]}>{user?.rolename || "-"}</Text>
           </View>
         </View>
       </View>

@@ -92,7 +92,7 @@ export const styles = StyleSheet.create({
     marginTop: 20,
   },
   logo: {
-    width: 120,
+    width: 100,
     height: 100,
     alignSelf: 'center',
   },

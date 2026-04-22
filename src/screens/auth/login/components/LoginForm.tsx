@@ -212,7 +212,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
                     : ERP_COLOR_CODE.ERP_COLOR
                 }
                 disabled={isLoading || validationLoading || erpLoginLoading}
-                style={styles.loginButton}
+                style={[styles.loginButton, {
+                    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                }]}
                 textStyle={styles.loginButtonText}
               />
             </Animated.View>

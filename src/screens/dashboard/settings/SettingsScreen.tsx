@@ -29,7 +29,7 @@ import {
   removeAccountThunk,
   switchAccountThunk,
 } from "../../../store/slices/auth/thunk";
-import { ERP_COLOR_CODE, setERPTheme } from "../../../utils/constants";
+import { ERP_COLOR_CODE, setERPAppColor, setERPTheme } from "../../../utils/constants";
 import {
   createAccountsTable,
   getActiveAccount,
@@ -928,6 +928,7 @@ const SettingsScreen = () => {
                 dispatch(resetDropdownState());
                 dispatch(resetSyncLocationState());
                 dispatch(resetAttendanceState());
+                setERPAppColor('#251d50');
                 dispatch(logoutUserThunk());
               }
             }

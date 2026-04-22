@@ -388,7 +388,7 @@ const { height, width } = useWindowDimensions();
           !imageExists && {
             width: "100%",
             borderWidth: 1.5,
-            borderRadius: 12,
+            borderRadius: 10,
             borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
             marginBottom: 8,
             borderStyle: "dashed",

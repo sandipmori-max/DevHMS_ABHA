@@ -973,9 +973,9 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                 height: 100,
                                 width: 140,
                                 marginBottom: 12,
-                                backgroundColor: !imageExists
-                                  ? "none"
-                                  : "white",
+                                // backgroundColor: !imageExists
+                                //   ? "none"
+                                //   : "white",
                               }}
                             >
                               <FastImage
@@ -1450,9 +1450,9 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                       </TouchableOpacity>
                                     </Animated.View>
 
-                                    <Text style={styles.note}>
+                                    {/* <Text style={styles.note}>
                                       {t("account.msg1")}
-                                    </Text>
+                                    </Text> */}
                                   </>
                                 );
                               }}

@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -16,6 +17,10 @@ import {
   AppState,
   useWindowDimensions,
   ActivityIndicator,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
 } from "react-native";
 import {
   RouteProp,
@@ -70,6 +75,8 @@ import TranslatedText from "../tabs/home/TranslatedText";
 import { setReloadApp } from "../../../store/slices/reloadApp/reloadAppSlice";
 import { updateAppMenuList } from "../../../store/slices/auth/authSlice";
 import FastImage from "react-native-fast-image";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
+import DynamicTable from "./components/DynamicTable";
 
 type PageRouteParams = { PageScreen: { item: any } };
 
@@ -136,7 +143,10 @@ const PageScreen = () => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [isValidate, setIsValidate] = useState(false);
 
-  console.log("controls++++++++++++++++++++", controls);
+  console.log(
+    "controls+++++++++++++++++++++++++++++++++++------------------------------++++",
+    controls,
+  );
   const [tapLoader, setTapLoader] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
@@ -738,8 +748,692 @@ const PageScreen = () => {
     return [];
   };
 
+  const [vendorTemplate] = useState({
+    title: "P1",
+    pageControls: [
+      {
+        dtlid: 200002608,
+        id: 156,
+        seqno: 1,
+        field: "projectteamid",
+        dfield: "",
+        fieldtitle: "Project Team ID",
+        title: "Project Team ID",
+        text: "",
+        dtext: "",
+        defaultvalue: "",
+        tooltip: "Project Team",
+        size: "",
+        ctltype: "NUMERIC",
+        ddl: "",
+        ddlfield: "",
+        ddlwhere: "",
+        ajax: 0,
+        visible: "1",
+        refcol: 0,
+        mandatory: "0",
+        disabled: "1",
+      },
+      {
+        dtlid: 200002609,
+        id: 156,
+        seqno: 2,
+        field: "projectid",
+        dfield: "projectname",
+        fieldtitle: "Project Name",
+        title: "Project Name",
+        text: "",
+        dtext: "",
+        defaultvalue: "",
+        tooltip: "Project Name",
+        size: "",
+        ctltype: "NUMERIC",
+        ddl: "ViewProjects-ProjectName,ProjectID",
+        ddlfield: "ProjectName",
+        ddlwhere: "Status in (~A~,~R~,~N~)",
+        ajax: 1,
+        visible: "0",
+        refcol: 0,
+        mandatory: "1",
+        disabled: "0",
+      },
+      {
+        dtlid: 200002610,
+        id: 156,
+        seqno: 3,
+        field: "userid",
+        dfield: "developer",
+        fieldtitle: "Developer",
+        title: "Developer",
+        text: "",
+        dtext: "",
+        defaultvalue: "",
+        tooltip: "Developer Name",
+        size: "",
+        ctltype: "NUMERIC",
+        ddl: "ViewUserMaster-UserName,UserID,RoleID,RoleName",
+        ddlfield: "Developer,DesigID",
+        ddlwhere: "Status=~A~",
+        ajax: 1,
+        visible: "0",
+        refcol: 0,
+        mandatory: "1",
+        disabled: "0",
+      },
+      {
+        dtlid: 200002611,
+        id: 156,
+        seqno: 4,
+        field: "desigid",
+        dfield: "",
+        fieldtitle: "Role Name",
+        title: "Role Name",
+        text: "",
+        dtext: "",
+        defaultvalue: "",
+        tooltip: "Designation",
+        size: "",
+        ctltype: "INT",
+        ddl: "RoleMst-RoleID,RoleName",
+        ddlfield: "RoleName",
+        ddlwhere: "Status=~A~",
+        ajax: 0,
+        visible: "1",
+        refcol: 0,
+        mandatory: "0",
+        disabled: "0",
+      },
+      {
+        dtlid: 200002612,
+        id: 156,
+        seqno: 5,
+        field: "fordays",
+        dfield: "",
+        fieldtitle: "For Days",
+        title: "For Days",
+        text: 1,
+        dtext: "",
+        defaultvalue: 1,
+        tooltip: "For Days",
+        size: "",
+        ctltype: "INT",
+        ddl: "1,2,3,4,5,6,7-",
+        ddlfield: "ForDays",
+        ddlwhere: "1=1",
+        ajax: 0,
+        visible: "0",
+        refcol: 0,
+        mandatory: "1",
+        disabled: "0",
+      },
+      {
+        dtlid: 200002613,
+        id: 156,
+        seqno: 6,
+        field: "todate",
+        dfield: "",
+        fieldtitle: "To Date",
+        title: "To Date",
+        text: "",
+        dtext: "",
+        defaultvalue: "",
+        tooltip: "To Date",
+        size: "",
+        ctltype: "STRING",
+        ddl: "",
+        ddlfield: "",
+        ddlwhere: "",
+        ajax: 0,
+        visible: "0",
+        refcol: 0,
+        mandatory: "0",
+        disabled: "1",
+      },
+      {
+        dtlid: 200002614,
+        id: 156,
+        seqno: 7,
+        field: "cuid",
+        dfield: "entryby",
+        fieldtitle: "Entry By",
+        title: "Entry By",
+        text: 113,
+        dtext: "Sandip Mori",
+        defaultvalue: "#useridname",
+        tooltip: "Entry By (Who have entered the entry)",
+        size: "",
+        ctltype: "NUMERIC",
+        ddl: "UserMaster-UserName,UserID",
+        ddlfield: "EntryBy",
+        ddlwhere: "Status=~A~",
+        ajax: 1,
+        visible: "0",
+        refcol: 0,
+        mandatory: "0",
+        disabled: "1",
+      },
+      {
+        dtlid: 200002615,
+        id: 156,
+        seqno: 8,
+        field: "editmode",
+        dfield: "",
+        fieldtitle: "Edit Mode",
+        title: "Edit Mode",
+        text: "Edit",
+        dtext: "",
+        defaultvalue: "Edit",
+        tooltip: "Edit Mode",
+        size: "",
+        ctltype: "STRING",
+        ddl: "Edit,View-",
+        ddlfield: "EditMode",
+        ddlwhere: "1=1",
+        ajax: 0,
+        visible: "0",
+        refcol: 0,
+        mandatory: "1",
+        disabled: "0",
+      },
+      {
+        dtlid: 200002616,
+        id: 156,
+        seqno: 9,
+        field: "muid",
+        dfield: "updateby",
+        fieldtitle: "Update By",
+        title: "Update By",
+        text: 113,
+        dtext: "Sandip Mori",
+        defaultvalue: "#useridname",
+        tooltip: "Update By (Who have last updated the entry)",
+        size: "",
+        ctltype: "NUMERIC",
+        ddl: "UserMaster-UserName,UserID",
+        ddlfield: "UpdateBy",
+        ddlwhere: "Status=~A~",
+        ajax: 1,
+        visible: "1",
+        refcol: 0,
+        mandatory: "0",
+        disabled: "1",
+      },
+    ],
+    buttonControls: [],
+  });
+
+  const [purchaseTemplate] = useState({
+    title: "P2",
+    pageControls: [
+      {
+        dtlid: 200002608,
+        id: 156,
+        seqno: 1,
+        field: "projectteamid",
+        dfield: "",
+        fieldtitle: "Project Team ID",
+        title: "Project Team ID",
+        text: "",
+        dtext: "",
+        defaultvalue: "",
+        tooltip: "Project Team",
+        size: "",
+        ctltype: "NUMERIC",
+        ddl: "",
+        ddlfield: "",
+        ddlwhere: "",
+        ajax: 0,
+        visible: "1",
+        refcol: 0,
+        mandatory: "0",
+        disabled: "1",
+      },
+      {
+        dtlid: 200002609,
+        id: 156,
+        seqno: 2,
+        field: "projectid",
+        dfield: "projectname",
+        fieldtitle: "Project Name",
+        title: "Project Name",
+        text: "",
+        dtext: "",
+        defaultvalue: "",
+        tooltip: "Project Name",
+        size: "",
+        ctltype: "NUMERIC",
+        ddl: "ViewProjects-ProjectName,ProjectID",
+        ddlfield: "ProjectName",
+        ddlwhere: "Status in (~A~,~R~,~N~)",
+        ajax: 1,
+        visible: "0",
+        refcol: 0,
+        mandatory: "1",
+        disabled: "0",
+      },
+      {
+        dtlid: 200002610,
+        id: 156,
+        seqno: 3,
+        field: "userid",
+        dfield: "developer",
+        fieldtitle: "Developer",
+        title: "Developer",
+        text: "",
+        dtext: "",
+        defaultvalue: "",
+        tooltip: "Developer Name",
+        size: "",
+        ctltype: "NUMERIC",
+        ddl: "ViewUserMaster-UserName,UserID,RoleID,RoleName",
+        ddlfield: "Developer,DesigID",
+        ddlwhere: "Status=~A~",
+        ajax: 1,
+        visible: "0",
+        refcol: 0,
+        mandatory: "1",
+        disabled: "0",
+      },
+      {
+        dtlid: 200002611,
+        id: 156,
+        seqno: 4,
+        field: "desigid",
+        dfield: "",
+        fieldtitle: "Role Name",
+        title: "Role Name",
+        text: "",
+        dtext: "",
+        defaultvalue: "",
+        tooltip: "Designation",
+        size: "",
+        ctltype: "INT",
+        ddl: "RoleMst-RoleID,RoleName",
+        ddlfield: "RoleName",
+        ddlwhere: "Status=~A~",
+        ajax: 0,
+        visible: "1",
+        refcol: 0,
+        mandatory: "0",
+        disabled: "0",
+      },
+      {
+        dtlid: 200002612,
+        id: 156,
+        seqno: 5,
+        field: "fordays",
+        dfield: "",
+        fieldtitle: "For Days",
+        title: "For Days",
+        text: 1,
+        dtext: "",
+        defaultvalue: 1,
+        tooltip: "For Days",
+        size: "",
+        ctltype: "INT",
+        ddl: "1,2,3,4,5,6,7-",
+        ddlfield: "ForDays",
+        ddlwhere: "1=1",
+        ajax: 0,
+        visible: "0",
+        refcol: 0,
+        mandatory: "1",
+        disabled: "0",
+      },
+      {
+        dtlid: 200002613,
+        id: 156,
+        seqno: 6,
+        field: "todate",
+        dfield: "",
+        fieldtitle: "To Date",
+        title: "To Date",
+        text: "",
+        dtext: "",
+        defaultvalue: "",
+        tooltip: "To Date",
+        size: "",
+        ctltype: "STRING",
+        ddl: "",
+        ddlfield: "",
+        ddlwhere: "",
+        ajax: 0,
+        visible: "0",
+        refcol: 0,
+        mandatory: "0",
+        disabled: "1",
+      },
+      {
+        dtlid: 200002614,
+        id: 156,
+        seqno: 7,
+        field: "cuid",
+        dfield: "entryby",
+        fieldtitle: "Entry By",
+        title: "Entry By",
+        text: 113,
+        dtext: "Sandip Mori",
+        defaultvalue: "#useridname",
+        tooltip: "Entry By (Who have entered the entry)",
+        size: "",
+        ctltype: "NUMERIC",
+        ddl: "UserMaster-UserName,UserID",
+        ddlfield: "EntryBy",
+        ddlwhere: "Status=~A~",
+        ajax: 1,
+        visible: "0",
+        refcol: 0,
+        mandatory: "0",
+        disabled: "1",
+      },
+      {
+        dtlid: 200002615,
+        id: 156,
+        seqno: 8,
+        field: "editmode",
+        dfield: "",
+        fieldtitle: "Edit Mode",
+        title: "Edit Mode",
+        text: "Edit",
+        dtext: "",
+        defaultvalue: "Edit",
+        tooltip: "Edit Mode",
+        size: "",
+        ctltype: "STRING",
+        ddl: "Edit,View-",
+        ddlfield: "EditMode",
+        ddlwhere: "1=1",
+        ajax: 0,
+        visible: "0",
+        refcol: 0,
+        mandatory: "1",
+        disabled: "0",
+      },
+      {
+        dtlid: 200002616,
+        id: 156,
+        seqno: 9,
+        field: "muid",
+        dfield: "updateby",
+        fieldtitle: "Update By",
+        title: "Update By",
+        text: 113,
+        dtext: "Sandip Mori",
+        defaultvalue: "#useridname",
+        tooltip: "Update By (Who have last updated the entry)",
+        size: "",
+        ctltype: "NUMERIC",
+        ddl: "UserMaster-UserName,UserID",
+        ddlfield: "UpdateBy",
+        ddlwhere: "Status=~A~",
+        ajax: 1,
+        visible: "1",
+        refcol: 0,
+        mandatory: "0",
+        disabled: "1",
+      },
+    ],
+    buttonControls: [],
+  });
+  const [userTemplate] = useState({
+    title: "P3",
+    pageControls: [
+      {
+        dtlid: 200002608,
+        id: 156,
+        seqno: 1,
+        field: "projectteamid",
+        dfield: "",
+        fieldtitle: "Project Team ID",
+        title: "Project Team ID",
+        text: "",
+        dtext: "",
+        defaultvalue: "",
+        tooltip: "Project Team",
+        size: "",
+        ctltype: "NUMERIC",
+        ddl: "",
+        ddlfield: "",
+        ddlwhere: "",
+        ajax: 0,
+        visible: "1",
+        refcol: 0,
+        mandatory: "0",
+        disabled: "1",
+      },
+      {
+        dtlid: 200002609,
+        id: 156,
+        seqno: 2,
+        field: "projectid",
+        dfield: "projectname",
+        fieldtitle: "Project Name",
+        title: "Project Name",
+        text: "",
+        dtext: "",
+        defaultvalue: "",
+        tooltip: "Project Name",
+        size: "",
+        ctltype: "NUMERIC",
+        ddl: "ViewProjects-ProjectName,ProjectID",
+        ddlfield: "ProjectName",
+        ddlwhere: "Status in (~A~,~R~,~N~)",
+        ajax: 1,
+        visible: "0",
+        refcol: 0,
+        mandatory: "1",
+        disabled: "0",
+      },
+      {
+        dtlid: 200002610,
+        id: 156,
+        seqno: 3,
+        field: "userid",
+        dfield: "developer",
+        fieldtitle: "Developer",
+        title: "Developer",
+        text: "",
+        dtext: "",
+        defaultvalue: "",
+        tooltip: "Developer Name",
+        size: "",
+        ctltype: "NUMERIC",
+        ddl: "ViewUserMaster-UserName,UserID,RoleID,RoleName",
+        ddlfield: "Developer,DesigID",
+        ddlwhere: "Status=~A~",
+        ajax: 1,
+        visible: "0",
+        refcol: 0,
+        mandatory: "1",
+        disabled: "0",
+      },
+      {
+        dtlid: 200002611,
+        id: 156,
+        seqno: 4,
+        field: "desigid",
+        dfield: "",
+        fieldtitle: "Role Name",
+        title: "Role Name",
+        text: "",
+        dtext: "",
+        defaultvalue: "",
+        tooltip: "Designation",
+        size: "",
+        ctltype: "INT",
+        ddl: "RoleMst-RoleID,RoleName",
+        ddlfield: "RoleName",
+        ddlwhere: "Status=~A~",
+        ajax: 0,
+        visible: "1",
+        refcol: 0,
+        mandatory: "0",
+        disabled: "0",
+      },
+      {
+        dtlid: 200002612,
+        id: 156,
+        seqno: 5,
+        field: "fordays",
+        dfield: "",
+        fieldtitle: "For Days",
+        title: "For Days",
+        text: 1,
+        dtext: "",
+        defaultvalue: 1,
+        tooltip: "For Days",
+        size: "",
+        ctltype: "INT",
+        ddl: "1,2,3,4,5,6,7-",
+        ddlfield: "ForDays",
+        ddlwhere: "1=1",
+        ajax: 0,
+        visible: "0",
+        refcol: 0,
+        mandatory: "1",
+        disabled: "0",
+      },
+      {
+        dtlid: 200002613,
+        id: 156,
+        seqno: 6,
+        field: "todate",
+        dfield: "",
+        fieldtitle: "To Date",
+        title: "To Date",
+        text: "",
+        dtext: "",
+        defaultvalue: "",
+        tooltip: "To Date",
+        size: "",
+        ctltype: "STRING",
+        ddl: "",
+        ddlfield: "",
+        ddlwhere: "",
+        ajax: 0,
+        visible: "0",
+        refcol: 0,
+        mandatory: "0",
+        disabled: "1",
+      },
+      {
+        dtlid: 200002614,
+        id: 156,
+        seqno: 7,
+        field: "cuid",
+        dfield: "entryby",
+        fieldtitle: "Entry By",
+        title: "Entry By",
+        text: 113,
+        dtext: "Sandip Mori",
+        defaultvalue: "#useridname",
+        tooltip: "Entry By (Who have entered the entry)",
+        size: "",
+        ctltype: "NUMERIC",
+        ddl: "UserMaster-UserName,UserID",
+        ddlfield: "EntryBy",
+        ddlwhere: "Status=~A~",
+        ajax: 1,
+        visible: "0",
+        refcol: 0,
+        mandatory: "0",
+        disabled: "1",
+      },
+      {
+        dtlid: 200002615,
+        id: 156,
+        seqno: 8,
+        field: "editmode",
+        dfield: "",
+        fieldtitle: "Edit Mode",
+        title: "Edit Mode",
+        text: "Edit",
+        dtext: "",
+        defaultvalue: "Edit",
+        tooltip: "Edit Mode",
+        size: "",
+        ctltype: "STRING",
+        ddl: "Edit,View-",
+        ddlfield: "EditMode",
+        ddlwhere: "1=1",
+        ajax: 0,
+        visible: "0",
+        refcol: 0,
+        mandatory: "1",
+        disabled: "0",
+      },
+      {
+        dtlid: 200002616,
+        id: 156,
+        seqno: 9,
+        field: "muid",
+        dfield: "updateby",
+        fieldtitle: "Update By",
+        title: "Update By",
+        text: 113,
+        dtext: "Sandip Mori",
+        defaultvalue: "#useridname",
+        tooltip: "Update By (Who have last updated the entry)",
+        size: "",
+        ctltype: "NUMERIC",
+        ddl: "UserMaster-UserName,UserID",
+        ddlfield: "UpdateBy",
+        ddlwhere: "Status=~A~",
+        ajax: 1,
+        visible: "1",
+        refcol: 0,
+        mandatory: "0",
+        disabled: "1",
+      },
+    ],
+    buttonControls: [
+      {
+        btn_name: "Save",
+        btn_color: "black",
+        btn_icon_name: "add",
+      },
+      {
+        btn_name: "Update",
+        btn_color: "green",
+        btn_icon_name: "edit",
+      },
+      {
+        btn_name: "Delete",
+        btn_color: "red",
+        btn_icon_name: "delete",
+      },
+    ],
+  });
+  const sections = [
+    {
+      key: vendorTemplate?.title,
+      template: vendorTemplate?.pageControls,
+      buttons: vendorTemplate?.buttonControls,
+    },
+    {
+      key: "purchase",
+      template: purchaseTemplate?.pageControls,
+      buttons: purchaseTemplate?.buttonControls,
+    },
+    {
+      key: "userInfo",
+      template: userTemplate?.pageControls,
+      buttons: userTemplate?.buttonControls,
+    },
+  ];
+
+  const [allData, setAllData] = useState({});
+
   const renderItem = useCallback(
-    ({ item, index }: { item: any; index: number }) => {
+    ({
+      item,
+      index,
+      isFromChild = false,
+    }: {
+      item: any;
+      index: number;
+      isFromChild: boolean;
+    }) => {
       const setValue = (val) => {
         console.log("SET VALUE START 👉", item?.field, val);
 
@@ -809,7 +1503,7 @@ const PageScreen = () => {
           ? ""
           : formValues[item?.field] || formValues[item?.text] || "";
 
-      console.log("item 0000000 ", item);
+      console.log("item 0000000 ------------------------------- ", item);
       if (item?.visible === "1") return null;
 
       let content = null;
@@ -819,6 +1513,7 @@ const PageScreen = () => {
         const boolVal = String(rawVal).toLowerCase() === "true";
         content = (
           <BoolInput
+            isFromChild={isFromChild}
             label={item?.fieldtitle}
             value={boolVal}
             onChange={(val) => {
@@ -831,6 +1526,7 @@ const PageScreen = () => {
       else if (item?.field === "---") {
         content = (
           <CustomMultiPicker
+            isFromChild={isFromChild}
             isValidate={isValidate}
             label={item?.fieldtitle}
             selectedValue={value}
@@ -846,6 +1542,7 @@ const PageScreen = () => {
       else if (item?.ctltype === "FILE") {
         content = (
           <FilePickerRow
+            isFromChild={isFromChild}
             isValidate={isValidate}
             baseLink={baseLink}
             infoData={infoData}
@@ -857,23 +1554,24 @@ const PageScreen = () => {
       }
       //VideoRecorder
       else if (item?.ctltype === "VIDEO") {
-        content = <VideoRecorder item={item} />;
+        content = <VideoRecorder isFromChild={isFromChild} item={item} />;
       }
       //ScanScreen
       else if (item?.ctltype === "QRSCANNER" && item?.title === "QR Scan") {
-        content = <ScanScreen item={item} />;
+        content = <ScanScreen isFromChild={isFromChild} item={item} />;
       }
       //BarCodeScan
       else if (
         item?.ctltype === "QRSCANNER" &&
         item?.title === "Barcode Scan"
       ) {
-        content = <BarCodeScan item={item} />;
+        content = <BarCodeScan isFromChild={isFromChild} item={item} />;
       }
       //LocationRow
       else if (item?.defaultvalue === "#location") {
         content = (
           <LocationRow
+            isFromChild={isFromChild}
             locationVisible={locationVisible}
             isValidate={isValidate}
             locationEnabled={locationEnabled}
@@ -933,12 +1631,20 @@ const PageScreen = () => {
       }
       //Disabled
       else if (item?.disabled === "1" && item?.ajax !== 1) {
-        content = <Disabled item={item} value={value} type={item?.ctltype} />;
+        content = (
+          <Disabled
+            isFromChild={isFromChild}
+            item={item}
+            value={value}
+            type={item?.ctltype}
+          />
+        );
       }
       //CustomPicker
       else if (item?.ddl && item?.ddl !== "" && item?.ajax === 0) {
         content = (
           <CustomPicker
+            isFromChild={isFromChild}
             isForceOpen={true}
             isValidate={isValidate}
             label={item?.fieldtitle}
@@ -955,6 +1661,7 @@ const PageScreen = () => {
       else if (item?.ddl && item?.ddl !== "" && item?.ajax === 1) {
         content = (
           <AjaxPicker
+            isFromChild={isFromChild}
             isForceOpen={true}
             isValidate={isValidate}
             label={item?.fieldtitle}
@@ -972,6 +1679,7 @@ const PageScreen = () => {
       else if (item?.ctltype === "DATE") {
         content = (
           <DateRow
+            isFromChild={isFromChild}
             isValidate={isValidate}
             item={item}
             errors={errors}
@@ -985,6 +1693,7 @@ const PageScreen = () => {
       else if (item?.ctltype === "DATETIME") {
         content = (
           <DateTimeRow
+            isFromChild={isFromChild}
             isValidate={isValidate}
             item={item}
             errors={errors}
@@ -997,6 +1706,7 @@ const PageScreen = () => {
       else {
         content = (
           <Input
+            isFromChild={isFromChild}
             id={item?.fieldtitle}
             isValidate={isValidate}
             onFocus={() =>
@@ -1011,19 +1721,32 @@ const PageScreen = () => {
       }
       //content
       return (
-        <Animated.View
-          entering={FadeInUp.delay(index * 70).springify()}
-          layout={Layout.springify()}
-          style={
-            isLandscape && {
-              width: "100%",
-              flex: 1,
-              marginRight: 8,
-            }
-          }
-        >
-          {content}
-        </Animated.View>
+        <>
+          {isFromChild ? (
+            <>
+              <View style={{ width: width * (isLandscape ? 0.42 : 0.46) }}>
+                {content}
+              </View>
+            </>
+          ) : (
+            <>
+              {" "}
+              <Animated.View
+                entering={FadeInUp.delay(index * 70).springify()}
+                layout={Layout.springify()}
+                style={[
+                  isLandscape && {
+                    width: "100%",
+                    flex: 1,
+                    marginHorizontal: 4,
+                  },
+                ]}
+              >
+                {content}
+              </Animated.View>{" "}
+            </>
+          )}
+        </>
       );
     },
     [formValues, errors, controls, locationEnabled, isLandscape],
@@ -1101,6 +1824,90 @@ const PageScreen = () => {
   if (loadingPageId) {
     return <FullViewLoader isShowTop={theme === "dark" ? false : true} />;
   }
+
+  const groupControls = (ctr) => {
+    const rows = [];
+
+    if (ctr.length < 10) {
+      return ctr.filter((item) => item?.visible !== "1").map((item) => [item]);
+    }
+
+    const isHidden = (item) => item?.visible === "1";
+
+     const isLongTitle = (item) => {
+      const text = item?.fieldtitle ? String(item.fieldtitle) : "";
+      const dtext = item?.tooltip ? String(item.tooltip) : "";
+
+      return text.length > 10 || dtext.length > 20;
+    };
+    const isLongText = (item) => {
+      const text = item?.text ? String(item.text) : "";
+      const dtext = item?.dtext ? String(item.dtext) : "";
+
+      return text.length > 20 || dtext.length > 20;
+    };
+
+    // ✅ FORCE SINGLE (1×1 only)
+    const isForceSingle = (item) => {
+      return (
+        item?.ctltype === "FILE" ||
+        item?.ctltype === "VIDEO" ||
+        item?.ctltype === "IMAGE" ||
+        item?.ctltype === "PHOTO" ||
+        (item?.ctltype === "IMAGE" && item?.field === "signature") ||
+        (item?.ctltype === "QRSCANNER" && item?.title === "QR Scan") ||
+        (item?.ctltype === "QRSCANNER" && item?.title === "Barcode Scan") ||
+        item?.defaultvalue === "#location" ||
+        item?.defaultvalue === "#html"
+      );
+    };
+
+    const isPairable = (item) => {
+      return (
+        (item?.ddl && item?.ddl !== "" && item?.ajax === 0) ||
+        (item?.ddl && item?.ddl !== "" && item?.ajax === 1) ||
+        item?.disabled === "1" ||
+        item?.ctltype === "DATE" ||
+        item?.ctltype === "BOOL" 
+      );
+    };
+
+    for (let i = 0; i < ctr.length; i++) {
+      const current = ctr[i];
+
+      if (isHidden(current)) continue;
+
+      // ✅ FORCE SINGLE RULE (highest priority)
+      if (isForceSingle(current) || isLongText(current) || isLongTitle(current)) {
+        rows.push([current]);
+        continue;
+      }
+
+      let nextIndex = i + 1;
+
+      while (nextIndex < ctr.length && isHidden(ctr[nextIndex])) {
+        nextIndex++;
+      }
+
+      const next = ctr[nextIndex];
+
+      if (
+        isPairable(current) &&
+        next &&
+        !isForceSingle(next) && // ❗ prevent pairing
+        !isLongText(next) && // ❗ prevent pairing
+        isPairable(next)
+      ) {
+        rows.push([current, next]);
+        i = nextIndex;
+      } else {
+        rows.push([current]);
+      }
+    }
+
+    return rows;
+  };
+
   return (
     <>
       {tapLoader && (
@@ -1111,13 +1918,12 @@ const PageScreen = () => {
             justifyContent: "center",
             alignItems: "center",
             zIndex: 999,
-           
           }}
         >
           <View
-            style={{ 
-              height: 180,
-              width: 180,
+            style={{
+              height: 80,
+              width: 80,
               borderRadius: 10,
               backgroundColor: "white",
               justifyContent: "center",
@@ -1125,14 +1931,6 @@ const PageScreen = () => {
               alignItems: "center",
             }}
           >
-             <FastImage
-            source={{
-              uri: `${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`,
-            }}
-            style={{ width: 80, height: 80 , marginBottom: 12}}
-            resizeMode="contain"
-          />
-
             <ActivityIndicator size={"large"} />
           </View>
         </View>
@@ -1140,7 +1938,7 @@ const PageScreen = () => {
       {theme !== "dark" && (
         <View
           style={{
-            height: Platform.OS === "ios" ? 16 : 6,
+            height: 6,
             width: "100%",
             backgroundColor:
               theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
@@ -1152,7 +1950,7 @@ const PageScreen = () => {
       <View
         style={{
           flex: 1,
-          padding: 16,
+          padding: 10,
           backgroundColor:
             theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE,
         }}
@@ -1181,22 +1979,294 @@ const PageScreen = () => {
                   theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE,
               }}
             >
-              <FlatList
-                showsVerticalScrollIndicator={false}
-                data={controls}
-                key={
-                  isLandscape
-                    ? `${isLandscape}-landscape`
-                    : `${isLandscape}-portrait`
+              {isLandscape ? (
+                <>
+                  {" "}
+                  <FlatList
+                    showsVerticalScrollIndicator={false}
+                    data={controls}
+                    key={
+                      isLandscape
+                        ? `${isLandscape}-landscape`
+                        : `${isLandscape}-portrait`
+                    }
+                    ref={flatListRef}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={renderItem}
+                    contentContainerStyle={{ paddingBottom: keyboardHeight }}
+                    keyboardShouldPersistTaps="handled"
+                    numColumns={isLandscape ? 2 : 1}
+                    //  ListFooterComponent={() => {
+                    //   return (
+                    //     <ScrollView>
+                    //       {sections.map((section) => (
+                    //         <DynamicTable
+                    //           key={section.key}
+                    //           sectionKey={section.key}
+                    //           template={section.template}
+                    //           buttons={section.buttons}
+                    //           allData={allData}
+                    //           setAllData={setAllData}
+                    //           renderItem={renderItem}
+                    //         />
+                    //       ))}
+                    //     </ScrollView>
+
+                    //   );
+                    // }}
+                  />{" "}
+                </>
+              ) : (
+                <FlatList
+                  showsVerticalScrollIndicator={false}
+                  data={groupControls(controls)}
+                  key={
+                    isLandscape
+                      ? `${isLandscape}-landscape`
+                      : `${isLandscape}-portrait`
+                  }
+                  ref={flatListRef}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item: row, index }) => {
+                    return (
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        {row.map((col, colIndex) => (
+                          <View
+                            key={colIndex}
+                            style={{
+                              flex: 1,
+                              marginLeft: 4,
+                            }}
+                          >
+                            {renderItem({
+                              item: col,
+                              index,
+                              isFromChild: false,
+                            })}
+                          </View>
+                        ))}
+                      </View>
+                    );
+                  }}
+                  contentContainerStyle={{ paddingBottom: keyboardHeight }}
+                  keyboardShouldPersistTaps="handled"
+                  numColumns={isLandscape ? 2 : 1}
+                  // ListFooterComponent={() => {
+                  //   return (
+                  //     <ScrollView>
+                  //       {sections.map((section) => (
+                  //         <DynamicTable
+                  //           key={section.key}
+                  //           sectionKey={section.key}
+                  //           template={section.template}
+                  //           buttons={section.buttons}
+                  //           allData={allData}
+                  //           setAllData={setAllData}
+                  //           renderItem={renderItem}
+                  //         />
+                  //       ))}
+                  //     </ScrollView>
+
+                  //   );
+                  // }}
+                />
+              )}
+
+              {/* <View style={{ bottom: -6, width: '100%'}}>
+                <TouchableOpacity
+                onPress={async() =>{ 
+                   try {
+                  setTapLoader(true);
+                  if (myScript) {
+                    let rules;
+
+                    if (typeof myScript === "string") {
+                      try {
+                        rules = JSON.parse(myScript);
+                      } catch (e) {
+                        console.error("Invalid JSON from backend", e);
+                        setTapLoader(false);
+                        return;
+                      }
+                    } else {
+                      rules = myScript;
+                    }
+
+                    const { actions, messages } = evaluateRulesWithActions(
+                      rules,
+                      formValues,
+                    );
+                    const hasButtonSaveEnable = actions.some(
+                      (item) => item?.field === "buttonSave",
+                    );
+                    if (hasButtonSaveEnable) {
+                      const hasButtonSaveEnable = actions.some(
+                        (item) =>
+                          item?.field === "buttonSave" &&
+                          item.action === "enable",
+                      );
+                      const updatedControls = applyActionsToControls(
+                        controls,
+                        actions,
+                      );
+                      setControls(updatedControls);
+                      setButtonSave(hasButtonSaveEnable);
+                      if (!hasButtonSaveEnable) {
+                        setTapLoader(false);
+                        setScriptErrorMessage(messages);
+                        setIsVisibleScriptError(true);
+                        return;
+                      }
+                    }
+                    const updatedControls = applyActionsToControls(
+                      controls,
+                      actions,
+                    );
+                    setControls(updatedControls);
+                  }
+
+                  const locationEnabled = hasLocationField
+                    ? await DeviceInfo.isLocationEnabled()
+                    : true;
+
+                  const permissionStatus = hasLocationField
+                    ? await requestLocationPermissions()
+                    : "granted";
+
+                  const hasCameraPermission = hasMediaField
+                    ? await requestCameraPermission()
+                    : true;
+
+                  if (!hasCameraPermission && hasMediaField) {
+                    setAlertVisible(true);
+                    setModalClose(true);
+                    setIsSettingVisible(true);
+                    setAlertConfig({
+                      title: t("title.title16"),
+                      message: t("msg.msg15"),
+                      type: "error",
+                    });
+
+                    return;
+                  }
+
+                  if (hasLocationField && !locationEnabled) {
+                    setAlertConfig({
+                      title: t("title.title13"),
+                      message: t("title.title15"),
+                      type: "error",
+                    });
+                    setAlertVisible(true);
+                    setModalClose(true);
+                    setIsSettingVisible(true);
+                    return;
+                  }
+
+                  if (
+                    hasLocationField &&
+                    (permissionStatus === "denied" ||
+                      permissionStatus === "blocked")
+                  ) {
+                    setAlertConfig({
+                      title: t("title.title13"),
+                      message: t("title.title15"),
+                      type: "error",
+                    });
+                    setAlertVisible(true);
+                    setModalClose(false);
+                    return;
+                  }
+
+                  // ✅ Permissions are granted, proceed
+                  setLocationVisible(true);
+                  setActionSaveLoader(true);
+                  setIsValidate(true);
+
+                  if (validateForm()) {
+                    const submitValues: Record<string, any> = {};
+                    controls?.forEach((f) => {
+                      if (f.refcol !== "1")
+                        submitValues[f?.field] = formValues[f?.field];
+                    });
+
+                    try {
+                      setLoader(true);
+                      await dispatch(
+                        savePageThunk({
+                          page: url,
+                          id,
+                          data: { ...submitValues },
+                        }),
+                      ).unwrap();
+                      setLoader(false);
+                      setIsValidate(false);
+                      try {
+                        dispatch(getERPAppConfigMenuThunk());
+                      } catch (error) {
+                        dispatch(updateAppMenuList([])); // Clear menu on error
+                        console.log("Error fetching app config menu:", error);
+                      }
+                      if (isFromProfile) {
+                        setTimeout(() => {
+                          dispatch(setReloadApp());
+                        }, 1000);
+                      }
+                      fetchPageData();
+                      setAlertConfig({
+                        title: t("title.title17"),
+                        message: t("title.title18"),
+                        type: "success",
+                      });
+                      setAlertVisible(true);
+                      setGoBack(true);
+
+                      setTimeout(() => {
+                        setAlertVisible(false);
+                        navigation.goBack();
+                      }, 1800);
+                    } catch (err: any) {
+                      setLoader(false);
+                      setAlertConfig({
+                        title: t("title.title17"),
+                        message: err,
+                        type: "error",
+                      });
+                      setAlertVisible(true);
+                      setGoBack(false);
+                    }
+                  }
+
+                  setActionSaveLoader(false);
+                  setTimeout(() => {
+                    setTapLoader(false);
+                  }, 600);
+                } catch (error) {
+                  console.error("Save error:", error);
+                  setTimeout(() => {
+                    setTapLoader(false);
+                  }, 600);
+                  setActionSaveLoader(false);
                 }
-                ref={flatListRef}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={renderItem}
-                contentContainerStyle={{ paddingBottom: keyboardHeight }}
-                keyboardShouldPersistTaps="handled"
-                numColumns={isLandscape ? 2 : 1}
-              />
+                }}
+                style={{
+                  backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR, padding: 12, borderRadius: 8}}>
+                  <View style={{flexDirection:'row', justifyContent:'center', alignContent:'center', alignItems:'center', gap: 4}}>
+                    <MaterialIcons size={22} name="save" color={'white'}/>
+                    <Text style={{
+                      color:'white',
+                      fontSize: 18,
+                      fontWeight: '600'
+                    }}>Save</Text>
+                  </View>
+                </TouchableOpacity>
+              </View> */}
             </View>
+
             <CustomAlert
               visible={alertVisible}
               title={alertConfig.title}
@@ -1337,3 +2407,81 @@ const PageScreen = () => {
 };
 
 export default PageScreen;
+
+const styles = StyleSheet.create({
+  header: { fontSize: 22, fontWeight: "bold", margin: 15 },
+  section: { fontSize: 16, margin: 10, fontWeight: "600" },
+
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    margin: 10,
+    padding: 10,
+    borderRadius: 8,
+  },
+
+  rowHeader: {
+    flexDirection: "row",
+    marginLeft: 8,
+    backgroundColor: "#eee",
+  },
+  rowItem: {
+    flexDirection: "row",
+    marginLeft: 8,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 5,
+    borderBottomWidth: 1,
+    borderColor: "#eee",
+  },
+
+  cellH: {
+    width: 120,
+    fontWeight: "bold",
+  },
+
+  cell: {
+    width: 120,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    margin: 2,
+    padding: 6,
+    borderRadius: 5,
+  },
+
+  delete: {
+    color: "red",
+    fontWeight: "bold",
+    paddingHorizontal: 10,
+  },
+  deleteBtn: {
+    backgroundColor: ERP_COLOR_CODE.ERP_ERROR,
+    padding: 6,
+    borderRadius: 8,
+    alignSelf: "flex-start",
+    marginTop: 10,
+  },
+  addBtn: {
+    backgroundColor: "#4CAF50",
+    margin: 8,
+    padding: 6,
+    borderRadius: 8,
+    alignSelf: "flex-end",
+  },
+
+  addText: { color: "#fff", fontWeight: "bold" },
+
+  total: { margin: 15, fontWeight: "bold" },
+
+  saveBtn: {
+    backgroundColor: "#2196F3",
+    margin: 10,
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+
+  saveText: { color: "#fff", fontWeight: "bold" },
+});

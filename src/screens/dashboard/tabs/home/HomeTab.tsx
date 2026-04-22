@@ -23,7 +23,7 @@ import {
   switchAccountThunk,
 } from "../../../../store/slices/auth/thunk";
 import ErrorMessage from "../../../../components/error/Error";
-import { ERP_COLOR_CODE } from "../../../../utils/constants";
+import { ERP_COLOR_CODE, setERPAppColor } from "../../../../utils/constants";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import Footer from "./Footer";
 import PieChartSection from "./chartData";
@@ -90,7 +90,7 @@ const hasHtmlContent = (str: string) => {
   return /<([a-z]+)([^>]*?)>/i.test(str);
 };
 
-const HomeScreen = ({ setHideTab, hideTab }) => {
+const HomeScreen = ({ setHideTab, hideTab }: any) => {
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const { t } = useTranslation();
@@ -136,8 +136,8 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
       }
     }
   };
-
-  console.log("dashboard store error -------- ", error);
+  
+ 
   const aiCalled = useRef(false);
 
   const [loadingPageId, setLoadingPageId] = useState<any>(null);
@@ -333,7 +333,103 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
             <ERPIcon
               name="refresh"
               onPress={async () => {
-                try {
+                  refreshData();
+              }}
+              isLoading={actionLoader}
+            />
+
+            {dashboard.length > 5 && (
+              <ERPIcon name="search" onPress={() => setShowSearch(true)} />
+            )}
+
+            {attendanceDone && user?.id == "113"  && (
+              <ERPIcon
+                color={"green"}
+                name={"location-on"}
+                onPress={() => {
+                  navigation.navigate("LocationTrack");
+                }}
+              />
+            )}
+            {isLandscape && (
+              <>
+                <ERPIcon
+                  name={!isHorizontal ? "list" : "apps"}
+                  onPress={() => setIsHorizontal((prev) => !prev)}
+                />
+                <ERPIcon
+                  name={!hideTab ? "fullscreen" : "fullscreen-exit"}
+                  onPress={() => {
+                    setHideTab(!hideTab);
+                  }}
+                />
+                {controls.length > 0 && (
+                  <ERPIcon
+                    name={isFilterVisible ? "close" : "filter-alt"}
+                    onPress={() => setIsFilterVisible((prev) => !prev)}
+                  />
+                )}
+              </>
+            )}
+            {!isLandscape && (
+              <ERPIcon
+                name={!showFull ? "more-vert" : "close"}
+                onPress={() => {
+                  setIsFilterVisible(false);
+                  setShowFull(!showFull);
+                }}
+              />
+            )}
+          </View>
+        ),
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => navigation?.openDrawer()}
+          style={{
+            height: 46,
+            width: 46,
+            justifyContent: "center",
+            alignContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <ERPIcon
+            extSize={24}
+            isMenu={true}
+            name="menu"
+            onPress={() => navigation?.openDrawer()}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  }, [
+    showFull,
+    actionLoader,
+    attendanceDone,
+    navigation,
+    isHorizontal,
+    isRefresh,
+    showSearch,
+    dashboard,
+    searchText,
+    filteredDashboard,
+    isFilterVisible,
+    hideTab,
+    isLandscape,
+    controls,
+  ]);
+
+  const accentColors = [
+    ERP_COLOR_CODE.ERP_APP_COLOR,
+    "#00C2A8",
+    "#FFB020",
+    "#FF6B6B",
+    "#9B59B6",
+    "#20C997",
+  ];
+
+  const refreshData = async () => {
+       try {
                   dispatch(getERPAppConfigMenuThunk());
                   if (appBottomMenuList.length === 0) {
                     setAlertVisible(true);
@@ -427,100 +523,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
                 } catch (error) {
                   console.log("Error during refresh:", error);
                 }
-              }}
-              isLoading={actionLoader}
-            />
-
-            {dashboard.length > 5 && (
-              <ERPIcon name="search" onPress={() => setShowSearch(true)} />
-            )}
-
-            {/* {attendanceDone && (
-              <ERPIcon
-                color={"green"}
-                name={"location-on"}
-                onPress={() => {
-                  navigation.navigate("LocationTrack");
-                }}
-              />
-            )} */}
-            {isLandscape && (
-              <>
-                <ERPIcon
-                  name={!isHorizontal ? "list" : "apps"}
-                  onPress={() => setIsHorizontal((prev) => !prev)}
-                />
-                <ERPIcon
-                  name={!hideTab ? "fullscreen" : "fullscreen-exit"}
-                  onPress={() => {
-                    setHideTab(!hideTab);
-                  }}
-                />
-                {controls.length > 0 && (
-                  <ERPIcon
-                    name={isFilterVisible ? "close" : "filter-alt"}
-                    onPress={() => setIsFilterVisible((prev) => !prev)}
-                  />
-                )}
-              </>
-            )}
-            {!isLandscape && (
-              <ERPIcon
-                name={!showFull ? "more-vert" : "close"}
-                onPress={() => {
-                  setIsFilterVisible(false);
-                  setShowFull(!showFull);
-                }}
-              />
-            )}
-          </View>
-        ),
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => navigation?.openDrawer()}
-          style={{
-            height: 46,
-            width: 46,
-            justifyContent: "center",
-            alignContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <ERPIcon
-            extSize={24}
-            isMenu={true}
-            name="menu"
-            onPress={() => navigation?.openDrawer()}
-          />
-        </TouchableOpacity>
-      ),
-    });
-  }, [
-    showFull,
-    actionLoader,
-    attendanceDone,
-    navigation,
-    isHorizontal,
-    isRefresh,
-    showSearch,
-    dashboard,
-    searchText,
-    filteredDashboard,
-    isFilterVisible,
-    hideTab,
-    isLandscape,
-    controls,
-  ]);
-
-  const accentColors = [
-    ERP_COLOR_CODE.ERP_APP_COLOR,
-    "#00C2A8",
-    "#FFB020",
-    "#FF6B6B",
-    "#9B59B6",
-    "#20C997",
-  ];
-
+  }
   const pieChartData = filteredDashboard
     .filter((item) => {
       const num = Number(item?.data);
@@ -1110,6 +1113,7 @@ const HomeScreen = ({ setHideTab, hideTab }) => {
             dispatch(resetDropdownState());
             dispatch(resetSyncLocationState());
             dispatch(resetAttendanceState());
+            setERPAppColor('#251d50');
             dispatch(logoutUserThunk());
           }
         }

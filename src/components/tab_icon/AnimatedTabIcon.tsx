@@ -71,7 +71,7 @@ const AnimatedTabIcon: React.FC<Props> = ({
     <Animated.View
       style={{
         transform: [{ scale }, { translateY }],
-        opacity,
+        opacity,         
       }}
     >
       <TabIcon

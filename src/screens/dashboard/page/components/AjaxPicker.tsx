@@ -27,6 +27,7 @@ const AjaxPicker = ({
   errors,
   dtext,
   formValues,
+  isFromChild = false
 }: any) => {
   const dispatch = useAppDispatch();
 const { height, width } = useWindowDimensions();  
@@ -119,24 +120,26 @@ const { height, width } = useWindowDimensions();
 
   return (
     <View style={{ marginBottom: 8 }}>
-      <View style={{ flexDirection: "row" }}>
+      {
+        !isFromChild &&   <View style={{ flexDirection: "row" }}>
         <TranslatedText
           numberOfLines={1}
           style={[
             styles.label,
             theme === "dark" && {
               color: "white",
-            },
+            }, 
           ]}
           text={label}
         ></TranslatedText>
         {item?.tooltip !== label && (
           <Text
+            numberOfLines={1}
             style={[
               styles.label,
               theme === "dark" && {
                 color: "white",
-              },
+              }, 
             ]}
           >
             {" "}
@@ -147,6 +150,8 @@ const { height, width } = useWindowDimensions();
           <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
         )}
       </View>
+      }
+    
 
       <TouchableOpacity
         style={[
@@ -172,6 +177,14 @@ const { height, width } = useWindowDimensions();
             theme === "dark" && {
               backgroundColor: 'gray',
             },
+          isFromChild && {
+            padding : 6,
+            borderRadius: 4,
+          },
+          item?.disabled == "1" && {
+            paddingVertical: 7
+          }
+
         ]}
         onPress={() => {
           if (item?.disabled !== "1") {

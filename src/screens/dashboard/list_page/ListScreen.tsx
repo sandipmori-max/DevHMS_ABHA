@@ -55,6 +55,7 @@ import {
   updateSelectedToDateState,
 } from "../../../store/slices/auth/authSlice";
 import { getDDLThunk } from "../../../store/slices/dropdown/thunk";
+import TableView from "./components/TableView";
 
 const ListScreen = () => {
   const route = useRoute<RouteProp<ListRouteParams, "List">>();
@@ -290,6 +291,7 @@ const ListScreen = () => {
       const data = res?.data ?? [];
       const filtered = data.filter((item) => item.value !== -1);
       const branchValues = filtered.map((item) => item.value).join(",");
+      console.log("branchValues", branchValues)
       dispatch(updateSelectedBranchIdsState(branchValues));
       dispatch(updateSelectedBranchesState(filtered));
       fetchListData();
@@ -679,7 +681,6 @@ const ListScreen = () => {
           style={{
             backgroundColor:
               theme === "dark" ? "#000" : ERP_COLOR_CODE.ERP_APP_COLOR,
-            borderWidth: 1,
             padding: 8,
             paddingBottom: 8,
             borderBottomEndRadius: 12,
@@ -1054,7 +1055,10 @@ const ListScreen = () => {
             <FullViewLoader />
           ) : (
             <>
-              <ReadableView
+             
+            {
+              isTableView ? <>
+              <TableView
                 handleDeleteNotification={handleDeleteNotification}
                 isFromAlertCard={isFromAlertCard}
                 configData={configData}
@@ -1073,6 +1077,27 @@ const ListScreen = () => {
                 isLoadingMore={isLoadingMore}
                 loadMore={loadMore}
               />
+               </>  : <ReadableView
+                handleDeleteNotification={handleDeleteNotification}
+                isFromAlertCard={isFromAlertCard}
+                configData={configData}
+                filteredData={filteredData}
+                loadingListId={loadingListId}
+                totalAmount={totalAmount}
+                totalQty={totalQty}
+                isFromBusinessCard={isFromBusinessCard}
+                pageParamsName={pageParamsName}
+                handleItemPressed={handleItemPressed}
+                parsedConfig={parsedConfig}
+                pageName={pageName}
+                setIsFilterVisible={setIsFilterVisible}
+                setSearchQuery={setSearchQuery}
+                handleActionButtonPressed={handleActionButtonPressed}
+                isLoadingMore={isLoadingMore}
+                loadMore={loadMore}
+              />
+            }
+              
             </>
           )}
         </>

@@ -15,14 +15,12 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import {
-  formatDateList,
-} from "../../../../utils/helpers";
+import { formatDateList } from "../../../../utils/helpers";
 import { styles } from "../list_page_style";
 import NoData from "../../../../components/no_data/NoData";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
- import { useAppSelector } from "../../../../store/hooks";
+import { useAppSelector } from "../../../../store/hooks";
 import useTranslations from "../../../../hooks/useTranslations";
 import ImageBottomSheetModal from "../../../../components/bottomsheet/ImageBottomSheetModal";
 import RemarksView from "./RemarksView";
@@ -103,19 +101,23 @@ const ReadableView = ({
   handleDeleteNotification,
   loadMore,
   isLoadingMore,
-  parsedConfig
+  parsedConfig,
 }: any) => {
   const { t } = useTranslations();
   const navigation = useNavigation();
   const screenWidth = Dimensions.get("window").width;
   const [listData, setListData] = useState(filteredData || []);
   const theme = useAppSelector((state) => state?.theme?.mode);
-  console.log("Rendering+++++++++++++ TableView with data length:", loadingListId ,filteredData);
+  console.log(
+    "Rendering+++++++++++++ TableView with data length:",
+    loadingListId,
+    filteredData,
+  );
 
   const slideAnim = useRef(new Animated.Value(300)).current; // right se start
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   useEffect(() => {
     Animated.parallel([
@@ -217,8 +219,8 @@ const ReadableView = ({
             paddingTop: 6,
             borderWidth: 1,
             borderColor: ERP_COLOR_CODE.ERP_ddd,
-            width: isLandscape ? '48%' : '96%',
-            overflow:'hidden'
+            width: isLandscape ? "48%" : "96%",
+            overflow: "hidden",
           }}
         >
           {/* main touchable */}
@@ -233,11 +235,14 @@ const ReadableView = ({
               },
             ]}
             onPress={async () => {
-              if(!parsedConfig){
+              if (!parsedConfig) {
                 return;
               }
               if (authUser) return;
-              if (parsedConfig?.editentry === 1 || parsedConfig?.editentry === "1") {
+              if (
+                parsedConfig?.editentry === 1 ||
+                parsedConfig?.editentry === "1"
+              ) {
                 setIsFilterVisible(false);
                 setSearchQuery("");
                 navigation.navigate("Page", {
@@ -378,11 +383,14 @@ const ReadableView = ({
 
           <TouchableOpacity
             onPress={async () => {
-              if(!parsedConfig){
+              if (!parsedConfig) {
                 return;
               }
               if (authUser) return;
-              if (parsedConfig?.editentry === 1 || parsedConfig?.editentry === "1") {
+              if (
+                parsedConfig?.editentry === 1 ||
+                parsedConfig?.editentry === "1"
+              ) {
                 navigation.navigate("Page", {
                   item,
                   title: pageParamsName,
@@ -454,71 +462,85 @@ const ReadableView = ({
             )}
           </TouchableOpacity>
           {
-            <View
-              style={{
-                justifyContent: qty && amount ? "space-between" : "flex-start",
-                width: "100%",
-                flexDirection: "row",
-              }}
-            >
-              {!!qty && (
-                <View style={{ flexDirection: "row", width: "50%" }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      textAlign: "right",
-                      fontSize: 14,
-                      fontWeight: "700",
-                      color: theme === "dark" ? "white" : "black",
-                    }}
-                  >
-                    {t("text.text28")}:
-                  </Text>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      textAlign: "right",
-                      fontSize: 14,
-                      fontWeight: "700",
-                      color: "#07581dff",
-                    }}
-                  >
-                    {" "}
-                    {qty}
-                  </Text>
-                </View>
-              )}
+            <View>
               {!!amount && !!qty && (
                 <View
                   style={{
-                    flexDirection: "row",
+                    marginVertical: 4,
+                    borderWidth: 1,
+                    borderStyle: "dashed",
+                    borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
                   }}
-                >
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      textAlign: "right",
-                      fontSize: 14,
-                      fontWeight: "700",
-                      color: theme === "dark" ? "white" : "black",
-                    }}
-                  >
-                    {t("text.text29")}:
-                  </Text>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      textAlign: "right",
-                      fontSize: 14,
-                      fontWeight: "700",
-                      color: "green",
-                    }}
-                  >
-                    {" "}
-                    {amount}
-                  </Text>
-                </View>
+                />
               )}
+
+              <View
+                style={{
+                  justifyContent:
+                    qty && amount ? "space-between" : "flex-start",
+                  width: "100%",
+                  flexDirection: "row",
+                }}
+              >
+                {!!qty && (
+                  <View style={{ flexDirection: "row", width: "50%" }}>
+                    <Text
+                      numberOfLines={1}
+                      style={{
+                        textAlign: "right",
+                        fontSize: 14,
+                        fontWeight: "700",
+                        color: theme === "dark" ? "white" : "black",
+                      }}
+                    >
+                      {t("text.text28")}:
+                    </Text>
+                    <Text
+                      numberOfLines={1}
+                      style={{
+                        textAlign: "right",
+                        fontSize: 14,
+                        fontWeight: "700",
+                        color: "#07581dff",
+                      }}
+                    >
+                      {" "}
+                      {qty}
+                    </Text>
+                  </View>
+                )}
+                {!!amount && !!qty && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                    }}
+                  >
+                    <Text
+                      numberOfLines={1}
+                      style={{
+                        textAlign: "right",
+                        fontSize: 14,
+                        fontWeight: "700",
+                        color: theme === "dark" ? "white" : "black",
+                      }}
+                    >
+                      {t("text.text29")}:
+                    </Text>
+                    <Text
+                      numberOfLines={1}
+                      style={{
+                        textAlign: "right",
+                        fontSize: 14,
+                        fontWeight: "700",
+                        color: "green",
+                      }}
+                    >
+                      {" "}
+                      {amount}
+                    </Text>
+                  </View>
+                )}
+              </View>
             </View>
           }
 
@@ -578,7 +600,6 @@ const ReadableView = ({
               </View>
             )}
         </View>
-        
       </>
     );
 
@@ -595,15 +616,13 @@ const ReadableView = ({
         <ImageBottomSheetModal
           visible={showModal}
           onClose={() => {
-            setShowModal(false)
+            setShowModal(false);
           }}
           imageUrl={img}
         />
       </>
     );
   };
-
-   
 
   if (!loadingListId && listData?.length === 0) {
     return (
@@ -630,7 +649,7 @@ const ReadableView = ({
         renderItem={({ item, index }) => (
           <RenderCard item={item} index={index} />
         )}
-        key={isLandscape ? "landscape" : "portrait"}    
+        key={isLandscape ? "landscape" : "portrait"}
         numColumns={isLandscape ? 2 : 1}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}

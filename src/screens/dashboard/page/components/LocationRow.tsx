@@ -15,6 +15,7 @@ const LocationRow = ({
   item,
   value,
   setValue,
+  isFromChild = false
 }: any) => {
   const {
     coords,
@@ -58,7 +59,8 @@ const LocationRow = ({
 
   return (
     <View style={{ marginBottom: 8 }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      {
+        !isFromChild &&  <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View style={{ flexDirection: "row" }}>
           <Text
             style={[
@@ -89,6 +91,8 @@ const LocationRow = ({
         </View>
         {!error && <ShortAction item={item} value={address} />}
       </View>
+      }
+    
 
       {/* Address / Loading / Error */}
       <View
@@ -97,6 +101,10 @@ const LocationRow = ({
           theme === "dark" && {
             backgroundColor: ERP_COLOR_CODE.ERP_555,
           },
+          isFromChild && {
+            padding : 6,
+            borderRadius: 4,
+          }
         ]}
       >
         {loading ? (

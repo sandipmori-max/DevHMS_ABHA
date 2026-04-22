@@ -7,12 +7,13 @@ import { formatDateHr } from "../../../../utils/helpers";
 import { useAppSelector } from "../../../../store/hooks";
 import InputError from "../../../../components/error/InputError";
 
-const DateRow = ({ isValidate, item, errors, value, showDatePicker }: any) => {
+const DateRow = ({ isValidate, item, errors, value, showDatePicker , isFromChild = false}: any) => {
   const theme = useAppSelector((state) => state?.theme.mode);
 
   return (
     <View style={{ marginBottom: 8 }}>
-      <View style={{ flexDirection: "row" }}>
+      {
+        !isFromChild &&    <View style={{ flexDirection: "row" }}>
         <Text
           style={[
             styles.label,
@@ -40,6 +41,8 @@ const DateRow = ({ isValidate, item, errors, value, showDatePicker }: any) => {
           <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
         )}
       </View>
+      }
+    
       <TouchableOpacity
         style={[
           styles.dateBox,
@@ -56,6 +59,10 @@ const DateRow = ({ isValidate, item, errors, value, showDatePicker }: any) => {
           theme === "dark" && {
             backgroundColor: "black",
           },
+          isFromChild && {
+            padding : 6,
+            borderRadius: 4,
+          }
         ]}
         onPress={() => showDatePicker(item?.field, value)}
       >

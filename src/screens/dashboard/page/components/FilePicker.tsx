@@ -189,7 +189,6 @@ const openFilePicker = async () => {
        borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
     }]} onPress={openFilePicker}>
       <MaterialIcons name="cloud-upload" size={36} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
-      <Text style={styles.uploadTitle}>Upload File</Text>
       <Text style={styles.uploadSub}>Tap to browse files</Text>
     </TouchableOpacity>
   )}
@@ -248,7 +247,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: "600",
-    marginBottom: 12,
+    marginBottom: 8,
     color: "#222",
   },
 
@@ -257,8 +256,8 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderStyle: "dashed",
     borderColor: "#4c6ef5",
-    borderRadius: 14,
-    paddingVertical: 30,
+    borderRadius: 10,
+    paddingVertical: 22,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#f8f9ff",

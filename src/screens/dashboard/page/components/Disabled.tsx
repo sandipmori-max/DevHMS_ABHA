@@ -8,7 +8,7 @@ import {
 import { useAppSelector } from "../../../../store/hooks";
 import ShortAction from "./ShortAction";
 
-const Disabled = ({ item, value, type }: any) => {
+const Disabled = ({ item, value, type , isFromChild = false}: any) => {
   console.log("item", item?.title)
   const theme = useAppSelector((state) => state?.theme.mode);
 
@@ -26,7 +26,8 @@ const Disabled = ({ item, value, type }: any) => {
 
   return (
     <View style={{ marginBottom: 8 }}>
-      <View
+      {
+        !isFromChild &&   <View
         style={{
           flexDirection: "row",
           justifyContent: "space-between",
@@ -49,7 +50,11 @@ const Disabled = ({ item, value, type }: any) => {
           </Text>
           {item?.fieldtitle !== item?.tooltip && (
             <Text
+              numberOfLines={1}
               style={[
+                {
+                  maxWidth: 130
+                },
                 styles.label,
                 theme === "dark" && {
                   color: "white",
@@ -66,12 +71,18 @@ const Disabled = ({ item, value, type }: any) => {
         </View>
         <ShortAction item={item} value={value} />
       </View>
+      }
+    
       <View
         style={[
           styles.disabledBox,
           theme === "dark" && {
             backgroundColor: 'gray',
           },
+          isFromChild && {
+            padding : 9,
+            borderRadius: 4,
+          }
         ]}
       >
         <Text

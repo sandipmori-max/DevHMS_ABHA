@@ -18,6 +18,7 @@ const CustomMultiPicker = ({
   item,
   errors,
   dtext,
+  isFromChild = false
 }: any) => {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<any[]>([]);

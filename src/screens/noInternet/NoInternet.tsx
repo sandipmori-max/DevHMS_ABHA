@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, Animated } from "react-native";
+import { View, Text, TouchableOpacity, Animated, Easing } from "react-native";
 
 import { styles } from "./nointernet_style";
 import useTranslations from "../../hooks/useTranslations";
@@ -10,96 +10,85 @@ import { NoInterNetProps } from "./types";
 const NoInternetScreen: React.FC<NoInterNetProps> = ({ onRetry }) => {
   const { t } = useTranslations();
 
-  const imageScale = useRef(new Animated.Value(0.8)).current;
-  const imageOpacity = useRef(new Animated.Value(0)).current;
+  // Single animation controller for cleaner orchestration
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(30)).current;
+  const scale = useRef(new Animated.Value(0.9)).current;
 
-  const titleAnim = useRef(new Animated.Value(30)).current;
-  const subtitleAnim = useRef(new Animated.Value(30)).current;
-  const buttonAnim = useRef(new Animated.Value(30)).current;
+  // button press animation
+  const buttonScale = useRef(new Animated.Value(1)).current;
 
-  const titleOpacity = useRef(new Animated.Value(0)).current;
-  const subtitleOpacity = useRef(new Animated.Value(0)).current;
-  const buttonOpacity = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(1)).current;
+  // subtle floating animation for GIF
+  const floatAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.spring(translateY, {
+        toValue: 0,
+        friction: 7,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scale, {
+        toValue: 1,
+        friction: 6,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // floating loop animation
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(floatAnim, {
+          toValue: 1,
+          duration: 2000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(floatAnim, {
+          toValue: 0,
+          duration: 2000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
 
   const onPressIn = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.95,
+    Animated.spring(buttonScale, {
+      toValue: 0.96,
       useNativeDriver: true,
     }).start();
   };
 
   const onPressOut = () => {
-    Animated.spring(scaleAnim, {
+    Animated.spring(buttonScale, {
       toValue: 1,
-      friction: 4,
-      tension: 220,
+      friction: 5,
       useNativeDriver: true,
     }).start();
   };
-  useEffect(() => {
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(imageScale, {
-          toValue: 1,
-          duration: 600,
-          useNativeDriver: true,
-        }),
-        Animated.timing(imageOpacity, {
-          toValue: 1,
-          duration: 600,
-          useNativeDriver: true,
-        }),
-      ]),
 
-      Animated.parallel([
-        Animated.timing(titleAnim, {
-          toValue: 0,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(titleOpacity, {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ]),
-
-      Animated.parallel([
-        Animated.timing(subtitleAnim, {
-          toValue: 0,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(subtitleOpacity, {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ]),
-
-      Animated.parallel([
-        Animated.timing(buttonAnim, {
-          toValue: 0,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(buttonOpacity, {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ]),
-    ]).start();
-  }, []);
+  const floatTranslate = floatAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -8],
+  });
 
   return (
     <View style={styles.container}>
       {/* GIF */}
       <Animated.View
         style={{
-          opacity: imageOpacity,
-          transform: [{ scale: imageScale }],
+          opacity: fadeAnim,
+          transform: [
+            { scale },
+            { translateY: floatTranslate },
+          ],
         }}
       >
         <FastImage
@@ -114,8 +103,8 @@ const NoInternetScreen: React.FC<NoInterNetProps> = ({ onRetry }) => {
         style={[
           styles.title,
           {
-            opacity: titleOpacity,
-            transform: [{ translateY: titleAnim }],
+            opacity: fadeAnim,
+            transform: [{ translateY }],
           },
         ]}
       >
@@ -127,8 +116,8 @@ const NoInternetScreen: React.FC<NoInterNetProps> = ({ onRetry }) => {
         style={[
           styles.subtitle,
           {
-            opacity: subtitleOpacity,
-            transform: [{ translateY: subtitleAnim }],
+            opacity: fadeAnim,
+            transform: [{ translateY }],
           },
         ]}
       >
@@ -136,7 +125,7 @@ const NoInternetScreen: React.FC<NoInterNetProps> = ({ onRetry }) => {
       </Animated.Text>
 
       {/* Button */}
-      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+      <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.button}
@@ -144,7 +133,9 @@ const NoInternetScreen: React.FC<NoInterNetProps> = ({ onRetry }) => {
           onPressIn={onPressIn}
           onPressOut={onPressOut}
         >
-          <Text style={styles.buttonText}>{t("errors.tryAgain")}</Text>
+          <Text style={styles.buttonText}>
+            {t("errors.tryAgain")}
+          </Text>
         </TouchableOpacity>
       </Animated.View>
     </View>
