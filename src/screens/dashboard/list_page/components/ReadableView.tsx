@@ -463,13 +463,14 @@ const ReadableView = ({
           </TouchableOpacity>
           {
             <View>
-              {!!amount && !!qty && (
+              {!!amount || !!qty && (
                 <View
                   style={{
-                    marginVertical: 4,
+                    marginBottom: 4,
                     borderWidth: 1,
                     borderStyle: "dashed",
                     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+                    opacity: 0.4,
                   }}
                 />
               )}

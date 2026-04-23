@@ -106,9 +106,9 @@ export default function DynamicTable({
 
       <View
         style={{
-          backgroundColor:  theme ? "#000" : "#fffbfb",
+          backgroundColor:  theme === 'dark' ? "#000" : "#fffbfb",
           borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-          shadowColor: "#fde1e1",
+          // shadowColor: "#fde1e1",
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.3,
           shadowRadius: 3,

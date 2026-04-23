@@ -506,10 +506,10 @@ const ListScreen = () => {
       setLoadingListId(item?.id || 0);
 
       console.log(
-        "LATEST ✅+++++++++++++++++++++++++++++",
-        fromDate,
-        toDate,
-        selectedBranchIds,
+        "LATEST ✅+++++++++++++++++++++++++++++ PARAMS",
+        "fromDate:", fromDate,
+        "toDate:", toDate,
+        "selectedBranchIds:", selectedBranchIds,
       );
 
       const raw = await dispatch(
@@ -907,7 +907,7 @@ const ListScreen = () => {
                             selectedValue={() => {}}
                             dtext={"Branch"}
                             onValueChange={(i) => {
-                              console.log("i-----------------", i);
+                              console.log("i-------++++++++++++++++++++++++++++++----------", i);
                               i.map((item) => item.value).join(",");
                               dispatch(updateSelectedBranchesState(i));
                               dispatch(

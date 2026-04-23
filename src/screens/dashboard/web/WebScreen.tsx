@@ -131,6 +131,9 @@ const WebScreen = () => {
     return `${baseLink}${itemUrl}&token=${token}`;
   }, [baseLink, item?.url, token]);
 
+
+  console.log("targetUrl:----------------------", targetUrl, "url:--------------------------", url);
+  
   if ((!isFromChart && !targetUrl) || (isFromChart && !url)) {
     return (
       <SafeAreaView style={styles.container}>

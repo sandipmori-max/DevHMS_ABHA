@@ -58,16 +58,26 @@ const CustomMultiplePicker = ({
     if (!isForMultipleSelection) setSelectedOption(dtext);
   }, [dtext]);
 
-  useEffect(() => {
-    if (!search) {
-      setFilteredOptions(options.filter(item => item.value !== -1));
-    } else {
-      const lower = search.toLowerCase();
-      setFilteredOptions(
-        options.filter(item => item.value !== -1).filter((o) => o.name?.toLowerCase().includes(lower)),
-      );
-    }
-  }, [search, options]);
+ useEffect(() => {
+  const minusOneItem = options.find(item => item.value === -1);
+  const otherOptions = options.filter(item => item.value !== -1);
+
+  let result = otherOptions;
+
+  if (search) {
+    const lower = search.toLowerCase();
+    result = otherOptions.filter(o =>
+      o.name?.toLowerCase().includes(lower)
+    );
+  }
+
+  // last me -1 add karo
+  if (minusOneItem) {
+    result = [...result, minusOneItem];
+  }
+
+  setFilteredOptions(result);
+}, [search, options]);
 
   const openBottomSheet = () => {
     Animated.timing(slideAnim, {
@@ -228,7 +238,7 @@ const CustomMultiplePicker = ({
           {/* {isForMultipleSelection && (
             <TouchableOpacity
               onPress={handleSelectAll}
-              style={{ marginBottom: 8 }}
+              style={{ margin: 8, marginBottom: 10, }}
             >
               <Text style={{ color: ERP_COLOR_CODE.ERP_APP_COLOR }}>
                 {selectedBranches.length === options.length

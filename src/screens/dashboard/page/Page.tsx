@@ -187,8 +187,6 @@ const PageScreen = () => {
 
   const isCheckingPermission = useRef(false);
   const locationSyncInterval = useRef<NodeJS.Timeout | null>(null);
-  const lastLocationEnabled = useRef<boolean | null>(null);
-  const appState = useRef(AppState.currentState);
   const [scriptErrorMessage, setScriptErrorMessage] = useState<any>();
   const [isVisibleScriptError, setIsVisibleScriptError] = useState(false);
 
@@ -627,19 +625,6 @@ const PageScreen = () => {
     buttonSave,
     error,
   ]);
-
-  const parseBackendScript = (str) => {
-    if (!str) return [];
-
-    try {
-      let cleaned = str.replace(/\n/g, "");
-      cleaned = cleaned.replace(/,\s*([}\]])/g, "$1");
-      return new Function(`return ${cleaned}`)();
-    } catch (e) {
-      console.log("❌ Parsing failed:", e);
-      return [];
-    }
-  };
 
   const fetchPageData = useCallback(async () => {
     try {
@@ -2071,7 +2056,6 @@ const PageScreen = () => {
                   //         />
                   //       ))}
                   //     </ScrollView>
-
                   //   );
                   // }}
                 />

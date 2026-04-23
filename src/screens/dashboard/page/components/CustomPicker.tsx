@@ -97,7 +97,7 @@ const CustomPicker = ({
           where: !isForceOpen ? `UserID in (${user?.id}, -1)` : item?.ddlwhere,
         }),
       ).unwrap();
-
+console.log("res of dropdown ++++++ +++ ++ + + ++ + + + + + + ", res)
       const data = res?.data ?? [];
       setOptions(data);
       if (item?.dtlid) optionsCache.current[item.dtlid] = data;

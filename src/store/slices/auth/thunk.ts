@@ -351,7 +351,7 @@ export const getERPDashboardThunk = createAsyncThunk(
       if(branch === '' && type === ''){
         return []
       }
-      console.log("dashboard-----------", "branch----", branch  , "type------", type, "fd-----", fd, "td-----", td )
+      console.log("#######dashboard----------- api. called with params +++++++++++++++", "branch----", branch  , "type------", type, "fd-----", fd, "td-----", td )
       const dashboard = await DevERPService.getDashboard(branch, type, fd, td);
       console.log("dashboard-----------response----------",  branch, type, fd, td , "-------", dashboard)
       return dashboard;

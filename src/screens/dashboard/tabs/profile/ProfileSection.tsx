@@ -194,14 +194,14 @@ const styles = StyleSheet.create({
     left: 16,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: ERP_COLOR_CODE.ERP_BORDER,
+    borderColor: ERP_COLOR_CODE.ERP_f0f0f0,
   },
 
   avatar: {
     width: 72,
     height: 72,
     borderRadius: 4,
-    backgroundColor: "gray",
+    backgroundColor: ERP_COLOR_CODE.ERP_f0f0f0,
   },
 
   editBtn: {

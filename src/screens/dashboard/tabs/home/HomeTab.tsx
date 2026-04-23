@@ -103,7 +103,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
   const [aiMessage, setAiMessage] = useState("");
   const [visibleAI, setVisibleAI] = useState(false);
-  const [showFull, setShowFull] = useState(false);
+  const [showFull, setShowFull] = useState(true);
   const [attendance, setAttendance] = useState<any>(null);
   const [workingTime, setWorkingTime] = useState("00:00:00");
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -119,7 +119,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     user,
     attendanceDone,
   } = useAppSelector((state) => state.auth);
- 
 
   const runAI = async () => {
     try {
@@ -132,12 +131,11 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       if (e?.message?.includes("Quota")) {
         setTimeout(() => {
           runAI();
-        }, 40000);
+        }, 60000);
       }
     }
   };
-  
- 
+
   const aiCalled = useRef(false);
 
   const [loadingPageId, setLoadingPageId] = useState<any>(null);
@@ -156,7 +154,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
   const theme = useAppSelector((state) => state?.theme.mode);
   const [actionLoader, setActionLoader] = useState(false);
   const [isHorizontal, setIsHorizontal] = useState(false);
-  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [isFilterVisible, setIsFilterVisible] = useState(true);
 
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState("");
@@ -204,8 +202,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       // dispatch(setActiveDashboardBranch(""));
       // dispatch(setActiveDashboardType(""));
       // dispatch(setActiveDashboardTypeId(""));
-      setIsFilterVisible(false);
-      setShowFull(false);
+      setIsFilterVisible(true);
+      setShowFull(true);
       setIsHorizontal(false);
       return () => {};
     }, [isAuthenticated, navigation, isLandscape]),
@@ -333,7 +331,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
             <ERPIcon
               name="refresh"
               onPress={async () => {
-                  refreshData();
+                refreshData();
               }}
               isLoading={actionLoader}
             />
@@ -342,7 +340,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
               <ERPIcon name="search" onPress={() => setShowSearch(true)} />
             )}
 
-            {attendanceDone && user?.id == "113"  && (
+            {attendanceDone && user?.id == "113" && (
               <ERPIcon
                 color={"green"}
                 name={"location-on"}
@@ -429,101 +427,91 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
   ];
 
   const refreshData = async () => {
-       try {
-                  dispatch(getERPAppConfigMenuThunk());
-                  if (appBottomMenuList.length === 0) {
-                    setAlertVisible(true);
-                  } else {
-                    setAlertVisible(false);
-                  }
-                  setControlsLoader(true);
-                  setActionLoader(true);
-                  setIsRefresh(!isRefresh);
-                  const now = new Date();
-                  const firstDay = new Date(
-                    now.getFullYear(),
-                    now.getMonth(),
-                    1,
-                  );
-                  const lastDay = new Date();
-                  const fromDateStr = formatDateForAPI(firstDay);
-                  const toDateStr = formatDateForAPI(lastDay);
-                  setFromDate(fromDateStr);
-                  setToDate(toDateStr);
+    try {
+      dispatch(getERPAppConfigMenuThunk());
+      if (appBottomMenuList.length === 0) {
+        setAlertVisible(true);
+      } else {
+        setAlertVisible(false);
+      }
+      setControlsLoader(true);
+      setActionLoader(true);
+      setIsRefresh(!isRefresh);
+      const now = new Date();
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastDay = new Date();
+      const fromDateStr = formatDateForAPI(firstDay);
+      const toDateStr = formatDateForAPI(lastDay);
 
-                  const branchObj = controls.find(
-                    (item) => item.fieldtitle === "Branch",
-                  );
-                  const typeObj = controls.find(
-                    (item) => item.fieldtitle === "Type",
-                  );
+      const branchObj = controls.find((item) => item.fieldtitle === "Branch");
+      const typeObj = controls.find((item) => item.fieldtitle === "Type");
 
-                  const res = await dispatch(
-                    getDDLThunk({
-                      dtlid: branchObj?.dtlid,
-                      where: `UserID in (${user?.id}, -1) AND selected = 1`,
-                    }),
-                  ).unwrap();
+      const res = await dispatch(
+        getDDLThunk({
+          dtlid: branchObj?.dtlid,
+          where: `UserID in (${user?.id}, -1) AND selected = 1`,
+        }),
+      ).unwrap();
+      console.log("res ++++++ +++ ++ + + ++ + + + + + + ", res);
 
-                  const data = res?.data ?? [];
-                  // setPreSelectedBranch(data);
-                  console.log(
-                    "--------------------------------------------data +++++++++++ -----------  Data:",
-                    data,
-                  );
-                  dispatch(
-                    setActiveDashboardBranchId(data[0]?.value?.toString()),
-                  );
-                  dispatch(setActiveDashboardBranch(data[0]?.name));
+      const data = res?.data ?? [];
+      const filtered = data.filter((item) => item.value !== -1);
 
-                  const res1 = await dispatch(
-                    getDDLThunk({
-                      dtlid: typeObj?.dtlid,
-                      where: `UserID in (${user?.id}, -1)`,
-                    }),
-                  ).unwrap();
-                  const data1 = res1?.data ?? [];
-                  console.log(
-                    "--------------------------------------------DDLres1 Data:",
-                    res1,
-                  );
-                  dispatch(
-                    setActiveDashboardTypeId(data1[0]?.value?.toString()),
-                  );
-                  dispatch(setActiveDashboardType(data1[0]?.name));
+      console.log(
+        "filtered refresh============= ++++++ +++ ++ + + ++ + + + + + + ",
+        filtered,
+      );
 
-                  const params = {
-                    branch: data[0]?.value?.toString() || "",
-                    type: data1[0]?.value?.toString() || "",
-                    fd: fromDateStr,
-                    td: toDateStr,
-                  };
-                  dispatch(getERPDashboardThunk(params));
-                  const timer = setTimeout(() => {
-                    setActionLoader(false);
-                    setControlsLoader(false);
-                    dispatch(setDashboardLoading(false));
-                  }, 4000);
+      dispatch(setActiveDashboardBranchId(filtered[0]?.value?.toString()));
+      dispatch(setActiveDashboardBranch(filtered[0]?.name));
 
-                  dispatch(getLastPunchInThunk())
-                    .unwrap()
-                    .then((res) => {
-                      if (res?.id !== "0" && res?.id !== 0) {
-                        setAttendance(res);
-                      } else {
-                        setAttendance(null);
-                      }
-                      setAttendance(res);
-                    })
-                    .catch((err) => {
-                      setAttendance(null);
-                    });
+      const res1 = await dispatch(
+        getDDLThunk({
+          dtlid: typeObj?.dtlid,
+          where: `UserID in (${user?.id}, -1)`,
+        }),
+      ).unwrap();
+      const data1 = res1?.data ?? [];
+      console.log(
+        "--------------------------------------------DDLres1 Data:",
+        res1,
+      );
+      dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString()));
+      dispatch(setActiveDashboardType(data1[0]?.name));
 
-                  return () => clearTimeout(timer);
-                } catch (error) {
-                  console.log("Error during refresh:", error);
-                }
-  }
+      const params = {
+        branch: filtered[0]?.value?.toString() || "",
+        type: data1[0]?.value?.toString() || "",
+        fd: fromDateStr,
+        td: toDateStr,
+      };
+      dispatch(getERPDashboardThunk(params));
+      const timer = setTimeout(() => {
+        setActionLoader(false);
+        setControlsLoader(false);
+        dispatch(setDashboardLoading(false));
+      }, 6000);
+
+      dispatch(getLastPunchInThunk())
+        .unwrap()
+        .then((res) => {
+          if (res?.id !== "0" && res?.id !== 0) {
+            setAttendance(res);
+          } else {
+            setAttendance(null);
+          }
+          setAttendance(res);
+        })
+        .catch((err) => {
+          setAttendance(null);
+        });
+      setFromDate(fromDateStr);
+      setToDate(toDateStr);
+      return () => clearTimeout(timer);
+    } catch (error) {
+      console.log("Error during refresh:", error);
+    }
+  };
   const pieChartData = filteredDashboard
     .filter((item) => {
       const num = Number(item?.data);
@@ -809,7 +797,9 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     [dispatch],
   );
 
+  
   useEffect(() => {
+     
     console.log(
       "--------------------------------------------Dashboard Params:",
       {
@@ -820,25 +810,22 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       },
     );
 
-      dispatch(
-            getERPDashboardThunk({
-              branch:
-                auth?.dashboardBranchId.trim() === "-1"
-                  ? "-1"
-                  : auth?.dashboardBranchId.trim() || "",
-              type:
-                auth?.dashboardTypeId.trim() === "all" ||
-                auth?.dashboardTypeId.trim() === "ALL"
-                  ? ""
-                  : auth?.dashboardTypeId.trim() || "",
-              fd: auth?.dashboardFromDate.trim() || fromDate,
-              td: auth?.dashboardToDate.trim() || toDate,
-            }),
-      );
-   
+    dispatch(
+      getERPDashboardThunk({
+        branch: auth?.dashboardBranchId.trim(),
+        type:
+          auth?.dashboardTypeId.trim() === "all" ||
+          auth?.dashboardTypeId.trim() === "ALL"
+            ? ""
+            : auth?.dashboardTypeId.trim() || "",
+        fd: auth?.dashboardFromDate.trim() || fromDate,
+        td: auth?.dashboardToDate.trim() || toDate,
+      }),
+    );
+
     const timer = setTimeout(() => {
       dispatch(setDashboardLoading(false));
-    }, 4000);
+    }, 6000);
     return () => clearTimeout(timer);
   }, [
     auth.dashboardBranch,
@@ -862,18 +849,22 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         const typeObj = normalizedControls.find(
           (item) => item.fieldtitle === "Type",
         );
-
+        console.log("branchObj", branchObj);
         const res = await dispatch(
           getDDLThunk({
             dtlid: branchObj?.dtlid,
             where: `UserID in (${user?.id}, -1) AND selected = 1`,
           }),
         ).unwrap();
+        console.log("res ++++++ +++ ++ + + ++ + + + + + + ", res);
 
         const data = res?.data ?? [];
+        const filtered = data.filter((item) => item.value !== -1);
 
-        dispatch(setActiveDashboardBranchId(data[0]?.value?.toString()));
-        dispatch(setActiveDashboardBranch(data[0]?.name));
+        console.log("filtered ++++++ +++ ++ + + ++ + + + + + +  fetchData +++++++ ", filtered);
+
+        dispatch(setActiveDashboardBranchId(filtered[0]?.value?.toString()));
+        dispatch(setActiveDashboardBranch(filtered[0]?.name));
 
         const res1 = await dispatch(
           getDDLThunk({
@@ -889,7 +880,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
         dispatch(
           getERPDashboardThunk({
-            branch: data[0]?.value?.toString() || "",
+            branch: filtered[0]?.value?.toString() || "",
             type: data1[0]?.value?.toString() || "",
             fd: fromDate,
             td: toDate,
@@ -1058,7 +1049,12 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
   useEffect(() => {
     const handleTokenExpire = async () => {
-      if (error === "Token Expire" || error === "Invalid Token" || error == 'Credential not match or User is not allowed for mobile application') {
+      if (
+        error === "Token Expire" ||
+        error === "Invalid Token" ||
+        error ==
+          "Credential not match or User is not allowed for mobile application"
+      ) {
         const db = await getDBConnection();
         await createAccountsTable(db);
 
@@ -1113,7 +1109,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
             dispatch(resetDropdownState());
             dispatch(resetSyncLocationState());
             dispatch(resetAttendanceState());
-            setERPAppColor('#251d50');
+            setERPAppColor("#251d50");
             dispatch(logoutUserThunk());
           }
         }
@@ -1225,12 +1221,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                     controls
                       .filter((x) => x.ctltype === "DATE")
                       .map((item, index) => (
-                        <View
-                          key={index}
-                          style={[
-                            styles.dateRow, 
-                          ]}
-                        >
+                        <View key={index} style={[styles.dateRow]}>
                           <TouchableOpacity
                             onPress={() =>
                               setShowDatePicker({
@@ -1450,7 +1441,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         style={{
           backgroundColor:
             theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-          padding: !showFull ? 2 : !hideTab ? 12 : 2,
+          padding: !showFull ? 2 : !hideTab ? 8 : 2,
+          paddingBottom: 12,
           borderBottomRightRadius: 8,
           borderBottomLeftRadius: 8,
         }}
@@ -1621,12 +1613,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                 controls
                   .filter((x) => x.ctltype === "DATE")
                   .map((item, index) => (
-                    <View
-                      key={index}
-                      style={[
-                        styles.dateRow, 
-                      ]}
-                    >
+                    <View key={index} style={[styles.dateRow]}>
                       <TouchableOpacity
                         onPress={() =>
                           setShowDatePicker({
@@ -1899,7 +1886,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                               <>
                                 <View
                                   style={{
-                                    marginTop: theme === 'light' ? 12 : 2,
+                                    marginTop: theme === "light" ? 12 : 2,
                                     marginBottom: 2,
                                     backgroundColor:
                                       theme === "dark" ? "gray" : "#f5f5f5",
