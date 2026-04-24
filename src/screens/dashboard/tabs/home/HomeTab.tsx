@@ -462,8 +462,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         filtered,
       );
 
-      dispatch(setActiveDashboardBranchId(filtered[0]?.value?.toString()));
-      dispatch(setActiveDashboardBranch(filtered[0]?.name));
+      dispatch(setActiveDashboardBranchId(filtered[0]?.value?.toString() || ""));
+      dispatch(setActiveDashboardBranch(filtered[0]?.name || ""));
 
       const res1 = await dispatch(
         getDDLThunk({
@@ -476,8 +476,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         "--------------------------------------------DDLres1 Data:",
         res1,
       );
-      dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString()));
-      dispatch(setActiveDashboardType(data1[0]?.name));
+      dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString() || ""));
+      dispatch(setActiveDashboardType(data1[0]?.name || ""));
 
       const params = {
         branch: filtered[0]?.value?.toString() || "",
@@ -799,27 +799,16 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
   
   useEffect(() => {
-     
-    console.log(
-      "--------------------------------------------Dashboard Params:",
-      {
-        branch: auth?.dashboardBranchId.trim() || "",
-        type: auth?.dashboardTypeId.trim() || "",
-        fd: auth?.dashboardFromDate.trim() || fromDate,
-        td: auth?.dashboardToDate.trim() || toDate,
-      },
-    );
-
     dispatch(
       getERPDashboardThunk({
-        branch: auth?.dashboardBranchId.trim(),
+        branch: auth?.dashboardBranchId,
         type:
-          auth?.dashboardTypeId.trim() === "all" ||
-          auth?.dashboardTypeId.trim() === "ALL"
+         auth?.dashboardTypeId && auth?.dashboardTypeId === "all" ||
+          auth?.dashboardTypeId === "ALL"
             ? ""
-            : auth?.dashboardTypeId.trim() || "",
-        fd: auth?.dashboardFromDate.trim() || fromDate,
-        td: auth?.dashboardToDate.trim() || toDate,
+            : auth?.dashboardTypeId || "",
+        fd: auth?.dashboardFromDate || fromDate,
+        td: auth?.dashboardToDate|| toDate,
       }),
     );
 
@@ -856,15 +845,15 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
             where: `UserID in (${user?.id}, -1) AND selected = 1`,
           }),
         ).unwrap();
-        console.log("res ++++++ +++ ++ + + ++ + + + + + + ", res);
+        console.log("res------ ++++++ +++ ++ + + ++ + + + + + + ", res);
 
         const data = res?.data ?? [];
         const filtered = data.filter((item) => item.value !== -1);
 
         console.log("filtered ++++++ +++ ++ + + ++ + + + + + +  fetchData +++++++ ", filtered);
 
-        dispatch(setActiveDashboardBranchId(filtered[0]?.value?.toString()));
-        dispatch(setActiveDashboardBranch(filtered[0]?.name));
+        dispatch(setActiveDashboardBranchId(filtered[0]?.value?.toString() || ""));
+        dispatch(setActiveDashboardBranch(filtered[0]?.name || ""));
 
         const res1 = await dispatch(
           getDDLThunk({
@@ -875,8 +864,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
         const data1 = res1?.data ?? [];
 
-        dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString()));
-        dispatch(setActiveDashboardType(data1[0]?.name));
+        dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString() || ""));
+        dispatch(setActiveDashboardType(data1[0]?.name || ""));
 
         dispatch(
           getERPDashboardThunk({
@@ -1296,15 +1285,15 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                 if (item?.title === "Branch") {
                                   dispatch(
                                     setActiveDashboardBranchId(
-                                      i?.value?.toString(),
+                                      i?.value?.toString() || "",
                                     ),
                                   );
-                                  dispatch(setActiveDashboardBranch(i?.name));
+                                  dispatch(setActiveDashboardBranch(i?.name || ""));
                                 } else {
-                                  dispatch(setActiveDashboardType(i?.name));
+                                  dispatch(setActiveDashboardType(i?.name || ""));
                                   dispatch(
                                     setActiveDashboardTypeId(
-                                      i?.value?.toString(),
+                                      i?.value?.toString() || "",
                                     ),
                                   );
                                 }
@@ -1571,15 +1560,15 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                               if (item?.title === "Branch") {
                                 dispatch(
                                   setActiveDashboardBranchId(
-                                    i?.value?.toString(),
+                                    i?.value?.toString() || "",
                                   ),
                                 );
-                                dispatch(setActiveDashboardBranch(i?.name));
+                                dispatch(setActiveDashboardBranch(i?.name || ""));
                               } else {
-                                dispatch(setActiveDashboardType(i?.name));
+                                dispatch(setActiveDashboardType(i?.name || ""));
                                 dispatch(
                                   setActiveDashboardTypeId(
-                                    i?.value?.toString(),
+                                    i?.value?.toString() || "",
                                   ),
                                 );
                               }
@@ -1681,14 +1670,14 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                             if (item?.title === "Branch") {
                               dispatch(
                                 setActiveDashboardBranchId(
-                                  i?.value?.toString(),
+                                  i?.value?.toString() || "",
                                 ),
                               );
-                              dispatch(setActiveDashboardBranch(i?.name));
+                              dispatch(setActiveDashboardBranch(i?.name || ""));
                             } else {
-                              dispatch(setActiveDashboardType(i?.name));
+                              dispatch(setActiveDashboardType(i?.name || ""));
                               dispatch(
-                                setActiveDashboardTypeId(i?.value?.toString()),
+                                setActiveDashboardTypeId(i?.value?.toString() || ""),
                               );
                             }
                           }}

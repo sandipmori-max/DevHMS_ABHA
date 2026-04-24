@@ -2095,7 +2095,7 @@ PODS:
     - Yoga
   - react-native-sqlite-storage (6.0.1):
     - React-Core
-  - react-native-vector-icons-fontawesome (13.0.0)
+  - react-native-vector-icons-fontawesome (13.1.1)
   - react-native-vector-icons-material-icons (12.5.0)
   - react-native-version-check (3.5.0):
     - React-Core
@@ -2759,7 +2759,7 @@ PODS:
     - Yoga
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.30.1):
+  - RNGestureHandler (2.31.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3588,7 +3588,7 @@ SPEC CHECKSUMS:
   react-native-render-html: 5afc4751f1a98621b3009432ef84c47019dcb2bd
   react-native-safe-area-context: 4cd26e0865366ae470c15ed17d86f043a495cb37
   react-native-sqlite-storage: 0c84826214baaa498796c7e46a5ccc9a82e114ed
-  react-native-vector-icons-fontawesome: 53835cb7f1bebc941d5b55a632bc7fbc8105cac8
+  react-native-vector-icons-fontawesome: 7fb9da054077e3f34a33a096210ef2b2d55ac4b6
   react-native-vector-icons-material-icons: 8717ed6d0adafdea7a20475dababba112992a372
   react-native-version-check: 842a3b0e7221798cbe8c6abaf24aab3ed0b485ce
   react-native-webview: e26595a2381074569a53bd389ae3350cdc9f2f29
@@ -3631,7 +3631,7 @@ SPEC CHECKSUMS:
   RNFBApp: dd459605dade60ba81833945bc26efa1c44ac1bc
   RNFBMessaging: bb9afc19988f131f84370b4345ba15aa6cb558c1
   RNFS: 89de7d7f4c0f6bafa05343c578f61118c8282ed8
-  RNGestureHandler: 9fc6fc2c95c1b8cdd71e3c24525bf384a16d7df2
+  RNGestureHandler: 545bda8c91015fdb0211010b8ee658021de9fed4
   RNMLKitTextRecognition: 2d7c3481b9dabc72f7e31c67025c28b2c8d653b0
   RNPermissions: 33af1745a026bc48e11937eabd3d41c82ebd6499
   RNReanimated: efeb14f6e1ccdc2f2288ccdceaeaa3821e7cbc94
