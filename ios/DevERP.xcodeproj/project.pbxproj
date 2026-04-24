@@ -17,6 +17,10 @@
 		DAAFE8EA2F1BACF200F00D76 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAAFE8E92F1BACF200F00D76 /* LocationService.swift */; };
 		DAAFE8EC2F1BAD0500F00D76 /* LocationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DAAFE8EB2F1BAD0500F00D76 /* LocationModule.m */; };
 		DAB5A1882F05534700923390 /* LocationModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB5A1872F05534500923390 /* LocationModule.swift */; };
+		DAB5FD7B2F9B84C1007D0EDD /* DocumentScanner.mm in Sources */ = {isa = PBXBuildFile; fileRef = DAB5FD7A2F9B84C1007D0EDD /* DocumentScanner.mm */; };
+		DAB5FD7D2F9B8C29007D0EDD /* VisionKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAB5FD7C2F9B8C29007D0EDD /* VisionKit.framework */; };
+		DAB5FD7F2F9B8C36007D0EDD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAB5FD7E2F9B8C36007D0EDD /* UIKit.framework */; };
+		DAB5FD812F9B8C3F007D0EDD /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAB5FD802F9B8C3F007D0EDD /* CoreLocation.framework */; };
 		DACC1D5B2F33480300EBAA0E /* OrientationModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = DACC1D5A2F33480300EBAA0E /* OrientationModule.swift */; };
 		DACC1D5D2F33482B00EBAA0E /* OrientationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DACC1D5C2F33482B00EBAA0E /* OrientationModule.m */; };
 /* End PBXBuildFile section */
@@ -37,6 +41,11 @@
 		DAAFE8EB2F1BAD0500F00D76 /* LocationModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LocationModule.m; sourceTree = "<group>"; };
 		DAAFE8ED2F1BAD0900F00D76 /* DevERP-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DevERP-Bridging-Header.h"; sourceTree = "<group>"; };
 		DAB5A1872F05534500923390 /* LocationModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationModule.swift; sourceTree = "<group>"; };
+		DAB5FD792F9B84B6007D0EDD /* DocumentScanner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DocumentScanner.h; sourceTree = "<group>"; };
+		DAB5FD7A2F9B84C1007D0EDD /* DocumentScanner.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DocumentScanner.mm; sourceTree = "<group>"; };
+		DAB5FD7C2F9B8C29007D0EDD /* VisionKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VisionKit.framework; path = System/Library/Frameworks/VisionKit.framework; sourceTree = SDKROOT; };
+		DAB5FD7E2F9B8C36007D0EDD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		DAB5FD802F9B8C3F007D0EDD /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		DACC1D5A2F33480300EBAA0E /* OrientationModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationModule.swift; sourceTree = "<group>"; };
 		DACC1D5C2F33482B00EBAA0E /* OrientationModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OrientationModule.m; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -47,6 +56,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DAB5FD812F9B8C3F007D0EDD /* CoreLocation.framework in Frameworks */,
+				DAB5FD7F2F9B8C36007D0EDD /* UIKit.framework in Frameworks */,
+				DAB5FD7D2F9B8C29007D0EDD /* VisionKit.framework in Frameworks */,
 				3FCE7B3EA0B21A65F3334A54 /* Pods_DevERP.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -57,6 +69,8 @@
 		13B07FAE1A68108700A75B9A /* DevERP */ = {
 			isa = PBXGroup;
 			children = (
+				DAB5FD7A2F9B84C1007D0EDD /* DocumentScanner.mm */,
+				DAB5FD792F9B84B6007D0EDD /* DocumentScanner.h */,
 				DACC1D5C2F33482B00EBAA0E /* OrientationModule.m */,
 				DACC1D5A2F33480300EBAA0E /* OrientationModule.swift */,
 				DAAFE8EB2F1BAD0500F00D76 /* LocationModule.m */,
@@ -75,6 +89,9 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DAB5FD802F9B8C3F007D0EDD /* CoreLocation.framework */,
+				DAB5FD7E2F9B8C36007D0EDD /* UIKit.framework */,
+				DAB5FD7C2F9B8C29007D0EDD /* VisionKit.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				1AB1D406F944F7D2287F8EDC /* Pods_DevERP.framework */,
 			);
@@ -294,6 +311,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DAB5A1882F05534700923390 /* LocationModule.swift in Sources */,
+				DAB5FD7B2F9B84C1007D0EDD /* DocumentScanner.mm in Sources */,
 				DACC1D5B2F33480300EBAA0E /* OrientationModule.swift in Sources */,
 				DAAFE8EA2F1BACF200F00D76 /* LocationService.swift in Sources */,
 				DAAFE8EC2F1BAD0500F00D76 /* LocationModule.m in Sources */,

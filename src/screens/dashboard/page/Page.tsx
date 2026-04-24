@@ -77,6 +77,7 @@ import { updateAppMenuList } from "../../../store/slices/auth/authSlice";
 import FastImage from "react-native-fast-image";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import DynamicTable from "./components/DynamicTable";
+import DocScan from "./components/DocScan";
 
 type PageRouteParams = { PageScreen: { item: any } };
 
@@ -1492,6 +1493,18 @@ const PageScreen = () => {
       if (item?.visible === "1") return null;
 
       let content = null;
+
+      // if(true){
+      // return content = ( <DocScan
+      //   label="📄 Scan Invoice"
+      //   onScanResult={(files) => {
+      //     console.log("BASE64 IMAGES:", files);
+
+      //     // example: send to API
+      //     // handleAttachment(files);
+      //   }}
+      //   /> )
+      // }
       //BoolInput
       if (item?.ctltype === "BOOL") {
         const rawVal = formValues[item?.field] ?? item?.text;
@@ -1609,7 +1622,7 @@ const PageScreen = () => {
                 isFromNew={isFromNew}
                 handleAttachment={handleAttachment}
                 errors={errors}
-              />
+               />
             )}
           </>
         );
