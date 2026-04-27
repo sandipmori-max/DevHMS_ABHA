@@ -64,6 +64,7 @@ import {
   Modal,
   Platform,
   useWindowDimensions,
+  ScrollView,
 } from "react-native";
 import TranslatedText from "./TranslatedText";
 import GreetingBottomSheet from "./GreetingBottomSheet";
@@ -1345,9 +1346,11 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       </View>
     );
   }
+// const scrollYY = useRef(new Animated.Value(0)).current;
 
   return (
-    <View
+    <ScrollView
+     showsVerticalScrollIndicator={false}
       style={{
         height: Dimensions.get("screen").height,
         flex: 1,
@@ -2515,7 +2518,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         message={aiMessage}
         onClose={() => setVisibleAI(false)}
       />
-    </View>
+    </ScrollView>
   );
 };
 

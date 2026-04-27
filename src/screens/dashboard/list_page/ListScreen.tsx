@@ -581,6 +581,7 @@ const ListScreen = () => {
     console.log(
       "parsedConfig++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++",
       parsedConfig,
+      pageName
     );
     if (!parsedConfig) {
       return;

@@ -5,7 +5,6 @@ import {
   StatusBar,
   Animated,
   Easing,
-  Text,
   useWindowDimensions,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
@@ -19,11 +18,14 @@ import { firstLetterUpperCase } from "../../utils/helpers";
 
 const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.6)).current;
-  const textTranslateY = useRef(new Animated.Value(30)).current;
+  const scaleAnim = useRef(new Animated.Value(0.7)).current;
+  const textTranslateY = useRef(new Animated.Value(40)).current;
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
-  const { height, width } = useWindowDimensions();  
+  const greetingOpacity = useRef(new Animated.Value(0)).current;
+
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
+
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
   const { user } = useAppSelector((state) => state.auth);
@@ -37,150 +39,177 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   }, []);
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 700,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 5,
-        tension: 90,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
+    const start = Date.now();
+    const MIN_SPLASH = 1800;
+
+    Animated.sequence([
+      // 🔥 Logo entry
       Animated.parallel([
-        Animated.timing(textTranslateY, {
-          toValue: 0,
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 600,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          friction: 4,
+          tension: 8,
+          useNativeDriver: true,
+        }),
+      ]),
+
+      Animated.delay(100),
+
+      // 🔥 Greeting animation
+      Animated.parallel([
+        Animated.timing(greetingOpacity, {
+          toValue: 1,
           duration: 500,
           useNativeDriver: true,
         }),
-        Animated.timing(subtitleOpacity, {
-          toValue: 1,
-          duration: 700,
-          delay: 200,
+        Animated.timing(textTranslateY, {
+          toValue: 0,
+          duration: 500,
+          easing: Easing.out(Easing.exp),
           useNativeDriver: true,
         }),
-      ]).start();
+      ]),
+
+      // 🔥 Subtitle fade
+      Animated.timing(subtitleOpacity, {
+        toValue: 1,
+        duration: 600,
+        easing: Easing.ease,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      const elapsed = Date.now() - start;
+
+      if (elapsed >= MIN_SPLASH) {
+        onFinish();
+      } else {
+        setTimeout(onFinish, MIN_SPLASH - elapsed);
+      }
     });
-
-    const timer = setTimeout(() => {
-      onFinish();
-    }, 2500);
-
-    return () => clearTimeout(timer);
   }, []);
 
+  const gradientColors =
+    theme === "dark" ? ["#000000", "#1a1a1a"] : ["#4c669f", "#3b5998", "#192f6a"]
+
   return (
-    <LinearGradient
-      colors={
-        theme === "dark"
-          ? ["#000000", "#1a1a1a"]
-          : ["#4c669f", "#3b5998", "#192f6a"]
-      }
-      style={styles.container}
-    >
+    <LinearGradient colors={gradientColors} style={styles.container}>
       <StatusBar hidden />
 
       {isLandscape ? (
-        <>
-          <View style={{ flexDirection: "row" }}>
-            <View style={{ width: "50%",
-              justifyContent:'center',
-              alignContent:'center',
-              alignItems:'center'
-             }}>
-              <Animated.View
-                style={[
-                  styles.logoWrapper,
-                  {
-                    opacity: fadeAnim,
-                    transform: [{ scale: scaleAnim }],
-                  },
-                ]}
-              >
-                <Image
-                  source={user?.companyLogo || ERP_ICON.APP_LOGO}
-                  style={[styles.logo, {
-                    height: 80,
-                    width: 80
-                  }]}
-                  resizeMode="contain"
-                />
-              </Animated.View>
+        <View style={{ flexDirection: "row", flex: 1 }}>
+          {/* LEFT SIDE */}
+          <View
+            style={{
+              width: "50%",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Animated.View
+              style={[
+                styles.logoWrapper,
+                {
+                  opacity: fadeAnim,
+                  transform: [{ scale: scaleAnim }],
+                  shadowColor: "#fff",
+                  shadowOpacity: 0.3,
+                  shadowRadius: 20,
+                  elevation: 10,
+                },
+              ]}
+            >
+              <Image
+                source={user?.companyLogo || ERP_ICON.APP_LOGO}
+                style={{ height: 90, width: 90 }}
+                resizeMode="contain"
+              />
+            </Animated.View>
 
-              {user?.name && (
-                <Animated.Text
-                  style={[
-                    styles.helloTitle,
-                    {
-                      transform: [{ translateY: textTranslateY }],
-                      color: "#fff",
-                    },
-                  ]}
-                >
-                  {greeting}, {firstLetterUpperCase(user?.name)}
-                </Animated.Text>
-              )}
-            </View>
-
-            <View style={{ width: "50%",   
-              alignContent:'center',
-              alignItems:'center' }}>
-              {/* 🔹 Company Name */}
+            {user?.name && (
               <Animated.Text
                 style={[
-                  styles.title,
+                  styles.helloTitle,
                   {
+                    opacity: greetingOpacity,
                     transform: [{ translateY: textTranslateY }],
                     color: "#fff",
                   },
                 ]}
               >
-                {user?.companyName
-                  ? `Welcome to\n${user.companyName}`
-                  : t("text.text53")}
+                {greeting}, {firstLetterUpperCase(user?.name)}
               </Animated.Text>
-
-              {/* 🔹 Subtitle */}
-              <Animated.Text
-                style={[
-                  styles.subtitle,
-                  {
-                    opacity: subtitleOpacity,
-                    color: "#ddd",
-                  },
-                ]}
-              >
-                {t("text.text54")}
-              </Animated.Text>
-
-              {/* 🔹 Powered By */}
-              <Animated.Text
-                style={[
-                  styles.poweredBy,
-                  {
-                    opacity: subtitleOpacity,
-                    color: "#aaa",
-                  },
-                ]}
-              >
-                Powered by - DevERP Solutions Pvt. Ltd.
-              </Animated.Text>
-            </View>
+            )}
           </View>
-        </>
+
+          {/* RIGHT SIDE */}
+          <View
+            style={{
+              width: "50%",
+              justifyContent: "center",
+              alignItems: "center",
+              paddingHorizontal: 20,
+            }}
+          >
+            <Animated.Text
+              style={[
+                styles.title,
+                {
+                  transform: [{ translateY: textTranslateY }],
+                  color: "#fff",
+                  textAlign: "center",
+                },
+              ]}
+            >
+              {user?.companyName
+                ? `Welcome to\n${user.companyName}`
+                : t("text.text53")}
+            </Animated.Text>
+
+            <Animated.Text
+              style={[
+                styles.subtitle,
+                {
+                  opacity: subtitleOpacity,
+                  color: "#ddd",
+                  textAlign: "center",
+                },
+              ]}
+            >
+              {t("text.text54")}
+            </Animated.Text>
+
+            <Animated.Text
+              style={[
+                styles.poweredBy,
+                {
+                  opacity: subtitleOpacity,
+                  color: "#aaa",
+                },
+              ]}
+            >
+              Powered by - DevERP Solutions Pvt. Ltd.
+            </Animated.Text>
+          </View>
+        </View>
       ) : (
         <>
-          {/* 🔹 Logo */}
+          {/* LOGO */}
           <Animated.View
             style={[
               styles.logoWrapper,
               {
                 opacity: fadeAnim,
                 transform: [{ scale: scaleAnim }],
+                shadowColor: "#fff",
+                shadowOpacity: 0.3,
+                shadowRadius: 20,
+                elevation: 10,
               },
             ]}
           >
@@ -191,12 +220,13 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
             />
           </Animated.View>
 
-          {/* 🔹 Greeting */}
+          {/* GREETING */}
           {user?.name && (
             <Animated.Text
               style={[
                 styles.helloTitle,
                 {
+                  opacity: greetingOpacity,
                   transform: [{ translateY: textTranslateY }],
                   color: "#fff",
                 },
@@ -206,13 +236,14 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
             </Animated.Text>
           )}
 
-          {/* 🔹 Company Name */}
+          {/* TITLE */}
           <Animated.Text
             style={[
               styles.title,
               {
                 transform: [{ translateY: textTranslateY }],
                 color: "#fff",
+                textAlign: "center",
               },
             ]}
           >
@@ -221,20 +252,21 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
               : t("text.text53")}
           </Animated.Text>
 
-          {/* 🔹 Subtitle */}
+          {/* SUBTITLE */}
           <Animated.Text
             style={[
               styles.subtitle,
               {
                 opacity: subtitleOpacity,
                 color: "#ddd",
+                textAlign: "center",
               },
             ]}
           >
             {t("text.text54")}
           </Animated.Text>
 
-          {/* 🔹 Powered By */}
+          {/* FOOTER */}
           <Animated.Text
             style={[
               styles.poweredBy,

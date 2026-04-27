@@ -454,7 +454,7 @@
 
 // export default CustomDrawerContent;
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -596,14 +596,41 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
     }
   };
 
+  const getGreetingMeta = () => {
+    const hour = new Date().getHours();
+
+    if (hour < 12) {
+      return {
+        text: "Good Morning",
+        icon: "wb-sunny",
+        color: "#FFA726",
+      };
+    }
+
+    if (hour < 17) {
+      return {
+        text: "Good Afternoon",
+        icon: "light-mode",
+        color: "#29B6F6",
+      };
+    }
+
+    return {
+      text: "Good Evening",
+      icon: "nights-stay",
+      color: "#9575CD",
+    };
+  };
+
+  const greetingMeta = useMemo(() => getGreetingMeta(), []);
+
   return (
     <DrawerContentScrollView
       showsVerticalScrollIndicator={false}
       {...props}
       contentContainerStyle={{
         flexGrow: 1,
-        backgroundColor:
-          theme === "dark" ? 'black' : "white",
+        backgroundColor: theme === "dark" ? "black" : "white",
       }}
     >
       {/* ================= HEADER ================= */}
@@ -743,6 +770,43 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
             },
           ]}
         >
+          <View
+            style={{
+              paddingHorizontal: 4,
+              backgroundColor: "rgba(255,255,255,0.08)",
+              marginBottom: 4,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                
+                paddingVertical: 10,
+                paddingHorizontal: 14,
+                borderRadius: 12,
+                alignSelf: "flex-start",
+              }}
+            >
+              <MaterialIcons
+                name={greetingMeta.icon}
+                size={22}
+                color={greetingMeta.color}
+                style={{ marginRight: 8 }}
+              />
+
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "600",
+                  letterSpacing: 0.3,
+                }}
+              >
+                {greetingMeta.text}
+              </Text>
+            </View>
+          </View>
+
           {appDrawerMenuList.length > 0 &&
             appDrawerMenuList.map((item, index) => {
               const isActive = currentRoute === item.name;
@@ -826,7 +890,13 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                         name={item.iconname.toLowerCase().trim()}
                         size={20}
                         color={
-                          theme === "dark" ?  isActive ? 'white' : "gray"  : isActive ? "#FFF" : "#000"
+                          theme === "dark"
+                            ? isActive
+                              ? "white"
+                              : "gray"
+                            : isActive
+                            ? "#FFF"
+                            : "#000"
                         }
                       />
                       <TranslatedText
@@ -835,7 +905,13 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                           isActive && styles.activeText,
                           {
                             color:
-                              theme === "dark" ?  isActive ? 'white' : "gray"  : isActive ? "#FFF" : "#000",
+                              theme === "dark"
+                                ? isActive
+                                  ? "white"
+                                  : "gray"
+                                : isActive
+                                ? "#FFF"
+                                : "#000",
                           },
                         ]}
                         numberOfLines={1}
@@ -881,7 +957,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
           style={[
             styles.logoutButton,
             {
-              borderColor: theme === 'dark' ? 'gray' : ERP_COLOR_CODE.ERP_APP_COLOR,
+              borderColor:
+                theme === "dark" ? "gray" : ERP_COLOR_CODE.ERP_APP_COLOR,
             },
           ]}
         >
