@@ -1,17 +1,14 @@
-package com.deverp;
+package com.deverp.docscanner;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.util.Base64;
 
 import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.*;
 import com.google.mlkit.vision.documentscanner.*;
 
-import java.io.*;
 import java.util.UUID;
 
 public class DocumentScannerModule extends ReactContextBaseJavaModule {
@@ -42,16 +39,25 @@ public class DocumentScannerModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void launchScanner(ReadableMap options, Callback cb) {
         Activity activity = getCurrentActivity();
-        if (activity == null) return;
+
+        if (activity == null) {
+            sendError("Activity is null");
+            return;
+        }
+
+        if (this.callback != null) {
+            sendError("Scanner already in progress");
+            return;
+        }
 
         this.callback = cb;
 
-        GmsDocumentScannerOptions scannerOptions =
+        GmsDocumentScannerOptions options1 =
                 new GmsDocumentScannerOptions.Builder()
-                        .setPageLimit(1) // ✅ single scan
+                        .setPageLimit(1)
                         .build();
 
-        GmsDocumentScanner scanner = GmsDocumentScanning.getClient(scannerOptions);
+        GmsDocumentScanner scanner = GmsDocumentScanning.getClient(options1);
 
         scanner.getStartScanIntent(activity)
                 .addOnSuccessListener(intent -> {
@@ -73,6 +79,12 @@ public class DocumentScannerModule extends ReactContextBaseJavaModule {
             WritableMap res = new WritableNativeMap();
             res.putBoolean("didCancel", true);
             callback.invoke(res);
+            callback = null;
+            return;
+        }
+
+        if (data == null) {
+            sendError("No data received");
             return;
         }
 
@@ -82,27 +94,29 @@ public class DocumentScannerModule extends ReactContextBaseJavaModule {
         WritableArray arr = new WritableNativeArray();
 
         if (result != null && result.getPages().size() > 0) {
-            Uri uri = result.getPages().get(0).getImageUri(); // single page
+            Uri uri = result.getPages().get(0).getImageUri();
 
             WritableMap img = new WritableNativeMap();
             img.putString("uri", uri.toString());
             img.putString("fileName", UUID.randomUUID() + ".jpg");
-            img.putInt("width", 0);
-            img.putInt("height", 0);
-            img.putInt("fileSize", 0);
 
             arr.pushMap(img);
         }
 
         WritableMap res = new WritableNativeMap();
         res.putArray("images", arr);
+
         callback.invoke(res);
+        callback = null;
     }
 
     private void sendError(String msg) {
+        if (callback == null) return;
+
         WritableMap err = new WritableNativeMap();
         err.putBoolean("error", true);
         err.putString("errorMessage", msg);
         callback.invoke(err);
+        callback = null;
     }
 }

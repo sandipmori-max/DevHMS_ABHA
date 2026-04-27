@@ -59,7 +59,7 @@ dependencies {
         implementation jscFlavor
     }
     implementation 'com.google.firebase:firebase-bom:33.6.0'
-    implementation 'com.google.mlkit:document-scanner:16.0.0-beta1'
+    implementation 'com.google.android.gms:play-services-mlkit-document-scanner:16.0.0'
     implementation "com.google.android.gms:play-services-location:21.3.0"
     implementation "com.squareup.okhttp3:okhttp:4.11.0"
  }

@@ -19,7 +19,10 @@ import {
 import { Formik } from "formik";
 
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getERPAppConfigMenuThunk, loginUserThunk } from "../../../store/slices/auth/thunk";
+import {
+  getERPAppConfigMenuThunk,
+  loginUserThunk,
+} from "../../../store/slices/auth/thunk";
 
 import { styles } from "./add_account_style";
 import { erpAddAccountValidationSchema } from "../../../utils/validations/add_accounts";
@@ -101,7 +104,10 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
 
   useEffect(() => {
     const fetchDeviceName = async () => {
-      const name = Platform.OS === 'ios' ? DeviceInfo.getModel() + " " + await DeviceInfo.getUniqueId() : await DeviceInfo.getDeviceName();
+      const name =
+        Platform.OS === "ios"
+          ? DeviceInfo.getModel() + " " + (await DeviceInfo.getUniqueId())
+          : await DeviceInfo.getDeviceName();
       setDeviceId(name);
       AsyncStorage.setItem("device", name);
     };
@@ -219,7 +225,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
       const accountExists = accounts?.some(
         (acc) =>
           acc?.user?.name === values?.user &&
-          acc?.user?.company_code === values?.company_code
+          acc?.user?.company_code === values?.company_code,
       );
       if (accountExists) {
         setAlertConfig({
@@ -330,11 +336,11 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
       onClose();
       setLoader(false);
       try {
-             dispatch(getERPAppConfigMenuThunk());
-           } catch (error) {
-            dispatch(updateAppMenuList([])); // Clear menu on error
-              console.log("Error fetching app config menu:", error);
-           }
+        dispatch(getERPAppConfigMenuThunk());
+      } catch (error) {
+        dispatch(updateAppMenuList([])); // Clear menu on error
+        console.log("Error fetching app config menu:", error);
+      }
 
       setTimeout(() => {
         dispatch(setReloadApp());
@@ -838,7 +844,6 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                             {/* Add Button */}
                             <Animated.View
                               style={[
-                              
                                 {
                                   opacity: buttonAnim,
                                   transform: [
@@ -868,7 +873,6 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                     borderColor: "white",
                                     borderWidth: 1,
                                   },
-                                   
                                 ]}
                                 onPress={() => handleSubmit()}
                                 onPressIn={onPressIn}
@@ -1390,28 +1394,29 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                     <Animated.View
                                       style={[
                                         {
-                                   
-                                        opacity: buttonAnim,
-                                        transform: [
-                                          {
-                                            translateY: buttonAnim.interpolate({
-                                              inputRange: [0, 1],
-                                              outputRange: [50, 0],
-                                            }),
-                                          },
-                                          { scale: pressAnim }, // 👈 press animation
-                                        ],
-                                      }]}
+                                          opacity: buttonAnim,
+                                          transform: [
+                                            {
+                                              translateY:
+                                                buttonAnim.interpolate({
+                                                  inputRange: [0, 1],
+                                                  outputRange: [50, 0],
+                                                }),
+                                            },
+                                            { scale: pressAnim }, // 👈 press animation
+                                          ],
+                                        },
+                                      ]}
                                     >
                                       <TouchableOpacity
                                         style={[
                                           styles.addButton,
                                           {
-                                    backgroundColor:
-                                      theme === "dark"
-                                        ? "white"
-                                        : ERP_COLOR_CODE.ERP_APP_COLOR,
-                                  },
+                                            backgroundColor:
+                                              theme === "dark"
+                                                ? "white"
+                                                : ERP_COLOR_CODE.ERP_APP_COLOR,
+                                          },
                                           loader && styles.disabledButton,
                                           theme === "dark" && {
                                             backgroundColor: "white",

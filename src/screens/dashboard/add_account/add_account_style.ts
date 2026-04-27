@@ -1,17 +1,17 @@
-import { Platform, StyleSheet } from 'react-native';
-import { ERP_COLOR_CODE } from '../../../utils/constants';
+import { Platform, StyleSheet } from "react-native";
+import { ERP_COLOR_CODE } from "../../../utils/constants";
 
 export const styles = StyleSheet.create({
   container: {
-    marginTop: Platform.OS === 'ios' ? 40 : 10,
+    marginTop: Platform.OS === "ios" ? 40 : 10,
     flex: 1,
   },
   iconWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    position: 'absolute',
+    flexDirection: "row",
+    alignItems: "center",
+    position: "absolute",
     right: 10,
-    height: '100%',
+    height: "100%",
   },
   back: {
     width: 24,
@@ -19,15 +19,15 @@ export const styles = StyleSheet.create({
     tintColor: ERP_COLOR_CODE.ERP_BLACK,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 12,
-    borderBottomWidth: 1, 
-    marginTop: Platform?.OS === 'android' ? 12 : 45
+    borderBottomWidth: 1,
+    marginTop: Platform?.OS === "android" ? 12 : 45,
   },
   title: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     color: ERP_COLOR_CODE.ERP_BLACK,
   },
   closeButton: {
@@ -37,15 +37,15 @@ export const styles = StyleSheet.create({
   },
   closeButtonText: {
     color: ERP_COLOR_CODE.ERP_BLACK,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   formContainer: {
     padding: 20,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   subtitle: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 30,
     color: ERP_COLOR_CODE.ERP_555,
   },
@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
   inputLabel: {
     marginBottom: 6,
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: ERP_COLOR_CODE.ERP_444,
   },
 
@@ -65,15 +65,15 @@ export const styles = StyleSheet.create({
     marginTop: 4,
   },
   addButton: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignContent: "center",
     gap: 8,
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
     paddingVertical: 15,
     borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 10, 
+    alignItems: "center",
+    marginTop: 10,
   },
   disabledButton: {
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
@@ -82,23 +82,23 @@ export const styles = StyleSheet.create({
   addButtonText: {
     color: ERP_COLOR_CODE.ERP_WHITE,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   note: {
     fontSize: 14,
     color: ERP_COLOR_CODE.ERP_777,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 20,
     marginTop: 20,
   },
   logo: {
     width: 100,
     height: 100,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   inputWithIcon: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
     borderRadius: 10,

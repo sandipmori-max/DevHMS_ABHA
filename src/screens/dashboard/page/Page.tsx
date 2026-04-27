@@ -1410,6 +1410,7 @@ const PageScreen = () => {
 
   const [allData, setAllData] = useState({});
 
+  console.log("RENDERING... ", controls, formValues);
   const renderItem = useCallback(
     ({
       item,
@@ -1519,6 +1520,23 @@ const PageScreen = () => {
             }}
           />
         );
+      } else if (item?.ctltype === "IMAGE" && item?.field === "challanimg") {
+        content = (
+          <DocScan
+            item={item}
+            label={item?.fieldtitle}
+            onScanResult={(files, val) => {
+              console.log("BASE64 IMAGES:", files);
+
+              // example: send to API
+              // handleAttachment(files);
+
+                      setFormValues((prev) => {
+              return { ...prev, [val]: files };
+            });
+            }}
+          />
+        );
       }
       //----PENDING----CustomMultiPicker
       else if (item?.field === "---") {
@@ -1622,7 +1640,7 @@ const PageScreen = () => {
                 isFromNew={isFromNew}
                 handleAttachment={handleAttachment}
                 errors={errors}
-               />
+              />
             )}
           </>
         );
@@ -1824,7 +1842,6 @@ const PageScreen = () => {
   }
 
   const groupControls = (ctr) => {
-    
     const rows = [];
 
     if (ctr.length < 10) {
@@ -1833,7 +1850,7 @@ const PageScreen = () => {
 
     const isHidden = (item) => item?.visible === "1";
 
-     const isLongTitle = (item) => {
+    const isLongTitle = (item) => {
       const text = item?.fieldtitle ? String(item.fieldtitle) : "";
       const dtext = item?.tooltip ? String(item.tooltip) : "";
 
@@ -1865,9 +1882,9 @@ const PageScreen = () => {
       return (
         (item?.ddl && item?.ddl !== "" && item?.ajax === 0) ||
         (item?.ddl && item?.ddl !== "" && item?.ajax === 1) ||
-        (item?.disabled === "1" && item.fieldtitle.length < 20)||
+        (item?.disabled === "1" && item.fieldtitle.length < 20) ||
         item?.ctltype === "DATE" ||
-        item?.ctltype === "BOOL" 
+        item?.ctltype === "BOOL"
       );
     };
 
@@ -1877,7 +1894,11 @@ const PageScreen = () => {
       if (isHidden(current)) continue;
 
       // ✅ FORCE SINGLE RULE (highest priority)
-      if (isForceSingle(current) || isLongText(current) || isLongTitle(current)) {
+      if (
+        isForceSingle(current) ||
+        isLongText(current) ||
+        isLongTitle(current)
+      ) {
         rows.push([current]);
         continue;
       }
@@ -2074,7 +2095,6 @@ const PageScreen = () => {
                   // }}
                 />
               )}
-
             </View>
 
             <CustomAlert
