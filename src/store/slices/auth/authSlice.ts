@@ -75,6 +75,14 @@ const authSlice = createSlice({
       state.appDrawerMenuList = [];
 
     },
+    clearDashboardFilters: (state) => {
+  state.dashboardFromDate = "";
+  state.dashboardToDate = "";
+  state.dashboardBranchId = "";
+  state.dashboardBranch = "";
+  state.dashboardType = "";
+  state.dashboardTypeId = "";
+},
     updateAttendanceState: (state, action: PayloadAction<boolean>) => {
       state.attendanceDone = action.payload;
     },
@@ -145,7 +153,6 @@ const authSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(checkAuthStateThunk.fulfilled, (state, action) => {
-        state.isLoading = false;
         if (action.payload) {
           if (action?.payload?.accounts) {
             state.accounts = action?.payload?.accounts;
@@ -161,6 +168,7 @@ const authSlice = createSlice({
           state.isAuthenticated = !!action?.payload?.user;
         }
         state.error = null;
+        // state.isLoading = false;
       })
       .addCase(checkAuthStateThunk.rejected, (state, action) => {
         state.isLoading = false;
@@ -460,6 +468,7 @@ export const {
   updateSelectedFromDateState,
   updateSelectedToDateState,
   updateSelectedBranchIdsState,
-  updateAppMenuList
+  updateAppMenuList,
+  clearDashboardFilters
 } = authSlice.actions;
 export default authSlice.reducer;

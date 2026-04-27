@@ -796,35 +796,41 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     },
     [dispatch],
   );
+  useFocusEffect(
+  useCallback(() => {
+    // ✅ runs ONLY when screen comes into focus
 
-  
-  useEffect(() => {
     dispatch(
       getERPDashboardThunk({
         branch: auth?.dashboardBranchId,
         type:
-         auth?.dashboardTypeId && auth?.dashboardTypeId === "all" ||
+          auth?.dashboardTypeId === "all" ||
           auth?.dashboardTypeId === "ALL"
             ? ""
             : auth?.dashboardTypeId || "",
         fd: auth?.dashboardFromDate || fromDate,
-        td: auth?.dashboardToDate|| toDate,
-      }),
+        td: auth?.dashboardToDate || toDate,
+      })
     );
 
     const timer = setTimeout(() => {
       dispatch(setDashboardLoading(false));
     }, 6000);
-    return () => clearTimeout(timer);
+
+    return () => {
+      // cleanup when screen unfocus
+      clearTimeout(timer);
+    };
   }, [
-    auth.dashboardBranch,
-    auth.dashboardType,
-    auth.dashboardFromDate,
-    auth.dashboardToDate,
+    auth?.dashboardBranchId,
+    auth?.dashboardTypeId,
+    auth?.dashboardFromDate,
+    auth?.dashboardToDate,
     fromDate,
     toDate,
     reLoading,
-  ]);
+  ])
+);
 
   const fetchData = useCallback(
     async (normalizedControls, fromDate, toDate) => {
@@ -849,11 +855,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
         const data = res?.data ?? [];
         const filtered = data.filter((item) => item.value !== -1);
-
         console.log("filtered ++++++ +++ ++ + + ++ + + + + + +  fetchData +++++++ ", filtered);
-
-        dispatch(setActiveDashboardBranchId(filtered[0]?.value?.toString() || ""));
-        dispatch(setActiveDashboardBranch(filtered[0]?.name || ""));
 
         const res1 = await dispatch(
           getDDLThunk({
@@ -863,9 +865,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         ).unwrap();
 
         const data1 = res1?.data ?? [];
-
-        dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString() || ""));
-        dispatch(setActiveDashboardType(data1[0]?.name || ""));
+        
 
         dispatch(
           getERPDashboardThunk({
@@ -875,6 +875,12 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
             td: toDate,
           }),
         );
+
+        dispatch(setActiveDashboardBranchId(filtered[0]?.value?.toString() || ""));
+        dispatch(setActiveDashboardBranch(filtered[0]?.name || ""));
+        dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString() || ""));
+        dispatch(setActiveDashboardType(data1[0]?.name || ""));
+
       } catch (error) {
         console.log("DDL Error:", error);
       }
@@ -1033,80 +1039,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
     return () => clearInterval(intervalRef.current);
   }, [attendance?.intime]);
-
-  const { execute: validateCompanyCode } = useApi();
-
-  useEffect(() => {
-    const handleTokenExpire = async () => {
-      if (
-        error === "Token Expire" ||
-        error === "Invalid Token" ||
-        error ==
-          "Credential not match or User is not allowed for mobile application"
-      ) {
-        const db = await getDBConnection();
-        await createAccountsTable(db);
-
-        const activeUser = await getActiveAccount(db);
-
-        if (activeUser) {
-          const newActiveUser = await logoutUser(db, activeUser?.id);
-
-          if (newActiveUser) {
-            if (isTokenValid(newActiveUser?.user?.tokenValidTill)) {
-              DevERPService.setToken(newActiveUser?.user?.token || "");
-
-              await AsyncStorage.setItem(
-                "erp_token",
-                newActiveUser?.user?.token || "",
-              );
-              await AsyncStorage.setItem(
-                "auth_token",
-                newActiveUser?.user?.token || "",
-              );
-              await AsyncStorage.setItem(
-                "erp_token_valid_till",
-                newActiveUser?.user?.tokenValidTill || "",
-              );
-
-              const validation = await validateCompanyCode(() =>
-                DevERPService.validateCompanyCode(
-                  newActiveUser?.user?.company_code,
-                ),
-              );
-
-              if (!validation?.isValid) return;
-
-              dispatch(switchAccountThunk(newActiveUser?.id));
-            } else {
-              const validation = await validateCompanyCode(() =>
-                DevERPService.validateCompanyCode(
-                  newActiveUser?.user?.company_code,
-                ),
-              );
-
-              if (!validation?.isValid) return;
-
-              dispatch(switchAccountThunk(newActiveUser?.id));
-            }
-          } else {
-            dispatch(setDashboard([]));
-            dispatch(setEmptyMenu([]));
-            dispatch(resetAjaxState());
-            dispatch(resetAttendanceState());
-            dispatch(clearAuthState());
-            dispatch(resetDropdownState());
-            dispatch(resetSyncLocationState());
-            dispatch(resetAttendanceState());
-            setERPAppColor("#251d50");
-            dispatch(logoutUserThunk());
-          }
-        }
-      }
-    };
-
-    handleTokenExpire();
-  }, [error]);
 
   if (isDashboardLoading) return <FullViewLoader isShowTop={false} />;
   if (error) {

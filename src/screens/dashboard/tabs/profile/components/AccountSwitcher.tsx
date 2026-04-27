@@ -35,12 +35,14 @@ import FastImage from "react-native-fast-image";
 import { ERP_COLOR_CODE } from "../../../../../utils/constants";
 import {
   clearAuthState,
+  clearDashboardFilters,
   setActiveDashboardBranch,
   setActiveDashboardBranchId,
   setActiveDashboardType,
   setActiveDashboardTypeId,
   setDashboard,
   setEmptyMenu,
+  setLoading,
   updateAppMenuList,
   updateSelectedFromDateState,
   updateSelectedToDateState,
@@ -54,6 +56,8 @@ import { setReloadApp } from "../../../../../store/slices/reloadApp/reloadAppSli
 import ImageBottomSheetModal from "../../../../../components/bottomsheet/ImageBottomSheetModal";
 import { useTranslation } from "react-i18next";
 import TranslatedText from "../../home/TranslatedText";
+import { batch } from "react-redux";
+
 
 interface AccountSwitcherProps {
   visible: boolean;
@@ -170,6 +174,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
         console.log("Error fetching app config menu:", error);
       }
       setTimeout(() => {
+        dispatch(setLoading(false));
         dispatch(setReloadApp());
       }, 1000);
     }
@@ -253,13 +258,9 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
           onPressIn={onPressItemIn}
           onPressOut={onPressItemOut}
           onPress={async () => {
+            dispatch(setLoading(true));
             // setTimeout(async ()=>{
-            dispatch(updateSelectedFromDateState(""));
-            dispatch(updateSelectedToDateState(""));
-            dispatch(setActiveDashboardBranchId(""));
-            dispatch(setActiveDashboardBranch(""));
-            dispatch(setActiveDashboardType(""));
-            dispatch(setActiveDashboardTypeId(""));
+            dispatch(clearDashboardFilters());
             dispatch(setDashboard([]));
             dispatch(setEmptyMenu([]));
             dispatch(resetAjaxState());
@@ -289,6 +290,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
               );
               if (!validation?.isValid) return;
               handleSwitchAccount(item?.id);
+
             }
             // },600)
           }}

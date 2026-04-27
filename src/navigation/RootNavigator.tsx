@@ -30,16 +30,12 @@ import { request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import { getLastPunchInThunk } from "../store/slices/attendance/thunk";
 import { setReloadApp } from "../store/slices/reloadApp/reloadAppSlice";
 import {
-  setActiveDashboardBranch,
-  setActiveDashboardBranchId,
-  setActiveDashboardType,
-  setActiveDashboardTypeId,
+  setLoading,
   updateAppMenuList,
   updateAttendanceState,
   updatePinVerifyLoadedState,
 } from "../store/slices/auth/authSlice";
 import { useTranslation } from "react-i18next";
-import { useFocusEffect } from "@react-navigation/native";
 
 // ------------------------- Location Permission Helper -------------------------
 export async function requestLocationPermissions(): Promise<
@@ -100,7 +96,7 @@ const RootNavigator = () => {
   const langCode = useAppSelector((state) => state.theme.langcode);
 
   const [alertVisible, setAlertVisible] = useState(false);
-  const [openSettings, setOpenSettings] = useState(false); 
+  const [openSettings, setOpenSettings] = useState(false);
 
   const [backgroundDeniedModal, setBackgroundDeniedModal] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
@@ -145,16 +141,6 @@ const RootNavigator = () => {
     }
   };
 
-  //  useFocusEffect(
-  //       useCallback(() => {
-  //         dispatch(setActiveDashboardBranchId(""));
-  //         dispatch(setActiveDashboardBranch(""));
-  //         dispatch(setActiveDashboardType(""));
-  //         dispatch(setActiveDashboardTypeId(""));
-          
-  //         return () => {};
-  //       }, []),
-  //     );
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -192,13 +178,14 @@ const RootNavigator = () => {
   }, [isAuthenticated, reLoading]);
   const app_id = user?.app_id;
 
- 
-
   useEffect(() => {
     const fetchDeviceName = async () => {
-      const name =  Platform.OS === 'ios' ? DeviceInfo.getModel() + " " + await DeviceInfo.getUniqueId() : await DeviceInfo.getDeviceName();
+      const name =
+        Platform.OS === "ios"
+          ? DeviceInfo.getModel() + " " + (await DeviceInfo.getUniqueId())
+          : await DeviceInfo.getDeviceName();
 
-      console.log("name", name)
+      console.log("name", name);
       let appid = await AsyncStorage.getItem("appid");
       if (!appid) {
         appid = app_id;
@@ -210,7 +197,20 @@ const RootNavigator = () => {
       DevERPService.setAppId(appid || "");
       DevERPService.setDevice(name);
 
-      dispatch(checkAuthStateThunk());
+      try {
+        dispatch(setLoading(true));
+
+        await dispatch(checkAuthStateThunk()).unwrap();
+      } catch (err) {
+        if (err === "token_expired") {
+          console.log("Token expired during initialization. Logging out.");
+          // 👉 logout logic here
+        } else {
+          console.log("Other error:", err);
+        }
+      } finally {
+        dispatch(setLoading(false));
+      }
     };
     fetchDeviceName();
   }, [dispatch]);
@@ -257,16 +257,35 @@ const RootNavigator = () => {
 
   // ------------------------- Device Setup -------------------------
   const init = async () => {
-    const name = Platform.OS === 'ios' ? DeviceInfo.getModel() + " " + await DeviceInfo.getUniqueId()  : await DeviceInfo.getDeviceName();
+    const name =
+      Platform.OS === "ios"
+        ? DeviceInfo.getModel() + " " + (await DeviceInfo.getUniqueId())
+        : await DeviceInfo.getDeviceName();
     await AsyncStorage.setItem("device", name);
     await DevERPService.initialize();
-    await dispatch(checkAuthStateThunk());
-     try {
-       dispatch(getERPAppConfigMenuThunk());
-     } catch (error) {
-      dispatch(updateAppMenuList([])); // Clear menu on error
+    try {
+      dispatch(setLoading(true));
+
+      await dispatch(checkAuthStateThunk()).unwrap();
+      if (isAuthenticated) {
+      try {
+        dispatch(getERPAppConfigMenuThunk());
+      } catch (error) {
+        dispatch(updateAppMenuList([]));
         console.log("Error fetching app config menu:", error);
-     }
+      }
+    }
+    } catch (err) {
+      if (err === "token_expired") {
+        console.log("Token expired during initialization. Logging out.");
+        // 👉 logout logic here
+      } else {
+        console.log("Other error:", err);
+      }
+    } finally {
+      dispatch(setLoading(false));
+    }
+    
   };
 
   // ------------------------- Check Location -------------------------
@@ -391,7 +410,7 @@ const RootNavigator = () => {
       return () => clearTimeout(timer);
     }
   }, [isAuthenticated, reLoading]);
-   // ------------------------- Render -------------------------
+  // ------------------------- Render -------------------------
   if (isLoading) return <FullViewLoader />;
 
   return (

@@ -161,9 +161,11 @@ class DevERPService {
     );
 
     if (String(response?.data.success) !== "1")
-      throw new Error(
-        response?.data?.message || "Please check your internet connection",
-      );
+    {
+      return 'token_expired';
+      // throw new Error(response?.data?.message || "Failed to get auth token");
+    }
+    
 
     this.token = response?.data?.token || "";
     this.tokenValidTill = response?.data?.validTill || "";

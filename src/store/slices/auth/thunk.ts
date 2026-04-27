@@ -11,13 +11,13 @@ import {
 } from "../../../utils/sqlite";
 import { Account, User } from "./type";
 import { DevERPService } from "../../../services/api";
-
 export const checkAuthStateThunk = createAsyncThunk(
   "auth/checkAuthState",
   async (_, { rejectWithValue }) => {
     try {
       const db = await getDBConnection();
       await createAccountsTable(db);
+
       const accounts = await getAccounts(db);
       const activeAccount = await getActiveAccount(db);
 
@@ -36,8 +36,13 @@ export const checkAuthStateThunk = createAsyncThunk(
         }
       }
 
-      // token invalid/expired → refresh
-      await DevERPService.getAuth();
+      // 🔄 Token expired → try refresh
+      try {
+        await DevERPService.getAuth();
+      } catch (err: any) {
+        // 👇 THIS is where you detect expiry / failure
+        return rejectWithValue("token_expired");
+      }
 
       const updatedAccounts = await getAccounts(db);
       const updatedActiveAccount = await getActiveAccount(db);
@@ -47,10 +52,11 @@ export const checkAuthStateThunk = createAsyncThunk(
         activeAccountId: updatedActiveAccount?.id || null,
         user: updatedActiveAccount?.user || null,
       };
+
     } catch (error) {
       return rejectWithValue("Failed to check authentication state");
     }
-  },
+  }
 );
 
 export const loginUserThunk = createAsyncThunk(

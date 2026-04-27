@@ -46,8 +46,7 @@ const CustomPicker = ({
   const [selectedOption, setSelectedOption] = useState("");
   const theme = useAppSelector((state) => state?.theme.mode);
   const { user } = useAppSelector((state) => state?.auth);
-  console.log("ite+++++m", item?.title)
-
+ 
   const optionsCache = useRef<{ [key: string]: any[] }>({});
  
   // Bottom sheet animation

@@ -216,13 +216,12 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
     try {
       DevERPService.setDevice(deviceId);
       setLoader(true);
-      const userExists = accounts?.some(
-        (acc) => acc?.user?.name === values?.user,
+      const accountExists = accounts?.some(
+        (acc) =>
+          acc?.user?.name === values?.user &&
+          acc?.user?.company_code === values?.company_code
       );
-      const codeExists = accounts?.some(
-        (acc) => acc?.user?.company_code === values?.company_code,
-      );
-      if (userExists && codeExists) {
+      if (accountExists) {
         setAlertConfig({
           title: t("test5"),
           message: t("msg.msg1"),

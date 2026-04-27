@@ -27,17 +27,21 @@ const BoolInput = ({ value, onChange, label, isFromChild = false }: BoolInputPro
       ></TranslatedText>}
       <View style={{ 
         padding: 10,
-        marginVertical: 4,
+        marginVertical: 6,
         borderWidth: 0.4,
         borderRadius: 8,
         width:'98%',
         flexDirection: 'row', alignItems: 'center' }}>
         <View style={{flexDirection:'row', width:'40%', alignContent:'center', alignItems:'center'}}>
           <TouchableOpacity
-          style={[styles.radio, value && styles.radioSelected, ]}
+          style={[styles.radio, value && styles.radioSelected, value && {
+            borderColor :   ERP_COLOR_CODE.ERP_APP_COLOR  
+          }]}
           onPress={() => onChange(true)}
         >
-          {value && <View style={styles.radioInner} />}
+          {value && <View style={[styles.radioInner, {
+            backgroundColor:   ERP_COLOR_CODE.ERP_APP_COLOR  
+          }]} />}
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => onChange(true)}
@@ -60,10 +64,14 @@ const BoolInput = ({ value, onChange, label, isFromChild = false }: BoolInputPro
           marginLeft: 18,
           flexDirection:'row' , width:'40%', alignContent:'center', alignItems:'center'}}>
           <TouchableOpacity
-          style={[styles.radio, !value && styles.radioSelected]}
+          style={[styles.radio, !value && styles.radioSelected, !value && {
+            borderColor :   ERP_COLOR_CODE.ERP_APP_COLOR  
+          }]}
           onPress={() => onChange(false)}
         >
-          {!value && <View style={styles.radioInner} />}
+          {!value && <View style={[styles.radioInner, {
+            backgroundColor:   ERP_COLOR_CODE.ERP_APP_COLOR  
+          }]} />}
         </TouchableOpacity>
          <TouchableOpacity
           onPress={() => onChange(false)}
