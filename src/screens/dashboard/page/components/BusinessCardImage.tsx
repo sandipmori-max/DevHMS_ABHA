@@ -12,6 +12,7 @@ import {
   TouchableWithoutFeedback,
   Alert,
   useWindowDimensions,
+  NativeModules
 } from "react-native";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import TextRecognition from "@react-native-ml-kit/text-recognition";
@@ -24,6 +25,27 @@ import {
 } from "react-native-permissions";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import useTranslations from "../../../../hooks/useTranslations";
+import { ERP_COLOR_CODE } from "../../../../utils/constants";
+
+
+const { DocumentScanner } = NativeModules;
+
+const launchScannerAsync = (options: any) => {
+  return new Promise<any>((resolve, reject) => {
+    if (!DocumentScanner) {
+      reject(new Error("DocumentScanner module not linked"));
+      return;
+    }
+
+    try {
+      DocumentScanner.launchScanner(options, (result: any) => {
+        resolve(result);
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 
 const BusinessCardView = ({
   setValue,
@@ -409,33 +431,88 @@ const { height, width } = useWindowDimensions();
     return result;
   };
 
+   const handleScan = async () => {
+      try { 
+        const result = await launchScannerAsync({
+          quality: 0.8,
+          includeExif: true,
+          includeBase64: true,
+          includeLocationExif: false,
+        });
+  
+        if (result?.didCancel) {
+          return;
+        }
+  
+        if (result?.error) {
+          Alert.alert("Error", result?.errorMessage || "Scan failed");
+          return;
+        }
+  
+        if (result?.images?.length > 0) {
+          const processed = result.images.map((img: any) => ({
+            ...img,
+            base64: img.base64 || null,
+          }));
+   
+
+          setCacheBuster(Date.now());
+        setBase64(
+          `${item?.field}.jpeg; data:${processed[0]?.type};base64,${processed[0]?.base64}}`,
+        );
+        setImageUri(processed[0]?.uri);
+        } else {
+        }
+      } catch (error: any) {
+        Alert.alert("Error", error.message || "Something went wrong");
+      } finally {
+        setShowPicker(false);
+      }
+    };
+
   return (
     <ScrollView>
       <Text style={styles.title}>{t("title.title9")}</Text>
 
-      <View style={{ alignItems: "center", marginVertical: 12 }}>
-        <TouchableOpacity
-          onPress={() => setShowPicker(true)}
-          style={[
-            styles.imageThumb,
-            { justifyContent: "center", alignItems: "center" },
-          ]}
-        >
-          {loading ? (
-            <ActivityIndicator size="large" color="#007bff" />
-          ) : (
-            <Image
-              key={item.field}
-              source={{ uri: imageUri ? imageUri : getImageUri("small") }}
-              style={styles.imageThumb}
-              resizeMode="cover"
-            />
-          )}
-          <View style={styles.editIconContainer}>
-            <MaterialIcons name="edit" size={18} color="#000" />
-          </View>
-        </TouchableOpacity>
+      <View style={[styles.cardContainer,  ]}>
+  <TouchableOpacity
+    activeOpacity={0.85}
+    onPress={() => setShowPicker(true)}
+    style={styles.card}
+  >
+    {loading ? (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#007bff" />
       </View>
+    ) : (
+      <>
+        <Image
+          source={{ uri: imageUri ? imageUri : getImageUri("small") }}
+          style={styles.image}
+          resizeMode='contain'
+        />
+
+        {/* Overlay */}
+        {
+          !imageUri &&  <View style={styles.overlay}>
+          <MaterialIcons name="cloud-upload" size={26} color="#000" />
+          <Text style={styles.overlayText}>
+            {imageUri ? "Change Image" : "Upload Image"}
+          </Text>
+        </View>
+        }
+       
+      </>
+    )}
+
+    {/* Edit Icon */}
+    <View style={[styles.editIcon, {
+      backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+    }]}>
+      <MaterialIcons name="edit" size={16} color="#fff" />
+    </View>
+  </TouchableOpacity>
+</View>
 
       <Modal
       supportedOrientations={["portrait", "landscape"]}
@@ -460,11 +537,20 @@ const { height, width } = useWindowDimensions();
           </View>
 
           <View style={styles.optionRow}>
+             <TouchableOpacity
+              style={styles.optionCard}
+              onPress={handleScan}
+            >
+              <MaterialIcons name="document-scanner" size={40} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
+              <Text style={styles.optionText}>Doc scan</Text>
+            </TouchableOpacity>
+
+
             <TouchableOpacity
               style={styles.optionCard}
               onPress={pickFromCamera}
             >
-              <MaterialIcons name="photo-camera" size={40} color="#000" />
+              <MaterialIcons name="photo-camera" size={40} color={ERP_COLOR_CODE.ERP_APP_COLOR}/>
               <Text style={styles.optionText}>{t("title.title11")}</Text>
             </TouchableOpacity>
 
@@ -472,7 +558,7 @@ const { height, width } = useWindowDimensions();
               style={styles.optionCard}
               onPress={pickFromGallery}
             >
-              <MaterialIcons name="photo-library" size={40} color="#000" />
+              <MaterialIcons name="photo-library" size={40} color={ERP_COLOR_CODE.ERP_APP_COLOR}/>
               <Text style={styles.optionText}>{t("title.title12")}</Text>
             </TouchableOpacity>
           </View>
@@ -483,6 +569,55 @@ const { height, width } = useWindowDimensions();
 };
 
 const styles = StyleSheet.create({
+  cardContainer: {
+  marginVertical: 10,
+},
+
+card: {
+  width: "100%",
+  height: 180,
+  borderRadius: 8,
+  overflow: "hidden",
+  backgroundColor: "#f5f5f5",
+  borderWidth: 1,
+  borderStyle: "dashed",
+},
+
+image: {
+  width: "100%",
+  height: "100%",
+},
+
+overlay: {
+  position: "absolute",
+  bottom: 0,
+  width: "100%",
+  paddingVertical: 10,
+  backgroundColor: "rgba(198, 193, 193, 0.4)",
+  alignItems: "center",
+},
+
+overlayText: {
+  color: "#000",
+  fontSize: 13,
+  marginTop: 4,
+},
+
+editIcon: {
+  position: "absolute",
+  top: 8,
+  right: 8,
+  backgroundColor: "#fff",
+  borderRadius: 8,
+  padding: 6,
+  elevation: 3,
+},
+
+loaderContainer: {
+  flex: 1,
+  justifyContent: "center",
+  alignItems: "center",
+},
   title: { fontSize: 16, fontWeight: "bold", marginTop: 10 },
   imageThumb: {
     borderWidth: 1,
@@ -536,7 +671,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   optionCard: {
-    width: "42%",
+    width: "30%",
     height: 110,
     backgroundColor: "#f8f9fa",
     borderRadius: 16,

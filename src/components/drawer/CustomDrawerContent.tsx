@@ -473,7 +473,7 @@ import { useNavigation, useNavigationState } from "@react-navigation/native";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import FastImage from "react-native-fast-image";
 
-import { useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   firstLetterUpperCase,
   handleEmailPress,
@@ -489,6 +489,7 @@ import TranslatedText from "../../screens/dashboard/tabs/home/TranslatedText";
 import InAppReview from "react-native-in-app-review";
 import AboutBottomSheet from "./AboutBottomSheet";
 import { ERP_ICON } from "../../assets";
+import { getERPConfigDataThunk } from "../../store/slices/auth/thunk";
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   const navigation = useNavigation();
@@ -503,8 +504,9 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   const theme = useAppSelector((state) => state.theme.mode);
   const baseLink = useBaseLink();
   const { appDrawerMenuList } = useAppSelector((state) => state?.auth);
+  const dispatch = useAppDispatch();
 
-  /* ================= SAFE CURRENT ROUTE ================= */
+   /* ================= SAFE CURRENT ROUTE ================= */
   const currentRoute = useNavigationState((state) => {
     const route = state.routes[state.index];
     return route?.name;
@@ -623,6 +625,43 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   };
 
   const greetingMeta = useMemo(() => getGreetingMeta(), []);
+  const extractConfig = (raw: any) => {
+    try {
+      const parsedRaw = typeof raw === "string" ? JSON.parse(raw) : raw;
+
+      let msg = parsedRaw?.data?.message;
+      if (!msg) return null;
+
+      // remove outer quotes + last }
+      msg = msg.replace(/^"+|"+$/g, "").replace(/}$/, "");
+
+      const obj: any = {};
+
+      msg.split(",").forEach((pair) => {
+        let [key, value] = pair.split(":");
+
+        if (!key || !value) return;
+
+        // clean key
+        key = key.replace(/"/g, "").trim();
+
+        // clean value
+        value = value.trim();
+
+        // number detect
+        if (!isNaN(Number(value))) {
+          obj[key] = Number(value);
+        } else {
+          obj[key] = value.replace(/"/g, "").trim();
+        }
+      });
+
+      return obj;
+    } catch (e) {
+      console.log("Parse Failed:", e);
+      return null;
+    }
+  };
 
   return (
     <DrawerContentScrollView
@@ -829,7 +868,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                       isActive &&
                         theme === "dark" && { backgroundColor: "gray" },
                     ]}
-                    onPress={() => {
+                    onPress={async () => {
+                      console.log("Drawer Item Pressed:", item);
                       if (item?.link === "AboutUs") {
                         setShowAbout(true);
                         return;
@@ -856,24 +896,41 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
 
                       // isAppLink  + title  + url + isFromBusinessCard + isFromAlertCard
                       if (
-                        item?.isAppLink === "true" ||
-                        item?.isAppLink === true
+                        item?.isapplink === "true" ||
+                        item?.isapplink === true || item?.isapplink === "True"
                       ) {
+                         let raw = null;
+                                    try {
+                                      raw = await dispatch(
+                                        getERPConfigDataThunk
+                                        ({
+                                          page: item?.url,
+                                        }),
+                                      ).unwrap();
+                        
+                                      console.log("++++++++++++++++++++++++++++++++++++++raw", raw);
+                                    } catch (error) {
+                                      console.log("++++++++++++++++++++++++++++++++++++++error", error);
+                                    }
+                        
+                                    const parsedConfig = extractConfig(raw);
+                        
+
                         props?.navigation.navigate("List", {
                           item: {
                             title: item?.name,
                             name: item?.name,
-                            url: item?.url,
+                            url: item?.link,
                             isFromBusinessCard:
-                              item?.isFromBusinessCard || false,
-                            isFromAlertCard: item?.isFromAlertCard || false,
+                              item?.isfrombusinesscard === "True" ? true : false,
+                            isFromAlertCard: item?.isfromalertcard === "True" ? true : false,
                             id: "0",
                           },
+                          parsedConfig
                         });
                         props?.navigation.closeDrawer();
                         return;
                       }
-                      ////// -----------
 
                       if (item?.link === "home") {
                         props?.navigation.navigate("Home", { screen: "Home" });

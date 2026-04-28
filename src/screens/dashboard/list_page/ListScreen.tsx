@@ -114,6 +114,8 @@ const ListScreen = () => {
   const pageTitle = item?.title || item?.name || "List Data";
   const pageParamsName = item?.name || "List Data";
   const pageName = item?.url;
+
+  console.log("ListScreen params-----------", item);
   const isFromBusinessCard = item?.isFromBusinessCard || false;
   const isFromAlertCard = item?.isFromAlertCard || false;
 

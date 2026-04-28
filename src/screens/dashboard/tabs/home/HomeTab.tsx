@@ -1079,13 +1079,10 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                 theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
               padding: 12,
               width: width,
-              borderBottomRightRadius: 24,
-              borderBottomLeftRadius: 24,
-              borderColor: "white",
-              // width: "100%",
+              borderBottomRightRadius: 8,
+              borderBottomLeftRadius: 8,
               alignItems: "center",
               alignContent: "center",
-              marginBottom: 10,
             }}
           >
             {showFull && (

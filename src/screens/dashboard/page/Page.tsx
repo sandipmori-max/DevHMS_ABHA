@@ -1520,18 +1520,13 @@ const PageScreen = () => {
             }}
           />
         );
-      } else if (item?.ctltype === "IMAGE" && item?.field === "challanimg") {
+      } else if (item?.ctltype === "IMAGE" && item?.field === `doc_scan_${item?.field}`) {
         content = (
           <DocScan
             item={item}
             label={item?.fieldtitle}
             onScanResult={(files, val) => {
-              console.log("BASE64 IMAGES:", files);
-
-              // example: send to API
-              // handleAttachment(files);
-
-                      setFormValues((prev) => {
+              setFormValues((prev) => {
               return { ...prev, [val]: files };
             });
             }}

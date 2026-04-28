@@ -54,8 +54,6 @@ const PrivacyPolicyScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-    <View style={{height: 16, width: '100%', backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR, borderBottomLeftRadius: 12, borderBottomRightRadius: 12}}></View>
-      
       <WebView
         source={{ uri: finalUrl }}
         startInLoadingState={true}

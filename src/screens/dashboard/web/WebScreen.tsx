@@ -144,23 +144,8 @@ const WebScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar
-        backgroundColor={ERP_COLOR_CODE.ERP_APP_COLOR}
-        translucent={false}
-      />
-      <View
-        style={{
-           height: Platform.OS === 'ios' ?  16  : 6,
-          width: "100%",
-          backgroundColor:
-            theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-          borderBottomLeftRadius: 12,
-          borderBottomRightRadius: 12,
-        }}
-      ></View>
-
       {token ? (
-        <>
+        <View style={{flex: 1}}>
           <WebView
             ref={webviewRef}
             originWhitelist={["*"]}
@@ -238,7 +223,7 @@ const WebScreen = () => {
               const data = JSON.parse(event.nativeEvent.data);
             }}
           />
-        </>
+        </View>
       ) : (
         <FullViewLoader />
       )}
