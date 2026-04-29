@@ -329,7 +329,7 @@ export const getERPAppConfigMenuThunk = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await DevERPService.getAppMenu();
-      console.log("response------------------", response)
+      console.log("response------------------=========================================", response)
       if (response && typeof response === 'string') {
         return response;
       } else if (response && typeof response === 'object') {
@@ -338,7 +338,7 @@ export const getERPAppConfigMenuThunk = createAsyncThunk(
 
       return rejectWithValue('Invalid menu response format');
     } catch (error: any) {
-       console.log("response---error---------------", error)
+       console.log("response---error---------------=======================", error)
       return rejectWithValue(error?.message || 'Failed to get ERP menu');
     }
   },

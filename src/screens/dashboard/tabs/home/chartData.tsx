@@ -48,7 +48,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
         >
           {/* Pie Chart */}
           <TouchableOpacity
-            onPress={() => navigation.navigate("Web", { isFromChart: true })}
+            onPress={() => navigation.navigate("Privacy Policy", { isFromChart: true })}
             style={{
               width: "30%",
               alignItems: "center",

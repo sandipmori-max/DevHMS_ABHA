@@ -193,20 +193,20 @@ const CustomMultiplePicker = ({
       </TouchableOpacity>
 
       {/* MODAL */}
-      <Modal transparent visible={open} animationType="none">
+      <Modal transparent visible={open} supportedOrientations={["portrait", "landscape"]} animationType="none">
         <TouchableWithoutFeedback onPress={closeBottomSheet}>
           <View style={{ flex: 1, backgroundColor: "#00000066" }} />
         </TouchableWithoutFeedback>
 
         <Animated.View
-          style={{
+          style={[{
             position: "absolute",
             top: slideAnim,
             height: SCREEN_HEIGHT * 0.75,
             backgroundColor: theme === "dark" ? "black" : "white",
             width: isLandscape ? "50%" : "100%",
             padding: 16,
-          }}
+          }, isLandscape ? { left: "25%" } : null] }
         >
           {/* HEADER */}
           <View

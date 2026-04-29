@@ -15,6 +15,7 @@ import { SplashProps } from "./types";
 import { useAppSelector } from "../../store/hooks";
 import useTranslations from "../../hooks/useTranslations";
 import { firstLetterUpperCase } from "../../utils/helpers";
+import { ERP_COLOR_CODE } from "../../utils/constants";
 
 const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -28,7 +29,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
 
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
-  const { user } = useAppSelector((state) => state.auth);
+  const { user, appColorCode } = useAppSelector((state) => state.auth);
 
   // 🔥 Dynamic Greeting
   const greeting = useMemo(() => {
@@ -95,7 +96,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   }, []);
 
   const gradientColors =
-    theme === "dark" ? ["#000000", "#1a1a1a"] : ["#4c669f", "#3b5998", "#192f6a"]
+    theme ===  "dark" ? ["#000000", "#1a1a1a"] :  appColorCode ? [ERP_COLOR_CODE.ERP_APP_COLOR , "#4c669f", "#3b5998",]:  ["#4c669f", "#3b5998", "#192f6a"]
 
   return (
     <LinearGradient colors={gradientColors} style={styles.container}>
@@ -116,11 +117,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
                 styles.logoWrapper,
                 {
                   opacity: fadeAnim,
-                  transform: [{ scale: scaleAnim }],
-                  shadowColor: "#fff",
-                  shadowOpacity: 0.3,
-                  shadowRadius: 20,
-                  elevation: 10,
+                  transform: [{ scale: scaleAnim }], 
                 },
               ]}
             >
@@ -205,11 +202,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
               styles.logoWrapper,
               {
                 opacity: fadeAnim,
-                transform: [{ scale: scaleAnim }],
-                shadowColor: "#fff",
-                shadowOpacity: 0.3,
-                shadowRadius: 20,
-                elevation: 10,
+                transform: [{ scale: scaleAnim }], 
               },
             ]}
           >

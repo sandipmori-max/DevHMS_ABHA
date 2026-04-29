@@ -163,12 +163,12 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
     }
   }, [visible, slideAnim, buttonAnim, listAnim]);
 
-  const handleSwitchAccount = (accountId: string) => {
+  const handleSwitchAccount = async (accountId: string) => {
     if (accountId !== activeAccountId) {
-      dispatch(switchAccountThunk(accountId));
-      dispatch(getLastPunchInThunk());
+     await dispatch(switchAccountThunk(accountId));
+     await dispatch(getLastPunchInThunk());
       try {
-        dispatch(getERPAppConfigMenuThunk());
+       await dispatch(getERPAppConfigMenuThunk());
       } catch (error) {
         dispatch(updateAppMenuList([])); // Clear menu on error
         console.log("Error fetching app config menu:", error);

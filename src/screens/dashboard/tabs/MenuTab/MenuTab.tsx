@@ -542,7 +542,7 @@ const MenuTab = ({
           } else {
             const db = await getDBConnection();
             await increaseTapCount(db, item.id, user?.id);
-            navigation.navigate("Web", { item });
+           navigation.navigate("Privacy Policy", { item });
           }
         }}
       >
@@ -668,7 +668,7 @@ const MenuTab = ({
         }}
       ></View>
 
-      {!isHorizontal && list.length > 6 ? (
+      {!isHorizontal ? (
         <>
           <SectionList
             sections={sectionListData}

@@ -3,18 +3,13 @@ import { ERP_COLOR_CODE } from '../../../utils/constants';
 
 export const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: ERP_COLOR_CODE.ERP_WHITE || ERP_COLOR_CODE.ERP_WHITE,
-    marginTop: Platform.OS === 'android' ? 4 : 0,
+    backgroundColor: ERP_COLOR_CODE.ERP_WHITE ,
   },
   webview: {
-    flex: 1,
-    marginTop: 12,
-    backgroundColor: ERP_COLOR_CODE.ERP_WHITE || ERP_COLOR_CODE.ERP_WHITE,
+    backgroundColor: ERP_COLOR_CODE.ERP_WHITE ,
   },
   loadingContainer: {
-    flex: 1,
-    backgroundColor: ERP_COLOR_CODE.ERP_WHITE || ERP_COLOR_CODE.ERP_WHITE,
+    backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 32,

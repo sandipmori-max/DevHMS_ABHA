@@ -454,7 +454,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                       height: 100,
                       width: 140,
                       marginBottom: 12,
-                      backgroundColor: !imageExists ? "none" : "white",
+                      backgroundColor: "white",
                     }}
                   >
                     <FastImage
@@ -842,22 +842,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                             </View>
 
                             {/* Add Button */}
-                            <Animated.View
-                              style={[
-                                {
-                                  opacity: buttonAnim,
-                                  transform: [
-                                    {
-                                      translateY: buttonAnim.interpolate({
-                                        inputRange: [0, 1],
-                                        outputRange: [50, 0],
-                                      }),
-                                    },
-                                    { scale: pressAnim }, // 👈 press animation
-                                  ],
-                                },
-                              ]}
-                            >
+                           
                               <TouchableOpacity
                                 style={[
                                   styles.addButton,
@@ -899,14 +884,9 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                     ? t("account.adding")
                                     : t("account.add")}
                                 </Text>
-                              </TouchableOpacity>
-                            </Animated.View>
+                              </TouchableOpacity> 
 
-                            <View
-                              style={{
-                                height: 140,
-                              }}
-                            />
+                             
                           </>
                         );
                       }}
@@ -976,9 +956,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                 height: 100,
                                 width: 140,
                                 marginBottom: 12,
-                                // backgroundColor: !imageExists
-                                //   ? "none"
-                                //   : "white",
+                                backgroundColor
+                                  : "white",
                               }}
                             >
                               <FastImage
@@ -1391,23 +1370,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                     </View>
 
                                     {/* Add Button */}
-                                    <Animated.View
-                                      style={[
-                                        {
-                                          opacity: buttonAnim,
-                                          transform: [
-                                            {
-                                              translateY:
-                                                buttonAnim.interpolate({
-                                                  inputRange: [0, 1],
-                                                  outputRange: [50, 0],
-                                                }),
-                                            },
-                                            { scale: pressAnim }, // 👈 press animation
-                                          ],
-                                        },
-                                      ]}
-                                    >
+                                    
                                       <TouchableOpacity
                                         style={[
                                           styles.addButton,
@@ -1452,8 +1415,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                             : t("account.add")}
                                         </Text>
                                       </TouchableOpacity>
-                                    </Animated.View>
-
+ 
                                     {/* <Text style={styles.note}>
                                       {t("account.msg1")}
                                     </Text> */}
@@ -1462,7 +1424,6 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                               }}
                             </Formik>
                           </View>
-                          <View style={{ height: 150 }} />
                         </Animated.View>
                       )}
                     />

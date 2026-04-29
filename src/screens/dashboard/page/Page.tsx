@@ -1520,7 +1520,7 @@ const PageScreen = () => {
             }}
           />
         );
-      } else if (item?.ctltype === "IMAGE" && item?.field === `doc_scan_${item?.field}`) {
+      } else if (item?.ctltype === "IMAGE" && item?.field?.startsWith("doc_scan_")) {
         content = (
           <DocScan
             item={item}

@@ -1,4 +1,7 @@
-import { Platform, SafeAreaView, StatusBar, Text, useWindowDimensions, View } from "react-native";
+import { Platform, StatusBar,
+  SafeAreaView,
+  Text, useWindowDimensions, View, 
+  Dimensions} from "react-native";
 import React, {
   useEffect,
   useLayoutEffect,
@@ -102,13 +105,13 @@ const WebScreen = () => {
         >
           {isFromChart
             ? t("text.text52")
-            : item?.title || t("webScreen.details")}
+            : item?.name || t("webScreen.details")}
         </Text>
       ),
       headerBackTitle: "",
       headerRight: () => (
         <>
-          {isFromChart || item?.title === "Attendance Code" ? (
+          {isFromChart || item?.name === "Attendance Code" ? (
             <>
               <ERPIcon name={"refresh"} onPress={reloadWebView} />
             </>
@@ -131,22 +134,16 @@ const WebScreen = () => {
     return `${baseLink}${itemUrl}&token=${token}`;
   }, [baseLink, item?.url, token]);
 
-
-  console.log("targetUrl:----------------------", targetUrl, "url:--------------------------", url);
   
-  if ((!isFromChart && !targetUrl) || (isFromChart && !url)) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <FullViewLoader />
-      </SafeAreaView>
-    );
-  }
-
   return (
-    <SafeAreaView style={styles.container}>
+    <View  style={[
+      styles.container,
+    ]}>
       {token ? (
-        <View style={{flex: 1}}>
-          <WebView
+        <View style={{
+          backgroundColor: "green",
+          height: Dimensions.get("window").height - 22, marginTop: 22}}>
+          {/* <WebView
             ref={webviewRef}
             originWhitelist={["*"]}
             mixedContentMode="always"
@@ -194,22 +191,11 @@ const WebScreen = () => {
             }}
             onLoadStart={() => {
               webviewRef.current?.clearCache(true);
-              // webviewRef.current?.clearHistory();
               setIsReloading(true);
             }}
             onLoadEnd={() => {
               setIsReloading(false);
-              // const jsCode = `
-              //   (function() {
-              //     const div = document.getElementById('divPage');
-              //     if (div) {
-              //       div.style.display = 'none';
-              //     }
-              //   })();
-              //   true;
-              // `;
-              // webviewRef.current?.injectJavaScript(jsCode);
-              // setIsHidden(true)
+             
             }}
             injectedJavaScript={`
               (function() {
@@ -222,12 +208,12 @@ const WebScreen = () => {
             onMessage={(event) => {
               const data = JSON.parse(event.nativeEvent.data);
             }}
-          />
+          /> */}
         </View>
       ) : (
         <FullViewLoader />
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 
