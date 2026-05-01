@@ -269,9 +269,9 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
-    borderRadius: 8,
+    borderRadius: 4,
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 6,
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE
   },
@@ -284,7 +284,6 @@ export const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: ERP_COLOR_CODE.ERP_1A1A1A,
-    paddingVertical: 4,
   },
   clearButton: {
     padding: 4,
@@ -311,8 +310,8 @@ export const styles = StyleSheet.create({
   dateButton: {
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingVertical: 6,
+    borderRadius: 4,
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
     alignItems: 'center',

@@ -886,7 +886,11 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                 </Text>
                               </TouchableOpacity> 
 
-                             
+                              <View
+                              style={{
+                                height: 140,
+                              }}
+                            />
                           </>
                         );
                       }}
