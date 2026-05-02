@@ -87,9 +87,9 @@ export const styles = StyleSheet.create({
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     marginHorizontal: 16,
     marginVertical: 8,
-    borderRadius: 12,
+    borderRadius: 8,
     overflow: "hidden",
-    borderWidth: 1,
+    borderWidth: 0.6,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
   },
   sectionTitle: {

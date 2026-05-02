@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Modal, View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from "react-native";
+import { Modal, View, Text, StyleSheet, TouchableOpacity, useWindowDimensions, TouchableWithoutFeedback } from "react-native";
 import TypingDots from "./TypingDots";
+import { useAppSelector } from "../../../../store/hooks";
 
 const GreetingBottomSheet = ({
   visible,
@@ -10,6 +11,8 @@ const GreetingBottomSheet = ({
 }: any) => {
   const [displayText, setDisplayText] = useState("");
 const { height, width } = useWindowDimensions();  
+    const theme = useAppSelector(state => state?.theme.mode);
+
   const isLandscape = width > height;
   useEffect(() => {
     if (!visible) {
@@ -33,22 +36,33 @@ const { height, width } = useWindowDimensions();
 
   return (
     <Modal visible={visible} supportedOrientations={["portrait", "landscape"]} transparent animationType="slide">
+    
+     <TouchableWithoutFeedback onPress={() => onClose()}>
+            <View style={styles.overlay} />
+          </TouchableWithoutFeedback>
+    
       <View style={[styles.overlay,isLandscape && {
         alignContent:'center',
         alignItems:'center'
       }]}>
-        <View style={[styles.sheet, {
+        <View style={[styles.sheet,
+        theme === 'dark' && {
+          backgroundColor: '#000',
+          borderColor: 'white',
+          borderWidth: 0.4
+        },
+        {
           width: isLandscape ? '50%' : '100%'
         }]}>
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.aiRow}>
-              <Text style={styles.botIcon}>🤖</Text>
-              <Text style={styles.title}>{title}</Text>
+              <Text style={[styles.botIcon, theme === 'dark' && { color: 'white' }]}>🤖</Text>
+              <Text style={[styles.title, theme === 'dark' && { color: 'white' }]}>{title}</Text>
             </View>
 
             <TouchableOpacity onPress={onClose}>
-              <Text style={styles.close}>✕</Text>
+              <Text style={[styles.close, theme === 'dark' && { color: 'white' }]}>✕</Text>
             </TouchableOpacity>
           </View>
 

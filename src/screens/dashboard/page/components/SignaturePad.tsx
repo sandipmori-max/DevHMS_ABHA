@@ -82,8 +82,9 @@ const { height, width } = useWindowDimensions();
           width: "100%",
           padding: 4,
           borderWidth: 1,
+           borderStyle: "dashed",
           borderRadius: 8,
-          borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+          borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
           backgroundColor: "white",
         }}
       >
@@ -95,8 +96,16 @@ const { height, width } = useWindowDimensions();
             resizeMode="contain"
           />
         </View>
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <MaterialIcons name="edit" size={18} color="#000" />
+        <TouchableOpacity style={{
+            padding: 8,
+            height: 30,
+            width: 30,
+            borderRadius: 8,
+            backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+            justifyContent: "center",
+            alignItems: "center",
+        }} onPress={() => setModalVisible(true)}>
+          <MaterialIcons name="edit" size={14} color="#fff" />
         </TouchableOpacity>
       </View>
 
@@ -110,10 +119,11 @@ const { height, width } = useWindowDimensions();
         <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
           <View style={styles.overlay} />
         </TouchableWithoutFeedback>
-
-        <View
+        <View style={styles.container2}>
+  <View
           style={[
             styles.bottomSheet,
+             
             theme === "dark" && {
               borderWidth: 1,
               borderColor: "white",
@@ -140,7 +150,7 @@ const { height, width } = useWindowDimensions();
                 <MaterialIcons
                   name="save"
                   size={18}
-                  color={theme === "dark" ? "white" : "black"}
+                  color={theme === "dark" ? "white" : "green"}
                 />
               </TouchableOpacity>
 
@@ -151,7 +161,7 @@ const { height, width } = useWindowDimensions();
                 <MaterialIcons
                   name="auto-fix-high"
                   size={18}
-                  color={theme === "dark" ? "white" : "black"}
+                  color={theme === "dark" ? "white" : "orange"}
                 />
               </TouchableOpacity>
 
@@ -162,7 +172,7 @@ const { height, width } = useWindowDimensions();
                 <MaterialIcons
                   name="close"
                   size={18}
-                  color={theme === "dark" ? "white" : "black"}
+                  color={theme === "dark" ? "white" : "red"}
                 />
               </TouchableOpacity>
             </View>
@@ -192,6 +202,8 @@ const { height, width } = useWindowDimensions();
             />
           </View>
         </View>
+        </View>
+      
       </Modal>
     </View>
   );
@@ -204,6 +216,11 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 12,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+  },
+   container2: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
   },
   imageThumb: {
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
@@ -255,7 +272,7 @@ const styles = StyleSheet.create({
   },
   signatureBox: {
     flex: 1,
-    borderWidth: 1,
+    borderWidth: 0.4,
     borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
   },

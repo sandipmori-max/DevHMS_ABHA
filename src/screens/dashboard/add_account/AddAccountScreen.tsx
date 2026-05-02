@@ -978,6 +978,9 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                   {
                                     marginTop: 0,
                                   },
+                                  user?.company_code
+                            ?.toLowerCase()
+                            ?.includes("deverp") && { width: 80, height: 80 , marginTop: 10},
                                 ]}
                                 onError={() => {
                                   setImageExists(false);

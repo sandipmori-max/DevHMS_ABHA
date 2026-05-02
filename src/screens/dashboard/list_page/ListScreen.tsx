@@ -56,6 +56,7 @@ import {
 } from "../../../store/slices/auth/authSlice";
 import { getDDLThunk } from "../../../store/slices/dropdown/thunk";
 import TableView from "./components/TableView";
+import AppMapView from "./components/AppMapView";
 
 const ListScreen = () => {
   const route = useRoute<RouteProp<ListRouteParams, "List">>();
@@ -1105,48 +1106,48 @@ const ListScreen = () => {
             <FullViewLoader />
           ) : (
             <>
-             
-            {
-              isTableView ? <>
-              <TableView
-                handleDeleteNotification={handleDeleteNotification}
-                isFromAlertCard={isFromAlertCard}
-                configData={configData}
-                filteredData={filteredData}
-                loadingListId={loadingListId}
-                totalAmount={totalAmount}
-                totalQty={totalQty}
-                isFromBusinessCard={isFromBusinessCard}
-                pageParamsName={pageParamsName}
-                handleItemPressed={handleItemPressed}
-                parsedConfig={parsedConfig}
-                pageName={pageName}
-                setIsFilterVisible={setIsFilterVisible}
-                setSearchQuery={setSearchQuery}
-                handleActionButtonPressed={handleActionButtonPressed}
-                isLoadingMore={isLoadingMore}
-                loadMore={loadMore}
-              />
-               </>  : <ReadableView
-                handleDeleteNotification={handleDeleteNotification}
-                isFromAlertCard={isFromAlertCard}
-                configData={configData}
-                filteredData={filteredData}
-                loadingListId={loadingListId}
-                totalAmount={totalAmount}
-                totalQty={totalQty}
-                isFromBusinessCard={isFromBusinessCard}
-                pageParamsName={pageParamsName}
-                handleItemPressed={handleItemPressed}
-                parsedConfig={parsedConfig}
-                pageName={pageName}
-                setIsFilterVisible={setIsFilterVisible}
-                setSearchQuery={setSearchQuery}
-                handleActionButtonPressed={handleActionButtonPressed}
-                isLoadingMore={isLoadingMore}
-                loadMore={loadMore}
-              />
-            }
+             {/* <AppMapView /> */}
+              {
+                isTableView ? <>
+                <TableView
+                  handleDeleteNotification={handleDeleteNotification}
+                  isFromAlertCard={isFromAlertCard}
+                  configData={configData}
+                  filteredData={filteredData}
+                  loadingListId={loadingListId}
+                  totalAmount={totalAmount}
+                  totalQty={totalQty}
+                  isFromBusinessCard={isFromBusinessCard}
+                  pageParamsName={pageParamsName}
+                  handleItemPressed={handleItemPressed}
+                  parsedConfig={parsedConfig}
+                  pageName={pageName}
+                  setIsFilterVisible={setIsFilterVisible}
+                  setSearchQuery={setSearchQuery}
+                  handleActionButtonPressed={handleActionButtonPressed}
+                  isLoadingMore={isLoadingMore}
+                  loadMore={loadMore}
+                />
+                </>  : <ReadableView
+                  handleDeleteNotification={handleDeleteNotification}
+                  isFromAlertCard={isFromAlertCard}
+                  configData={configData}
+                  filteredData={filteredData}
+                  loadingListId={loadingListId}
+                  totalAmount={totalAmount}
+                  totalQty={totalQty}
+                  isFromBusinessCard={isFromBusinessCard}
+                  pageParamsName={pageParamsName}
+                  handleItemPressed={handleItemPressed}
+                  parsedConfig={parsedConfig}
+                  pageName={pageName}
+                  setIsFilterVisible={setIsFilterVisible}
+                  setSearchQuery={setSearchQuery}
+                  handleActionButtonPressed={handleActionButtonPressed}
+                  isLoadingMore={isLoadingMore}
+                  loadMore={loadMore}
+                />
+              }
               
             </>
           )}

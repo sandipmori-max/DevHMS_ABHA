@@ -270,7 +270,7 @@ const { height, width } = useWindowDimensions();
                   theme === "dark" && {
                     color: "white",
                     backgroundColor: "black",
-                    borderWidth: 1,
+                    borderWidth: 0.4,
                     borderColor: "white",
                   },
                   { paddingRight: 40 },

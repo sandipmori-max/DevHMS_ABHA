@@ -97,7 +97,7 @@ export const styles = StyleSheet.create({
   },
   option: {
     padding: 12,
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.4,
     borderBottomColor: ERP_COLOR_CODE.ERP_eee,
     flexDirection: "row",
     justifyContent: "space-between",

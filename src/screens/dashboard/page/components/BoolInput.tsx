@@ -31,6 +31,7 @@ const BoolInput = ({ value, onChange, label, isFromChild = false }: BoolInputPro
         borderWidth: 0.4,
         borderRadius: 8,
         width:'98%',
+        borderColor: theme === 'dark' ? 'white' : 'black',
         flexDirection: 'row', alignItems: 'center' }}>
         <View style={{flexDirection:'row', width:'40%', alignContent:'center', alignItems:'center'}}>
           <TouchableOpacity

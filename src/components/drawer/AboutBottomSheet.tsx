@@ -14,11 +14,14 @@ import {
 } from "react-native";
 import { ERP_COLOR_CODE } from "../../utils/constants";
 import { ERP_ICON } from "../../assets";
+import { useAppSelector } from "../../store/hooks";
 
 const AboutBottomSheet = ({ visible, onClose }: any) => {
   const translateY = useRef(new Animated.Value(400)).current;
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
+    const theme = useAppSelector((state) => state?.theme.mode);
+  
   useEffect(() => {
     if (visible) {
       translateY.setValue(400);
@@ -47,6 +50,11 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
           {
             height: height * 0.75,
           },
+          theme === "dark" && {
+            backgroundColor: "black",
+            borderColor: "white",
+            borderWidth: 0.4,
+          }
         ]}
       >
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -69,25 +77,29 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                         />
                       </View>
 
-                      <Text style={styles.title}>
+                      <Text style={[styles.title, theme === "dark" && { color: "white" }]}>
                         DevERP Solutions Pvt. Ltd.
                       </Text>
-                      <Text style={styles.subtitle}>
+                      <Text style={[styles.subtitle, theme === "dark" && { color: "white" }]}>
                         Business Automation & ERP
                       </Text>
                     </View>
                   </View>
 
                   {/* CONTACT */}
-                  <View style={styles.card}>
-                    <Text style={styles.cardTitle}>Contact</Text>
+                  <View style={[styles.card, theme === "dark" && {
+                    backgroundColor: '#000',
+                    borderColor: 'white',
+                    borderWidth: 0.4
+                  }]}>
+                    <Text style={[styles.cardTitle, theme === "dark" && { color: "white" }]}>Contact</Text>
 
                     <TouchableOpacity
                       style={styles.row}
                       onPress={() => open("tel:+919327940159")}
                     >
                       <MaterialIcons name="call" size={20} color="green" />
-                      <Text style={styles.text}>+91 7935312554</Text>
+                      <Text style={[styles.text, theme === "dark" && { color: "white" }]}>+91 7935312554</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -99,7 +111,7 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                         size={20}
                         color={ERP_COLOR_CODE.ERP_ERROR}
                       />
-                      <Text style={styles.text}>support@deverp.com</Text>
+                      <Text style={[styles.text, theme === "dark" && { color: "white" }]}>support@deverp.com</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -115,8 +127,12 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                   ]}
                 >
                   {/* ADDRESS */}
-                  <View style={styles.card}>
-                    <Text style={styles.cardTitle}>Address</Text>
+                  <View style={[styles.card, theme === "dark" && {
+                    backgroundColor: '#000',
+                    borderColor: 'white',
+                    borderWidth: 0.4
+                  }]}>
+                    <Text style={[styles.cardTitle, theme === "dark" && { color: "white" }]}>Address</Text>
 
                     <View style={styles.row}>
                       <MaterialIcons
@@ -133,15 +149,19 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                   </View>
 
                   {/* ONLINE */}
-                  <View style={styles.card}>
-                    <Text style={styles.cardTitle}>Online</Text>
+                  <View style={[styles.card, theme === "dark" && {
+                    backgroundColor: '#000',
+                    borderColor: 'white',
+                    borderWidth: 0.4
+                  }]}>
+                    <Text style={[styles.cardTitle, theme === "dark" && { color: "white" }]}>Online</Text>
 
                     <TouchableOpacity
                       style={styles.row}
                       onPress={() => open("https://www.deverp.com")}
                     >
                       <MaterialIcons name="language" size={20} color="blue" />
-                      <Text style={styles.text}>www.deverp.com</Text>
+                      <Text style={[styles.text, theme === "dark" && { color: "white" }]}>www.deverp.com</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -149,7 +169,7 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                       onPress={() => open("https://wa.me/919327940159")}
                     >
                       <MaterialIcons name="chat" size={20} color="#25D366" />
-                      <Text style={styles.text}>WhatsApp Chat</Text>
+                      <Text style={[styles.text, theme === "dark" && { color: "white" }]}>WhatsApp Chat</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -165,35 +185,40 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                       {
                         marginTop: 40,
                       },
+                      theme === "dark" && {
+                        backgroundColor: '#000',
+                        borderColor: 'white',
+                        borderWidth: 0.4
+                      }
                     ]}
                   >
-                    <Text style={styles.cardTitle}>Follow Us</Text>
+                    <Text style={[styles.cardTitle, theme === "dark" && { color: "white" }]}>Follow Us</Text>
 
                     <View style={styles.socialGrid}>
                       <TouchableOpacity
                         onPress={() =>
                           open("https://www.facebook.com/DevERPSolutions#")
                         }
-                        style={styles.socialItem}
+                        style={[styles.socialItem, theme === "dark" && { backgroundColor: '#000', borderWidth: 0.4, borderColor: 'white' }]}
                       >
                         <MaterialIcons
                           name="facebook"
                           size={22}
                           color="#1877F2"
                         />
-                        <Text style={styles.socialText}>Facebook</Text>
+                        <Text style={[styles.socialText, theme === "dark" && { color: "white" }]}>Facebook</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
                         onPress={() => open("https://x.com/DevERP5")}
-                        style={styles.socialItem}
+                        style={[styles.socialItem, theme === "dark" && { backgroundColor: '#000', borderWidth: 0.4, borderColor: 'white' }]}
                       >
                         <MaterialIcons
                           name="alternate-email"
                           size={22}
                           color="#000"
                         />
-                        <Text style={styles.socialText}>X</Text>
+                        <Text style={[styles.socialText, theme === "dark" && { color: "white" }]}>X</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
@@ -202,28 +227,35 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                             "https://www.linkedin.com/in/deverp-solutions-pvt-ltd-company-286598181",
                           )
                         }
-                        style={styles.socialItem}
+                        style={[styles.socialItem, theme === "dark" && {
+                           backgroundColor: '#000',
+                           borderWidth: 0.4, borderColor: 'white' 
+                          
+                          }]}
                       >
                         <MaterialIcons
                           name="business"
                           size={22}
                           color="#0A66C2"
                         />
-                        <Text style={styles.socialText}>LinkedIn</Text>
+                        <Text style={[styles.socialText, theme === "dark" && { color: "white" }]}>LinkedIn</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
                         onPress={() =>
                           open("https://www.instagram.com/deverp001/?hl=en")
                         }
-                        style={styles.socialItem}
+                        style={[styles.socialItem, theme === "dark" && {
+                          borderColor: 'white',
+                          borderWidth: 0.4,
+                          backgroundColor: '#000' }]}
                       >
                         <MaterialIcons
                           name="photo-camera"
                           size={22}
                           color="#E1306C"
                         />
-                        <Text style={styles.socialText}>Instagram</Text>
+                        <Text style={[styles.socialText, theme === "dark" && { color: "white" }]}>Instagram</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -249,21 +281,31 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                     />
                   </View>
 
-                  <Text style={styles.title}>DevERP Solutions Pvt. Ltd.</Text>
-                  <Text style={styles.subtitle}>Business Automation & ERP</Text>
+                  <Text style={[styles.title, theme === "dark" && { color: "white" }]}>
+                    DevERP Solutions Pvt. Ltd.
+                  </Text>
+                  <Text style={[styles.subtitle, theme === "dark" && { color: "white" }]}>
+                    Business Automation & ERP
+                  </Text>
                 </View>
               </View>
 
               {/* CONTACT */}
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>Contact</Text>
+              <View style={[styles.card, theme === "dark" && {
+                backgroundColor: '#000',
+                borderColor: 'white',
+                borderWidth: 0.4
+              }]}>
+                <Text style={[styles.cardTitle, theme === "dark" && { color: "white" }]}>Contact</Text>
 
                 <TouchableOpacity
                   style={styles.row}
                   onPress={() => open("tel:+919327940159")}
                 >
                   <MaterialIcons name="call" size={20} color="green" />
-                  <Text style={styles.text}>+91 7935312554</Text>
+                  <Text style={[styles.text, theme === "dark" && { color: "white" }]}>
+                    +91 7935312554
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -275,13 +317,19 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                     size={20}
                     color={ERP_COLOR_CODE.ERP_ERROR}
                   />
-                  <Text style={styles.text}>support@deverp.com</Text>
+                  <Text style={[styles.text, theme === "dark" && { color: "white" }]}>
+                    support@deverp.com
+                  </Text>
                 </TouchableOpacity>
               </View>
 
               {/* ADDRESS */}
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>Address</Text>
+              <View style={[styles.card, theme === "dark" && {
+                backgroundColor: '#000',
+                borderColor: 'white',
+                borderWidth: 0.4
+              }]}>
+                <Text style={[styles.cardTitle, theme === "dark" && { color: "white" }]}>Address</Text>
 
                 <View style={styles.row}>
                   <MaterialIcons
@@ -289,7 +337,7 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                     size={20}
                     color={ERP_COLOR_CODE.ERP_ERROR}
                   />
-                  <Text style={styles.text}>
+                  <Text style={[styles.text, theme === "dark" && { color: "white" }]}>
                     405, 407B Primate Complex{"\n"}
                     Opp. Gormoh Hotel, Bodakdev{"\n"}
                     Ahmedabad - 380054, Gujarat, India
@@ -298,15 +346,21 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
               </View>
 
               {/* ONLINE */}
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>Online</Text>
+              <View style={[styles.card, theme === "dark" && {
+                backgroundColor: '#000',
+                borderColor: 'white',
+                borderWidth: 0.4
+              }]}>
+                <Text style={[styles.cardTitle, theme === "dark" && { color: "white" }]}>Online</Text>
 
                 <TouchableOpacity
                   style={styles.row}
                   onPress={() => open("https://www.deverp.com")}
                 >
                   <MaterialIcons name="language" size={20} color="blue" />
-                  <Text style={styles.text}>www.deverp.com</Text>
+                  <Text style={[styles.text, theme === "dark" && { color: "white" }]}>
+                    www.deverp.com
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -314,35 +368,51 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                   onPress={() => open("https://wa.me/919327940159")}
                 >
                   <MaterialIcons name="chat" size={20} color="#25D366" />
-                  <Text style={styles.text}>WhatsApp Chat</Text>
+                  <Text style={[styles.text, theme === "dark" && { color: "white" }]}>
+                    WhatsApp Chat
+                  </Text>
                 </TouchableOpacity>
               </View>
 
               {/* SOCIAL */}
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>Follow Us</Text>
+              <View style={[styles.card, theme === "dark" && {
+                backgroundColor: '#000',
+                borderColor: 'white',
+                borderWidth: 0.4
+              }]}>
+                <Text style={[styles.cardTitle, theme === "dark" && { color: "white" }]}>Follow Us</Text>
 
-                <View style={styles.socialGrid}>
+                <View style={[styles.socialGrid]}>
                   <TouchableOpacity
                     onPress={() =>
                       open("https://www.facebook.com/DevERPSolutions#")
                     }
-                    style={styles.socialItem}
+                    style={[styles.socialItem,  theme === "dark" && {
+                  borderColor: 'white',
+                  borderWidth: 0.4,
+                  padding: 10,
+                  backgroundColor: '#000'
+                }]}
                   >
                     <MaterialIcons name="facebook" size={22} color="#1877F2" />
-                    <Text style={styles.socialText}>Facebook</Text>
+                    <Text style={[styles.socialText, theme === "dark" && { color: "white" }]}>Facebook</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     onPress={() => open("https://x.com/DevERP5")}
-                    style={styles.socialItem}
+                    style={[styles.socialItem,  theme === "dark" && {
+                  borderColor: 'white',
+                  borderWidth: 0.4,
+                  padding: 10,
+                  backgroundColor: '#000'
+                }]}
                   >
                     <MaterialIcons
                       name="alternate-email"
                       size={22}
                       color="#000"
                     />
-                    <Text style={styles.socialText}>X</Text>
+                    <Text style={[styles.socialText, theme === "dark" && { color: "white" }]}>X</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -351,24 +421,34 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                         "https://www.linkedin.com/in/deverp-solutions-pvt-ltd-company-286598181",
                       )
                     }
-                    style={styles.socialItem}
+                    style={[styles.socialItem,  theme === "dark" && {
+                  borderColor: 'white',
+                  borderWidth: 0.4,
+                  padding: 10,
+                  backgroundColor: '#000'
+                }]}
                   >
                     <MaterialIcons name="business" size={22} color="#0A66C2" />
-                    <Text style={styles.socialText}>LinkedIn</Text>
+                    <Text style={[styles.socialText, theme === "dark" && { color: "white" }]}>LinkedIn</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     onPress={() =>
                       open("https://www.instagram.com/deverp001/?hl=en")
                     }
-                    style={styles.socialItem}
+                    style={[styles.socialItem,  theme === "dark" && {
+                  borderColor: 'white',
+                  borderWidth: 0.4,
+                  padding: 10,
+                  backgroundColor: '#000'
+                }]}
                   >
                     <MaterialIcons
                       name="photo-camera"
                       size={22}
                       color="#E1306C"
                     />
-                    <Text style={styles.socialText}>Instagram</Text>
+                    <Text style={[styles.socialText, theme === "dark" && { color: "white" }]}>Instagram</Text>
                   </TouchableOpacity>
                 </View>
               </View>

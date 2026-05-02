@@ -206,18 +206,22 @@ const CustomMultiplePicker = ({
             backgroundColor: theme === "dark" ? "black" : "white",
             width: isLandscape ? "50%" : "100%",
             padding: 16,
+            borderTopLeftRadius: 12,
+            borderTopRightRadius: 12,
+            borderWidth: 1,
+            borderColor: theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR,
           }, isLandscape ? { left: "25%" } : null] }
         >
           {/* HEADER */}
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text style={{ fontWeight: "800" }}>
+            <Text style={{ fontWeight: "800", color: theme === "dark" ? "#fff" : "#000" }}>
               {t("text.text34")} {label}
             </Text>
 
             <TouchableOpacity onPress={closeBottomSheet}>
-              <MaterialIcons name="close" size={24} />
+              <MaterialIcons style={{ color: theme === "dark" ? "#fff" : "#000" }} name="close" size={24} />
             </TouchableOpacity>
           </View>
 
@@ -227,7 +231,8 @@ const CustomMultiplePicker = ({
             value={search}
             onChangeText={setSearch}
             style={{
-              borderWidth: 1,
+              borderWidth: 0.4,
+              borderColor:  theme === "dark" ? '#fff' : ERP_COLOR_CODE.ERP_F8F9FA,
               borderRadius: 8,
               padding: 8,
               marginVertical: 8,
@@ -297,7 +302,9 @@ const CustomMultiplePicker = ({
                         }
                       }}
                     >
-                      <Text>{opt.name}</Text>
+                      <Text style={[ theme === "dark" && { color: "#fff" }]}>
+                        {opt.name}
+                      </Text>
 
                       {selected && (
                         <MaterialIcons
@@ -322,12 +329,12 @@ const CustomMultiplePicker = ({
               style={{
                 marginTop: 10,
                 padding: 12,
-                backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                backgroundColor: theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR,
                 borderRadius: 8,
                 alignItems: "center",
               }}
             >
-              <Text style={{ color: "white" }}>Done</Text>
+              <Text style={{ color: theme === "dark" ? "#000" : "white" }}>Done</Text>
             </TouchableOpacity>
           )}
         </Animated.View>

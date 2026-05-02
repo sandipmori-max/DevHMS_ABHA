@@ -506,7 +506,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   const { appDrawerMenuList } = useAppSelector((state) => state?.auth);
   const dispatch = useAppDispatch();
 
-   /* ================= SAFE CURRENT ROUTE ================= */
+  /* ================= SAFE CURRENT ROUTE ================= */
   const currentRoute = useNavigationState((state) => {
     const route = state.routes[state.index];
     return route?.name;
@@ -686,7 +686,11 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
             {
               backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
             },
-            theme === "dark" && { backgroundColor: "gray" },
+            theme === "dark" && {
+              backgroundColor: "#000",
+              borderWidth: 1,
+              borderColor: "#fff",
+            },
           ]}
         >
           <View>
@@ -812,7 +816,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
           <View
             style={{
               paddingHorizontal: 4,
-              backgroundColor: "rgba(255,255,255,0.08)",
+              backgroundColor: theme === "dark" ? "black" : "white",
               marginBottom: 4,
             }}
           >
@@ -820,7 +824,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                
+
                 paddingVertical: 10,
                 paddingHorizontal: 14,
                 borderRadius: 12,
@@ -839,6 +843,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                   fontSize: 16,
                   fontWeight: "600",
                   letterSpacing: 0.3,
+                  color: theme === "dark" ? "white" : "black",
                 }}
               >
                 {greetingMeta.text}
@@ -897,24 +902,29 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                       // isAppLink  + title  + url + isFromBusinessCard + isFromAlertCard
                       if (
                         item?.isapplink === "true" ||
-                        item?.isapplink === true || item?.isapplink === "True"
+                        item?.isapplink === true ||
+                        item?.isapplink === "True"
                       ) {
-                         let raw = null;
-                                    try {
-                                      raw = await dispatch(
-                                        getERPConfigDataThunk
-                                        ({
-                                          page: item?.url,
-                                        }),
-                                      ).unwrap();
-                        
-                                      console.log("++++++++++++++++++++++++++++++++++++++raw", raw);
-                                    } catch (error) {
-                                      console.log("++++++++++++++++++++++++++++++++++++++error", error);
-                                    }
-                        
-                                    const parsedConfig = extractConfig(raw);
-                        
+                        let raw = null;
+                        try {
+                          raw = await dispatch(
+                            getERPConfigDataThunk({
+                              page: item?.url,
+                            }),
+                          ).unwrap();
+
+                          console.log(
+                            "++++++++++++++++++++++++++++++++++++++raw",
+                            raw,
+                          );
+                        } catch (error) {
+                          console.log(
+                            "++++++++++++++++++++++++++++++++++++++error",
+                            error,
+                          );
+                        }
+
+                        const parsedConfig = extractConfig(raw);
 
                         props?.navigation.navigate("List", {
                           item: {
@@ -922,11 +932,14 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                             name: item?.name,
                             url: item?.link,
                             isFromBusinessCard:
-                              item?.isfrombusinesscard === "True" ? true : false,
-                            isFromAlertCard: item?.isfromalertcard === "True" ? true : false,
+                              item?.isfrombusinesscard === "True"
+                                ? true
+                                : false,
+                            isFromAlertCard:
+                              item?.isfromalertcard === "True" ? true : false,
                             id: "0",
                           },
-                          parsedConfig
+                          parsedConfig,
                         });
                         props?.navigation.closeDrawer();
                         return;

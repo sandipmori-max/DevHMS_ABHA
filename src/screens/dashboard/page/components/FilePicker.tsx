@@ -153,13 +153,14 @@ const openFilePicker = async () => {
   };
 
   return (
- <View style={styles.container}>
+ <View style={[styles.container, theme === "dark" && { backgroundColor: "#000" }]}>
   <View style={{ flexDirection: "row" }}>
           <Text
             style={[
               styles.label,
               theme === "dark" && {
-                color: "white",
+                 color: theme === "dark" ? "#fff" : "#000",
+                 
               },
             ]}
           >
@@ -186,9 +187,10 @@ const openFilePicker = async () => {
   {/* Upload Area */}
   {selectedFiles.length === 0 && (
     <TouchableOpacity style={[styles.uploadBox, {
-       borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+       borderColor:  theme === "dark" ? '#fff' : ERP_COLOR_CODE.ERP_APP_COLOR,
+       backgroundColor: theme === "dark" ? "#000" : "#f8f9ff",
     }]} onPress={openFilePicker}>
-      <MaterialIcons name="cloud-upload" size={36} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
+      <MaterialIcons name="cloud-upload" size={36} color={theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR} />
       <Text style={styles.uploadSub}>Tap to browse files</Text>
     </TouchableOpacity>
   )}

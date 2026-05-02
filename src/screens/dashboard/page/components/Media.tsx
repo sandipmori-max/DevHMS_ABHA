@@ -44,7 +44,7 @@ const Media = ({
   const [loadingSmall, setLoadingSmall] = useState(false);
   const [loadingLarge, setLoadingLarge] = useState(false);
   const [cacheBuster, setCacheBuster] = useState(Date.now());
-const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const [alertVisible, setAlertVisible] = useState(false);
   const [isSettingVisible, setIsSettingVisible] = useState(false);
@@ -54,6 +54,7 @@ const { height, width } = useWindowDimensions();
     type: "info" as "error" | "success" | "info",
   });
 
+  console.log("Media Rendered with imageUri:", imageUri, "and errors:", errors);
   const scale = useRef(new Animated.Value(1)).current;
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
@@ -70,6 +71,7 @@ const { height, width } = useWindowDimensions();
       `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${
         type === "small" ? `d_${item?.text}` : item?.text
       }`;
+      console.log("Generated image URI:", base);
     return `${base}?cb=${cacheBuster}`;
   };
 
@@ -149,10 +151,10 @@ const { height, width } = useWindowDimensions();
             launchCamera(
               {
                 mediaType: "photo",
-                quality: 0.5,
+                quality: 0.4,
                 includeBase64: true,
-                maxWidth: 1024,
-                maxHeight: 1024,
+                maxWidth: 800,
+                maxHeight: 800,
                 saveToPhotos: false,
               },
               (response) => {
@@ -202,10 +204,10 @@ const { height, width } = useWindowDimensions();
             launchCamera(
               {
                 mediaType: "photo",
-                quality: 0.5,
+                quality: 0.4,
                 includeBase64: true,
-                maxWidth: 1024,
-                maxHeight: 1024,
+                maxWidth: 800,
+                maxHeight: 800,
                 saveToPhotos: false,
               },
               (response) => {
@@ -244,10 +246,10 @@ const { height, width } = useWindowDimensions();
             launchCamera(
               {
                 mediaType: "photo",
-                quality: 0.5,
+                quality: 0.4,
                 includeBase64: true,
-                maxWidth: 1024,
-                maxHeight: 1024,
+                maxWidth: 800,
+                maxHeight: 800,
                 saveToPhotos: false,
               },
               (response) => {
@@ -389,13 +391,13 @@ const { height, width } = useWindowDimensions();
             width: "100%",
             borderWidth: 1.5,
             borderRadius: 10,
-            borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+            borderColor: theme === "dark" ? '#fff' : ERP_COLOR_CODE.ERP_APP_COLOR,
             marginBottom: 8,
             borderStyle: "dashed",
-             backgroundColor: "#f8f9ff",
+             backgroundColor: theme === "dark" ? "#000" : "#f8f9ff",
           },
           errors[item?.field] && {
-            borderColor: ERP_COLOR_CODE.ERP_ERROR,
+            borderColor:  ERP_COLOR_CODE.ERP_ERROR,
           },
         ]}
       >
@@ -518,7 +520,7 @@ const { height, width } = useWindowDimensions();
               <MaterialIcons
                 name="close"
                 size={30}
-                color={ERP_COLOR_CODE.ERP_WHITE}
+                color={theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_WHITE}
               />
             </TouchableOpacity>
 
@@ -686,11 +688,11 @@ const styles = StyleSheet.create({
   editBtn: {
     height: 36,
     width: 36,
-    borderRadius: 36,
+    borderRadius: 8,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     position: "absolute",
     bottom: 28,
-    left: Dimensions.get("screen").width / 1.88,
+    left: Dimensions.get("screen").width / 1.84,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 1,

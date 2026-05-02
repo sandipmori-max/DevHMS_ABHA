@@ -37,7 +37,7 @@ const RemarksView = ({ remarks }) => {
     <View
       style={{
         width: "100%", 
-        backgroundColor: isDark ? "#1F2937" : "#FFFFFF",
+        backgroundColor: isDark ? "#000" : "#FFFFFF",
         marginVertical: 4
       }}
     >

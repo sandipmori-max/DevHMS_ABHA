@@ -153,6 +153,21 @@ const PrivacyPolicyScreen = () => {
     });
   }, [navigation, theme, isHidden, item, isFromChart]);
 
+  const injectedCSS = `
+  (function() {
+    var meta = document.createElement('meta'); 
+    meta.name = 'viewport'; 
+    meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'; 
+    document.getElementsByTagName('head')[0].appendChild(meta);
+
+    document.body.style.overflow = 'hidden';   // extra scroll remove
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+  })();
+  true;
+`;
+
+
   return (
     <SafeAreaView style={styles.container}>
       {!finalUrl || (isFromChart && !token) ? (
@@ -178,7 +193,20 @@ const PrivacyPolicyScreen = () => {
                 setIsReloading(false);
               }
             }}
-          />
+            scalesPageToFit={false}
+            setBuiltInZoomControls={false}
+            setDisplayZoomControls={false}
+            bounces={false}
+            overScrollMode="never"  
+            scrollEnabled={true}
+            injectedJavaScript={injectedCSS}
+            keyboardDisplayRequiresUserAction={false}
+            automaticallyAdjustContentInsets={false}
+            contentMode="mobile"
+            allowsInlineMediaPlayback={true}
+            decelerationRate="normal" 
+
+           />
 
           {isReloading && (
             <View style={styles.loaderContainer}>
@@ -200,7 +228,6 @@ const styles = StyleSheet.create({
   webview: {
     flex: 1,
      backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
-    marginTop: 22,
   },
   loaderContainer: {
     ...StyleSheet.absoluteFillObject,

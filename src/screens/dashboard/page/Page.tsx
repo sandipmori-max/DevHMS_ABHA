@@ -392,7 +392,7 @@ const PageScreen = () => {
             }}
             text={title || pageTitle || "Details"}
           ></TranslatedText>
-          {isFromProfile === false && (
+          
             <TranslatedText
               numberOfLines={1}
               style={{
@@ -403,11 +403,10 @@ const PageScreen = () => {
               }}
               text={
                 isFromNew
-                  ? `( ${t("text.text44")} )`
-                  : `( ${t("text.text45")} )`
+                  ? `- ( ${t("text.text44")} )`
+                  : `- ( ${t("text.text45")} )`
               }
-            ></TranslatedText>
-          )}
+            ></TranslatedText> 
         </View>
       ),
       headerRight: () => (
@@ -558,7 +557,7 @@ const PageScreen = () => {
                       setLoader(false);
                       setIsValidate(false);
                       try {
-                        dispatch(getERPAppConfigMenuThunk());
+                       await dispatch(getERPAppConfigMenuThunk());
                       } catch (error) {
                         dispatch(updateAppMenuList([])); // Clear menu on error
                         console.log("Error fetching app config menu:", error);
@@ -1940,7 +1939,9 @@ const PageScreen = () => {
               height: 80,
               width: 80,
               borderRadius: 10,
-              backgroundColor: "white",
+              borderWidth: 1,
+              borderColor: theme === "dark" ? "white" : "black",
+              backgroundColor: theme === "dark" ? "black" : "white",
               justifyContent: "center",
               alignContent: "center",
               alignItems: "center",
@@ -2092,20 +2093,7 @@ const PageScreen = () => {
               )}
             </View>
 
-            <CustomAlert
-              visible={alertVisible}
-              title={alertConfig.title}
-              message={alertConfig.message}
-              type={alertConfig.type}
-              onClose={() => {
-                setTapLoader(false);
-                if (modalClose) setAlertVisible(false);
-              }}
-              actionLoader={undefined}
-              isSettingVisible={isSettingVisible}
-              closeHide={undefined}
-              isForLoading={tapLoader}
-            />
+            
             {loader && (
               <View
                 style={{
@@ -2217,6 +2205,7 @@ const PageScreen = () => {
           message={alertConfig.message}
           type={alertConfig.type}
           onClose={() => {
+             console.log("Alert closed 22222222222222222");
             setTapLoader(false);
             setAlertVisible(false);
             if (goBack) {

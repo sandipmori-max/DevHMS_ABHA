@@ -542,7 +542,7 @@ const MenuTab = ({
           } else {
             const db = await getDBConnection();
             await increaseTapCount(db, item.id, user?.id);
-           navigation.navigate("Privacy Policy", { item });
+            navigation.navigate("Privacy Policy", { item });
           }
         }}
       >
@@ -672,10 +672,9 @@ const MenuTab = ({
         <>
           <SectionList
             sections={sectionListData}
-            keyboardShouldPersistTaps="handled"
             keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
             renderSectionHeader={({ section }) => (
               <View
                 style={{
@@ -683,7 +682,7 @@ const MenuTab = ({
                   alignContent: "center",
                   alignItems: "center",
                   marginBottom: 6,
-                  backgroundColor: "#fffcfc",
+                  backgroundColor:  theme === "dark" ? "black" : "#fffcfc",
                   width: "98%",
                   justifyContent: "space-between",
                   padding: 4,
@@ -692,27 +691,25 @@ const MenuTab = ({
                   marginLeft: 4,
                 }}
               >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    marginLeft: 2,
-                  }}
-                >
+                {" "}
+                <View style={{ flexDirection: "row", marginLeft: 2 }}>
+                  {" "}
                   <MaterialIcons
                     name={section?.moduleMaterialIcon || "widgets"}
                     color={ERP_COLOR_CODE.ERP_APP_COLOR}
                     size={18}
-                  />
+                  />{" "}
                   <Text
                     style={{
                       marginLeft: 6,
                       fontWeight: "600",
-                      color: ERP_COLOR_CODE.ERP_161515,
+                      color: theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_161515,
                     }}
                   >
-                    {section?.title}
-                  </Text>
-                </View>
+                    {" "}
+                    {section?.title}{" "}
+                  </Text>{" "}
+                </View>{" "}
                 <View
                   style={{
                     height: 24,
@@ -725,44 +722,43 @@ const MenuTab = ({
                     opacity: 0.5,
                   }}
                 >
-                  <Text
-                    style={{
-                      color: "white",
-                    }}
-                  >
-                    {section.data.length}
-                  </Text>
-                </View>
+                  {" "}
+                  <Text style={{ color: "white" }}>
+                    {" "}
+                    {section.data.length}{" "}
+                  </Text>{" "}
+                </View>{" "}
               </View>
             )}
             renderItem={({ item, index, section }) => {
               const items = section.data;
               const chunkSize = isLandscape ? 4 : 3;
 
-              if (index % chunkSize !== 0) return null;
-              const rowItems = items.slice(index, index + chunkSize);
+              // sirf first index pe pura section render karo
+              if (index !== 0) return null;
+
+              // rows create karo
+              const rows = [];
+              for (let i = 0; i < items.length; i += chunkSize) {
+                rows.push(items.slice(i, i + chunkSize));
+              }
 
               return (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  {rowItems.map((child, childIndex) => {
-                    const globalIndex = index + childIndex;
-
-                    return (
-                      <View
-                        key={childIndex}
-                        style={{
-                          width: isLandscape ? "25%" : "33%",
-                        }}
-                      >
-                        {renderItem({ item: child, index: globalIndex })}
-                      </View>
-                    );
-                  })}
+                <View style={styles.sectionContainer}>
+                  {rows.map((row, rowIndex) => (
+                    <View key={rowIndex} style={{ flexDirection: "row" }}>
+                      {row.map((child, childIndex) => (
+                        <View
+                          key={childIndex}
+                          style={{
+                            width: isLandscape ? "25%" : "33%",
+                          }}
+                        >
+                          {renderItem({ item: child, index: childIndex })}
+                        </View>
+                      ))}
+                    </View>
+                  ))}
                 </View>
               );
             }}

@@ -548,11 +548,17 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
             borderRadius: 8,
             width: isFromHtml ? "100%" : isHorizontal ? "100%" : "48%",
             flex: 1,
+            
             borderLeftColor: accentColors[index % accentColors.length],
             borderWidth: 1,
             borderLeftWidth: 3,
             backgroundColor: theme === "dark" ? "black" : "white",
           },
+          theme === "dark" && {
+            borderWidth: 0.4,
+            borderColor: ERP_COLOR_CODE.ERP_BORDER,
+            borderLeftColor: accentColors[index % accentColors.length],
+          }
         ]}
         activeOpacity={0.7}
         onPress={async () => {
@@ -2402,7 +2408,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                         color={
                                           theme === "dark"
                                             ? "white"
-                                            : ERP_COLOR_CODE.ERP_green
+                                            : ERP_COLOR_CODE.ERP_ERROR
                                         }
                                       />
                                     </View>

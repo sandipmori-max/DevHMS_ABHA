@@ -181,9 +181,11 @@ const openCameraV2 = (
     launchCamera(
       {
         mediaType: "photo",
-        cameraType: "front",
         quality: 0.4,
         includeBase64: true,
+        maxWidth: 800,
+        maxHeight: 800,
+        saveToPhotos: false,
       },
       (response) => {
         if (response?.didCancel || response?.errorCode) {
@@ -605,7 +607,7 @@ const openCameraV2 = (
                               styles.input,
                               { minHeight: 100, textAlignVertical: "top" },
                               theme === "dark" && {
-                                borderWidth: 1,
+                                borderWidth: 0.4,
                                 borderColor: "white",
                                 color: "white",
                                 backgroundColor: "black",
@@ -826,7 +828,7 @@ const openCameraV2 = (
                           styles.input,
                           { minHeight: 100, textAlignVertical: "top" },
                           theme === "dark" && {
-                            borderWidth: 1,
+                            borderWidth: 0.4,
                             borderColor: "white",
                             color: "white",
                             backgroundColor: "black",

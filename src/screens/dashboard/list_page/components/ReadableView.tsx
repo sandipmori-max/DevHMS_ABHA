@@ -177,8 +177,7 @@ const ReadableView = ({
     if (!item) return null;
     const name = item?.name?.toString() || `-`;
     const subName = item?.number || `-`;
-    const [isRemarksExpanded, setRemarksExpanded] = useState(false);
-
+ 
     const status = item?.status;
     const date = item?.date;
     const remarks = item?.remarks;
@@ -217,8 +216,8 @@ const ReadableView = ({
             marginVertical: 2.5,
             marginHorizontal: 8,
             paddingTop: 6,
-            borderWidth: 1,
-            borderColor: ERP_COLOR_CODE.ERP_ddd,
+            borderWidth: 0.4,
+            borderColor: theme === "dark" ? ERP_COLOR_CODE.ERP_BORDER : ERP_COLOR_CODE.ERP_999,
             width: isLandscape ? "48%" : "96%",
             overflow: "hidden",
           }}

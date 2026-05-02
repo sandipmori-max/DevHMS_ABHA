@@ -11,6 +11,7 @@ import {
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import useTranslations from "../../../../hooks/useTranslations";
+import { useAppSelector } from "../../../../store/hooks";
 
 const SLIDE_WIDTH = Dimensions.get("screen").width - 30;
 const SLIDER_SIZE = 44;
@@ -33,6 +34,8 @@ const SlideButtonIOS: React.FC<Props> = ({
   const { t } = useTranslations();
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
+    const theme = useAppSelector(state => state?.theme.mode);
+  
   return (
     <TouchableOpacity
       onPress={() => {
@@ -45,8 +48,8 @@ const SlideButtonIOS: React.FC<Props> = ({
         style={[
           styles.sliderContainer,
           {
-            borderColor: successColor,
-            backgroundColor: successColor,
+            borderColor: theme === "dark" ? "white" : successColor,
+            backgroundColor: theme === "dark" ? "black" : successColor,
           },
 
           isLandscape

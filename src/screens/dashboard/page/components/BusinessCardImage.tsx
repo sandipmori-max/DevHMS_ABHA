@@ -154,10 +154,10 @@ const { height, width } = useWindowDimensions();
     setTimeout(async () => {
       const res = await launchCamera({
         mediaType: "photo",
-        quality: 0.5,
+        quality: 0.4,
         includeBase64: true,
-        maxWidth: 1024,
-        maxHeight: 1024,
+        maxWidth: 800,
+        maxHeight: 800,
         saveToPhotos: false,
       });
 

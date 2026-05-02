@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { ERP_COLOR_CODE } from '../../../../utils/constants';
 
 export const styles = StyleSheet.create({
   centered: {
@@ -12,6 +13,10 @@ export const styles = StyleSheet.create({
   },
   columnWrapper: {
     justifyContent: "space-between",
+  },
+  sectionContainer: {
+    margin: 6,
+    borderRadius: 2,
   },
   icon: {
     width: 24,
@@ -69,13 +74,13 @@ export const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: "500",
+    // fontWeight: "500",
     marginBottom: 6,
     textAlign: "center",
   },
   titleV2: {
     fontSize: 14,
-    fontWeight: "500",
+    // fontWeight: "500",
     marginBottom: 2,
     textAlign: "center",
   },
