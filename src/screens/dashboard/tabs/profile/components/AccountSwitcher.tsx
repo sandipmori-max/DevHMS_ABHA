@@ -563,14 +563,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
                 />
               }
 
-              <Text
-                style={[
-                  styles.addAccountText,
-                  theme === "dark" && { color: "black" },
-                ]}
-              >
-                {tapLoader ? t("text96") : t("text97")}
-              </Text>
+              
             </TouchableOpacity>
           </Animated.View>
         )}

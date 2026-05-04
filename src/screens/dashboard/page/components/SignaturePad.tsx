@@ -214,8 +214,7 @@ export default SignaturePad;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 12,
-    backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+    marginTop: 6,
   },
    container2: {
     position: 'absolute',

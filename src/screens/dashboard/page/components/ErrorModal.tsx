@@ -23,7 +23,7 @@ const HIDDEN_POSITION = 300;
 const ErrorModal = ({ visible, errors, onClose }: any) => {
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
-  const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const translateY = useRef(new Animated.Value(HIDDEN_POSITION)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
@@ -210,13 +210,31 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
             <>
               {/* CONTENT – NOT DRAGGABLE */}
               <View style={{ alignItems: "center" }}>
-                <FastImage
-                  source={ERP_ICON.VALIDATON}
-                  style={{ height: 160, width: 120 }}
-                  resizeMode="contain"
-                />
+                <View
+                  style={{
+                    position: "absolute",
+                    top: -90,
+                    height: 70,
+                    width: 70,
+                    backgroundColor: theme === "dark" ? "#000" : "#fff",
+                    borderRadius: 40,
+                    overflow: "hidden",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <FastImage
+                    source={ERP_ICON.VALIDATON}
+                    style={{
+                      position: "absolute",
+                      height: 50,
+                      width: 50,
+                    }}
+                    resizeMode="contain"
+                  />
+                </View>
               </View>
-
+                    <View style={{height: 20}}/>
               <FlatList
                 data={errors}
                 keyExtractor={(_, i) => i.toString()}
@@ -224,6 +242,8 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
                   <Text style={styles.errorText}>• {item}</Text>
                 )}
               />
+                    <View style={{height: 20}}/>
+
             </>
           )}
         </Animated.View>

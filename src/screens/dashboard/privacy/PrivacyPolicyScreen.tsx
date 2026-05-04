@@ -91,12 +91,6 @@ const PrivacyPolicyScreen = () => {
     setWebKey(Date.now());
     setIsReloading(true);
     setIsHidden(false);
-
-    try {
-      webviewRef.current?.clearCache(true);
-    } catch (e) {}
-
-    webviewRef.current?.reload();
   };
 
   // Toggle div inside WebView
@@ -178,11 +172,8 @@ const PrivacyPolicyScreen = () => {
             key={webKey}
             ref={webviewRef}
             source={{ uri: finalUrl }}
-            javaScriptEnabled={true}
-            domStorageEnabled={false}
-            style={styles.webview}
-            cacheEnabled={true}
-            incognito={true}
+            javaScriptEnabled={true} 
+            style={styles.webview}  
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             onLoadStart={() => setIsReloading(true)}
@@ -192,19 +183,17 @@ const PrivacyPolicyScreen = () => {
               if (nativeEvent.progress === 1) {
                 setIsReloading(false);
               }
-            }}
-            scalesPageToFit={false}
+            }} 
+            originWhitelist={['*']}
             setBuiltInZoomControls={false}
             setDisplayZoomControls={false}
             bounces={false}
             overScrollMode="never"  
+            androidLayerType="hardware"
             scrollEnabled={true}
-            injectedJavaScript={injectedCSS}
-            keyboardDisplayRequiresUserAction={false}
+            injectedJavaScriptBeforeContentLoaded={injectedCSS} 
             automaticallyAdjustContentInsets={false}
-            contentMode="mobile"
-            allowsInlineMediaPlayback={true}
-            decelerationRate="normal" 
+             allowsInlineMediaPlayback={true} 
 
            />
 

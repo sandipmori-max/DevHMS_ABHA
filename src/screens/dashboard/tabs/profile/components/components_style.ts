@@ -110,6 +110,7 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   addAccountButton: {
+    width: "15%",
     margin: 16,
     padding: 16,
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
@@ -118,6 +119,8 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     gap: 4,
+    alignSelf: "flex-end",
+    marginBottom: 44,
     //  shadowColor: ERP_COLOR_CODE.ERP_BLACK,
     // shadowOffset: { width: 0, height: 1 },
     // shadowOpacity: 0.6,

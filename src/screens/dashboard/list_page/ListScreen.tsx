@@ -716,7 +716,7 @@ const ListScreen = () => {
                             color: "white",
                           },
                         ]}
-                        placeholder={`Search ${pageTitle.toLowerCase()} in list...`}
+                        placeholder={`Search in list...`}
                         value={searchQuery}
                         onChangeText={handleSearchChange}
                         placeholderTextColor={ERP_COLOR_CODE.ERP_6C757D}
@@ -869,7 +869,7 @@ const ListScreen = () => {
                         color: "white",
                       },
                     ]}
-                    placeholder={`Search ${pageTitle.toLowerCase()} in list...`}
+                    placeholder={`Search in list...`}
                     value={searchQuery}
                     onChangeText={handleSearchChange}
                     placeholderTextColor={ERP_COLOR_CODE.ERP_6C757D}

@@ -1744,7 +1744,7 @@ const PageScreen = () => {
               <Animated.View
                 entering={FadeInUp.delay(index * 70).springify()}
                 layout={Layout.springify()}
-                style={[
+                style={[ 
                   isLandscape && {
                     width: "100%",
                     flex: 1,
@@ -1939,7 +1939,7 @@ const PageScreen = () => {
               height: 80,
               width: 80,
               borderRadius: 10,
-              borderWidth: 1,
+              borderWidth: 0.4,
               borderColor: theme === "dark" ? "white" : "black",
               backgroundColor: theme === "dark" ? "black" : "white",
               justifyContent: "center",
@@ -2056,8 +2056,7 @@ const PageScreen = () => {
                             key={colIndex}
                             style={{
                               flex: 1,
-                              marginLeft: 4,
-                            }}
+                              marginHorizontal: 2}}
                           >
                             {renderItem({
                               item: col,

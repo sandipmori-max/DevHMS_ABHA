@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
   gif: {
     width: 120,
     height: 120,
-    marginBottom: 6,
+    marginBottom: 6, 
   },
   errorContainer: {
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
