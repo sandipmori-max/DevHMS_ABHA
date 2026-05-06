@@ -7,10 +7,11 @@ import {
   Modal,
   ScrollView,
   useWindowDimensions,
+  KeyboardAvoidingView,
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { styles } from "../page_style";
-import {  ERP_COLOR_CODE } from "../../../../utils/constants";
+import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import { getAjaxThunk } from "../../../../store/slices/ajax/thunk";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import FullViewLoader from "../../../../components/loader/FullViewLoader";
@@ -27,10 +28,10 @@ const AjaxPicker = ({
   errors,
   dtext,
   formValues,
-  isFromChild = false
+  isFromChild = false,
 }: any) => {
   const dispatch = useAppDispatch();
-const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const [selectedOption, setSelectedOption] = useState(
     dtext || item?.text || item?.value,
@@ -68,7 +69,9 @@ const { height, width } = useWindowDimensions();
     });
 
     // 2️⃣ Replace $UID with item.id
-    resolvedWhere = resolvedWhere?.replace(/\$UID/g, user?.id);
+    resolvedWhere = resolvedWhere
+      ?.replace(/\$UID/g, user?.id)
+      .replace(/\@UID/g, user?.id);
 
     try {
       setLoader(true);
@@ -120,38 +123,37 @@ const { height, width } = useWindowDimensions();
 
   return (
     <View style={{ marginBottom: 8 }}>
-      {
-        !isFromChild &&   <View style={{ flexDirection: "row" }}>
-        <TranslatedText
-          numberOfLines={1}
-          style={[
-            styles.label,
-            theme === "dark" && {
-              color: "white",
-            }, 
-          ]}
-          text={label}
-        ></TranslatedText>
-        {item?.tooltip !== label && (
-          <Text
+      {!isFromChild && (
+        <View style={{ flexDirection: "row" }}>
+          <TranslatedText
             numberOfLines={1}
             style={[
               styles.label,
               theme === "dark" && {
                 color: "white",
-              }, 
+              },
             ]}
-          >
-            {" "}
-            - ( {item?.tooltip} ){" "}
-          </Text>
-        )}
-        {item?.mandatory === "1" && (
-          <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
-        )}
-      </View>
-      }
-    
+            text={label}
+          ></TranslatedText>
+          {item?.tooltip !== label && (
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.label,
+                theme === "dark" && {
+                  color: "white",
+                },
+              ]}
+            >
+              {" "}
+              - ( {item?.tooltip} ){" "}
+            </Text>
+          )}
+          {item?.mandatory === "1" && (
+            <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
+          )}
+        </View>
+      )}
 
       <TouchableOpacity
         style={[
@@ -175,16 +177,15 @@ const { height, width } = useWindowDimensions();
           },
           item?.disabled == "1" &&
             theme === "dark" && {
-              backgroundColor: 'gray',
+              backgroundColor: "gray",
             },
           isFromChild && {
-            padding : 6,
+            padding: 6,
             borderRadius: 4,
           },
           item?.disabled == "1" && {
-            paddingVertical: 7
-          }
-
+            paddingVertical: 7,
+          },
         ]}
         onPress={() => {
           if (item?.disabled !== "1") {
@@ -213,190 +214,202 @@ const { height, width } = useWindowDimensions();
         />
       </TouchableOpacity>
 
-      <Modal visible={open} supportedOrientations={["portrait", "landscape"]} animationType="slide" transparent>
-        <View
-          style={
-            [styles.overlay,isLandscape && {
-                            alignContent:'center',
-                            alignItems:'center'
-                          }]
-            
-            }
-        >
+      <Modal
+        visible={open}
+        supportedOrientations={["portrait", "landscape"]}
+        animationType="slide"
+        transparent
+      >
+        <KeyboardAvoidingView style={{ flex: 1 }}>
           <View
             style={[
-              {
-                height: height * 0.75,
-                backgroundColor:
-                  theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE,
-                borderTopLeftRadius: 16,
-                borderTopRightRadius: 16,
-                padding: 16,
+              styles.overlay,
+              isLandscape && {
+                alignContent: "center",
+                alignItems: "center",
               },
-              theme === "dark" && {
-                borderWidth: 1,
-                borderColor: "white",
-              }
-              , {
-          width: isLandscape ? '50%' : '100%'
-        }
             ]}
           >
             <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
+              style={[
+                {
+                  maxHeight: height * 0.75,
+                  flex: 1,
+                  backgroundColor:
+                    theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE,
+                  borderTopLeftRadius: 16,
+                  borderTopRightRadius: 16,
+                  padding: 16,
+                },
+                theme === "dark" && {
+                  borderWidth: 1,
+                  borderColor: "white",
+                },
+                {
+                  width: isLandscape ? "50%" : "100%",
+                },
+              ]}
             >
-              <TranslatedText
-                numberOfLines={1}
-                text={label}
-                style={{
-                  fontSize: 16,
-                  fontWeight: "600",
-                  color: theme === "dark" ? "white" : "#000",
-                }}
-              ></TranslatedText>
-              <TouchableOpacity onPress={() => setOpen(false)}>
-                <MaterialIcons
-                  name="close"
-                  size={24}
-                  color={theme === "dark" ? "white" : "#000"}
-                />
-              </TouchableOpacity>
-            </View>
-
-            <View style={{ position: "relative", marginVertical: 12 }}>
-              <TextInput
-                style={[
-                  styles.textInput,
-                  theme === "dark" && {
-                    color: "white",
-                    backgroundColor: "black",
-                    borderWidth: 0.4,
-                    borderColor: "white",
-                  },
-                  { paddingRight: 40 },
-                ]}
-                placeholder={t("title.title5")}
-                placeholderTextColor={ERP_COLOR_CODE.ERP_888}
-                value={search}
-                onChangeText={setSearch}
-                autoFocus={isLandscape ? false : true}
-              />
-
-              {search?.length > 0 && (
-                <TouchableOpacity
-                  onPress={() => setSearch("")}
-                  style={{
-                    position: "absolute",
-                    right: 10,
-                    top: "50%",
-                    transform: [{ translateY: -12 }],
-                  }}
-                >
-                  <MaterialIcons
-                    name="close"
-                    size={20}
-                    color={ERP_COLOR_CODE.ERP_888}
-                  />
-                </TouchableOpacity>
-              )}
-            </View>
-
-            {loader ? (
               <View
                 style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignContent: "center",
-                  alignItems: "center",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                 }}
               >
-                <FullViewLoader isShowTop={false} />
+                <TranslatedText
+                  numberOfLines={1}
+                  text={label}
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "600",
+                    color: theme === "dark" ? "white" : "#000",
+                  }}
+                ></TranslatedText>
+                <TouchableOpacity onPress={() => setOpen(false)}>
+                  <MaterialIcons
+                    name="close"
+                    size={24}
+                    color={theme === "dark" ? "white" : "#000"}
+                  />
+                </TouchableOpacity>
               </View>
-            ) : (
-              <ScrollView
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
-              >
-                {options?.length > 0 ? (
-                  options?.map((opt: any, i: number) => {
-                    const entries = Object.entries(opt).filter(
-                      ([key]) => !key.toLowerCase().includes("id"),
-                    );
 
-                    const isGrid = entries.length >= 3;
+              <View style={{ position: "relative", marginVertical: 12 }}>
+                <TextInput
+                  style={[
+                    styles.textInput,
+                    theme === "dark" && {
+                      color: "white",
+                      backgroundColor: "black",
+                      borderWidth: 0.4,
+                      borderColor: "white",
+                    },
+                    { paddingRight: 40 },
+                  ]}
+                  placeholder={t("title.title5")}
+                  placeholderTextColor={ERP_COLOR_CODE.ERP_888}
+                  value={search}
+                  onChangeText={setSearch}
+                  autoFocus={isLandscape ? false : true}
+                />
 
-                    return (
-                      <TouchableOpacity
-                        key={i}
-                        style={[
-                          styles.option,
-                          { paddingVertical: 12 },
-                          theme === "dark" && {
-                            borderBottomColor: ERP_COLOR_CODE.ERP_F8F9FA,
-                          },
-                        ]}
-                        onPress={() => handleSelect(opt)}
-                      >
-                        <View
-                          style={{
-                            flexDirection: isGrid ? "row" : "column",
-                            flexWrap: isGrid ? "wrap" : "nowrap",
-                          }}
-                        >
-                          {entries?.map(([key, value], idx) => (
-                            <View
-                              key={idx}
-                              style={{
-                                width: isGrid ? "33.33%" : "100%",
-                                paddingVertical: 4,
-                                paddingHorizontal: 6,
-                              }}
-                            >
-                              <TranslatedText
-                                style={[
-                                  {
-                                    color:
-                                      key === label?.toLowerCase()
-                                        ? ERP_COLOR_CODE.ERP_APP_COLOR
-                                        : ERP_COLOR_CODE.ERP_BLACK,
-                                    fontSize:
-                                      key === label?.toLowerCase() ? 16 : 14,
-                                    fontWeight:
-                                      key === label?.toLowerCase()
-                                        ? "700"
-                                        : "400",
-                                  },
-                                  {
-                                    color: theme === "dark" ? "white" : "#000",
-                                  },
-                                ]}
-                                numberOfLines={1}
-                                text={String(value)}
-                              ></TranslatedText>
-                            </View>
-                          ))}
-                        </View>
-                      </TouchableOpacity>
-                    );
-                  })
-                ) : (
-                  <View
+                {search?.length > 0 && (
+                  <TouchableOpacity
+                    onPress={() => setSearch("")}
                     style={{
-                      marginVertical: 12,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: 100,
-                      alignContent: "center",
-                      marginTop: 200,
+                      position: "absolute",
+                      right: 10,
+                      top: "50%",
+                      transform: [{ translateY: -12 }],
                     }}
                   >
-                    <NoData isShowTop={false} />
-                  </View>
+                    <MaterialIcons
+                      name="close"
+                      size={20}
+                      color={ERP_COLOR_CODE.ERP_888}
+                    />
+                  </TouchableOpacity>
                 )}
-              </ScrollView>
-            )}
+              </View>
+
+              {loader ? (
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <FullViewLoader isShowTop={false} />
+                </View>
+              ) : (
+                <ScrollView
+                  keyboardShouldPersistTaps="handled"
+                  showsVerticalScrollIndicator={false}
+                >
+                  {options?.length > 0 ? (
+                    options?.map((opt: any, i: number) => {
+                      const entries = Object.entries(opt).filter(
+                        ([key]) => !key.toLowerCase().includes("id"),
+                      );
+
+                      const isGrid = entries.length >= 3;
+
+                      return (
+                        <TouchableOpacity
+                          key={i}
+                          style={[
+                            styles.option,
+                            { paddingVertical: 12 },
+                            theme === "dark" && {
+                              borderBottomColor: ERP_COLOR_CODE.ERP_F8F9FA,
+                            },
+                          ]}
+                          onPress={() => handleSelect(opt)}
+                        >
+                          <View
+                            style={{
+                              flexDirection: isGrid ? "row" : "column",
+                              flexWrap: isGrid ? "wrap" : "nowrap",
+                            }}
+                          >
+                            {entries?.map(([key, value], idx) => (
+                              <View
+                                key={idx}
+                                style={{
+                                  width: isGrid ? "33.33%" : "100%",
+                                  paddingVertical: 4,
+                                  paddingHorizontal: 6,
+                                }}
+                              >
+                                <TranslatedText
+                                  style={[
+                                    {
+                                      color:
+                                        key === label?.toLowerCase()
+                                          ? ERP_COLOR_CODE.ERP_APP_COLOR
+                                          : ERP_COLOR_CODE.ERP_BLACK,
+                                      fontSize:
+                                        key === label?.toLowerCase() ? 16 : 14,
+                                      fontWeight:
+                                        key === label?.toLowerCase()
+                                          ? "700"
+                                          : "400",
+                                    },
+                                    {
+                                      color:
+                                        theme === "dark" ? "white" : "#000",
+                                    },
+                                  ]}
+                                  numberOfLines={1}
+                                  text={String(value)}
+                                ></TranslatedText>
+                              </View>
+                            ))}
+                          </View>
+                        </TouchableOpacity>
+                      );
+                    })
+                  ) : (
+                    <View
+                      style={{
+                        marginVertical: 12,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: 100,
+                        alignContent: "center",
+                        marginTop: 200,
+                      }}
+                    >
+                      <NoData isShowTop={false} />
+                    </View>
+                  )}
+                </ScrollView>
+              )}
+            </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {errors[item.field] && <InputError error={errors[item?.field]} />}

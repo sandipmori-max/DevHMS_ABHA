@@ -1291,3 +1291,26 @@ export const getDashboardAI = async (dashboardData) => {
     return null;
   }
 };
+
+export const getDashboardIcon = (type) => {
+  if (!type) return "dashboard";
+
+  const key = type.trim().toUpperCase();
+
+  const iconMap = {
+    SYSTEM: "settings-suggest",
+    DISPATCH: "local-shipping",
+    ACCOUNTS: "account-balance",
+    LAB: "science",
+    MAINTENANCE: "build",
+    MARKETING: "campaign",
+    PURCHASE: "shopping-cart",
+    SALES: "point-of-sale",
+    STORE: "store",
+    ALL: "business",
+    GENERAL: "generating-tokens",
+    GRID: "grid-view",
+  };
+
+  return iconMap[key] || "business"; // default fallback
+};

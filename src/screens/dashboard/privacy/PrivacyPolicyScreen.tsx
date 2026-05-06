@@ -91,6 +91,11 @@ const PrivacyPolicyScreen = () => {
     setWebKey(Date.now());
     setIsReloading(true);
     setIsHidden(false);
+
+    try {
+      webviewRef.current?.clearCache(true);
+    } catch (e) {}
+
   };
 
   // Toggle div inside WebView
@@ -147,21 +152,6 @@ const PrivacyPolicyScreen = () => {
     });
   }, [navigation, theme, isHidden, item, isFromChart]);
 
-  const injectedCSS = `
-  (function() {
-    var meta = document.createElement('meta'); 
-    meta.name = 'viewport'; 
-    meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'; 
-    document.getElementsByTagName('head')[0].appendChild(meta);
-
-    document.body.style.overflow = 'hidden';   // extra scroll remove
-    document.body.style.margin = '0';
-    document.body.style.padding = '0';
-  })();
-  true;
-`;
-
-
   return (
     <SafeAreaView style={styles.container}>
       {!finalUrl || (isFromChart && !token) ? (
@@ -169,31 +159,78 @@ const PrivacyPolicyScreen = () => {
       ) : (
         <>
           <WebView
-            key={webKey}
             ref={webviewRef}
             source={{ uri: finalUrl }}
-            javaScriptEnabled={true} 
-            style={styles.webview}  
-            showsVerticalScrollIndicator={false}
+            startInLoadingState={true}
+            javaScriptEnabled={true}
+            domStorageEnabled={false}
+            style={styles.webview}
             showsHorizontalScrollIndicator={false}
-            onLoadStart={() => setIsReloading(true)}
-            onLoadEnd={() => setIsReloading(false)}
-            onError={() => setIsReloading(false)}
-            onLoadProgress={({ nativeEvent }) => {
-              if (nativeEvent.progress === 1) {
-                setIsReloading(false);
-              }
-            }} 
-            originWhitelist={['*']}
-            setBuiltInZoomControls={false}
-            setDisplayZoomControls={false}
+            showsVerticalScrollIndicator={false}
             bounces={false}
-            overScrollMode="never"  
-            androidLayerType="hardware"
             scrollEnabled={true}
-            injectedJavaScriptBeforeContentLoaded={injectedCSS} 
-            automaticallyAdjustContentInsets={false}
-             allowsInlineMediaPlayback={true} 
+            decelerationRate={0.998}
+            cacheEnabled={true}
+            incognito={true}
+            cacheMode="LOAD_DEFAULT"
+            renderLoading={() => (
+              <View
+                style={[
+                  styles.loaderContainer,
+                  theme === "dark" && {
+                    backgroundColor: "black",
+                  },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.loaderContainer,
+                    theme === "dark" && {
+                      backgroundColor: "black",
+                    },
+                  ]}
+                >
+                  <FullViewLoader isShowTop={false} />
+                </View>
+              </View>
+            )}
+            allowsBackForwardNavigationGestures={true}
+            textZoom={100}
+            allowsLinkPreview={false}
+            onError={(syntheticEvent) => {
+              const { nativeEvent } = syntheticEvent;
+              setIsReloading(false);
+            }}
+            onLoadStart={() => {
+              webviewRef.current?.clearCache(true);
+              // webviewRef.current?.clearHistory();
+              setIsReloading(true);
+            }}
+            onLoadEnd={() => {
+              setIsReloading(false);
+              // const jsCode = `
+              //   (function() {
+              //     const div = document.getElementById('divPage');
+              //     if (div) {
+              //       div.style.display = 'none';
+              //     }
+              //   })();
+              //   true;
+              // `;
+              // webviewRef.current?.injectJavaScript(jsCode);
+              // setIsHidden(true)
+            }}
+            injectedJavaScript={`
+              (function() {
+                const allIds = Array.from(document.querySelectorAll('[id]')).map(el => el.id);
+                const allClasses = Array.from(document.querySelectorAll('[class]')).map(el => el.className);
+                window.ReactNativeWebView.postMessage(JSON.stringify({ ids: allIds, classes: allClasses }));
+              })();
+              true;
+            `}
+            onMessage={(event) => {
+              const data = JSON.parse(event.nativeEvent.data);
+            }}
 
            />
 

@@ -20,7 +20,10 @@ import useTranslations from "../../../../hooks/useTranslations";
 import InputError from "../../../../components/error/InputError";
 import NoData from "../../../../components/no_data/NoData";
 import TranslatedText from "../../tabs/home/TranslatedText";
-import { updateSelectedBranchesState, updateSelectedBranchIdsState } from "../../../../store/slices/auth/authSlice";
+import {
+  updateSelectedBranchesState,
+  updateSelectedBranchIdsState,
+} from "../../../../store/slices/auth/authSlice";
 
 const CustomMultiplePicker = ({
   isValidate,
@@ -58,26 +61,26 @@ const CustomMultiplePicker = ({
     if (!isForMultipleSelection) setSelectedOption(dtext);
   }, [dtext]);
 
- useEffect(() => {
-  const minusOneItem = options.find(item => item.value === -1);
-  const otherOptions = options.filter(item => item.value !== -1);
+  useEffect(() => {
+    const minusOneItem = options.find((item) => item.value === -1);
+    const otherOptions = options.filter((item) => item.value !== -1);
 
-  let result = otherOptions;
+    let result = otherOptions;
 
-  if (search) {
-    const lower = search.toLowerCase();
-    result = otherOptions.filter(o =>
-      o.name?.toLowerCase().includes(lower)
-    );
-  }
+    if (search) {
+      const lower = search.toLowerCase();
+      result = otherOptions.filter((o) =>
+        o.name?.toLowerCase().includes(lower),
+      );
+    }
 
-  // last me -1 add karo
-  if (minusOneItem) {
-    result = [...result, minusOneItem];
-  }
+    // last me -1 add karo
+    if (minusOneItem) {
+      result = [...result, minusOneItem];
+    }
 
-  setFilteredOptions(result);
-}, [search, options]);
+    setFilteredOptions(result);
+  }, [search, options]);
 
   const openBottomSheet = () => {
     Animated.timing(slideAnim, {
@@ -160,13 +163,12 @@ const CustomMultiplePicker = ({
   const handleDone = () => {
     onValueChange(selectedBranches);
     closeBottomSheet();
-  }; 
- 
+  };
+
   return (
     <View style={{ marginVertical: 8 }}>
       {/* LABEL */}
 
-     
       {/* PICKER */}
       <TouchableOpacity
         style={[styles.pickerBox1]}
@@ -193,36 +195,83 @@ const CustomMultiplePicker = ({
       </TouchableOpacity>
 
       {/* MODAL */}
-      <Modal transparent visible={open} supportedOrientations={["portrait", "landscape"]} animationType="none">
+      <Modal
+        transparent
+        visible={open}
+        supportedOrientations={["portrait", "landscape"]}
+        animationType="none"
+      >
         <TouchableWithoutFeedback onPress={closeBottomSheet}>
           <View style={{ flex: 1, backgroundColor: "#00000066" }} />
         </TouchableWithoutFeedback>
 
         <Animated.View
-          style={[{
-            position: "absolute",
-            top: slideAnim,
-            height: SCREEN_HEIGHT * 0.75,
-            backgroundColor: theme === "dark" ? "black" : "white",
-            width: isLandscape ? "50%" : "100%",
-            padding: 16,
-            borderTopLeftRadius: 12,
-            borderTopRightRadius: 12,
-            borderWidth: 1,
-            borderColor: theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR,
-          }, isLandscape ? { left: "25%" } : null] }
+          style={[
+            {
+              position: "absolute",
+              top: slideAnim,
+              height: SCREEN_HEIGHT * 0.75,
+              backgroundColor: theme === "dark" ? "black" : "white",
+              width: isLandscape ? "50%" : "100%",
+              padding: 16,
+              borderTopLeftRadius: 12,
+              borderTopRightRadius: 12,
+              borderWidth: 1,
+              borderColor:
+                theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR,
+            },
+            isLandscape ? { left: "25%" } : null,
+          ]}
         >
           {/* HEADER */}
           <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
+            style={{
+              alignContent: "center",
+              alignItems: "center",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
           >
-            <Text style={{ fontWeight: "800", color: theme === "dark" ? "#fff" : "#000" }}>
+            <Text
+              style={{
+                fontWeight: "800",
+                color: theme === "dark" ? "#fff" : "#000",
+              }}
+            >
               {t("text.text34")} {label}
             </Text>
 
-            <TouchableOpacity onPress={closeBottomSheet}>
-              <MaterialIcons style={{ color: theme === "dark" ? "#fff" : "#000" }} name="close" size={24} />
-            </TouchableOpacity>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              {isForMultipleSelection && (
+                <TouchableOpacity
+                  onPress={handleDone}
+                  style={{
+                    backgroundColor:
+                      theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR,
+                    justifyContent: "center",
+                    alignContent: "center",
+                    alignItems: "center",
+                    paddingHorizontal: 8,
+                    borderRadius: 4,
+                    marginRight: 22,
+                  }}
+                >
+                  <Text style={{ color: theme === "dark" ? "#000" : "white" }}>
+                    Done
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              <TouchableOpacity onPress={closeBottomSheet}>
+                <MaterialIcons
+                  style={{ color: theme === "dark" ? "#fff" : "#000" }}
+                  name="close"
+                  size={24}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* SEARCH */}
@@ -232,7 +281,8 @@ const CustomMultiplePicker = ({
             onChangeText={setSearch}
             style={{
               borderWidth: 0.4,
-              borderColor:  theme === "dark" ? '#fff' : ERP_COLOR_CODE.ERP_F8F9FA,
+              borderColor:
+                theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_F8F9FA,
               borderRadius: 8,
               padding: 8,
               marginVertical: 8,
@@ -275,10 +325,9 @@ const CustomMultiplePicker = ({
                         },
 
                         {
-                          backgroundColor:
-                            selected  
-                              ? ERP_COLOR_CODE.ERP_F8F9FA
-                              : ERP_COLOR_CODE.ERP_WHITE,
+                          backgroundColor: selected
+                            ? ERP_COLOR_CODE.ERP_F8F9FA
+                            : ERP_COLOR_CODE.ERP_WHITE,
                           marginBottom: 4,
                           borderRadius: 8,
                           padding: 12,
@@ -302,7 +351,7 @@ const CustomMultiplePicker = ({
                         }
                       }}
                     >
-                      <Text style={[ theme === "dark" && { color: "#fff" }]}>
+                      <Text style={[theme === "dark" && { color: "#fff" }]}>
                         {opt.name}
                       </Text>
 
@@ -320,22 +369,6 @@ const CustomMultiplePicker = ({
                 <NoData isShowTop={false} />
               )}
             </ScrollView>
-          )}
-
-          {/* DONE */}
-          {isForMultipleSelection && (
-            <TouchableOpacity
-              onPress={handleDone}
-              style={{
-                marginTop: 10,
-                padding: 12,
-                backgroundColor: theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR,
-                borderRadius: 8,
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ color: theme === "dark" ? "#000" : "white" }}>Done</Text>
-            </TouchableOpacity>
           )}
         </Animated.View>
       </Modal>

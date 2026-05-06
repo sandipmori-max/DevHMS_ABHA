@@ -18,15 +18,10 @@ Payroll Mobile App – API Documentation
 d1ea2ea6-591c-4eba-9128-02b0e243614a
 373b67afa904484cad3dd86e2c085176
 
-
 d1ea2ea6-591c-4eba-9128-02b0e243614a
 438acfebe5c442b4b5588be214318b93
 
-
-
 value="61f573de0c2943368e83eb5784dfaa92"
-
-
 
 //// sandip 
 dev Infinix ZERO 20
@@ -35,7 +30,6 @@ fir c-2bQQzIRf2t5q8YzHfXXQ:APA91bFwMLVKqV3pzj3G8PyB2NN9B43Qq4uuODozl798BwmL41diK
 
 token respo - fc6979ac5e0e4560a1a0b9425f46a09c 
 new token - 6b30f59259594a519dcc20c66ea9b84b
-
 
 
 1. Authentication Flow

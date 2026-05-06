@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { styles } from "../page_style";
-import {  ERP_COLOR_CODE } from "../../../../utils/constants";
+import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import { getDDLThunk } from "../../../../store/slices/dropdown/thunk";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import FullViewLoader from "../../../../components/loader/FullViewLoader";
@@ -20,8 +20,8 @@ import useTranslations from "../../../../hooks/useTranslations";
 import InputError from "../../../../components/error/InputError";
 import NoData from "../../../../components/no_data/NoData";
 import TranslatedText from "../../tabs/home/TranslatedText";
+import { getDashboardIcon } from "../../../../utils/helpers";
 
- 
 const CustomPicker = ({
   isValidate,
   label,
@@ -32,13 +32,13 @@ const CustomPicker = ({
   dtext,
   isForceOpen,
   isForMultipleSelection = false,
-  isFromDashboard=false,
-  isFromChild = false
+  isFromDashboard = false,
+  isFromChild = false,
 }: any) => {
   const { t } = useTranslations();
-  const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
-  const SCREEN_HEIGHT= height;
+  const SCREEN_HEIGHT = height;
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<any[]>([]);
   const dispatch = useAppDispatch();
@@ -46,9 +46,9 @@ const CustomPicker = ({
   const [selectedOption, setSelectedOption] = useState("");
   const theme = useAppSelector((state) => state?.theme.mode);
   const { user } = useAppSelector((state) => state?.auth);
- 
+
   const optionsCache = useRef<{ [key: string]: any[] }>({});
- 
+
   // Bottom sheet animation
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
@@ -96,7 +96,7 @@ const CustomPicker = ({
           where: !isForceOpen ? `UserID in (${user?.id}, -1)` : item?.ddlwhere,
         }),
       ).unwrap();
-console.log("res of dropdown ++++++ +++ ++ + + ++ + + + + + + ", res)
+      console.log("res of dropdown ++++++ +++ ++ + + ++ + + + + + + ", res);
       const data = res?.data ?? [];
       setOptions(data);
       if (item?.dtlid) optionsCache.current[item.dtlid] = data;
@@ -110,7 +110,7 @@ console.log("res of dropdown ++++++ +++ ++ + + ++ + + + + + + ", res)
   // const filtered = options.filter(item => item.value !== -1);
 
   return (
-    <View style={{ marginBottom : isFromDashboard ? 2 : 8 }}>
+    <View style={{ marginBottom: isFromDashboard ? 2 : 8 }}>
       {/* Label */}
       {!isFromChild && !isFromDashboard && !isForceOpen && (
         <TranslatedText
@@ -120,24 +120,30 @@ console.log("res of dropdown ++++++ +++ ++ + + ++ + + + + + + ", res)
         ></TranslatedText>
       )}
 
-      {!isFromChild &&  isForceOpen && (
+      {!isFromChild && isForceOpen && (
         <View style={{ flexDirection: "row" }}>
           <TranslatedText
             numberOfLines={1}
             text={label}
-            style={[styles.label, theme === "dark" && { color: "white" }, 
+            style={[
+              styles.label,
+              theme === "dark" && { color: "white" },
               {
-                  maxWidth: 120
-                }
+                maxWidth: 120,
+              },
             ]}
           ></TranslatedText>
-          {(label.length > 40) && item?.tooltip !== label && (
+          {label.length > 40 && item?.tooltip !== label && (
             <TranslatedText
               numberOfLines={1}
               text={`- ( ${item?.tooltip} )`}
-              style={[styles.label, theme === "dark" && { color: "white" },  {
-                  maxWidth: 80
-                },]}
+              style={[
+                styles.label,
+                theme === "dark" && { color: "white" },
+                {
+                  maxWidth: 80,
+                },
+              ]}
             ></TranslatedText>
           )}
           {item?.mandatory === "1" && (
@@ -153,7 +159,7 @@ console.log("res of dropdown ++++++ +++ ++ + + ++ + + + + + + ", res)
           item?.disabled === "1" && styles.disabledBox,
           item?.disabled === "1" &&
             theme === "dark" && {
-              backgroundColor:  'gray',
+              backgroundColor: "gray",
               borderWidth: 1,
             },
           isForceOpen &&
@@ -169,7 +175,7 @@ console.log("res of dropdown ++++++ +++ ++ + + ++ + + + + + + ", res)
             },
           isForceOpen &&
             theme === "dark" && {
-              backgroundColor:  'gray',
+              backgroundColor: "gray",
             },
           item?.background && {
             backgroundColor: item?.background,
@@ -180,16 +186,16 @@ console.log("res of dropdown ++++++ +++ ++ + + ++ + + + + + + ", res)
 
           item?.disabled == "1" &&
             theme === "dark" && {
-              backgroundColor: 'gray',
+              backgroundColor: "gray",
             },
           isFromDashboard && {
             paddingVertical: 6,
             borderRadius: 4,
           },
           isFromChild && {
-            padding : 6,
+            padding: 6,
             borderRadius: 4,
-          }
+          },
         ]}
         onPress={() => {
           if (item?.disabled !== "1") handleOpen();
@@ -218,7 +224,12 @@ console.log("res of dropdown ++++++ +++ ++ + + ++ + + + + + + ", res)
       </TouchableOpacity>
 
       {/* Bottom Sheet Modal */}
-      <Modal transparent visible={open} animationType="none" supportedOrientations={["portrait", "landscape"]}>
+      <Modal
+        transparent
+        visible={open}
+        animationType="none"
+        supportedOrientations={["portrait", "landscape"]}
+      >
         {/* Close outside area */}
         <TouchableWithoutFeedback onPress={closeBottomSheet}>
           <View style={{ flex: 1, backgroundColor: "#00000066" }} />
@@ -226,39 +237,42 @@ console.log("res of dropdown ++++++ +++ ++ + + ++ + + + + + + ", res)
 
         {/* Bottom Sheet */}
         <Animated.View
-          style={[{
-            position: "absolute",
-            top: slideAnim,
-           
-            height: SCREEN_HEIGHT * 0.75,
-            backgroundColor: theme === "dark" ? "black" : "white",
-            borderTopLeftRadius: 16,
-            borderTopRightRadius: 16,
-            padding: 16,
-            borderWidth: 1,
-            borderColor: theme === "dark" ? "white" : "black",
-            width: isLandscape ? '50%' : '100%'
-          },
-          !isLandscape && {
-             left: 0,
-            right: 0,
-          },
-          isLandscape && {
-             right: width * 0.25,
-             justifyContent:'center'
-          }
-        
-        ]}
+          style={[
+            {
+              position: "absolute",
+              top: slideAnim,
+
+              height: SCREEN_HEIGHT * 0.75,
+              backgroundColor: theme === "dark" ? "black" : "white",
+              borderTopLeftRadius: 16,
+              borderTopRightRadius: 16,
+              padding: 16,
+              borderWidth: 1,
+              borderColor: theme === "dark" ? "white" : "black",
+              width: isLandscape ? "50%" : "100%",
+            },
+            !isLandscape && {
+              left: 0,
+              right: 0,
+            },
+            isLandscape && {
+              right: width * 0.25,
+              justifyContent: "center",
+            },
+          ]}
         >
           <View
-            style={[{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              padding: 4,
-            }, isLandscape && {
-                alignContent:'center',
-                alignItems:'center'
-              }]}
+            style={[
+              {
+                flexDirection: "row",
+                justifyContent: "space-between",
+                padding: 4,
+              },
+              isLandscape && {
+                alignContent: "center",
+                alignItems: "center",
+              },
+            ]}
           >
             <TranslatedText
               style={{
@@ -325,24 +339,51 @@ console.log("res of dropdown ++++++ +++ ++ + + ++ + + + + + + ", res)
                       closeBottomSheet();
                     }}
                   >
-                    <TranslatedText
-                      style={[
-                        {
-                          color:
-                            theme === "dark"
-                              ? "white"
-                              : selectedOption === opt?.name
-                              ? ERP_COLOR_CODE.ERP_APP_COLOR
-                              : ERP_COLOR_CODE.ERP_BLACK,
-                        },
-                        selectedOption === opt?.name && {
-                          fontSize: 16,
-                          fontWeight: "600",
-                        },
-                      ]}
-                      numberOfLines={1}
-                      text={opt?.name}
-                    ></TranslatedText>
+                    {isFromDashboard && (item?.title === "Branch" ||  item?.title === "Type") ? (
+                      <>
+                        <View style={{ flexDirection: "row", gap: 8 }}>
+                          <MaterialIcons   name={getDashboardIcon(opt?.name)} size={18} />
+                          <TranslatedText
+                            style={[
+                              {
+                                color:
+                                  theme === "dark"
+                                    ? "white"
+                                    : selectedOption === opt?.name
+                                    ? ERP_COLOR_CODE.ERP_APP_COLOR
+                                    : ERP_COLOR_CODE.ERP_BLACK,
+                              },
+                              selectedOption === opt?.name && {
+                                fontSize: 16,
+                                fontWeight: "600",
+                              },
+                            ]}
+                            numberOfLines={1}
+                            text={opt?.name}
+                          ></TranslatedText>
+                        </View>
+                      </>
+                    ) : (
+                      <TranslatedText
+                        style={[
+                          {
+                            color:
+                              theme === "dark"
+                                ? "white"
+                                : selectedOption === opt?.name
+                                ? ERP_COLOR_CODE.ERP_APP_COLOR
+                                : ERP_COLOR_CODE.ERP_BLACK,
+                          },
+                          selectedOption === opt?.name && {
+                            fontSize: 16,
+                            fontWeight: "600",
+                          },
+                        ]}
+                        numberOfLines={1}
+                        text={opt?.name}
+                      ></TranslatedText>
+                    )}
+
                     {selectedOption === opt?.name && (
                       <MaterialIcons
                         name="done-all"
