@@ -233,7 +233,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-          height: isLandscape ? 56: 48 
       },
       headerBackTitle: "",
       headerTintColor: "#fff",

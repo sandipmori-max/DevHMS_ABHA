@@ -235,14 +235,14 @@ const ListScreen = () => {
               isLoading={actionLoaders}
             />
           )}
-          {/* {
+          {
             !isFromAlertCard && <ERPIcon
               name={isTableView ? 'list' : 'apps'}
               onPress={() => {
                 setIsTableView(!isTableView);
               }}
             />
-          } */}
+          }
           {!error && (
             <ERPIcon
               name={isFilterVisible ? "close" : "filter-alt"}
@@ -1183,6 +1183,9 @@ const ListScreen = () => {
                   backgroundColor:
                     theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
                 },
+                isLandscape && {
+                  bottom: 10
+                }
               ]}
               onPressIn={onPressIn}
               onPressOut={onPressOut}

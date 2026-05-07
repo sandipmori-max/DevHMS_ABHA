@@ -842,51 +842,51 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                             </View>
 
                             {/* Add Button */}
-                           
-                              <TouchableOpacity
-                                style={[
-                                  styles.addButton,
-                                  {
-                                    backgroundColor:
-                                      theme === "dark"
-                                        ? "white"
-                                        : ERP_COLOR_CODE.ERP_APP_COLOR,
-                                  },
-                                  loader && styles.disabledButton,
-                                  theme === "dark" && {
-                                    backgroundColor: "white",
-                                    borderColor: "white",
-                                    borderWidth: 1,
-                                  },
-                                ]}
-                                onPress={() => handleSubmit()}
-                                onPressIn={onPressIn}
-                                onPressOut={onPressOut}
-                                disabled={loader}
-                                activeOpacity={1} // avoid opacity conflict
-                              >
-                                <MaterialIcons
-                                  name="person-add-alt"
-                                  size={24}
-                                  color={
-                                    theme === "dark"
-                                      ? "black"
-                                      : ERP_COLOR_CODE.ERP_WHITE
-                                  }
-                                />
-                                <Text
-                                  style={[
-                                    styles.addButtonText,
-                                    theme === "dark" && { color: "black" },
-                                  ]}
-                                >
-                                  {loader
-                                    ? t("account.adding")
-                                    : t("account.add")}
-                                </Text>
-                              </TouchableOpacity> 
 
-                              <View
+                            <TouchableOpacity
+                              style={[
+                                styles.addButton,
+                                {
+                                  backgroundColor:
+                                    theme === "dark"
+                                      ? "white"
+                                      : ERP_COLOR_CODE.ERP_APP_COLOR,
+                                },
+                                loader && styles.disabledButton,
+                                theme === "dark" && {
+                                  backgroundColor: "white",
+                                  borderColor: "white",
+                                  borderWidth: 1,
+                                },
+                              ]}
+                              onPress={() => handleSubmit()}
+                              onPressIn={onPressIn}
+                              onPressOut={onPressOut}
+                              disabled={loader}
+                              activeOpacity={1} // avoid opacity conflict
+                            >
+                              <MaterialIcons
+                                name="person-add-alt"
+                                size={24}
+                                color={
+                                  theme === "dark"
+                                    ? "black"
+                                    : ERP_COLOR_CODE.ERP_WHITE
+                                }
+                              />
+                              <Text
+                                style={[
+                                  styles.addButtonText,
+                                  theme === "dark" && { color: "black" },
+                                ]}
+                              >
+                                {loader
+                                  ? t("account.adding")
+                                  : t("account.add")}
+                              </Text>
+                            </TouchableOpacity>
+
+                            <View
                               style={{
                                 height: 140,
                               }}
@@ -960,8 +960,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                 height: 100,
                                 width: 140,
                                 marginBottom: 12,
-                                backgroundColor
-                                  : "white",
+                                backgroundColor: "white",
                               }}
                             >
                               <FastImage
@@ -979,8 +978,12 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                     marginTop: 0,
                                   },
                                   user?.company_code
-                            ?.toLowerCase()
-                            ?.includes("deverp") && { width: 80, height: 80 , marginTop: 10},
+                                    ?.toLowerCase()
+                                    ?.includes("deverp") && {
+                                    width: 80,
+                                    height: 80,
+                                    marginTop: 10,
+                                  },
                                 ]}
                                 onError={() => {
                                   setImageExists(false);
@@ -1377,52 +1380,52 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                     </View>
 
                                     {/* Add Button */}
-                                    
-                                      <TouchableOpacity
+
+                                    <TouchableOpacity
+                                      style={[
+                                        styles.addButton,
+                                        {
+                                          backgroundColor:
+                                            theme === "dark"
+                                              ? "white"
+                                              : ERP_COLOR_CODE.ERP_APP_COLOR,
+                                        },
+                                        loader && styles.disabledButton,
+                                        theme === "dark" && {
+                                          backgroundColor: "white",
+                                          borderColor: "white",
+                                          borderWidth: 1,
+                                        },
+                                      ]}
+                                      onPress={() => handleSubmit()}
+                                      onPressIn={onPressIn}
+                                      onPressOut={onPressOut}
+                                      disabled={loader}
+                                      activeOpacity={1} // avoid opacity conflict
+                                    >
+                                      <MaterialIcons
+                                        name="person-add-alt"
+                                        size={24}
+                                        color={
+                                          theme === "dark"
+                                            ? "black"
+                                            : ERP_COLOR_CODE.ERP_WHITE
+                                        }
+                                      />
+                                      <Text
                                         style={[
-                                          styles.addButton,
-                                          {
-                                            backgroundColor:
-                                              theme === "dark"
-                                                ? "white"
-                                                : ERP_COLOR_CODE.ERP_APP_COLOR,
-                                          },
-                                          loader && styles.disabledButton,
+                                          styles.addButtonText,
                                           theme === "dark" && {
-                                            backgroundColor: "white",
-                                            borderColor: "white",
-                                            borderWidth: 1,
+                                            color: "black",
                                           },
                                         ]}
-                                        onPress={() => handleSubmit()}
-                                        onPressIn={onPressIn}
-                                        onPressOut={onPressOut}
-                                        disabled={loader}
-                                        activeOpacity={1} // avoid opacity conflict
                                       >
-                                        <MaterialIcons
-                                          name="person-add-alt"
-                                          size={24}
-                                          color={
-                                            theme === "dark"
-                                              ? "black"
-                                              : ERP_COLOR_CODE.ERP_WHITE
-                                          }
-                                        />
-                                        <Text
-                                          style={[
-                                            styles.addButtonText,
-                                            theme === "dark" && {
-                                              color: "black",
-                                            },
-                                          ]}
-                                        >
-                                          {loader
-                                            ? t("account.adding")
-                                            : t("account.add")}
-                                        </Text>
-                                      </TouchableOpacity>
- 
+                                        {loader
+                                          ? t("account.adding")
+                                          : t("account.add")}
+                                      </Text>
+                                    </TouchableOpacity>
+
                                     {/* <Text style={styles.note}>
                                       {t("account.msg1")}
                                     </Text> */}
