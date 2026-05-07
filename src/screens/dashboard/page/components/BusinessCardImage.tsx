@@ -638,7 +638,7 @@ loaderContainer: {
     borderWidth: 1,
     borderColor: "#ccc",
   },
-  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)" },
+  modalOverlay: { flex: 1, backgroundColor: "#00000099" },
   bottomSheet: {
     position: "absolute",
     bottom: 0,

@@ -66,6 +66,7 @@ import {
   Platform,
   useWindowDimensions,
   ScrollView,
+  Image,
 } from "react-native";
 import TranslatedText from "./TranslatedText";
 import GreetingBottomSheet from "./GreetingBottomSheet";
@@ -86,6 +87,8 @@ import { resetAjaxState } from "../../../../store/slices/ajax/ajaxSlice";
 import { resetAttendanceState } from "../../../../store/slices/attendance/attendanceSlice";
 import { resetDropdownState } from "../../../../store/slices/dropdown/dropdownSlice";
 import { resetSyncLocationState } from "../../../../store/slices/location/syncLocationSlice";
+import { ERP_ICON } from "../../../../assets";
+import { useBaseLink } from "../../../../hooks/useBaseLink";
 
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;
@@ -230,6 +233,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+          height: isLandscape ? 56: 48 
       },
       headerBackTitle: "",
       headerTintColor: "#fff",
@@ -548,7 +552,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
             borderRadius: 8,
             width: isFromHtml ? "100%" : isHorizontal ? "100%" : "48%",
             flex: 1,
-            
+
             borderLeftColor: accentColors[index % accentColors.length],
             borderWidth: 1,
             borderLeftWidth: 3,
@@ -558,7 +562,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
             borderWidth: 0.4,
             borderColor: ERP_COLOR_CODE.ERP_BORDER,
             borderLeftColor: accentColors[index % accentColors.length],
-          }
+          },
         ]}
         activeOpacity={0.7}
         onPress={async () => {
@@ -1360,6 +1364,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
           </View>
 
           <NoData isShowTop={false} />
+          
         </View>
       </View>
     );

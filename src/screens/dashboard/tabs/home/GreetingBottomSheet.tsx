@@ -82,7 +82,7 @@ export default GreetingBottomSheet;
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: "#00000099",
     justifyContent: "flex-end",
   },
 

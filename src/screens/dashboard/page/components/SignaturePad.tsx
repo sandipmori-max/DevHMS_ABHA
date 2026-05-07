@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "#00000099",
   },
   bottomSheet: {
     height: Dimensions.get("window").height / 2.5,

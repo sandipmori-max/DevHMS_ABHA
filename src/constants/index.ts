@@ -12,4 +12,4 @@ export enum EPermissionTypes {
   CAMERA = "camera",
 }
 
-export const ERP_APP_VERSION = "1.3.1";
+export const ERP_APP_VERSION = "1.3.2";

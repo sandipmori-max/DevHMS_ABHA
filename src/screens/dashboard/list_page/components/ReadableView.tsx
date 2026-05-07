@@ -177,7 +177,7 @@ const ReadableView = ({
     if (!item) return null;
     const name = item?.name?.toString() || `-`;
     const subName = item?.number || `-`;
- 
+
     const status = item?.status;
     const date = item?.date;
     const remarks = item?.remarks;
@@ -188,7 +188,7 @@ const ReadableView = ({
       item?.image && item?.image?.replace(/^https:\/\\/, "http://");
     const authUser = item?.authuser;
     const qty = item?.qty;
-
+    const { user } = useAppSelector((state) => state.auth);
     const avatarLetter =
       typeof name === "string" && name.trim() !== ""
         ? name
@@ -217,7 +217,10 @@ const ReadableView = ({
             marginHorizontal: 8,
             paddingTop: 6,
             borderWidth: 0.4,
-            borderColor: theme === "dark" ? ERP_COLOR_CODE.ERP_BORDER : ERP_COLOR_CODE.ERP_999,
+            borderColor:
+              theme === "dark"
+                ? ERP_COLOR_CODE.ERP_BORDER
+                : ERP_COLOR_CODE.ERP_999,
             width: isLandscape ? "48%" : "96%",
             overflow: "hidden",
           }}
@@ -290,15 +293,27 @@ const ReadableView = ({
                       />
                     </TouchableOpacity>
                   ) : (
-                    <Text
-                      style={{
-                        color: "black",
-                        fontWeight: "400",
-                        fontSize: 16,
-                      }}
-                    >
-                      {avatarLetter}
-                    </Text>
+                    <>
+                      {user?.company_code?.toLowerCase()?.includes("deverp") ? (
+                        <>
+                          <MaterialIcons
+                            color={"gray"}
+                            size={26}
+                            name="person"
+                          />
+                        </>
+                      ) : (
+                        <Text
+                          style={{
+                            color: "black",
+                            fontWeight: "400",
+                            fontSize: 16,
+                          }}
+                        >
+                          {avatarLetter}
+                        </Text>
+                      )}
+                    </>
                   )}
                 </>
               )}
@@ -462,17 +477,18 @@ const ReadableView = ({
           </TouchableOpacity>
           {
             <View>
-              {!!amount || !!qty && (
-                <View
-                  style={{
-                    marginBottom: 4,
-                    borderWidth: 1,
-                    borderStyle: "dashed",
-                    borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-                    opacity: 0.4,
-                  }}
-                />
-              )}
+              {!!amount ||
+                (!!qty && (
+                  <View
+                    style={{
+                      marginBottom: 4,
+                      borderWidth: 1,
+                      borderStyle: "dashed",
+                      borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+                      opacity: 0.4,
+                    }}
+                  />
+                ))}
 
               <View
                 style={{

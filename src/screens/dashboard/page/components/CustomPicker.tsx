@@ -59,7 +59,7 @@ const CustomPicker = ({
   // Animate bottom sheet OPEN
   const openBottomSheet = () => {
     Animated.timing(slideAnim, {
-      toValue: SCREEN_HEIGHT * 0.25,
+      toValue: 0,
       duration: 250,
       useNativeDriver: false,
     }).start();
@@ -108,7 +108,14 @@ const CustomPicker = ({
   }, [dispatch, item?.dtlid, item?.ddlwhere, open]);
 
   // const filtered = options.filter(item => item.value !== -1);
+  const [contentHeight, setContentHeight] = useState(0);
+  const MAX_HEIGHT = SCREEN_HEIGHT * 0.75;
+  const MIN_HEIGHT = SCREEN_HEIGHT * 0.25;
 
+  const dynamicHeight = Math.min(
+    Math.max(contentHeight + 80, MIN_HEIGHT), // +80 header + padding
+    MAX_HEIGHT,
+  );
   return (
     <View style={{ marginBottom: isFromDashboard ? 2 : 8 }}>
       {/* Label */}
@@ -231,8 +238,8 @@ const CustomPicker = ({
         supportedOrientations={["portrait", "landscape"]}
       >
         {/* Close outside area */}
-        <TouchableWithoutFeedback onPress={closeBottomSheet}>
-          <View style={{ flex: 1, backgroundColor: "#00000066" }} />
+        <TouchableWithoutFeedback>
+          <View style={{ flex: 1, backgroundColor: "#00000099" }} />
         </TouchableWithoutFeedback>
 
         {/* Bottom Sheet */}
@@ -240,9 +247,10 @@ const CustomPicker = ({
           style={[
             {
               position: "absolute",
-              top: slideAnim,
+              bottom: slideAnim,
 
-              height: SCREEN_HEIGHT * 0.75,
+              height: dynamicHeight,
+              maxHeight: SCREEN_HEIGHT * 0.65,
               backgroundColor: theme === "dark" ? "black" : "white",
               borderTopLeftRadius: 16,
               borderTopRightRadius: 16,
@@ -250,6 +258,7 @@ const CustomPicker = ({
               borderWidth: 1,
               borderColor: theme === "dark" ? "white" : "black",
               width: isLandscape ? "50%" : "100%",
+              justifyContent: "flex-end",
             },
             !isLandscape && {
               left: 0,
@@ -304,6 +313,9 @@ const CustomPicker = ({
             <ScrollView
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
+              onContentSizeChange={(w, h) => {
+                setContentHeight(h);
+              }}
             >
               {options.length > 0 ? (
                 options.map((opt: any, i: number) => (
@@ -320,14 +332,15 @@ const CustomPicker = ({
                         borderRadius: 8,
                         padding: 12,
                       },
-                      theme === "dark" &&
-                        selectedOption === opt?.name && {
-                          backgroundColor: "white",
-                        },
+                      
                       theme === "dark" && {
                         backgroundColor: "black",
                         borderBottomColor: ERP_COLOR_CODE.ERP_F8F9FA,
                       },
+                      theme === "dark" &&
+                        selectedOption === opt?.name && {
+                          backgroundColor: "gray",
+                        },
                     ]}
                     onPress={() => {
                       if (!isForceOpen) {
@@ -339,10 +352,15 @@ const CustomPicker = ({
                       closeBottomSheet();
                     }}
                   >
-                    {isFromDashboard && (item?.title === "Branch" ||  item?.title === "Type") ? (
+                    {isFromDashboard &&
+                    (item?.title === "Branch" || item?.title === "Type") ? (
                       <>
                         <View style={{ flexDirection: "row", gap: 8 }}>
-                          <MaterialIcons   name={getDashboardIcon(opt?.name)} size={18} />
+                          <MaterialIcons
+                            name={getDashboardIcon(opt?.name)}
+                            size={18}
+                            color={theme === 'dark' ? 'white' : 'black'}
+                          />
                           <TranslatedText
                             style={[
                               {

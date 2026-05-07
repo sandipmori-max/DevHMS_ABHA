@@ -202,7 +202,7 @@ const CustomMultiplePicker = ({
         animationType="none"
       >
         <TouchableWithoutFeedback onPress={closeBottomSheet}>
-          <View style={{ flex: 1, backgroundColor: "#00000066" }} />
+          <View style={{ flex: 1, backgroundColor: "#00000099" }} />
         </TouchableWithoutFeedback>
 
         <Animated.View
