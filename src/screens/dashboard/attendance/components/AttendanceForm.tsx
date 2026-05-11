@@ -185,8 +185,8 @@ const openCameraV2 = (
         mediaType: "photo",
         quality: 0.4,
         includeBase64: true,
-        maxWidth: 800,
-        maxHeight: 800,
+        maxWidth: 500,
+        maxHeight: 500,
         saveToPhotos: false,
       },
       (response) => {

@@ -26,6 +26,8 @@ import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import { useAppSelector } from "../../../../store/hooks";
 import { useTranslation } from "react-i18next";
 import InputError from "../../../../components/error/InputError";
+import ImageResizer from "@bam.tech/react-native-image-resizer";
+import RNFS from "react-native-fs";
 
 const Media = ({
   isValidate,
@@ -44,10 +46,11 @@ const Media = ({
   const [loadingSmall, setLoadingSmall] = useState(false);
   const [loadingLarge, setLoadingLarge] = useState(false);
   const [cacheBuster, setCacheBuster] = useState(Date.now());
-  const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const [alertVisible, setAlertVisible] = useState(false);
   const [isSettingVisible, setIsSettingVisible] = useState(false);
+  const [imageExists, setImageExists] = useState(true);
   const [alertConfig, setAlertConfig] = useState({
     title: "",
     message: "",
@@ -71,7 +74,7 @@ const Media = ({
       `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${
         type === "small" ? `d_${item?.text}` : item?.text
       }`;
-      console.log("Generated image URI:", base);
+    console.log("Generated image URI:", base);
     return `${base}?cb=${cacheBuster}`;
   };
 
@@ -135,56 +138,199 @@ const Media = ({
 
   // -------------------- AppState listener --------------------
   useEffect(() => {
+    const writeLog = async (title: string, data?: any) => {
+      try {
+        const logPath = RNFS.DocumentDirectoryPath + "/camera_logs.txt";
+
+        const time = new Date().toISOString();
+
+        const log = `\n\n========== ${title} ==========\nTIME: ${time}\nDATA: ${JSON.stringify(
+          data,
+          null,
+          2,
+        )}\n`;
+
+        await RNFS.appendFile(logPath, log, "utf8");
+
+        console.log(title, data);
+      } catch (e) {
+        console.log("Log Write Error:", e);
+      }
+    };
+
     const subscription = AppState.addEventListener(
       "change",
       async (nextAppState) => {
-        if (
-          appState.current.match(/inactive|background/) &&
-          nextAppState === "active" &&
-          pendingCameraAction.current
-        ) {
-          const granted = await requestPermission("camera");
-          if (granted) {
-            setIsSettingVisible(false);
-            setAlertVisible(false);
-            pendingCameraAction.current = false;
-            launchCamera(
-              {
-                mediaType: "photo",
-                quality: 0.4,
-                includeBase64: true,
-                maxWidth: 800,
-                maxHeight: 800,
-                saveToPhotos: false,
-              },
-              (response) => {
-                try {
-                  if (response?.didCancel || response?.errorCode) {
-                    return;
-                  }
-                  if (response.assets && response.assets.length > 0) {
+        try {
+          await writeLog("APP STATE CHANGED", {
+            previous: appState.current,
+            next: nextAppState,
+            pendingCameraAction: pendingCameraAction.current,
+          });
+
+          if (
+            appState.current.match(/inactive|background/) &&
+            nextAppState === "active" &&
+            pendingCameraAction.current
+          ) {
+            await writeLog("RETURNED FROM SETTINGS");
+
+            const granted = await requestPermission("camera");
+
+            await writeLog("CAMERA PERMISSION RESULT", { granted });
+
+            if (granted) {
+              setIsSettingVisible(false);
+
+              setAlertVisible(false);
+
+              pendingCameraAction.current = false;
+
+              await writeLog("LAUNCHING CAMERA");
+
+              launchCamera(
+                {
+                  mediaType: "photo",
+
+                  quality: 0.4,
+
+                  includeBase64: true,
+
+                  maxWidth: 500,
+                  maxHeight: 500,
+
+                  saveToPhotos: false,
+                },
+                async (response) => {
+                  try {
+                    await writeLog("CAMERA RESPONSE RECEIVED", {
+                      didCancel: response?.didCancel,
+                      errorCode: response?.errorCode,
+                      errorMessage: response?.errorMessage,
+                    });
+
+                    if (response?.didCancel) {
+                      await writeLog("USER CANCELLED CAMERA");
+                      return;
+                    }
+
+                    if (response?.errorCode) {
+                      await writeLog("CAMERA ERROR", {
+                        errorCode: response?.errorCode,
+                        errorMessage: response?.errorMessage,
+                      });
+
+                      return;
+                    }
+
+                    if (!response?.assets?.length) {
+                      await writeLog("NO ASSETS FOUND");
+                      return;
+                    }
+
                     const asset = response.assets[0];
-                    setImageUri(asset.uri || null);
+
+                    await writeLog("ORIGINAL ASSET", {
+                      uri: asset?.uri,
+                      type: asset?.type,
+                      fileName: asset?.fileName,
+                      fileSize: asset?.fileSize,
+                      width: asset?.width,
+                      height: asset?.height,
+                    });
+
+                    if (!asset?.uri) {
+                      await writeLog("ASSET URI MISSING++++++++++++++++++++++++++++");
+                      return;
+                    }
+
+                    let finalUri = asset.uri;
+
+                    let finalBase64 = asset.base64 || "";
+
+                    const base64SizeInMB =
+                      (finalBase64.length * 3) / 4 / 1024 / 1024;
+
+                    await writeLog("BASE64 SIZE", {
+                      size: base64SizeInMB.toFixed(2) + " MB",
+                    });
+
+                    // AUTO COMPRESS
+                    if (base64SizeInMB > 5) {
+                      await writeLog("COMPRESSING IMAGE");
+
+                      const resizedImage =
+                        await ImageResizer.createResizedImage(
+                          asset.uri,
+                          500,
+                          500,
+                          "JPEG",
+                          40,
+                          0,
+                        );
+
+                      await writeLog("COMPRESSED IMAGE", resizedImage);
+
+                      const compressedBase64 = await RNFS.readFile(
+                        resizedImage.uri,
+                        "base64",
+                      );
+
+                      const compressedSize =
+                        (compressedBase64.length * 3) / 4 / 1024 / 1024;
+
+                      await writeLog("COMPRESSED SIZE", {
+                        size: compressedSize.toFixed(2) + " MB",
+                      });
+
+                      finalUri = resizedImage.uri;
+
+                      finalBase64 = compressedBase64;
+                    }
+
+                    // UPDATE UI
+                    setImageUri(finalUri);
+
                     setImageExists(true);
+
                     setCacheBuster(Date.now());
+
+                    await writeLog("UI UPDATED");
+
+                    // SEND TO BACKEND
                     handleAttachment(
-                      `${item?.field}.jpeg; data:${asset.type};base64,${asset.base64}`,
+                      `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
                       item.field,
                     );
+
+                    await writeLog("BASE64 SENT TO BACKEND");
+
+                    // CLEAN MEMORY
+                    response.assets = [];
+
+                    await writeLog("MEMORY CLEANED");
+                  } catch (err) {
+                    setImageExists(false);
+
+                    await writeLog("IMAGE PROCESS ERROR", err);
                   }
-                } catch (err) {
-                  setImageExists(false);
-                  console.error("Failed to process image:", err);
-                }
-              },
-            );
+                },
+              );
+            }
           }
+
+          appState.current = nextAppState;
+        } catch (error) {
+          await writeLog("APPSTATE ERROR", error);
         }
-        appState.current = nextAppState;
       },
     );
 
-    return () => subscription.remove();
+    return () => {
+      subscription.remove();
+
+      writeLog("APPSTATE SUBSCRIPTION REMOVED");
+    };
   }, []);
 
   // useLayoutEffect(()=>{
@@ -197,40 +343,159 @@ const Media = ({
         {
           text: "Camera",
           icon: "photo-camera",
-          onPress: async () => {
-            const granted = await requestPermission("camera");
-            if (!granted) return;
 
-            launchCamera(
-              {
-                mediaType: "photo",
-                quality: 0.4,
-                includeBase64: true,
-                maxWidth: 800,
-                maxHeight: 800,
-                saveToPhotos: false,
-              },
-              (response) => {
-                try {
-                  if (response?.didCancel || response?.errorCode) {
-                    return;
-                  }
-                  if (response.assets && response.assets.length > 0) {
+          onPress: async () => {
+            try {
+              console.log("========== CAMERA START ==========");
+
+              const granted = await requestPermission("camera");
+
+              console.log("Camera Permission:", granted);
+
+              if (!granted) {
+                console.log("Permission Denied");
+                return;
+              }
+
+              launchCamera(
+                {
+                  mediaType: "photo",
+                  // INITIAL COMPRESS
+                  quality: 0.4,
+                  // BACKEND REQUIREMENT
+                  includeBase64: true,
+
+                  maxWidth: 500,
+                  maxHeight: 500,
+
+                  saveToPhotos: false,
+                },
+                async (response) => {
+                  try {
+                    console.log("Camera Response Received");
+
+                    if (response?.didCancel) {
+                      console.log("User Cancelled Camera");
+                      return;
+                    }
+
+                    if (response?.errorCode) {
+                      console.log(
+                        "Camera Error:",
+                        response?.errorCode,
+                        response?.errorMessage,
+                      );
+                      return;
+                    }
+
+                    if (!response?.assets?.length) {
+                      console.log("No Assets Found");
+                      return;
+                    }
+
                     const asset = response.assets[0];
-                    setImageUri(asset.uri || null);
-                    setImageExists(true);
-                    setCacheBuster(Date.now());
-                    handleAttachment(
-                      `${item?.field}.jpeg; data:${asset.type};base64,${asset.base64}`,
-                      item.field,
+
+                    console.log("Original Asset:", {
+                      uri: asset?.uri,
+                      type: asset?.type,
+                      fileName: asset?.fileName,
+                      fileSize: asset?.fileSize,
+                      width: asset?.width,
+                      height: asset?.height,
+                    });
+
+                    if (!asset?.uri) {
+                      console.log("Asset URI Missing");
+                      return;
+                    }
+
+                    let finalUri = asset.uri;
+                    let finalBase64 = asset.base64 || "";
+
+                    const base64SizeInMB =
+                      (finalBase64.length * 3) / 4 / 1024 / 1024;
+
+                    console.log(
+                      "Original Base64 Size:",
+                      base64SizeInMB.toFixed(2),
+                      "MB",
                     );
+
+                    // LARGE IMAGE -> AUTO COMPRESS
+                    if (base64SizeInMB > 5) {
+                      console.log("Large Image Detected -> Compressing");
+
+                      const resizedImage =
+                        await ImageResizer.createResizedImage(
+                          asset.uri,
+                          500,
+                          500,
+                          "JPEG",
+                          40,
+                          0,
+                        );
+
+                      console.log("Compressed Image:", resizedImage);
+
+                      const compressedBase64 = await RNFS.readFile(
+                        resizedImage.uri,
+                        "base64",
+                      );
+
+                      const compressedSize =
+                        (compressedBase64.length * 3) / 4 / 1024 / 1024;
+
+                      console.log(
+                        "Compressed Base64 Size:",
+                        compressedSize.toFixed(2),
+                        "MB",
+                      );
+
+                      finalUri = resizedImage.uri;
+                      finalBase64 = compressedBase64;
+                    } else {
+                      console.log("Compression Not Required");
+                    }
+
+                    // UI UPDATE
+                    setImageExists(true);
+
+                    setImageUri(finalUri);
+
+                    setCacheBuster(Date.now());
+
+                    console.log("Image State Updated");
+
+                    // SEND TO BACKEND
+                    handleAttachment(
+                      `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
+                      item?.field,
+                    );
+
+                    console.log("Base64 Sent To Backend");
+
+                    // CLEAN MEMORY
+                    response.assets = [];
+
+                    console.log("Memory Cleaned");
+
+                    console.log("========== CAMERA SUCCESS ==========");
+                  } catch (err) {
+                    console.log(
+                      "Image Process Error:",
+                      JSON.stringify(err, null, 2),
+                    );
+
+                    setImageExists(false);
                   }
-                } catch (err) {
-                  setImageExists(false);
-                  console.error("Failed to process image:", err);
-                }
-              },
-            );
+                },
+              );
+            } catch (error) {
+              console.log(
+                "Camera Launch Error:",
+                JSON.stringify(error, null, 2),
+              );
+            }
           },
         },
       ];
@@ -239,40 +504,154 @@ const Media = ({
         {
           text: "Camera",
           icon: "photo-camera",
-          onPress: async () => {
-            const granted = await requestPermission("camera");
-            if (!granted) return;
 
-            launchCamera(
-              {
-                mediaType: "photo",
-                quality: 0.4,
-                includeBase64: true,
-                maxWidth: 800,
-                maxHeight: 800,
-                saveToPhotos: false,
-              },
-              (response) => {
-                try {
-                  if (response?.didCancel || response?.errorCode) {
-                    return;
-                  }
-                  if (response.assets && response.assets.length > 0) {
+          onPress: async () => {
+            try {
+              console.log("========== CAMERA START ==========");
+
+              const granted = await requestPermission("camera");
+
+              console.log("Camera Permission:", granted);
+
+              if (!granted) {
+                console.log("Permission Denied");
+                return;
+              }
+
+              launchCamera(
+                {
+                  mediaType: "photo",
+                  quality: 0.4,
+                  includeBase64: true,
+                  maxWidth: 500,
+                  maxHeight: 500,
+                  saveToPhotos: false,
+                },
+                async (response) => {
+                  try {
+                    console.log("Camera Response Received");
+                    if (response?.didCancel) {
+                      console.log("User Cancelled Camera");
+                      return;
+                    }
+
+                    if (response?.errorCode) {
+                      console.log(
+                        "Camera Error:",
+                        response?.errorCode,
+                        response?.errorMessage,
+                      );
+                      return;
+                    }
+
+                    if (!response?.assets?.length) {
+                      console.log("No Assets Found");
+                      return;
+                    }
+
                     const asset = response.assets[0];
-                    setImageUri(asset.uri || null);
-                    setImageExists(true);
-                    setCacheBuster(Date.now());
-                    handleAttachment(
-                      `${item?.field}.jpeg; data:${asset.type};base64,${asset.base64}`,
-                      item.field,
+
+                    console.log("Original Asset:", {
+                      uri: asset?.uri,
+                      type: asset?.type,
+                      fileName: asset?.fileName,
+                      fileSize: asset?.fileSize,
+                      width: asset?.width,
+                      height: asset?.height,
+                    });
+
+                    if (!asset?.uri) {
+                      console.log("Asset URI Missing");
+                      return;
+                    }
+
+                    let finalUri = asset.uri;
+                    let finalBase64 = asset.base64 || "";
+
+                    const base64SizeInMB =
+                      (finalBase64.length * 3) / 4 / 1024 / 1024;
+
+                    console.log(
+                      "Original Base64 Size:",
+                      base64SizeInMB.toFixed(2),
+                      "MB",
                     );
+
+                    // LARGE IMAGE -> AUTO COMPRESS
+                    if (base64SizeInMB > 5) {
+                      console.log("Large Image Detected -> Compressing");
+
+                      const resizedImage =
+                        await ImageResizer.createResizedImage(
+                          asset.uri,
+                          500,
+                          500,
+                          "JPEG",
+                          40,
+                          0,
+                        );
+
+                      console.log("Compressed Image:", resizedImage);
+
+                      const compressedBase64 = await RNFS.readFile(
+                        resizedImage.uri,
+                        "base64",
+                      );
+
+                      const compressedSize =
+                        (compressedBase64.length * 3) / 4 / 1024 / 1024;
+
+                      console.log(
+                        "Compressed Base64 Size:",
+                        compressedSize.toFixed(2),
+                        "MB",
+                      );
+
+                      finalUri = resizedImage.uri;
+                      finalBase64 = compressedBase64;
+                    } else {
+                      console.log("Compression Not Required");
+                    }
+
+                    // UI UPDATE
+                    setImageExists(true);
+
+                    setImageUri(finalUri);
+
+                    setCacheBuster(Date.now());
+
+                    console.log("Image State Updated");
+
+                    // SEND TO BACKEND
+                    handleAttachment(
+                      `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
+                      item?.field,
+                    );
+
+                    console.log("Base64 Sent To Backend");
+
+                    // CLEAN MEMORY
+                    response.assets = [];
+
+                    console.log("Memory Cleaned");
+
+                    console.log("========== CAMERA SUCCESS ==========");
+                  } catch (err) {
+                    console.log(
+                      "Image Process Error:",
+                      JSON.stringify(err, null, 2),
+                    );
+
+                    setImageExists(false);
                   }
-                } catch (err) {
-                  setImageExists(false);
-                  console.error("Failed to process image:", err);
-                }
-              },
-            );
+                },
+              );
+            } catch (error) {
+              console.log(
+                "Camera Launch Error:",
+                JSON.stringify(error, null, 2),
+              );
+            }
           },
         },
         {
@@ -345,7 +724,6 @@ const Media = ({
     scale.setValue(Math.max(1, scale.__getValue() - 0.2));
     lastScale.current = scale.__getValue();
   };
-  const [imageExists, setImageExists] = useState(true);
   // -------------------- JSX --------------------
   return (
     <>
@@ -391,13 +769,14 @@ const Media = ({
             width: "100%",
             borderWidth: 1.5,
             borderRadius: 10,
-            borderColor: theme === "dark" ? '#fff' : ERP_COLOR_CODE.ERP_APP_COLOR,
+            borderColor:
+              theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR,
             marginBottom: 8,
             borderStyle: "dashed",
-             backgroundColor: theme === "dark" ? "#000" : "#f8f9ff",
+            backgroundColor: theme === "dark" ? "#000" : "#f8f9ff",
           },
           errors[item?.field] && {
-            borderColor:  ERP_COLOR_CODE.ERP_ERROR,
+            borderColor: ERP_COLOR_CODE.ERP_ERROR,
           },
         ]}
       >
@@ -428,7 +807,9 @@ const Media = ({
             >
               <MaterialIcons
                 name="add-photo-alternate"
-                color={theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR}
+                color={
+                  theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR
+                }
                 size={38}
               />
               <Text style={{ color: ERP_COLOR_CODE.ERP_999 }}>
@@ -453,6 +834,7 @@ const Media = ({
                 setImageExists(false);
                 setLoadingSmall(false);
               }}
+              fadeDuration={0}
             />
           )}
         </View>
@@ -485,180 +867,202 @@ const Media = ({
         </>
       )}
       {/* Fullscreen Image Modal */}
-      <Modal
-      supportedOrientations={["portrait", "landscape"]}
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          scale.setValue(1);
-          translateX.setValue(0);
-          translateY.setValue(0);
-          lastTranslate.current = { x: 0, y: 0 };
-          lastScale.current = 1;
-          setModalVisible(false);
-        }}
-      >
-        <View style={[styles.fullscreenModalOverlay,isLandscape && {
-                        alignContent:'center',
-                        alignItems:'center'
-                      }]}>
-          <View style={[styles.fullscreenModalContent, {
-          width: isLandscape ? '50%' : '100%'
-        }]}>
-            <TouchableOpacity
-              style={styles.closeBtn}
-              onPress={() => {
-                scale.setValue(1);
-                translateX.setValue(0);
-                translateY.setValue(0);
-                lastTranslate.current = { x: 0, y: 0 };
-                lastScale.current = 1;
-                setModalVisible(false);
-              }}
-            >
-              <MaterialIcons
-                name="close"
-                size={30}
-                color={theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_WHITE}
-              />
-            </TouchableOpacity>
-
-            {loadingLarge && (
-              <ActivityIndicator
-                style={StyleSheet.absoluteFill}
-                size="large"
-                color={ERP_COLOR_CODE.ERP_WHITE}
-              />
-            )}
-
-            <Animated.View
-              style={{
-                width: "100%",
-                height: "100%",
-                transform: [{ scale }, { translateX }, { translateY }],
-              }}
-              {...panResponder.panHandlers}
-            >
-              <Image
-                source={{ uri: getImageUri("large") }}
-                style={styles.fullscreenImage}
-                resizeMode="contain"
-                onLoadStart={() => setLoadingLarge(true)}
-                onLoadEnd={() => setLoadingLarge(false)}
-              />
-            </Animated.View>
-
-            <View style={styles.zoomControls}>
-              <TouchableOpacity style={styles.zoomBtn} onPress={zoomIn}>
-                <MaterialIcons name="zoom-in" size={28} color="#000" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.zoomBtn} onPress={zoomOut}>
-                <MaterialIcons name="zoom-out" size={28} color="#000" />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Picker Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        supportedOrientations={["portrait", "landscape"]}
-        visible={pickerModalVisible}
-        onRequestClose={() => setPickerModalVisible(false)}
-      >
-        <View style={[styles.modalOverlay,isLandscape && {
-                        alignContent:'center',
-                        alignItems:'center'
-                      }]}>
+      {modalVisible && (
+        <Modal
+          supportedOrientations={["portrait", "landscape"]}
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            scale.setValue(1);
+            translateX.setValue(0);
+            translateY.setValue(0);
+            lastTranslate.current = { x: 0, y: 0 };
+            lastScale.current = 1;
+            setModalVisible(false);
+          }}
+        >
           <View
             style={[
-              styles.modalContent,
-              theme === "dark" && {
-                borderWidth: 1,
-                borderColor: "white",
-                backgroundColor: "black",
-              }, {
-          width: isLandscape ? '50%' : '100%'
-        }
+              styles.fullscreenModalOverlay,
+              isLandscape && {
+                alignContent: "center",
+                alignItems: "center",
+              },
             ]}
           >
-            <View style={styles.modalHeader}>
-              <Text
-                style={[
-                  styles.modalTitle,
-                  theme === "dark" && {
-                    color: "white",
-                  },
-                ]}
+            <View
+              style={[
+                styles.fullscreenModalContent,
+                {
+                  width: isLandscape ? "50%" : "100%",
+                },
+              ]}
+            >
+              <TouchableOpacity
+                style={styles.closeBtn}
+                onPress={() => {
+                  scale.setValue(1);
+                  translateX.setValue(0);
+                  translateY.setValue(0);
+                  lastTranslate.current = { x: 0, y: 0 };
+                  lastScale.current = 1;
+                  setModalVisible(false);
+                }}
               >
-                {t("text31")}
-              </Text>
-              <TouchableOpacity onPress={() => setPickerModalVisible(false)}>
                 <MaterialIcons
                   name="close"
-                  size={24}
-                  color={theme === "dark" ? "white" : "black"}
+                  size={30}
+                  color={theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_WHITE}
                 />
               </TouchableOpacity>
-            </View>
 
-            <View style={styles.optionRow}>
-              {renderMedia().map((option, idx) => (
-                <TouchableOpacity
-                  key={idx}
-                  style={[
-                    styles.optionCard,
-                    theme === "dark" && {
-                      backgroundColor: "black",
-                      borderWidth: 1,
-                      borderColor: "white",
-                    },
-                  ]}
-                  onPress={async () => {
-                    setPickerModalVisible(false);
-                    await option.onPress();
-                  }}
-                >
-                  <MaterialIcons
-                    name={option?.icon}
-                    size={36}
-                    color={theme === "dark" ? "white" : "black"}
-                  />
-                  <Text
-                    style={[
-                      styles.optionLabel,
-                      {
-                        color: theme === "dark" ? "white" : "black",
-                      },
-                    ]}
-                  >
-                    {option?.text}
-                  </Text>
+              {loadingLarge && (
+                <ActivityIndicator
+                  style={StyleSheet.absoluteFill}
+                  size="large"
+                  color={ERP_COLOR_CODE.ERP_WHITE}
+                />
+              )}
+
+              <Animated.View
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  transform: [{ scale }, { translateX }, { translateY }],
+                }}
+                {...panResponder.panHandlers}
+              >
+                <Image
+                  source={{ uri: getImageUri("large") }}
+                  style={styles.fullscreenImage}
+                  resizeMode="contain"
+                  onLoadStart={() => setLoadingLarge(true)}
+                  onLoadEnd={() => setLoadingLarge(false)}
+                />
+              </Animated.View>
+
+              <View style={styles.zoomControls}>
+                <TouchableOpacity style={styles.zoomBtn} onPress={zoomIn}>
+                  <MaterialIcons name="zoom-in" size={28} color="#000" />
                 </TouchableOpacity>
-              ))}
+                <TouchableOpacity style={styles.zoomBtn} onPress={zoomOut}>
+                  <MaterialIcons name="zoom-out" size={28} color="#000" />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      )}
+
+      {/* Picker Modal */}
+      {pickerModalVisible && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          supportedOrientations={["portrait", "landscape"]}
+          visible={pickerModalVisible}
+          onRequestClose={() => setPickerModalVisible(false)}
+        >
+          <View
+            style={[
+              styles.modalOverlay,
+              isLandscape && {
+                alignContent: "center",
+                alignItems: "center",
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.modalContent,
+                theme === "dark" && {
+                  borderWidth: 1,
+                  borderColor: "white",
+                  backgroundColor: "black",
+                },
+                {
+                  width: isLandscape ? "50%" : "100%",
+                },
+              ]}
+            >
+              <View style={styles.modalHeader}>
+                <Text
+                  style={[
+                    styles.modalTitle,
+                    theme === "dark" && {
+                      color: "white",
+                    },
+                  ]}
+                >
+                  {t("text31")}
+                </Text>
+                <TouchableOpacity onPress={() => setPickerModalVisible(false)}>
+                  <MaterialIcons
+                    name="close"
+                    size={24}
+                    color={theme === "dark" ? "white" : "black"}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.optionRow}>
+                {renderMedia().map((option, idx) => (
+                  <TouchableOpacity
+                    key={idx}
+                    style={[
+                      styles.optionCard,
+                      theme === "dark" && {
+                        backgroundColor: "black",
+                        borderWidth: 1,
+                        borderColor: "white",
+                      },
+                    ]}
+                    onPress={async () => {
+                      setPickerModalVisible(false);
+                      await option.onPress();
+                    }}
+                  >
+                    <MaterialIcons
+                      name={option?.icon}
+                      size={36}
+                      color={theme === "dark" ? "white" : "black"}
+                    />
+                    <Text
+                      style={[
+                        styles.optionLabel,
+                        {
+                          color: theme === "dark" ? "white" : "black",
+                        },
+                      ]}
+                    >
+                      {option?.text}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
 
       {/* Custom Alert for permissions */}
-      <CustomAlert
-        visible={alertVisible}
-        title={alertConfig.title}
-        message={alertConfig.message}
-        type={alertConfig.type}
-        onClose={() => {
-          if (!modalClose) {
-            setAlertVisible(false);
-          }
-        }}
-        isSettingVisible={isSettingVisible}
-        actionLoader={undefined}
-        closeHide={undefined}
-      />
+      {alertVisible && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          type={alertConfig.type}
+          onClose={() => {
+            if (!modalClose) {
+              setAlertVisible(false);
+            }
+          }}
+          isSettingVisible={isSettingVisible}
+          actionLoader={undefined}
+          closeHide={undefined}
+        />
+      )}
     </>
   );
 };
@@ -668,7 +1072,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 4,
-    
   },
 
   label: {
@@ -682,7 +1085,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderWidth: 1,
-    borderRadius: 10
+    borderRadius: 10,
   },
 
   editBtn: {
