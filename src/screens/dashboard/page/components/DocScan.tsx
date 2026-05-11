@@ -232,7 +232,7 @@ export default DocScan;
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 8,
+    borderRadius: 6,
     marginVertical: 2,
     borderWidth: 2,
     borderStyle: "dashed",

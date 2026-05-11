@@ -492,8 +492,8 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#f4f6f9",
     padding: 16,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
+    borderTopLeftRadius: 14,
+    borderTopRightRadius: 14,
   },
 
   handle: {
@@ -533,11 +533,10 @@ const styles = StyleSheet.create({
 
   card: {
     backgroundColor: "#fff",
-    borderRadius: 12,
+    borderRadius: 8,
     padding: 14,
     marginBottom: 12,
-    elevation: 3,
-  },
+   },
 
   cardTitle: {
     fontSize: 16,

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator, Platform } from "react-native";
 import React, { useEffect, useState } from "react";
 import { styles } from "../page_style";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
@@ -58,7 +58,7 @@ const LocationRow = ({
   }, [coords, loading, locationVisible, hookAddress, locationEnabled, error]);
 
   return (
-    <View style={{ marginBottom: 8 }}>
+    <View style={{ marginBottom: Platform.OS === 'android' ? 6 : 8 }}>
       {
         !isFromChild &&  <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View style={{ flexDirection: "row" }}>

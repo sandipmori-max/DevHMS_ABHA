@@ -51,7 +51,7 @@ import { resetAttendanceState } from "../../../store/slices/attendance/attendanc
 import { resetDropdownState } from "../../../store/slices/dropdown/dropdownSlice";
 import { resetSyncLocationState } from "../../../store/slices/location/syncLocationSlice";
 import { Easing } from "react-native";
-import { ERP_APP_VERSION } from "../../../constants";
+import { ERP_APP_VERSION, HEADER_HEIGHT } from "../../../constants";
 import { setReloadApp } from "../../../store/slices/reloadApp/reloadAppSlice";
 
 interface SettingItem {
@@ -138,7 +138,8 @@ const SettingsScreen = () => {
     navigation.setOptions({
       headerStyle: {
         backgroundColor:
-          theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR, // <-- BLACK HEADER
+          theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+          height: HEADER_HEIGHT,
       },
       headerBackTitle: "",
       headerTintColor: "#fff",

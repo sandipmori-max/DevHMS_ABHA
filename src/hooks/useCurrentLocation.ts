@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { PermissionsAndroid, Platform } from 'react-native';
+import { PermissionsAndroid, Platform, NativeModules } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 
 type Coords = {
@@ -25,7 +25,7 @@ export const useCurrentAddress = () => {
           title: 'Location Permission',
           message: 'App needs access to your location',
           buttonPositive: 'OK',
-        }
+        },
       );
 
       return granted === PermissionsAndroid.RESULTS.GRANTED;
@@ -40,47 +40,56 @@ export const useCurrentAddress = () => {
     setError(null);
 
     const hasPermission = await requestLocationPermission();
+    await new Promise(res => setTimeout(res, 400));
     if (!hasPermission) {
       setError('Location permission denied');
       setLoading(false);
       return;
     }
+    try {
+      const res = await NativeModules.LocationModule.getCurrentLocation();
 
-    Geolocation.getCurrentPosition(
-  (position) => {
-    const { latitude, longitude, accuracy } = position.coords;
-    setCoords({ latitude, longitude, accuracy });
-    setAddress(`${latitude},${longitude}`);
-    setLoading(false);
-  },
-  (err) => {
-
-    // ⭐ fallback network
-    Geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude, accuracy } = position.coords;
-        setCoords({ latitude, longitude, accuracy });
-        setAddress(`${latitude},${longitude}`);
-        setLoading(false);
-      },
-      (error) => {
-        setError(error.message);
-        setLoading(false);
-      },
-      {
-        enableHighAccuracy: false,
-        timeout: 10000,
-        maximumAge: 10000,
-      }
-    );
-  },
-  {
-    enableHighAccuracy: true,
-    timeout: 25000,
-    maximumAge: 0,
-  }
-);
-
+      console.log('res++++++++++++++++++++++++++++++', res);
+      const { latitude, longitude, accuracy } = res;
+      setCoords({ latitude, longitude, accuracy });
+      setAddress(`${latitude},${longitude}`);
+      setLoading(false);
+    } catch (error) {
+       console.log('error ++++++error +++++++++++ ++++++++error +++++', error);
+      Geolocation.getCurrentPosition(
+        position => {
+          const { latitude, longitude, accuracy } = position.coords;
+          setCoords({ latitude, longitude, accuracy });
+          setAddress(`${latitude},${longitude}`);
+          setLoading(false);
+        },
+        err => {
+          // ⭐ fallback network
+          Geolocation.getCurrentPosition(
+            position => {
+              const { latitude, longitude, accuracy } = position.coords;
+              setCoords({ latitude, longitude, accuracy });
+              setAddress(`${latitude},${longitude}`);
+              setLoading(false);
+            },
+            error => {
+              setError(error.message);
+              setLoading(false);
+            },
+            {
+              enableHighAccuracy: false,
+              timeout: 10000,
+              maximumAge: 10000,
+            },
+          );
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 25000,
+          maximumAge: 0,
+        },
+      );
+    }
   }, []);
 
   // ---------- INITIAL LOAD ----------

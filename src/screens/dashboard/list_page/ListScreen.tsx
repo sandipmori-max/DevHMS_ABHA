@@ -57,6 +57,7 @@ import {
 import { getDDLThunk } from "../../../store/slices/dropdown/thunk";
 import TableView from "./components/TableView";
 import AppMapView from "./components/AppMapView";
+import { HEADER_HEIGHT } from "../../../constants";
 
 const ListScreen = () => {
   const route = useRoute<RouteProp<ListRouteParams, "List">>();
@@ -208,9 +209,12 @@ const ListScreen = () => {
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
         // borderBottomWidth: 1,
         borderBottomColor: "#fff",
+         height: HEADER_HEIGHT,
+        
       },
       headerBackTitle: "",
       headerTintColor: "#fff",
+      headerTitleAlign: "left",
       headerTitle: () => (
         <TranslatedText
           numberOfLines={1}
@@ -236,7 +240,7 @@ const ListScreen = () => {
             />
           )}
           {
-            !isFromAlertCard && <ERPIcon
+             isLandscape && !isFromAlertCard && <ERPIcon
               name={isTableView ? 'list' : 'apps'}
               onPress={() => {
                 setIsTableView(!isTableView);
@@ -262,6 +266,7 @@ const ListScreen = () => {
     isTableView,
     actionLoaders,
     error,
+    isLandscape
   ]);
 
   const fetchPageData = async () => {
@@ -734,7 +739,7 @@ const ListScreen = () => {
                 </View>
 
                 <View style={{ width: "50%", marginTop: 4, marginLeft: 4 }}>
-                  {hasDateField && (
+                  {parsedConfig?.period === 1 || parsedConfig?.period === "1" && (
                     <View style={styles.dateContainer}>
                       {/* Start Date */}
                       <View style={styles.dateRow}>
@@ -886,7 +891,7 @@ const ListScreen = () => {
               </View>
 
               {(parsedConfig?.period === 1 || parsedConfig?.period === "1") && (
-                <View style={styles.dateContainer}>
+                <View style={[styles.dateContainer,]}>
                   {/* Start Date */}
                   <View style={styles.dateRow}>
                     <TouchableOpacity
@@ -1108,7 +1113,7 @@ const ListScreen = () => {
             <>
              {/* <AppMapView /> */}
               {
-                isTableView ? <>
+                isLandscape && isTableView ? <>
                 <TableView
                   handleDeleteNotification={handleDeleteNotification}
                   isFromAlertCard={isFromAlertCard}
@@ -1182,10 +1187,7 @@ const ListScreen = () => {
                 {
                   backgroundColor:
                     theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-                },
-                isLandscape && {
-                  bottom: 10
-                }
+                }, 
               ]}
               onPressIn={onPressIn}
               onPressOut={onPressOut}

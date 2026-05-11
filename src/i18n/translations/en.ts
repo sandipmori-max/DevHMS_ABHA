@@ -34,7 +34,7 @@ export default {
     welcomeDevERP: 'Welcome DevERP',
     addAccount: 'Add Account',
     signInToAddAccount: 'Sign in to add another account',
-    signInToAccount: 'Login to your account with your credentials',
+    signInToAccount: 'Sign in to your account',
     companyCode: 'Company Code',
     enterCompanyCode: 'Enter company code',
     user: 'User name',

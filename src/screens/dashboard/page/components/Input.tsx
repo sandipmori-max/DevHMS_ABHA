@@ -1,4 +1,4 @@
-import { View, Text, TextInput } from "react-native";
+import { View, Text, TextInput, Platform } from "react-native";
 import React, { useState } from "react";
 import { styles } from "../page_style";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
@@ -24,7 +24,7 @@ const Input = ({
   const [isInputEdit, setIsInputEdit] = useState(false);
 
   return (
-    <View style={{ marginBottom: 8 }}>
+    <View style={{ marginBottom:  Platform.OS === 'android' ? 6  : 8 }}>
       {
         !isFromChild && <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View style={{ flexDirection: "row" }}>

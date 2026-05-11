@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Dimensions,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import { useAppSelector } from "../../../../store/hooks";
@@ -99,7 +100,7 @@ export default function DynamicTable({
   );
 
   return (
-    <View style={{ marginTop: 10 }}>
+    <View style={{ marginTop: Platform.OS === 'android' ? 6  : 10 }}>
       <Text style={{ fontWeight: "bold", marginBottom: 6 }}>
         {sectionKey}
       </Text>

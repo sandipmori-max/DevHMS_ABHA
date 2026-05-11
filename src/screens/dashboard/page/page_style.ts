@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { ERP_COLOR_CODE } from "../../../utils/constants";
 
 export const styles = StyleSheet.create({
@@ -59,16 +59,16 @@ export const styles = StyleSheet.create({
   textInput: {
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-    borderRadius: 8,
-    padding: 10,
+    borderRadius: 6,
+    padding: Platform.OS === 'android' ? 8 : 10,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     color: "black",
   },
     pickerBox1: {
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-    borderRadius: 4,
-    padding: 8,
+    borderRadius: 6,
+    padding: 6,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -78,8 +78,8 @@ export const styles = StyleSheet.create({
   pickerBox: {
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-    borderRadius: 8,
-    padding: 8,
+    borderRadius: 6,
+    padding: Platform.OS === 'android' ? 6 : 8,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -107,15 +107,15 @@ export const styles = StyleSheet.create({
   disabledBox: {
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-    borderRadius: 8,
-    padding: 10,
+    borderRadius: 6,
+    padding: Platform.OS === 'android' ? 8 : 10,
     backgroundColor: "#f1f1f1",
   },
   dateBox: {
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-    borderRadius: 8,
-    padding: 10,
+    borderRadius: 6,
+    padding: Platform.OS === 'android' ? 8 : 10,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     flexDirection: "row",
     justifyContent: "space-between",

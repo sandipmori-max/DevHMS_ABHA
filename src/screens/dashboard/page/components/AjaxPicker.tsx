@@ -8,6 +8,7 @@ import {
   ScrollView,
   useWindowDimensions,
   KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { styles } from "../page_style";
@@ -122,7 +123,7 @@ const AjaxPicker = ({
   };
 
   return (
-    <View style={{ marginBottom: 8 }}>
+    <View style={{ marginBottom: Platform.OS === 'android' ? 6 : 8 }}>
       {!isFromChild && (
         <View style={{ flexDirection: "row" }}>
           <TranslatedText
@@ -184,7 +185,7 @@ const AjaxPicker = ({
             borderRadius: 4,
           },
           item?.disabled == "1" && {
-            paddingVertical: 7,
+            paddingVertical: Platform.OS === 'android' ? 5 : 7,
           },
         ]}
         onPress={() => {

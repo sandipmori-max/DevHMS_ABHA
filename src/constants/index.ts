@@ -1,3 +1,4 @@
+import { Dimensions, Platform } from "react-native";
 import { DrawerItemConfig } from "../components/types";
 
 export const ERP_DRAWER_LIST: DrawerItemConfig[] = [
@@ -13,3 +14,8 @@ export enum EPermissionTypes {
 }
 
 export const ERP_APP_VERSION = "1.3.2";
+
+export const HEADER_HEIGHT = Platform.OS === 'android' ? Math.min(
+  50,
+  Math.max(48, Dimensions.get("window").height * 0.065)
+) : undefined;

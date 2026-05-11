@@ -8,6 +8,7 @@ import {
   Text,
   useWindowDimensions,
   SectionList,
+  Platform,
 } from "react-native";
 import React, {
   useEffect,
@@ -50,6 +51,7 @@ import {
 import TranslatedText from "../home/TranslatedText";
 import { styles } from "./style";
 import { formatDateForAPI } from "../../../../utils/helpers";
+import { HEADER_HEIGHT } from "../../../../constants";
 const accentColors = [
   "#dbe0f5ff",
   "#c8f3edff",
@@ -204,6 +206,8 @@ const MenuTab = ({
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+      height: HEADER_HEIGHT,
+        
       },
       headerBackTitle: "",
       headerTintColor: "white",

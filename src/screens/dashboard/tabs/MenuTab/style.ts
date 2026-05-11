@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 
 export const styles = StyleSheet.create({
@@ -30,16 +30,16 @@ export const styles = StyleSheet.create({
     borderRadius: 6,
     paddingVertical: 1,
     paddingHorizontal: 2,
-    marginBottom: 12,
+    marginBottom: Platform.OS === 'android' ? 8 : 12,
     alignItems: "center",
     marginHorizontal: 6,
   },
   cardV2: {
     flex: 1,
     borderRadius: 6,
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    marginBottom: 8,
+    paddingVertical: Platform.OS === 'android' ? 6 : 8,
+    paddingHorizontal: Platform.OS === 'android' ? 6 : 8,
+    marginBottom: Platform.OS === 'android' ? 6 : 8,
     alignItems: "center",
     marginHorizontal: 4,
   },

@@ -166,7 +166,7 @@ const CustomMultiplePicker = ({
   };
 
   return (
-    <View style={{ marginVertical: 8 }}>
+    <View style={{ marginVertical: 0 }}>
       {/* LABEL */}
 
       {/* PICKER */}

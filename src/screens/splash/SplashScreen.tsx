@@ -8,6 +8,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+import { SvgUri } from "react-native-svg";
 
 import { ERP_ICON } from "../../assets";
 import { styles } from "./splash_style";
@@ -18,11 +19,17 @@ import { firstLetterUpperCase } from "../../utils/helpers";
 import { ERP_COLOR_CODE } from "../../utils/constants";
 
 const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
+  // EXISTING ANIMATIONS
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.7)).current;
   const textTranslateY = useRef(new Animated.Value(40)).current;
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
   const greetingOpacity = useRef(new Animated.Value(0)).current;
+
+  // NEW SPLASH ANIMATIONS
+  const topImageAnim = useRef(new Animated.Value(-200)).current;
+  const bottomImageAnim = useRef(new Animated.Value(200)).current;
+  const logoRotate = useRef(new Animated.Value(0)).current;
 
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
@@ -34,73 +41,175 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   // 🔥 Dynamic Greeting
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
+
     if (hour < 12) return "Good Morning";
     if (hour < 17) return "Good Afternoon";
+
     return "Good Evening";
   }, []);
 
-  useEffect(() => {
-    const start = Date.now();
-    const MIN_SPLASH = 1800;
+    useEffect(() => {
+  const start = Date.now();
 
-    Animated.sequence([
-      // 🔥 Logo entry
-      Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 600,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-        Animated.spring(scaleAnim, {
-          toValue: 1,
-          friction: 4,
-          tension: 8,
-          useNativeDriver: true,
-        }),
-      ]),
+  // ✅ Total splash visible time
+  const TOTAL_SPLASH_TIME = 2200;
 
-      Animated.delay(100),
-
-      // 🔥 Greeting animation
-      Animated.parallel([
-        Animated.timing(greetingOpacity, {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(textTranslateY, {
-          toValue: 0,
-          duration: 500,
-          easing: Easing.out(Easing.exp),
-          useNativeDriver: true,
-        }),
-      ]),
-
-      // 🔥 Subtitle fade
-      Animated.timing(subtitleOpacity, {
-        toValue: 1,
-        duration: 600,
-        easing: Easing.ease,
+  Animated.sequence([
+    // 🔥 Background animation
+    Animated.parallel([
+      Animated.spring(topImageAnim, {
+        toValue: 0,
+        damping: 14,
+        stiffness: 180,
+        mass: 0.7,
         useNativeDriver: true,
       }),
-    ]).start(() => {
-      const elapsed = Date.now() - start;
 
-      if (elapsed >= MIN_SPLASH) {
-        onFinish();
-      } else {
-        setTimeout(onFinish, MIN_SPLASH - elapsed);
-      }
-    });
-  }, []);
+      Animated.spring(bottomImageAnim, {
+        toValue: 0,
+        damping: 14,
+        stiffness: 180,
+        mass: 0.7,
+        useNativeDriver: true,
+      }),
+    ]),
 
+    // 🔥 Logo animation
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 320,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 4,
+        tension: 90,
+        useNativeDriver: true,
+      }),
+
+      Animated.timing(logoRotate, {
+        toValue: 1,
+        duration: 320,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+    ]),
+
+    // 🔥 Greeting animation
+    Animated.parallel([
+      Animated.timing(greetingOpacity, {
+        toValue: 1,
+        duration: 300,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+
+      Animated.timing(textTranslateY, {
+        toValue: 0,
+        duration: 300,
+        easing: Easing.out(Easing.exp),
+        useNativeDriver: true,
+      }),
+    ]),
+
+    // 🔥 Subtitle fade
+    Animated.timing(subtitleOpacity, {
+      toValue: 1,
+      duration: 250,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }),
+  ]).start(() => {
+    const elapsed = Date.now() - start;
+
+    const remainingTime = TOTAL_SPLASH_TIME - elapsed;
+
+    if (remainingTime > 0) {
+      setTimeout(onFinish, remainingTime);
+    } else {
+      onFinish();
+    }
+  });
+}, []);
   const gradientColors =
-    theme ===  "dark" ? ["#000000", "#1a1a1a"] :  appColorCode ? [ERP_COLOR_CODE.ERP_APP_COLOR , "#4c669f", "#3b5998",]:  ["#4c669f", "#3b5998", "#192f6a"]
+    theme === "dark"
+      ? ["#000000", "#1a1a1a"]
+      : appColorCode
+      ? [
+          ERP_COLOR_CODE.ERP_APP_COLOR,
+          "#4c669f",
+          "#3b5998",
+        ]
+      : ["#4c669f", "#3b5998", "#192f6a"];
+
+  const rotateInterpolate = logoRotate.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["-10deg", "0deg"],
+  });
 
   return (
     <LinearGradient colors={gradientColors} style={styles.container}>
       <StatusBar hidden />
+
+      {/* TOP LEFT SVG */}
+      <Animated.View
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          height: isLandscape ? 180 : 300,
+          width: isLandscape ? 120 : 190,
+          zIndex: 1,
+          transform: [{ translateY: topImageAnim }],
+        }}
+      >
+        <SvgUri
+          width="100%"
+          height="100%"
+          uri="https://res.cloudinary.com/dht4ddwtn/image/upload/v1741437043/Group_119_a7nurz.svg"
+        />
+      </Animated.View>
+
+      {/* TOP RIGHT SVG */}
+      <Animated.View
+        style={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          height: isLandscape ? 70 : 100,
+          width: isLandscape ? 70 : 100,
+          zIndex: 1,
+          transform: [{ translateY: topImageAnim }],
+        }}
+      >
+        {/* <SvgUri
+          width="100%"
+          height="100%"
+          uri="https://res.cloudinary.com/dht4ddwtn/image/upload/v1741434380/Group_116_lclkz2.svg"
+        /> */}
+      </Animated.View>
+
+      {/* BOTTOM LEFT SVG */}
+      <Animated.View
+        style={{
+          position: "absolute",
+          bottom: -30,
+          left: -10,
+          height: isLandscape ? 120 : 160,
+          width: isLandscape ? 120 : 160,
+          zIndex: 1,
+          transform: [{ translateY: bottomImageAnim }],
+        }}
+      >
+        {/* <SvgUri
+          width="100%"
+          height="100%"
+          uri="https://res.cloudinary.com/dht4ddwtn/image/upload/v1741411663/Group_156_qsmeiy.svg"
+        /> */}
+      </Animated.View>
 
       {isLandscape ? (
         <View style={{ flexDirection: "row", flex: 1 }}>
@@ -110,6 +219,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
               width: "50%",
               justifyContent: "center",
               alignItems: "center",
+              zIndex: 2,
             }}
           >
             <Animated.View
@@ -117,7 +227,10 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
                 styles.logoWrapper,
                 {
                   opacity: fadeAnim,
-                  transform: [{ scale: scaleAnim }], 
+                  transform: [
+                    { scale: scaleAnim },
+                    { rotate: rotateInterpolate },
+                  ],
                 },
               ]}
             >
@@ -151,6 +264,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
               justifyContent: "center",
               alignItems: "center",
               paddingHorizontal: 20,
+              zIndex: 2,
             }}
           >
             <Animated.Text
@@ -202,7 +316,11 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
               styles.logoWrapper,
               {
                 opacity: fadeAnim,
-                transform: [{ scale: scaleAnim }], 
+                transform: [
+                  { scale: scaleAnim },
+                  { rotate: rotateInterpolate },
+                ],
+                zIndex: 2,
               },
             ]}
           >
@@ -222,6 +340,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
                   opacity: greetingOpacity,
                   transform: [{ translateY: textTranslateY }],
                   color: "#fff",
+                  zIndex: 2,
                 },
               ]}
             >
@@ -237,6 +356,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
                 transform: [{ translateY: textTranslateY }],
                 color: "#fff",
                 textAlign: "center",
+                zIndex: 2,
               },
             ]}
           >
@@ -253,6 +373,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
                 opacity: subtitleOpacity,
                 color: "#ddd",
                 textAlign: "center",
+                zIndex: 2,
               },
             ]}
           >
@@ -266,6 +387,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
               {
                 opacity: subtitleOpacity,
                 color: "#aaa",
+                zIndex: 2,
               },
             ]}
           >

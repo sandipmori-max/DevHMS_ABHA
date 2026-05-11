@@ -44,7 +44,6 @@ const StackNavigator = () => {
     ),
     headerStyle: {
       backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-      height: Platform.OS === "android" ? 48 : undefined,
       elevation: 0,
       shadowOpacity: 0,
     },

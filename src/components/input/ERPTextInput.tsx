@@ -63,7 +63,7 @@ const ERPTextInput: React.FC<ERPTextInputProps> = ({
               alignContent: "center",
               flexDirection: "row",
               alignItems: "center",
-              borderRadius: 8,
+              borderRadius: 4,
               borderWidth: 1,
               borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
               paddingLeft: 12,

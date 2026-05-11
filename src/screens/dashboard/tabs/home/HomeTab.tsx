@@ -89,6 +89,7 @@ import { resetDropdownState } from "../../../../store/slices/dropdown/dropdownSl
 import { resetSyncLocationState } from "../../../../store/slices/location/syncLocationSlice";
 import { ERP_ICON } from "../../../../assets";
 import { useBaseLink } from "../../../../hooks/useBaseLink";
+import { HEADER_HEIGHT } from "../../../../constants";
 
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;
@@ -149,7 +150,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
   const [toDate, setToDate] = useState<string>("");
 
   const auth = useAppSelector((state) => state?.auth);
-
   const [showDatePicker, setShowDatePicker] = useState<null | {
     type: "from" | "to";
     show: boolean;
@@ -233,6 +233,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+        height: HEADER_HEIGHT,
       },
       headerBackTitle: "",
       headerTintColor: "#fff",
@@ -514,6 +515,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         });
       setFromDate(fromDateStr);
       setToDate(toDateStr);
+      dispatch(setActiveDashboardFromDate(fromDateStr));
+      dispatch(setActiveDashboardToDate(toDateStr));
       return () => clearTimeout(timer);
     } catch (error) {
       console.log("Error during refresh:", error);
@@ -743,6 +746,10 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
   const handleDateChange = useCallback(
     (event: any, selectedDate?: Date) => {
+      console.log(
+        "selectedDate++++++++++++++++++++++++++++++++++++++++++++",
+        selectedDate,
+      );
       if (event?.type === "dismissed" || !selectedDate) {
         setShowDatePicker(null);
         return;
@@ -750,7 +757,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
       const { type } = showDatePicker!;
       const formatted = formatDateForAPI(selectedDate);
-
+      console.log("selectedDate", selectedDate, type);
       if (type === "to") {
         if (fromDate) {
           const from = new Date(fromDate.split("-").reverse().join("-"));
@@ -761,11 +768,11 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
           }
         }
 
-        setToDate(formatted);
         dispatch(setActiveDashboardToDate(formatted));
+        setToDate(formatted);
       } else {
-        setFromDate(formatted);
         dispatch(setActiveDashboardFromDate(formatted));
+        setFromDate(formatted);
 
         if (toDate) {
           const to = new Date(toDate.split("-").reverse().join("-"));
@@ -809,6 +816,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     },
     [dispatch],
   );
+
   useFocusEffect(
     useCallback(() => {
       // ✅ runs ONLY when screen comes into focus
@@ -902,6 +910,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         dispatch(setActiveDashboardBranch(filtered[0]?.name || ""));
         dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString() || ""));
         dispatch(setActiveDashboardType(data1[0]?.name || ""));
+        dispatch(setActiveDashboardFromDate(fromDate));
+        dispatch(setActiveDashboardToDate(toDate));
       } catch (error) {
         console.log("DDL Error:", error);
       }
@@ -963,7 +973,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     () => uniqueByDate.length - leave,
     [uniqueByDate, leave],
   );
-
+  const [tempDate, setTempDate] = useState(new Date());
   useEffect(() => {
     getCurrentMonthRange();
   }, [user, reLoading]);
@@ -1279,6 +1289,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                     isLandscape && {
                       alignContent: "center",
                       alignItems: "center",
+                      // justifyContent:'center'
                     },
                   ]}
                 >
@@ -1290,41 +1301,76 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                         borderColor: "white",
                       },
                       {
-                        width: isLandscape ? "50%" : "100%",
+                        width: isLandscape ? "40%" : "100%",
                       },
                     ]}
                   >
                     {/* Divider */}
+
                     <View
-                      style={[
-                        theme === "dark" && {
-                          overflow: "hidden",
-                          borderColor: "white",
-                        },
-                        {
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          padding: 12,
-                          alignContent: "center",
-                          alignItems: "center",
-                        },
-                      ]}
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingHorizontal: 16,
+                        paddingVertical: 14,
+                      }}
                     >
-                      <Text
-                        style={{
-                          color: theme === "dark" ? "white" : "black",
-                        }}
-                      >
-                        {t("text89")}
-                      </Text>
+                      {/* Cancel */}
                       <TouchableOpacity
                         onPress={() => {
                           setShowDatePicker(null);
                         }}
                       >
-                        <MaterialIcons name="close" color={"black"} size={24} />
+                        <Text
+                          style={{
+                            color: "red",
+                            fontSize: 16,
+                            fontWeight: "500",
+                          }}
+                        >
+                          Cancel
+                        </Text>
+                      </TouchableOpacity>
+
+                      {/* Title */}
+                      <Text
+                        style={{
+                          color: theme === "dark" ? "white" : "black",
+                          fontSize: 16,
+                          fontWeight: "600",
+                        }}
+                      >
+                        {t("text89")}
+                      </Text>
+
+                      {/* Done */}
+                      <TouchableOpacity
+                        onPress={() => {
+                          const formatted = formatDateForAPI(tempDate);
+
+                          if (showDatePicker.type === "from") {
+                            setFromDate(formatted);
+                            dispatch(setActiveDashboardFromDate(formatted));
+                          } else {
+                            setToDate(formatted);
+                            dispatch(setActiveDashboardToDate(formatted));
+                          }
+                          setShowDatePicker(null);
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: "#007AFF",
+                            fontSize: 16,
+                            fontWeight: "600",
+                          }}
+                        >
+                          Done
+                        </Text>
                       </TouchableOpacity>
                     </View>
+
                     <View style={styles.divider} />
 
                     {/* Date Picker */}
@@ -1336,10 +1382,20 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                           ? parseCustomDate(toDate)
                           : new Date()
                       }
-                      themeVariant="light"
                       mode="date"
                       display="spinner"
-                      onChange={handleDateChange}
+                      is24Hour={false}
+                      onChange={(event, selectedDate) => {
+                        if (selectedDate) {
+                          setTempDate(selectedDate);
+                        }
+                      }}
+                      style={[
+                        styles.picker,
+                        {
+                          backgroundColor: "white",
+                        },
+                      ]}
                     />
                   </View>
                 </View>
@@ -1363,7 +1419,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
           </View>
 
           <NoData isShowTop={false} />
-          
         </View>
       </View>
     );
@@ -1686,36 +1741,71 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                 ]}
               >
                 {/* Divider */}
+
                 <View
-                  style={[
-                    theme === "dark" && {
-                      overflow: "hidden",
-                      borderColor: "white",
-                    },
-                    {
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      padding: 12,
-                      alignContent: "center",
-                      alignItems: "center",
-                    },
-                  ]}
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    paddingHorizontal: 16,
+                    paddingVertical: 14,
+                  }}
                 >
-                  <Text
-                    style={{
-                      color: theme === "dark" ? "white" : "black",
-                    }}
-                  >
-                    {t("text89")}
-                  </Text>
+                  {/* Cancel */}
                   <TouchableOpacity
                     onPress={() => {
                       setShowDatePicker(null);
                     }}
                   >
-                    <MaterialIcons name="close" color={"black"} size={24} />
+                    <Text
+                      style={{
+                        color: "red",
+                        fontSize: 16,
+                        fontWeight: "500",
+                      }}
+                    >
+                      Cancel
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/* Title */}
+                  <Text
+                    style={{
+                      color: theme === "dark" ? "white" : "black",
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                  >
+                    {t("text89")}
+                  </Text>
+
+                  {/* Done */}
+                  <TouchableOpacity
+                    onPress={() => {
+                      const formatted = formatDateForAPI(tempDate);
+
+                      if (showDatePicker.type === "from") {
+                        setFromDate(formatted);
+                        dispatch(setActiveDashboardFromDate(formatted));
+                      } else {
+                        setToDate(formatted);
+                        dispatch(setActiveDashboardToDate(formatted));
+                      }
+                      setShowDatePicker(null);
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "#007AFF",
+                        fontSize: 16,
+                        fontWeight: "600",
+                      }}
+                    >
+                      Done
+                    </Text>
                   </TouchableOpacity>
                 </View>
+
                 <View style={styles.divider} />
 
                 {/* Date Picker */}
@@ -1730,7 +1820,11 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                   mode="date"
                   display="spinner"
                   is24Hour={false}
-                  onChange={handleDateChange}
+                  onChange={(event, selectedDate) => {
+                    if (selectedDate) {
+                      setTempDate(selectedDate);
+                    }
+                  }}
                   style={[
                     styles.picker,
                     {

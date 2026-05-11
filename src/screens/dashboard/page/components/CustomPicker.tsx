@@ -9,6 +9,7 @@ import {
   Dimensions,
   ScrollView,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { styles } from "../page_style";
@@ -117,7 +118,7 @@ const CustomPicker = ({
     MAX_HEIGHT,
   );
   return (
-    <View style={{ marginBottom: isFromDashboard ? 2 : 8 }}>
+    <View style={{ marginBottom: isFromDashboard ? 2 : Platform.OS === 'android' ? 6  :8 }}>
       {/* Label */}
       {!isFromChild && !isFromDashboard && !isForceOpen && (
         <TranslatedText

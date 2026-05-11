@@ -6,6 +6,7 @@ import {
   Alert,
   BackHandler,
   StyleSheet,
+  Platform,
 } from 'react-native';
  
 import { RESULTS } from 'react-native-permissions';
@@ -79,7 +80,7 @@ const BarCodeScan = ({ item , isFromChild = false}: any) => {
   };
 
   return (
-    <View style={{ paddingVertical: 8 }}>
+    <View style={{ paddingVertical: Platform.OS === 'android' ? 6 : 8 }}>
       
       {/* Title */}
       <Text style={[styles.label, theme === 'dark' && { color: 'white' }]}>

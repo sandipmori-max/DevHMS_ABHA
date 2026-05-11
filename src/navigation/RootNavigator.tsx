@@ -295,7 +295,7 @@ const RootNavigator = () => {
     const enabled = await DeviceInfo.isLocationEnabled();
 
     const permission = await requestLocationPermissions();
-
+    await new Promise(res => setTimeout(res, 400));
     if (enabled && permission === "granted") {
       locationModalShownRef.current = false;
       setAlertVisible(false);
@@ -414,7 +414,7 @@ const RootNavigator = () => {
   if (isLoading) return <FullViewLoader />;
 
   return (
-    <>
+    <> 
       {isAuthenticated ? <StackNavigator /> : <AuthNavigator />}
       {isAuthenticated && (
         <CustomAlert

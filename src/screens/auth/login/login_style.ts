@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
 
 export const styles = StyleSheet.create({
@@ -41,13 +41,13 @@ export const styles = StyleSheet.create({
     color: ERP_COLOR_CODE.ERP_666,
   },
   inputContainer: {
-    marginBottom: 8,
+    marginBottom: Platform.OS ==='android' ? 6 : 8,
   },
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
     color: ERP_COLOR_CODE.ERP_444,
-    marginBottom: 6,
+    marginBottom: Platform.OS === 'android' ? 4 : 6,
   },
   input: { 
     padding: 15,
@@ -58,7 +58,7 @@ export const styles = StyleSheet.create({
   errorText: {
     color: ERP_COLOR_CODE.ERP_ERROR,
     fontSize: 13,
-    marginTop: 5,
+    marginTop: Platform.OS === 'android' ? 2 : 5,
   },
   errorContainer: {
     borderColor: ERP_COLOR_CODE.ERP_ERROR,
@@ -69,10 +69,10 @@ export const styles = StyleSheet.create({
   },
   loginButton: {
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-    padding: 16,
+    padding:  Platform.OS === 'android' ? 12 : 16,
     borderRadius: 8,
     marginBottom: 20, 
-    marginTop: 12,
+    marginTop: 8,
     borderWidth: 1,
     borderColor: '#FFF'
   },

@@ -70,8 +70,8 @@ export const styles = StyleSheet.create({
     alignContent: "center",
     gap: 8,
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-    paddingVertical: 15,
-    borderRadius: 10,
+    paddingVertical: 12,
+    borderRadius: 6,
     alignItems: "center",
     marginTop: 10,
   },
@@ -108,20 +108,19 @@ export const styles = StyleSheet.create({
 
   input: {
     flex: 1,
-    paddingVertical: 14,
     fontSize: 16,
-    padding: 14,
-    borderRadius: 10,
+    padding: Platform.OS === 'android' ? 8 : 10,
+    borderRadius: 4,
   },
   input1: {
     marginLeft: 10,
     fontSize: 16,
     borderColor: ERP_COLOR_CODE.ERP_161515,
-    paddingVertical: 14,
+    paddingVertical: 2,
     flex: 1,
-    borderRadius: 10,
+    borderRadius: 4,
   },
   toggleButton: {
-    padding: 14,
+    padding: 10,
   },
 });

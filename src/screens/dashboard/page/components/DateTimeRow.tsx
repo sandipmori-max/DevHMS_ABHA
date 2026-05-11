@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Platform } from "react-native";
 import React from "react";
 import { styles } from "../page_style";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
@@ -18,7 +18,7 @@ const DateTimeRow = ({
   const theme = useAppSelector((state) => state?.theme.mode);
 
   return (
-    <View style={{ marginBottom: 8 }}>
+    <View style={{ marginBottom: Platform.OS === 'android' ? 6  : 8 }}>
       {
         !isFromChild &&   <View style={{ flexDirection: "row" }}>
         <Text

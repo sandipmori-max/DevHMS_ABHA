@@ -5,5 +5,7 @@
 RCT_EXTERN_METHOD(startService)
 RCT_EXTERN_METHOD(stopService)
 RCT_EXTERN_METHOD(setUserTokens:(NSArray))
+RCT_EXTERN_METHOD(getCurrentLocation:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
 
 @end

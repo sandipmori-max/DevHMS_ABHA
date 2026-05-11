@@ -40,6 +40,7 @@ import useTranslations from "../../../hooks/useTranslations";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ERP_GIF } from "../../../assets";
 import TranslatedText from "../tabs/home/TranslatedText";
+import { HEADER_HEIGHT } from "../../../constants";
 
 const AttendanceScreen = () => {
   const route = useRoute();
@@ -50,7 +51,7 @@ const AttendanceScreen = () => {
   const dispatch = useAppDispatch();
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
-const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const [resData, setResData] = useState<any>();
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -113,6 +114,7 @@ const { height, width } = useWindowDimensions();
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+      height: HEADER_HEIGHT,
       },
       headerTintColor: "#fff",
       headerRight: () => (
@@ -348,11 +350,21 @@ const { height, width } = useWindowDimensions();
         )}
 
         {showDatePicker?.show && Platform.OS === "ios" && (
-          <Modal transparent animationType="slide" supportedOrientations={["portrait", "landscape"]} statusBarTranslucent>
-            <View style={[styles.overlay,isLandscape && {
-                            alignContent:'center',
-                            alignItems:'center'
-                          }]}>
+          <Modal
+            transparent
+            animationType="slide"
+            supportedOrientations={["portrait", "landscape"]}
+            statusBarTranslucent
+          >
+            <View
+              style={[
+                styles.overlay,
+                isLandscape && {
+                  alignContent: "center",
+                  alignItems: "center",
+                },
+              ]}
+            >
               <View
                 style={[
                   styles.sheet,
@@ -441,7 +453,7 @@ const { height, width } = useWindowDimensions();
             >
               <View
                 style={{
-                  height: Platform.OS === 'ios' ?  16  : 6,
+                  height: Platform.OS === "ios" ? 16 : 6,
                   width: "100%",
                   backgroundColor:
                     theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
@@ -485,8 +497,8 @@ const { height, width } = useWindowDimensions();
               >
                 <>
                   <View
-                    style={{ 
-                      height: Platform.OS === 'ios' ?  16  : 6,
+                    style={{
+                      height: Platform.OS === "ios" ? 16 : 6,
                       width: "100%",
                       backgroundColor:
                         theme === "dark"

@@ -78,6 +78,7 @@ import FastImage from "react-native-fast-image";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import DynamicTable from "./components/DynamicTable";
 import DocScan from "./components/DocScan";
+import { HEADER_HEIGHT } from "../../../constants";
 
 type PageRouteParams = { PageScreen: { item: any } };
 
@@ -183,11 +184,11 @@ const PageScreen = () => {
   const [isSettingVisible, setIsSettingVisible] = useState(false);
   const [myScript, setMyScript] = useState();
 
-  console.log("myScript", myScript);
+  console.log("myScript++++++++++++++++++++++++", myScript);
   const [backgroundDeniedModal, setBackgroundDeniedModal] = useState(false);
 
   const isCheckingPermission = useRef(false);
-  const locationSyncInterval = useRef<NodeJS.Timeout | null>(null);
+  const locationSyncInterval = useRef(null);
   const [scriptErrorMessage, setScriptErrorMessage] = useState<any>();
   const [isVisibleScriptError, setIsVisibleScriptError] = useState(false);
 
@@ -300,6 +301,7 @@ const PageScreen = () => {
 
         const hasPermission = await requestLocationPermission();
         const fullPermission = await requestLocationPermissions();
+        await new Promise(res => setTimeout(res, 400));
 
         if (hasPermission && fullPermission === "granted") {
           setAlertVisible(false);
@@ -375,9 +377,12 @@ const PageScreen = () => {
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+                  height: HEADER_HEIGHT,
+          
       },
       headerBackTitle: "",
       headerTintColor: "#fff",
+       headerTitleAlign: "left",
       headerTitle: () => (
         <View
           style={{ flexDirection: "row", alignItems: "center", maxWidth: 210 }}
@@ -433,7 +438,8 @@ const PageScreen = () => {
               onPress={async () => {
                 try {
                   setTapLoader(true);
-                  if (myScript) {
+                  console.log("myScript", myScript)
+                  if (myScript && Array.isArray(myScript)) {
                     let rules;
 
                     if (typeof myScript === "string") {

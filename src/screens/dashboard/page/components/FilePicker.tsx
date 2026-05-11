@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderStyle: "dashed",
     borderColor: "#4c6ef5",
-    borderRadius: 10,
+    borderRadius: 6,
     paddingVertical: 22,
     alignItems: "center",
     justifyContent: "center",

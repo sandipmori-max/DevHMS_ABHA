@@ -66,6 +66,7 @@ const TabNavigator = () => {
         headerStyle: {
           backgroundColor:
             theme === "dark" ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,
+            height: Platform.OS === 'android' ? 48 : undefined
         },
         headerTintColor: "white", 
       }}

@@ -6,6 +6,7 @@ import {
   Alert,
   BackHandler,
   StyleSheet,
+  Platform,
 } from "react-native";
 
 import { RESULTS } from "react-native-permissions";
@@ -86,7 +87,7 @@ const ScanScreen = ({ item }: any) => {
   };
 
   return (
-    <View style={{ paddingVertical: 8 }}>
+    <View style={{ paddingVertical: Platform.OS === 'android' ? 6 : 8 }}>
       {/* Field Label */}
       <Text style={[styles.label, theme === "dark" && { color: "white" }]}>
         {item?.fieldtitle}

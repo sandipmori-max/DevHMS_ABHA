@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import RNFS from "react-native-fs";
 import FastImage from "react-native-fast-image";
+import { ERP_COLOR_CODE } from "../constants";
 
 export const getBottomTabIcon = (iconName: string, focused: boolean) => {
   switch (iconName) {
@@ -1314,3 +1315,29 @@ export const getDashboardIcon = (type) => {
 
   return iconMap[key] || "business"; // default fallback
 };
+
+ export const getStatusPriority = (status) => {
+    const s = status?.toLowerCase();
+
+    if (s === "lwp-apply" || s === "lwp-approved") return 6;
+    if (s === "leave") return 5;
+    if (s === "half") return 4;
+    if (s === "punch missing") return 3;
+    if (s === "working") return 2;
+    if (s === "fullday") return 1;
+
+    return 0;
+  };
+
+ export const getColor = (status) => {
+    const s = status?.toLowerCase();
+    if (s === "lwp-approved") return "#f41010";
+    if (s === "lwp-apply" || s === "lwp-approved") return "#f41010"; // black
+    if (s === "leave") return ERP_COLOR_CODE.ERP_ERROR; // red
+    if (s === "half") return "#ff9800"; // orange
+    if (s === "punch missing") return "#9e9e9e"; // grey
+    if (s === "working") return "#4caf50"; // green-ish
+    if (s === "fullday") return "#4caf50";
+
+    return ERP_COLOR_CODE.ERP_APP_COLOR;
+  };

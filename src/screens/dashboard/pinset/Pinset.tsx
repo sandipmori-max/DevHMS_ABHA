@@ -34,6 +34,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setIsPinLoaded } from "../../../store/slices/auth/authSlice";
 import { useTranslation } from "react-i18next";
 import ERPIcon from "../../../components/icon/ERPIcon";
+import { HEADER_HEIGHT } from "../../../constants";
 
 const { width } = Dimensions.get("screen");
 
@@ -146,6 +147,7 @@ const PinSetupScreen = () => {
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+        height: HEADER_HEIGHT,
       },
       headerBackTitle: "",
       headerTintColor: "#fff",

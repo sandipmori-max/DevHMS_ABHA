@@ -11,6 +11,7 @@ import {
   Image,
   TouchableWithoutFeedback,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import SignatureScreen, {
   SignatureViewRef,
@@ -214,7 +215,7 @@ export default SignaturePad;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 6,
+    marginTop: Platform.OS === 'android' ? 4 :  6,
   },
    container2: {
     position: 'absolute',

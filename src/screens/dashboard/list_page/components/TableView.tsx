@@ -12,6 +12,8 @@ import NoData from "../../../../components/no_data/NoData";
 import { useNavigation } from "@react-navigation/native";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import MemoizedFooterView from "./MemoizedFooterView";
+import { useAppSelector } from "../../../../store/hooks";
+import useTranslations from "../../../../hooks/useTranslations";
 
 const TableView = ({
   configData,
@@ -25,15 +27,20 @@ const TableView = ({
   setSearchQuery,
   totalQty,
   isFromBusinessCard,
+  parsedConfig
 }: any) => {
   const navigation = useNavigation();
+  const { t } = useTranslations();
 
   const screenWidth = Dimensions.get("window").width;
+  const theme = useAppSelector((state) => state?.theme?.mode);
 
   /* ================= COLUMN WIDTH ================= */
 
-  // 4-5 columns visible on screen
-  const columnWidth = Math.max(110, Math.min(150, screenWidth / 4.2));
+  const columnWidth = Math.max(
+    110,
+    Math.min(150, screenWidth / 4.2),
+  );
 
   /* ================= BUTTON META ================= */
 
@@ -46,7 +53,8 @@ const TableView = ({
     }
 
     const configItem = configData?.find(
-      (cfg: any) => cfg?.datafield?.toLowerCase() === key?.toLowerCase(),
+      (cfg: any) =>
+        cfg?.datafield?.toLowerCase() === key?.toLowerCase(),
     );
 
     return {
@@ -59,15 +67,25 @@ const TableView = ({
 
   const allKeys =
     filteredData && filteredData?.length > 0
-      ? Object.keys(filteredData[0]).filter(
-          (key) => key !== "id" && key !== "html" && !key.startsWith("btn_"),
-        )
+      ? [
+          "#ID",
+          ...Object.keys(filteredData[0]).filter(
+            (key) =>
+              key !== "id" &&
+              key !== "html" &&
+              !key.startsWith("btn_"),
+          ),
+        ]
       : [];
 
   /* ================= FORMAT VALUE ================= */
 
   const formatValue = (value: any) => {
-    if (value === null || value === undefined || value === "") {
+    if (
+      value === null ||
+      value === undefined ||
+      value === ""
+    ) {
       return "-";
     }
 
@@ -82,85 +100,107 @@ const TableView = ({
 
   const TableHeader = () => {
     return (
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        bounces={false}
+      <View
+        style={{
+          flexDirection: "row",
+          backgroundColor:
+            ERP_COLOR_CODE.ERP_APP_COLOR,
+          height: 40,
+        }}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-            height: 40,
-          }}
-        >
-          {allKeys.map((key, idx) => (
-            <View
-              key={`${key}-${idx}`}
+        {allKeys.map((key, idx) => (
+          <View
+            key={`${key}-${idx}`}
+            style={{
+              width:
+                key === "#ID"
+                  ? 40
+                  : columnWidth,
+              minWidth:
+                key === "#ID"
+                  ? 40
+                  : 110,
+              maxWidth:
+                key === "#ID"
+                  ? 40
+                  : 150,
+              height: 40,
+              paddingHorizontal: 8,
+              borderRightWidth: 1,
+              borderRightColor:
+                "rgba(255,255,255,0.15)",
+              justifyContent: "center",
+              alignItems:
+                key === "#ID"
+                  ? "center"
+                  : "flex-start",
+            }}
+          >
+            <Text
+              numberOfLines={1}
               style={{
-                width: columnWidth,
-                height: 40,
-                minWidth: 80,
-                maxWidth: 150,
-                paddingVertical: 14,
-                paddingHorizontal: 8,
-                borderRightWidth: 1,
-                borderRightColor: "rgba(255,255,255,0.15)",
-                justifyContent: "center",
+                color: "#fff",
+                fontWeight: "800",
+                fontSize: 11,
+                textTransform: "uppercase",
               }}
             >
-              <Text
-                numberOfLines={1}
-                style={{
-                  color: "#fff",
-                  fontWeight: "800",
-                  fontSize: 11,
-                  textTransform: "uppercase",
-                }}
-              >
-                {formatHeaderTitle(key)}
-              </Text>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
+              {key === "#ID"
+                ? "#ID"
+                : formatHeaderTitle(key)}
+            </Text>
+          </View>
+        ))}
+      </View>
     );
   };
 
   /* ================= ROW ================= */
 
-  const renderItem = ({ item, index }: { item: any; index: number }) => {
-    const btnKeys = Object.keys(item).filter((key) => key.startsWith("btn_"));
+  const renderItem = ({
+    item,
+    index,
+  }: {
+    item: any;
+    index: number;
+  }) => {
+    const btnKeys = Object.keys(item).filter((key) =>
+      key.startsWith("btn_"),
+    );
 
     const authUser = item?.authuser;
 
     return (
       <TouchableOpacity
         activeOpacity={0.95}
-        onPress={() => {
-          if (authUser) {
-            return;
-          }
-
-          if (item?.id !== undefined) {
-            setIsFilterVisible(false);
-            setSearchQuery("");
-
-            navigation.navigate("Page", {
-              item,
-              title: pageParamsName,
-              id: item?.id,
-              url: pageName,
-              isFromBusinessCard,
-              isFromProfile: false,
-            });
-          }
-        }}
+         onPress={async () => {
+              if (!parsedConfig) {
+                return;
+              }
+              if (authUser) return;
+              if (
+                parsedConfig?.editentry === 1 ||
+                parsedConfig?.editentry === "1"
+              ) {
+                setIsFilterVisible(false);
+                setSearchQuery("");
+                navigation.navigate("Page", {
+                  item,
+                  title: pageParamsName,
+                  id: item?.id,
+                  url: pageName,
+                  isFromBusinessCard,
+                });
+              }
+            }}
         style={{
-          backgroundColor: index % 2 === 0 ? "#fff" : "#f8fafc",
+          backgroundColor:
+            index % 2 === 0
+              ? "#fff"
+              : "#f8fafc",
           borderBottomWidth: 1,
           borderBottomColor: "#e2e8f0",
-          padding: 4
+          padding: 4,
         }}
       >
         {/* TABLE ROW */}
@@ -170,20 +210,36 @@ const TableView = ({
           }}
         >
           {allKeys.map((key, idx) => {
-            const value = formatValue(item[key]);
+            const value =
+              key === "#ID"
+                ? index + 1
+                : formatValue(item[key]);
 
             return (
               <View
                 key={`${key}-${idx}`}
                 style={{
-                  width: columnWidth,
-                  minWidth: 110,
-                  maxWidth: 150,
+                  width:
+                    key === "#ID"
+                      ? 40
+                      : columnWidth,
+                  minWidth:
+                    key === "#ID"
+                      ? 40
+                      : 110,
+                  maxWidth:
+                    key === "#ID"
+                      ? 40
+                      : 150,
                   borderRightWidth: 1,
                   borderRightColor: "#edf2f7",
                   justifyContent: "center",
+                  alignItems:
+                    key === "#ID"
+                      ? "center"
+                      : "flex-start",
                   paddingHorizontal: 4,
-                  paddingVertical: 2,
+                  paddingVertical: 6,
                 }}
               >
                 <Text
@@ -192,8 +248,10 @@ const TableView = ({
                   style={{
                     fontSize: 12,
                     color: "#0f172a",
-                    fontWeight: "500",
-                    textDecorationStyle: "dotted",
+                    fontWeight:
+                      key === "#ID"
+                        ? "700"
+                        : "500",
                   }}
                 >
                   {value}
@@ -218,7 +276,8 @@ const TableView = ({
             {btnKeys.map((key, idx) => {
               const actionValue = item[key];
 
-              const { label, color } = getButtonMeta(key);
+              const { label, color } =
+                getButtonMeta(key);
 
               return (
                 <TouchableOpacity
@@ -248,7 +307,8 @@ const TableView = ({
                 >
                   <Text
                     style={{
-                      color: ERP_COLOR_CODE.ERP_WHITE,
+                      color:
+                        ERP_COLOR_CODE.ERP_WHITE,
                       fontWeight: "700",
                       fontSize: 12,
                     }}
@@ -269,7 +329,10 @@ const TableView = ({
               borderTopColor: "#f1f5f9",
             }}
           >
-            <MemoizedFooterView item={item} index={index} />
+            <MemoizedFooterView
+              item={item}
+              index={index}
+            />
           </View>
         )}
       </TouchableOpacity>
@@ -300,7 +363,7 @@ const TableView = ({
       style={{
         flex: 1,
         backgroundColor: "#f1f5f9",
-        marginTop: 4
+        margin: 4,
       }}
     >
       <ScrollView
@@ -313,17 +376,147 @@ const TableView = ({
             data={filteredData}
             renderItem={renderItem}
             keyExtractor={(item, index) =>
-              item?.id?.toString() || index.toString()
+              item?.id?.toString() ||
+              index.toString()
             }
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={TableHeader}
+            stickyHeaderIndices={[0]}
             contentContainerStyle={{
               paddingBottom: 20,
             }}
+             
           />
+         
         </View>
       </ScrollView>
+       {filteredData?.length > 0 && (
+                    <View
+                      style={{
+                        marginTop: 6,
+                        padding: 8,
+                        borderRadius: 8,
+                        backgroundColor:
+                          theme === "dark"
+                            ? "#000"
+                            : "#f1f1f1",
+                        borderWidth: 1,
+                        borderColor:
+                          ERP_COLOR_CODE.ERP_ddd,
+                        marginBottom: 6,
+                        marginHorizontal: 8,
+                        width: "96%",
+                      }}
+                    >
+                      <View
+                        style={{
+                          justifyContent:
+                            "space-between",
+                          flexDirection: "row",
+                          width: "90%",
+                        }}
+                      >
+                        {totalQty && (
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              width: "50%",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 14,
+                                fontWeight: "700",
+                                color:
+                                  theme === "dark"
+                                    ? "white"
+                                    : ERP_COLOR_CODE.ERP_333,
+                              }}
+                            >
+                              {t("text.text28")} :-
+                            </Text>
+
+                            <Text
+                              style={{
+                                fontSize: 16,
+                                fontWeight: "bold",
+                                color:
+                                  theme === "dark"
+                                    ? "white"
+                                    : "#28a745",
+                                marginLeft: 8,
+                              }}
+                            >
+                              {totalQty?.toFixed(2)}
+                            </Text>
+                          </View>
+                        )}
+
+                        {totalAmount && (
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              width: "50%",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 14,
+                                fontWeight: "700",
+                                flexShrink: 1,
+                                color:
+                                  theme === "dark"
+                                    ? "white"
+                                    : ERP_COLOR_CODE.ERP_333,
+                              }}
+                            >
+                              {t("text.text29")} :-
+                            </Text>
+
+                            <Text
+                              style={{
+                                fontSize: 16,
+                                fontWeight: "bold",
+                                color:
+                                  theme === "dark"
+                                    ? "white"
+                                    : "#28a745",
+                                marginLeft: 8,
+                              }}
+                            >
+                              ₹{" "}
+                              {totalAmount?.toFixed(
+                                2,
+                              )}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+
+                      <View
+                        style={{
+                          justifyContent:
+                            "space-between",
+                          flexDirection: "row",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            fontWeight: "700",
+                            color:
+                              theme === "dark"
+                                ? "white"
+                                : ERP_COLOR_CODE.ERP_333,
+                          }}
+                        >
+                          {filteredData?.length}{" "}
+                          {t("text.text31")}
+                        </Text>
+                      </View>
+                    </View>
+                  )}
     </View>
   );
 };

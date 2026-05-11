@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import { useAppSelector } from '../../../../store/hooks';
 import useTranslations from '../../../../hooks/useTranslations';
@@ -17,7 +17,7 @@ const BoolInput = ({ value, onChange, label, isFromChild = false }: BoolInputPro
   const { t } = useTranslations();
 
   return (
-    <View style={{ marginBottom: 8 }}>
+    <View style={{ marginBottom: Platform.OS === 'android' ? 6 : 8 }}>
       { label && <TranslatedText
       
       style={[{  fontWeight: '600' }, theme === 'dark' && { color: 'white' }]}
@@ -26,10 +26,10 @@ const BoolInput = ({ value, onChange, label, isFromChild = false }: BoolInputPro
       
       ></TranslatedText>}
       <View style={{ 
-        padding: 10,
+        padding: Platform.OS ==='android' ? 8 : 10,
         marginVertical: 6,
         borderWidth: 0.4,
-        borderRadius: 8,
+        borderRadius: 6,
         width:'98%',
         borderColor: theme === 'dark' ? 'white' : 'black',
         flexDirection: 'row', alignItems: 'center' }}>

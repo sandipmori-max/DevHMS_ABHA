@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { Text, TouchableOpacity, View, ScrollView } from "react-native";
+import { Text, TouchableOpacity, View, ScrollView, Platform } from "react-native";
 import { useAppDispatch } from "../../../../store/hooks";
 import { styles } from "../page_style";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
@@ -86,7 +86,7 @@ const CustomMultiPicker = ({
   };
 
   return (
-    <View style={{ marginBottom: 8 }}>
+    <View style={{ marginBottom: Platform.OS === 'android' ? 6 : 8 }}>
       <View style={{ flexDirection: "row" }}>
         <Text style={styles.label}>{label}</Text>
         {item?.tooltip !== label && <Text> - ( {item?.tooltip} ) </Text>}

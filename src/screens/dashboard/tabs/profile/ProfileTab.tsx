@@ -7,6 +7,7 @@ import {
   Animated,
   Easing,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 
 import AccountSwitcher from "./components/AccountSwitcher";
@@ -23,6 +24,7 @@ import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import ProfileSection from "./ProfileSection";
 import TranslatedText from "../home/TranslatedText";
 import { updateSelectedFromDateState, updateSelectedToDateState } from "../../../../store/slices/auth/authSlice";
+import { HEADER_HEIGHT } from "../../../../constants";
 
 const ProfileTab = () => {
   const { t } = useTranslation();
@@ -96,6 +98,7 @@ const ProfileTab = () => {
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+       height: HEADER_HEIGHT,
       },
       headerBackTitle: "",
       headerTintColor: "#fff",

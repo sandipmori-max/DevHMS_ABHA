@@ -6,6 +6,7 @@ import React, {
   useState,
 } from "react";
 import {
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -21,6 +22,7 @@ import useTranslations from "../../../hooks/useTranslations";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ERPIcon from "../../../components/icon/ERPIcon";
 import { useBaseLink } from "../../../hooks/useBaseLink";
+import { HEADER_HEIGHT } from "../../../constants";
 
 const PrivacyPolicyScreen = () => {
   const navigation = useNavigation<any>();
@@ -119,6 +121,7 @@ const PrivacyPolicyScreen = () => {
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+           height: HEADER_HEIGHT,
       },
       headerTintColor: "#fff",
       headerBackTitle: "",
@@ -140,6 +143,8 @@ const PrivacyPolicyScreen = () => {
       ),
       headerRight: () => (
         <>
+        {/* {
+         finalUrl !== defaultUrl && !passedUrl && <> 
           <ERPIcon name={"refresh"} onPress={reloadWebView} />
           {!isFromChart && item?.name !== "Attendance Code" && (
             <ERPIcon
@@ -147,6 +152,9 @@ const PrivacyPolicyScreen = () => {
               onPress={toggleDiv}
             />
           )}
+          </>
+        } */}
+          
         </>
       ),
     });

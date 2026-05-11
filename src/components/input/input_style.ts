@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { ERP_COLOR_CODE } from '../../utils/constants';
 
 export const styles = StyleSheet.create({
   inputContainer: {
-    marginBottom: 6,
+    marginBottom: Platform.OS === 'android' ? 4 : 6,
   },
   inputLabel: {
     fontSize: 14,
@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
   input: { 
     borderRadius: 6,
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 8,
     fontSize: 16,
     width: '94%',
     color: ERP_COLOR_CODE.ERP_BLACK,

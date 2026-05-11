@@ -262,8 +262,7 @@ export const styles = StyleSheet.create({
   },
 
   searchContainer: {
-    // marginTop: 8,
-    marginBottom: 8,
+    marginBottom: 0,
   },
   searchInputContainer: {
     flexDirection: 'row',
@@ -281,7 +280,7 @@ export const styles = StyleSheet.create({
     color: ERP_COLOR_CODE.ERP_6C757D,
   },
   searchInput: {
-    flex: 1,
+    paddingVertical: 6,
     fontSize: 16,
     color: ERP_COLOR_CODE.ERP_1A1A1A,
   },
@@ -297,7 +296,7 @@ export const styles = StyleSheet.create({
   dateContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 4,
+    marginVertical: 8,
   },
   dateRow: {
     flex: 1,

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Platform,
   useWindowDimensions,
+  NativeModules
 } from "react-native";
 import React, { useState, useRef, useEffect } from "react";
 import { Formik } from "formik";
@@ -91,6 +92,7 @@ const AttendanceForm = ({ setBlockAction, resData, isFromDashboard }: any) => {
       async (nextAppState) => {
         if (nextAppState === "active" && pendingCameraAction.current) {
           const hasPermission = await requestCameraAndLocationPermission();
+         await new Promise(res => setTimeout(res, 400));
           if (hasPermission) {
             setIsSettingVisible(false);
             setAlertVisible(false);
@@ -238,7 +240,7 @@ const openCameraV2 = (
     if (locationLoading) return;
 
     const hasPermission = await requestCameraAndLocationPermission();
-
+await new Promise(res => setTimeout(res, 400));
     if (!hasPermission) {
       pendingCameraAction.current = { setFieldValue, handleSubmit };
       setAlertConfig({
@@ -257,37 +259,89 @@ const openCameraV2 = (
     setBlocked(false);
     setLocationLoading(true);
 
-    const getLocationWithRetry = () => {
-      Geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position?.coords;
+ const getLocationWithRetry = async () => {
+      setLocationLoading(true);
 
-          setUserLocation({ latitude, longitude });
-          setFieldValue("latitude", String(latitude));
-          setFieldValue("longitude", String(longitude));
-          if(ATTENDANCE_LEVEL === 0){
-            openCameraV2(setFieldValue, handleSubmit);
-          }else{
-            openCamera(setFieldValue, handleSubmit);
-          }
-        },
-        (error) => {
-          console.log("-----------------------******", error);
+      try {
+        // ⚡ STEP 1: Native fast location
+        const res = await NativeModules.LocationModule.getCurrentLocation();
 
-          setAlertConfig({
-            title: t("errors.locationError"),
-            message: error?.message || t("msg.msg5"),
-            type: "error",
-          });
-          setAlertVisible(true);
-          setLocationLoading(false);
-        },
-        {
-          enableHighAccuracy: false,
-          timeout: 15000,
-          maximumAge: 10000,
-        },
-      );
+        console.log('res++++++++++++++++++++++++++++++', res);
+        let { latitude, longitude, accuracy } = res;
+
+        // 🎯 Accuracy check (optional but recommended)
+        if (accuracy && accuracy > 150) {
+          throw new Error('Low accuracy location');
+        }
+
+        // ✅ SUCCESS
+        setUserLocation({ latitude, longitude });
+        setFieldValue('latitude', String(latitude));
+        setFieldValue('longitude', String(longitude));
+
+        setLocationLoading(false);
+
+        // 📸 Continue flow
+        if (ATTENDANCE_LEVEL === 0) {
+          openCameraV2(setFieldValue, handleSubmit);
+        } else {
+          openCamera(setFieldValue, handleSubmit);
+        }
+      } catch (err) {
+        console.log('Native failed → fallback to JS', err);
+
+        // 🔁 STEP 2: Fallback (your old code)
+        Geolocation.getCurrentPosition(
+          position => {
+            const { latitude, longitude } = position.coords;
+
+            setUserLocation({ latitude, longitude });
+            setFieldValue('latitude', String(latitude));
+            setFieldValue('longitude', String(longitude));
+
+            setLocationLoading(false);
+
+            if (ATTENDANCE_LEVEL === 0) {
+              openCameraV2(setFieldValue, handleSubmit);
+            } else {
+              openCamera(setFieldValue, handleSubmit);
+            }
+          },
+          error => {
+            console.log('FINAL ERROR:', error);
+
+            let message = '';
+
+            switch (error.code) {
+              case 1:
+                message = 'Location permission denied';
+                break;
+              case 2:
+                message = 'Location unavailable (GPS/Network issue)';
+                break;
+              case 3:
+                message = 'Location timeout (slow network)';
+                break;
+              default:
+                message = error?.message || t('msg.msg5');
+            }
+
+            setAlertConfig({
+              title: t('errors.locationError'),
+              message,
+              type: 'error',
+            });
+
+            setAlertVisible(true);
+            setLocationLoading(false);
+          },
+          {
+            enableHighAccuracy: false,
+            timeout: 10000,
+            maximumAge: 10000,
+          },
+        );
+      }
     };
 
     getLocationWithRetry();
