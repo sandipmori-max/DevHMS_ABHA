@@ -180,45 +180,74 @@ const openCameraV2 = (
   handleSubmit: () => void,
 ) => {
   setTimeout(() => {
-    launchCamera(
-      {
-        mediaType: "photo",
-        quality: 0.4,
-        includeBase64: true,
-        maxWidth: 500,
-        maxHeight: 500,
-        saveToPhotos: false,
-      },
-      (response) => {
-        if (response?.didCancel || response?.errorCode) {
-          setLocationLoading(false);
-          setBlockAction(false);
-          return;
-        }
+   launchCamera(
+  {
+    mediaType: "photo",
 
-        const asset = response?.assets?.[0];
-        const photoUri = asset?.uri;
+    // ⚡ keep base64 OFF from camera (we generate after resize)
+    includeBase64: false,
 
-        if (!photoUri) return;
+    quality: 0.5,
+    maxWidth: 800,
+    maxHeight: 800,
+    saveToPhotos: false,
+  },
+  async (response) => {
+    try {
+      if (response?.didCancel || response?.errorCode) {
+        setLocationLoading(false);
+        setBlockAction(false);
+        return;
+      }
 
-        setStatusImage(photoUri);
+      const asset = response?.assets?.[0];
 
-        if (asset?.base64) {
-          setFieldValue(
-            "imageBase64",
-            `${
-              resData?.success === 1 || resData?.success === "1"
-                ? "punchOut.jpeg"
-                : "punchIn.jpeg"
-            }; data:${asset?.type};base64,${asset?.base64}`,
-          );
-        }
+      if (!asset?.uri) return;
 
-        setTimeout(() => {
-          handleSubmit();
-        }, 1000);
-      },
-    );
+      let finalUri = asset.uri;
+      let finalBase64 = "";
+
+      // 📌 STEP 1: Resize image (IMPORTANT FIX)
+      const resizedImage = await ImageResizer.createResizedImage(
+        asset.uri,
+        800, // width
+        800, // height
+        "JPEG",
+        60,  // quality
+        0,
+      );
+
+      finalUri = resizedImage.uri;
+
+      // 📌 STEP 2: Convert resized image to base64
+      const RNFS = require("react-native-fs");
+
+      finalBase64 = await RNFS.readFile(resizedImage.uri, "base64");
+
+      setStatusImage(finalUri);
+
+      // 📌 STEP 3: Prepare payload
+      const fileName =
+        resData?.success === 1 || resData?.success === "1"
+          ? "punchOut.jpeg"
+          : "punchIn.jpeg";
+
+      setFieldValue(
+        "imageBase64",
+        `${fileName};data:${asset.type};base64,${finalBase64}`,
+      );
+
+      // 📌 STEP 4: Submit safely
+      setTimeout(() => {
+        handleSubmit();
+      }, 300);
+    } catch (err) {
+      console.log("Camera Error:", err);
+      setLocationLoading(false);
+      setBlockAction(false);
+    }
+  },
+);
   }, 800); // 🔥 300–700ms ideal
 };
   const handleStatusToggle = async (

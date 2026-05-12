@@ -71,8 +71,7 @@ const Media = ({
   const getImageUri = (type: "small" | "large") => {
     const base =
       imageUri ||
-      `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${
-        type === "small" ? `d_${item?.text}` : item?.text
+      `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${type === "small" ? `d_${item?.text}` : item?.text
       }`;
     console.log("Generated image URI:", base);
     return `${base}?cb=${cacheBuster}`;
@@ -117,9 +116,8 @@ const Media = ({
       if (result === RESULTS.BLOCKED || result === RESULTS.DENIED) {
         setAlertConfig({
           title: `${type === "camera" ? "Camera" : "Gallery"} ${t("text28")}`,
-          message: `${t("text29")} ${
-            type === "camera" ? "camera" : "gallery"
-          } ${t("text30")}`,
+          message: `${t("text29")} ${type === "camera" ? "camera" : "gallery"
+            } ${t("text30")}`,
           type: "error",
         });
         setModalClose(true);
@@ -138,46 +136,24 @@ const Media = ({
 
   // -------------------- AppState listener --------------------
   useEffect(() => {
-    const writeLog = async (title: string, data?: any) => {
-      try {
-        const logPath = RNFS.DocumentDirectoryPath + "/camera_logs.txt";
 
-        const time = new Date().toISOString();
-
-        const log = `\n\n========== ${title} ==========\nTIME: ${time}\nDATA: ${JSON.stringify(
-          data,
-          null,
-          2,
-        )}\n`;
-
-        await RNFS.appendFile(logPath, log, "utf8");
-
-        console.log(title, data);
-      } catch (e) {
-        console.log("Log Write Error:", e);
-      }
-    };
 
     const subscription = AppState.addEventListener(
       "change",
       async (nextAppState) => {
         try {
-          await writeLog("APP STATE CHANGED", {
-            previous: appState.current,
-            next: nextAppState,
-            pendingCameraAction: pendingCameraAction.current,
-          });
+
 
           if (
             appState.current.match(/inactive|background/) &&
             nextAppState === "active" &&
             pendingCameraAction.current
           ) {
-            await writeLog("RETURNED FROM SETTINGS");
+
 
             const granted = await requestPermission("camera");
 
-            await writeLog("CAMERA PERMISSION RESULT", { granted });
+
 
             if (granted) {
               setIsSettingVisible(false);
@@ -186,61 +162,38 @@ const Media = ({
 
               pendingCameraAction.current = false;
 
-              await writeLog("LAUNCHING CAMERA");
+
 
               launchCamera(
                 {
                   mediaType: "photo",
-
-                  quality: 0.4,
-
-                  includeBase64: true,
-
-                  maxWidth: 500,
-                  maxHeight: 500,
-
+                  // ⚡ IMPORTANT FIX: avoid base64 at capture time
+                  includeBase64: false,
+                  quality: 0.5,
+                  maxWidth: 800,
+                  maxHeight: 800,
                   saveToPhotos: false,
                 },
                 async (response) => {
                   try {
-                    await writeLog("CAMERA RESPONSE RECEIVED", {
-                      didCancel: response?.didCancel,
-                      errorCode: response?.errorCode,
-                      errorMessage: response?.errorMessage,
-                    });
 
                     if (response?.didCancel) {
-                      await writeLog("USER CANCELLED CAMERA");
                       return;
                     }
 
                     if (response?.errorCode) {
-                      await writeLog("CAMERA ERROR", {
-                        errorCode: response?.errorCode,
-                        errorMessage: response?.errorMessage,
-                      });
 
                       return;
                     }
 
                     if (!response?.assets?.length) {
-                      await writeLog("NO ASSETS FOUND");
                       return;
                     }
 
                     const asset = response.assets[0];
 
-                    await writeLog("ORIGINAL ASSET", {
-                      uri: asset?.uri,
-                      type: asset?.type,
-                      fileName: asset?.fileName,
-                      fileSize: asset?.fileSize,
-                      width: asset?.width,
-                      height: asset?.height,
-                    });
-
                     if (!asset?.uri) {
-                      await writeLog("ASSET URI MISSING++++++++++++++++++++++++++++");
+
                       return;
                     }
 
@@ -251,13 +204,9 @@ const Media = ({
                     const base64SizeInMB =
                       (finalBase64.length * 3) / 4 / 1024 / 1024;
 
-                    await writeLog("BASE64 SIZE", {
-                      size: base64SizeInMB.toFixed(2) + " MB",
-                    });
 
                     // AUTO COMPRESS
                     if (base64SizeInMB > 5) {
-                      await writeLog("COMPRESSING IMAGE");
 
                       const resizedImage =
                         await ImageResizer.createResizedImage(
@@ -269,7 +218,6 @@ const Media = ({
                           0,
                         );
 
-                      await writeLog("COMPRESSED IMAGE", resizedImage);
 
                       const compressedBase64 = await RNFS.readFile(
                         resizedImage.uri,
@@ -278,10 +226,6 @@ const Media = ({
 
                       const compressedSize =
                         (compressedBase64.length * 3) / 4 / 1024 / 1024;
-
-                      await writeLog("COMPRESSED SIZE", {
-                        size: compressedSize.toFixed(2) + " MB",
-                      });
 
                       finalUri = resizedImage.uri;
 
@@ -295,7 +239,7 @@ const Media = ({
 
                     setCacheBuster(Date.now());
 
-                    await writeLog("UI UPDATED");
+
 
                     // SEND TO BACKEND
                     handleAttachment(
@@ -303,16 +247,13 @@ const Media = ({
                       item.field,
                     );
 
-                    await writeLog("BASE64 SENT TO BACKEND");
 
                     // CLEAN MEMORY
                     response.assets = [];
 
-                    await writeLog("MEMORY CLEANED");
                   } catch (err) {
                     setImageExists(false);
 
-                    await writeLog("IMAGE PROCESS ERROR", err);
                   }
                 },
               );
@@ -321,15 +262,12 @@ const Media = ({
 
           appState.current = nextAppState;
         } catch (error) {
-          await writeLog("APPSTATE ERROR", error);
         }
       },
     );
 
     return () => {
       subscription.remove();
-
-      writeLog("APPSTATE SUBSCRIPTION REMOVED");
     };
   }, []);
 
@@ -349,7 +287,6 @@ const Media = ({
               console.log("========== CAMERA START ==========");
 
               const granted = await requestPermission("camera");
-
               console.log("Camera Permission:", granted);
 
               if (!granted) {
@@ -360,14 +297,11 @@ const Media = ({
               launchCamera(
                 {
                   mediaType: "photo",
-                  // INITIAL COMPRESS
-                  quality: 0.4,
-                  // BACKEND REQUIREMENT
-                  includeBase64: true,
-
-                  maxWidth: 500,
-                  maxHeight: 500,
-
+                  // ⚡ IMPORTANT FIX: avoid base64 at capture time
+                  includeBase64: false,
+                  quality: 0.5,
+                  maxWidth: 800,
+                  maxHeight: 800,
                   saveToPhotos: false,
                 },
                 async (response) => {
@@ -410,63 +344,54 @@ const Media = ({
                     }
 
                     let finalUri = asset.uri;
-                    let finalBase64 = asset.base64 || "";
+                    let finalBase64 = "";
 
-                    const base64SizeInMB =
+                    // 📦 STEP 1: estimate size safely (fallback using fileSize if available)
+                    const approxSizeMB =
+                      asset.fileSize ? asset.fileSize / 1024 / 1024 : 0;
+
+                    console.log("Approx Image Size:", approxSizeMB.toFixed(2), "MB");
+
+                    // ⚡ STEP 2: compress ALWAYS for safety (not only >5MB)
+                    console.log("Compressing Image...");
+
+                    const resizedImage =
+                      await ImageResizer.createResizedImage(
+                        asset.uri,
+                        800,
+                        800,
+                        "JPEG",
+                        70, // better quality than 40
+                        0,
+                      );
+
+                    console.log("Compressed Image Path:", resizedImage.uri);
+
+                    // ⚡ STEP 3: convert to base64 AFTER compression
+                    finalBase64 = await RNFS.readFile(
+                      resizedImage.uri,
+                      "base64",
+                    );
+
+                    const compressedSizeMB =
                       (finalBase64.length * 3) / 4 / 1024 / 1024;
 
                     console.log(
-                      "Original Base64 Size:",
-                      base64SizeInMB.toFixed(2),
+                      "Final Base64 Size:",
+                      compressedSizeMB.toFixed(2),
                       "MB",
                     );
 
-                    // LARGE IMAGE -> AUTO COMPRESS
-                    if (base64SizeInMB > 5) {
-                      console.log("Large Image Detected -> Compressing");
+                    finalUri = resizedImage.uri;
 
-                      const resizedImage =
-                        await ImageResizer.createResizedImage(
-                          asset.uri,
-                          500,
-                          500,
-                          "JPEG",
-                          40,
-                          0,
-                        );
-
-                      console.log("Compressed Image:", resizedImage);
-
-                      const compressedBase64 = await RNFS.readFile(
-                        resizedImage.uri,
-                        "base64",
-                      );
-
-                      const compressedSize =
-                        (compressedBase64.length * 3) / 4 / 1024 / 1024;
-
-                      console.log(
-                        "Compressed Base64 Size:",
-                        compressedSize.toFixed(2),
-                        "MB",
-                      );
-
-                      finalUri = resizedImage.uri;
-                      finalBase64 = compressedBase64;
-                    } else {
-                      console.log("Compression Not Required");
-                    }
-
-                    // UI UPDATE
+                    // 🧠 UI UPDATE
                     setImageExists(true);
-
                     setImageUri(finalUri);
-
                     setCacheBuster(Date.now());
 
                     console.log("Image State Updated");
 
-                    // SEND TO BACKEND
+                    // 🚀 SEND TO BACKEND
                     handleAttachment(
                       `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
                       item?.field,
@@ -474,29 +399,21 @@ const Media = ({
 
                     console.log("Base64 Sent To Backend");
 
-                    // CLEAN MEMORY
-                    response.assets = [];
-
+                    // 🧹 MEMORY CLEANUP (important for Samsung crash fix)
+                  
                     console.log("Memory Cleaned");
 
                     console.log("========== CAMERA SUCCESS ==========");
                   } catch (err) {
-                    console.log(
-                      "Image Process Error:",
-                      JSON.stringify(err, null, 2),
-                    );
-
+                    console.log("Image Process Error:", JSON.stringify(err, null, 2));
                     setImageExists(false);
                   }
                 },
               );
             } catch (error) {
-              console.log(
-                "Camera Launch Error:",
-                JSON.stringify(error, null, 2),
-              );
+              console.log("Camera Launch Error:", JSON.stringify(error, null, 2));
             }
-          },
+          }
         },
       ];
     } else if (item?.ctltype === "PHOTO") {
@@ -510,7 +427,6 @@ const Media = ({
               console.log("========== CAMERA START ==========");
 
               const granted = await requestPermission("camera");
-
               console.log("Camera Permission:", granted);
 
               if (!granted) {
@@ -521,15 +437,16 @@ const Media = ({
               launchCamera(
                 {
                   mediaType: "photo",
-                  quality: 0.4,
-                  includeBase64: true,
-                  maxWidth: 500,
-                  maxHeight: 500,
+                  includeBase64: false,
+                  quality: 0.5,
+                  maxWidth: 800,
+                  maxHeight: 800,
                   saveToPhotos: false,
                 },
                 async (response) => {
                   try {
                     console.log("Camera Response Received");
+
                     if (response?.didCancel) {
                       console.log("User Cancelled Camera");
                       return;
@@ -566,63 +483,54 @@ const Media = ({
                     }
 
                     let finalUri = asset.uri;
-                    let finalBase64 = asset.base64 || "";
+                    let finalBase64 = "";
 
-                    const base64SizeInMB =
+                    // 📦 STEP 1: estimate size safely (fallback using fileSize if available)
+                    const approxSizeMB =
+                      asset.fileSize ? asset.fileSize / 1024 / 1024 : 0;
+
+                    console.log("Approx Image Size:", approxSizeMB.toFixed(2), "MB");
+
+                    // ⚡ STEP 2: compress ALWAYS for safety (not only >5MB)
+                    console.log("Compressing Image...");
+
+                    const resizedImage =
+                      await ImageResizer.createResizedImage(
+                        asset.uri,
+                        800,
+                        800,
+                        "JPEG",
+                        70, // better quality than 40
+                        0,
+                      );
+
+                    console.log("Compressed Image Path:", resizedImage.uri);
+
+                    // ⚡ STEP 3: convert to base64 AFTER compression
+                    finalBase64 = await RNFS.readFile(
+                      resizedImage.uri,
+                      "base64",
+                    );
+
+                    const compressedSizeMB =
                       (finalBase64.length * 3) / 4 / 1024 / 1024;
 
                     console.log(
-                      "Original Base64 Size:",
-                      base64SizeInMB.toFixed(2),
+                      "Final Base64 Size:",
+                      compressedSizeMB.toFixed(2),
                       "MB",
                     );
 
-                    // LARGE IMAGE -> AUTO COMPRESS
-                    if (base64SizeInMB > 5) {
-                      console.log("Large Image Detected -> Compressing");
+                    finalUri = resizedImage.uri;
 
-                      const resizedImage =
-                        await ImageResizer.createResizedImage(
-                          asset.uri,
-                          500,
-                          500,
-                          "JPEG",
-                          40,
-                          0,
-                        );
-
-                      console.log("Compressed Image:", resizedImage);
-
-                      const compressedBase64 = await RNFS.readFile(
-                        resizedImage.uri,
-                        "base64",
-                      );
-
-                      const compressedSize =
-                        (compressedBase64.length * 3) / 4 / 1024 / 1024;
-
-                      console.log(
-                        "Compressed Base64 Size:",
-                        compressedSize.toFixed(2),
-                        "MB",
-                      );
-
-                      finalUri = resizedImage.uri;
-                      finalBase64 = compressedBase64;
-                    } else {
-                      console.log("Compression Not Required");
-                    }
-
-                    // UI UPDATE
+                    // 🧠 UI UPDATE
                     setImageExists(true);
-
                     setImageUri(finalUri);
-
                     setCacheBuster(Date.now());
 
                     console.log("Image State Updated");
 
-                    // SEND TO BACKEND
+                    // 🚀 SEND TO BACKEND
                     handleAttachment(
                       `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
                       item?.field,
@@ -630,29 +538,22 @@ const Media = ({
 
                     console.log("Base64 Sent To Backend");
 
-                    // CLEAN MEMORY
-                    response.assets = [];
+                    // 🧹 MEMORY CLEANUP (important for Samsung crash fix)
+                    
 
                     console.log("Memory Cleaned");
 
                     console.log("========== CAMERA SUCCESS ==========");
                   } catch (err) {
-                    console.log(
-                      "Image Process Error:",
-                      JSON.stringify(err, null, 2),
-                    );
-
+                    console.log("Image Process Error:", JSON.stringify(err, null, 2));
                     setImageExists(false);
                   }
                 },
               );
             } catch (error) {
-              console.log(
-                "Camera Launch Error:",
-                JSON.stringify(error, null, 2),
-              );
+              console.log("Camera Launch Error:", JSON.stringify(error, null, 2));
             }
-          },
+          }
         },
         {
           text: "Gallery",

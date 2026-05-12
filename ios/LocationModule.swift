@@ -46,70 +46,135 @@ class LocationModule: NSObject {
         return true
     }
 
-    @objc
-func getCurrentLocation(_ resolve: @escaping RCTPromiseResolveBlock,
-                        rejecter reject: @escaping RCTPromiseRejectBlock) {
+ @objc
+func getCurrentLocation(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
+) {
 
     let manager = CLLocationManager()
 
-    // ⚡ STEP 1: Try last known location (FAST)
-    if let location = manager.location {
-        let age = Date().timeIntervalSince1970 - location.timestamp.timeIntervalSince1970
+    manager.desiredAccuracy =
+        kCLLocationAccuracyBest
 
-        // 🎯 1 min fresh check
-        if age < 60 {
+    // FAST CACHE CHECK
+    if let location = manager.location {
+
+        let age =
+            Date().timeIntervalSince1970 -
+            location.timestamp.timeIntervalSince1970
+
+        let accuracy =
+            location.horizontalAccuracy
+
+        print(
+            "CACHE accuracy:",
+            accuracy,
+            "age:",
+            age
+        )
+
+        // GOOD RECENT LOCATION
+        if age <= 10 &&
+            accuracy <= 80 {
+
             resolve([
-                "latitude": location.coordinate.latitude,
-                "longitude": location.coordinate.longitude,
-                "accuracy": location.horizontalAccuracy,
-                "timestamp": location.timestamp.timeIntervalSince1970 * 1000
+                "latitude":
+                    location.coordinate.latitude,
+
+                "longitude":
+                    location.coordinate.longitude,
+
+                "accuracy":
+                    accuracy,
+
+                "timestamp":
+                    location.timestamp
+                        .timeIntervalSince1970 * 1000
             ])
+
             return
         }
     }
 
-    // 🔁 STEP 2: Fresh fetch (single shot)
-    let tempManager = CLLocationManager()
-    tempManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+    class TempDelegate:
+        NSObject,
+        CLLocationManagerDelegate {
 
-    class TempDelegate: NSObject, CLLocationManagerDelegate {
-        var resolve: RCTPromiseResolveBlock
-        var reject: RCTPromiseRejectBlock
+        var resolve:
+            RCTPromiseResolveBlock
 
-        init(resolve: @escaping RCTPromiseResolveBlock,
-             reject: @escaping RCTPromiseRejectBlock) {
+        var reject:
+            RCTPromiseRejectBlock
+
+        init(
+            resolve: @escaping RCTPromiseResolveBlock,
+            reject: @escaping RCTPromiseRejectBlock
+        ) {
+
             self.resolve = resolve
             self.reject = reject
         }
 
-        func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-            guard let loc = locations.last else {
-                reject("NO_LOCATION", "No location found", nil)
+        func locationManager(
+            _ manager: CLLocationManager,
+            didUpdateLocations locations: [CLLocation]
+        ) {
+
+            guard let loc =
+                locations.last else {
+
                 return
             }
 
             resolve([
-                "latitude": loc.coordinate.latitude,
-                "longitude": loc.coordinate.longitude,
-                "accuracy": loc.horizontalAccuracy,
-                "timestamp": loc.timestamp.timeIntervalSince1970 * 1000
+                "latitude":
+                    loc.coordinate.latitude,
+
+                "longitude":
+                    loc.coordinate.longitude,
+
+                "accuracy":
+                    loc.horizontalAccuracy,
+
+                "timestamp":
+                    loc.timestamp
+                        .timeIntervalSince1970 * 1000
             ])
 
             manager.stopUpdatingLocation()
         }
 
-        func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-            reject("ERROR", error.localizedDescription, error)
+        func locationManager(
+            _ manager: CLLocationManager,
+            didFailWithError error: Error
+        ) {
+
+            reject(
+                "ERROR",
+                error.localizedDescription,
+                error
+            )
         }
     }
 
-    let delegate = TempDelegate(resolve: resolve, reject: reject)
-    tempManager.delegate = delegate
+    let delegate =
+        TempDelegate(
+            resolve: resolve,
+            reject: reject
+        )
 
-    // retain delegate (important ⚠️)
-    objc_setAssociatedObject(tempManager, "delegate", delegate, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    manager.delegate = delegate
 
-    tempManager.requestWhenInUseAuthorization()
-    tempManager.startUpdatingLocation()
+    objc_setAssociatedObject(
+        manager,
+        "delegate",
+        delegate,
+        .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+    )
+
+    manager.requestWhenInUseAuthorization()
+
+    manager.startUpdatingLocation()
 }
 }

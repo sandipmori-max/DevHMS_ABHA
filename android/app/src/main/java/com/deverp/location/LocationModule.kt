@@ -61,59 +61,131 @@ class LocationModule(private val reactContext: ReactApplicationContext) :
         reactContext.stopService(serviceIntent)
     }
 
-    @ReactMethod
-fun getCurrentLocation(promise: Promise) {
+  @ReactMethod
+fun getCurrentLocation(
+    promise: Promise
+) {
+
     try {
+
         val fusedLocationClient =
-            LocationServices.getFusedLocationProviderClient(reactApplicationContext)
+            LocationServices
+                .getFusedLocationProviderClient(
+                    reactApplicationContext
+                )
 
-        // ⚡ STEP 1: Try last location (FAST)
-        fusedLocationClient.lastLocation
+        // FAST CACHE CHECK
+        fusedLocationClient
+            .lastLocation
             .addOnSuccessListener { location ->
-                if (location != null) {
-                    val age = System.currentTimeMillis() - location.time
 
-                    // 🎯 1 min fresh check
-                    if (age < 60_000) {
-                        val map = Arguments.createMap()
-                        map.putDouble("latitude", location.latitude)
-                        map.putDouble("longitude", location.longitude)
-                        map.putDouble("accuracy", location.accuracy.toDouble())
-                        map.putDouble("timestamp", location.time.toDouble())
+                if (location != null) {
+
+                    val age =
+                        System.currentTimeMillis() -
+                        location.time
+
+                    val accuracy =
+                        location.accuracy
+
+                    Log.d(
+                        "GPS",
+                        "CACHE accuracy=$accuracy age=$age"
+                    )
+
+                    // GOOD RECENT LOCATION
+                    if (
+                        age <= 10000 &&
+                        accuracy <= 80
+                    ) {
+
+                        val map =
+                            Arguments.createMap()
+
+                        map.putDouble(
+                            "latitude",
+                            location.latitude
+                        )
+
+                        map.putDouble(
+                            "longitude",
+                            location.longitude
+                        )
+
+                        map.putDouble(
+                            "accuracy",
+                            accuracy.toDouble()
+                        )
+
+                        map.putDouble(
+                            "timestamp",
+                            location.time.toDouble()
+                        )
 
                         promise.resolve(map)
+
                         return@addOnSuccessListener
                     }
                 }
 
-                // 🔁 STEP 2: fresh fetch
-                fusedLocationClient.getCurrentLocation(
-                    Priority.PRIORITY_BALANCED_POWER_ACCURACY,
-                    null
-                )
+                // FAST LIVE GPS
+                fusedLocationClient
+                    .getCurrentLocation(
+                        Priority.PRIORITY_HIGH_ACCURACY,
+                        null
+                    )
                     .addOnSuccessListener { freshLocation ->
+
                         if (freshLocation != null) {
-                            val map = Arguments.createMap()
-                            map.putDouble("latitude", freshLocation.latitude)
-                            map.putDouble("longitude", freshLocation.longitude)
-                            map.putDouble("accuracy", freshLocation.accuracy.toDouble())
-                            map.putDouble("timestamp", freshLocation.time.toDouble())
+
+                            val map =
+                                Arguments.createMap()
+
+                            map.putDouble(
+                                "latitude",
+                                freshLocation.latitude
+                            )
+
+                            map.putDouble(
+                                "longitude",
+                                freshLocation.longitude
+                            )
+
+                            map.putDouble(
+                                "accuracy",
+                                freshLocation.accuracy.toDouble()
+                            )
+
+                            map.putDouble(
+                                "timestamp",
+                                freshLocation.time.toDouble()
+                            )
 
                             promise.resolve(map)
+
                         } else {
-                            promise.reject("NO_LOCATION", "Unable to fetch location")
+
+                            promise.reject(
+                                "NO_LOCATION",
+                                "Unable to fetch location"
+                            )
                         }
                     }
-                    .addOnFailureListener { e: Exception ->
-    promise.reject("ERROR", e.message ?: "Unknown error")
-}
+                    .addOnFailureListener { e ->
+
+                        promise.reject(
+                            "ERROR",
+                            e.message
+                        )
+                    }
             }
-           .addOnFailureListener { e: Exception ->
-    promise.reject("ERROR", e.message ?: "Unknown error")
-}
 
     } catch (e: Exception) {
-        promise.reject("ERROR", e.message)
+
+        promise.reject(
+            "ERROR",
+            e.message
+        )
     }
 }
 }
