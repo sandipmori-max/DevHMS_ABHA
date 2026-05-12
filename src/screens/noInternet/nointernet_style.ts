@@ -4,59 +4,69 @@ import { ERP_COLOR_CODE } from "../../utils/constants";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+    backgroundColor: "#F8FAFC",
     alignItems: "center",
     justifyContent: "center",
-    padding: 24,
+    paddingHorizontal: 28,
+    overflow: "hidden",
   },
+
+  topGlow: {
+    position: "absolute",
+    top: -120,
+    width: 260,
+    height: 260,
+    borderRadius: 260,
+    backgroundColor: "rgba(37,99,235,0.10)",
+  },
+
+  bottomGlow: {
+    position: "absolute",
+    bottom: -140,
+    width: 320,
+    height: 320,
+    borderRadius: 320,
+    backgroundColor: "rgba(59,130,246,0.08)",
+  },
+
   gif: {
-    width: 250,
-    height: 280,
-  },
-  image: {
-    width: 100,
-    height: 100,
-    marginBottom: 30,
-    tintColor: "#FF6B6B",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "600",
-    color: "#1F2937",
+    width: 260,
+    height: 260,
     marginBottom: 10,
-    textAlign: "center",
   },
+
+  title: {
+    fontSize: 30,
+    fontWeight: "800",
+    color: "#111827",
+    textAlign: "center",
+    letterSpacing: -0.6,
+  },
+
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
+    lineHeight: 24,
     color: "#6B7280",
     textAlign: "center",
-    marginBottom: 30,
-    paddingHorizontal: 10,
+    marginTop: 12,
+    marginBottom: 34,
+    paddingHorizontal: 14,
   },
+
   button: {
-    backgroundColor: "#2563EB",
-    paddingVertical: 14,
-    paddingHorizontal: 48,
-    borderRadius: 12,
-
-    // iOS shadow
-    shadowColor: "#2563EB",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-
-    elevation: 6,
-
+    backgroundColor: "#111827",
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderRadius: 999,
+    minWidth: 170,
     alignItems: "center",
     justifyContent: "center",
   },
 
   buttonText: {
     color: ERP_COLOR_CODE.ERP_WHITE,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "700",
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
   },
-
-  
 });

@@ -111,11 +111,10 @@ const AttendanceScreen = () => {
         color: "#FFFFFF",
       },
       headerBackTitle: "",
-      headerStyle: {
+       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-      height: HEADER_HEIGHT,
-      },
+       },
       headerTintColor: "#fff",
       headerRight: () => (
         <>
@@ -267,6 +266,9 @@ const AttendanceScreen = () => {
           <View
             style={[
               styles.dateContainer,
+              {
+                 backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+              },
               theme === "dark" && {
                 backgroundColor: "black",
               },

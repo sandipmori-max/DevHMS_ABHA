@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
 
 export const styles = StyleSheet.create({
@@ -270,7 +270,7 @@ export const styles = StyleSheet.create({
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     borderRadius: 4,
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: Platform.OS === 'android' ? 4 : 6,
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE
   },
@@ -280,8 +280,8 @@ export const styles = StyleSheet.create({
     color: ERP_COLOR_CODE.ERP_6C757D,
   },
   searchInput: {
-    paddingVertical: 6,
-    fontSize: 16,
+    paddingVertical:  Platform.OS === 'android' ? 4 : 6,
+    fontSize:   Platform.OS === 'android' ? 14 : 16,
     color: ERP_COLOR_CODE.ERP_1A1A1A,
   },
   clearButton: {

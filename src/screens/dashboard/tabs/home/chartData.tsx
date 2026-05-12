@@ -6,6 +6,7 @@ import {
   Dimensions,
   TouchableOpacity,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
 import { useAppSelector } from "../../../../store/hooks";
@@ -60,8 +61,8 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
             <PieChart
               data={pieChartData}
               donut
-              radius={78}
-              innerRadius={68}
+              radius={Platform.OS === 'android' ? 68 : 78}
+              innerRadius={Platform.OS === 'android' ? 58 : 68}
               textSize={14}
               textColor={theme === "dark" ? "#fff" : "#000"}
               showValuesAsLabels

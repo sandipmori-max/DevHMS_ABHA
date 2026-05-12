@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
 
 export const styles = StyleSheet.create({
@@ -8,8 +8,8 @@ export const styles = StyleSheet.create({
   dateContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginHorizontal: 16,
-    marginVertical: 8,
+    marginHorizontal: Platform.OS === 'android' ? 12 :16,
+    marginVertical: Platform.OS === 'android' ? 6 : 8,
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
   },
   overlay: {
@@ -64,9 +64,9 @@ export const styles = StyleSheet.create({
   },
   dateButton: {
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingHorizontal: Platform.OS === 'android' ? 10 : 12,
+    paddingVertical: Platform.OS === 'android' ? 8 :10,
+    borderRadius: Platform.OS === 'android' ? 6 : 8,
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
     alignItems: 'center',

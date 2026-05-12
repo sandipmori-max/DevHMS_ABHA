@@ -34,7 +34,7 @@ const SignaturePad: React.FC = ({
   const [cacheBuster, setCacheBuster] = useState(Date.now());
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
-const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const handleSignature = (signature: string) => {
     setSavedSignature(signature);
@@ -83,7 +83,7 @@ const { height, width } = useWindowDimensions();
           width: "100%",
           padding: 4,
           borderWidth: 1,
-           borderStyle: "dashed",
+          borderStyle: "dashed",
           borderRadius: 8,
           borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
           backgroundColor: "white",
@@ -98,13 +98,13 @@ const { height, width } = useWindowDimensions();
           />
         </View>
         <TouchableOpacity style={{
-            padding: 8,
-            height: 30,
-            width: 30,
-            borderRadius: 8,
-            backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-            justifyContent: "center",
-            alignItems: "center",
+          padding: 8,
+          height: 30,
+          width: 30,
+          borderRadius: 8,
+          backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+          justifyContent: "center",
+          alignItems: "center",
         }} onPress={() => setModalVisible(true)}>
           <MaterialIcons name="edit" size={14} color="#fff" />
         </TouchableOpacity>
@@ -121,90 +121,90 @@ const { height, width } = useWindowDimensions();
           <View style={styles.overlay} />
         </TouchableWithoutFeedback>
         <View style={styles.container2}>
-  <View
-          style={[
-            styles.bottomSheet,
-             
-            theme === "dark" && {
-              borderWidth: 1,
-              borderColor: "white",
-              backgroundColor: "black",
-            },
-          ]}
-        >
-          <View style={styles.modalHeader}>
-            <Text
-              style={[
-                styles.modalTitle,
-                theme === "dark" && {
-                  color: "white",
-                },
-              ]}
-            >
-              {t("text.text39")}
-            </Text>
-            <View style={styles.buttonOverlay}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleSave}
-              >
-                <MaterialIcons
-                  name="save"
-                  size={18}
-                  color={theme === "dark" ? "white" : "green"}
-                />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.button, styles.clearButton]}
-                onPress={handleClear}
-              >
-                <MaterialIcons
-                  name="auto-fix-high"
-                  size={18}
-                  color={theme === "dark" ? "white" : "orange"}
-                />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.button, styles.closeButton]}
-                onPress={() => setModalVisible(false)}
-              >
-                <MaterialIcons
-                  name="close"
-                  size={18}
-                  color={theme === "dark" ? "white" : "red"}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
           <View
             style={[
-              styles.signatureBox,
-              {
-                backgroundColor: "white",
+              styles.bottomSheet,
+
+              theme === "dark" && {
+                borderWidth: 1,
+                borderColor: "white",
+                backgroundColor: "black",
               },
             ]}
           >
-            <SignatureScreen
-              ref={signatureRef}
-              onOK={handleSignature}
-              onEmpty={() => Alert.alert(t("msg.msg14"))}
-              descriptionText={t("text.text40")}
-              clearText={t("text.text41")}
-              confirmText={t("text.text42")}
-              autoClear={false}
-              dataURL={savedSignature || undefined}
-              webStyle={`
+            <View style={styles.modalHeader}>
+              <Text
+                style={[
+                  styles.modalTitle,
+                  theme === "dark" && {
+                    color: "white",
+                  },
+                ]}
+              >
+                {t("text.text39")}
+              </Text>
+              <View style={styles.buttonOverlay}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleSave}
+                >
+                  <MaterialIcons
+                    name="save"
+                    size={18}
+                    color={theme === "dark" ? "white" : "green"}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.button, styles.clearButton]}
+                  onPress={handleClear}
+                >
+                  <MaterialIcons
+                    name="auto-fix-high"
+                    size={18}
+                    color={theme === "dark" ? "white" : "orange"}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.button, styles.closeButton]}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <MaterialIcons
+                    name="close"
+                    size={18}
+                    color={theme === "dark" ? "white" : "red"}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View
+              style={[
+                styles.signatureBox,
+                {
+                  backgroundColor: "white",
+                },
+              ]}
+            >
+              <SignatureScreen
+                ref={signatureRef}
+                onOK={handleSignature}
+                onEmpty={() => Alert.alert(t("msg.msg14"))}
+                descriptionText={t("text.text40")}
+                clearText={t("text.text41")}
+                confirmText={t("text.text42")}
+                autoClear={false}
+                dataURL={savedSignature || undefined}
+                webStyle={`
                 .m-signature-pad--footer {display: none; margin: 0;}
                 .m-signature-pad {box-shadow: none; border: none;}
               `}
-            />
+              />
+            </View>
           </View>
         </View>
-        </View>
-      
+
       </Modal>
     </View>
   );
@@ -215,9 +215,9 @@ export default SignaturePad;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: Platform.OS === 'android' ? 4 :  6,
+    marginTop: Platform.OS === 'android' ? 4 : 6,
   },
-   container2: {
+  container2: {
     position: 'absolute',
     bottom: 0,
     width: '100%',

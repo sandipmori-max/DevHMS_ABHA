@@ -377,9 +377,9 @@ const PageScreen = () => {
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-                  height: HEADER_HEIGHT,
-          
+           
       },
+ 
       headerBackTitle: "",
       headerTintColor: "#fff",
        headerTitleAlign: "left",
@@ -1535,6 +1535,7 @@ const PageScreen = () => {
               return { ...prev, [val]: files };
             });
             }}
+            errors={errors}
           />
         );
       }
@@ -1574,14 +1575,14 @@ const PageScreen = () => {
       }
       //ScanScreen
       else if (item?.ctltype === "QRSCANNER" && item?.title === "QR Scan") {
-        content = <ScanScreen isFromChild={isFromChild} item={item} />;
+        content = <ScanScreen errors={errors} isFromChild={isFromChild} item={item} />;
       }
       //BarCodeScan
       else if (
         item?.ctltype === "QRSCANNER" &&
         item?.title === "Barcode Scan"
       ) {
-        content = <BarCodeScan isFromChild={isFromChild} item={item} />;
+        content = <BarCodeScan errors={errors} isFromChild={isFromChild} item={item} />;
       }
       //LocationRow
       else if (item?.defaultvalue === "#location") {

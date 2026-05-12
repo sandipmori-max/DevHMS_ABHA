@@ -139,8 +139,8 @@ const SettingsScreen = () => {
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-          height: HEADER_HEIGHT,
-      },
+       },
+ 
       headerBackTitle: "",
       headerTintColor: "#fff",
       headerTitle: () => (
@@ -349,7 +349,7 @@ const SettingsScreen = () => {
           <MaterialIcons
             name={item?.icon}
             color={theme === "dark" ? "white" : item?.action === "Logout" ? ERP_COLOR_CODE.ERP_ERROR :  ERP_COLOR_CODE.ERP_APP_COLOR}
-            size={22}
+            size={Platform.OS === 'android' ? 18 : 22}
           />
         </View>
         <View style={styles.settingInfo}>
@@ -511,7 +511,7 @@ const SettingsScreen = () => {
     >
       <View
         style={{
-          height: Platform.OS === "ios" ? 16 : 6,
+          height: 6,
           width: "100%",
           backgroundColor:
             theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,

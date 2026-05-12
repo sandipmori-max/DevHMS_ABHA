@@ -463,6 +463,7 @@ import {
   Image,
   Animated,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import {
   DrawerContentComponentProps,
@@ -745,12 +746,12 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
             {user?.mobileno && (
               <TouchableOpacity
                 onPress={() => {
-                  handlePhonePress(user?.mobileno);
+                  // handlePhonePress(user?.mobileno);
                 }}
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  padding: 6,
+                  padding: Platform.OS === 'android' ? 4 : 6,
                 }}
               >
                 <MaterialIcons name="call" color="white" size={14} />
@@ -765,12 +766,12 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
             {user?.emailid && (
               <TouchableOpacity
                 onPress={() => {
-                  handleEmailPress(user?.emailid);
+                  // handleEmailPress(user?.emailid);
                 }}
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  padding: 6,
+                  padding: Platform.OS === 'android' ? 4 : 6,
                 }}
               >
                 <MaterialIcons name="mail-outline" color="white" size={14} />
@@ -787,7 +788,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  padding: 6,
+                  padding: Platform.OS === 'android' ? 4 : 6,
                 }}
               >
                 <MaterialIcons name="person" color="white" size={14} />
@@ -824,9 +825,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-
-                paddingVertical: 10,
-                paddingHorizontal: 14,
+                paddingVertical: Platform.OS === 'android' ? 8 : 10,
+                paddingHorizontal: Platform.OS === 'android' ? 10 : 14,
                 borderRadius: 12,
                 alignSelf: "flex-start",
               }}

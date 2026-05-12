@@ -189,7 +189,12 @@ const openFilePicker = async () => {
     <TouchableOpacity style={[styles.uploadBox, {
        borderColor:  theme === "dark" ? '#fff' : ERP_COLOR_CODE.ERP_APP_COLOR,
        backgroundColor: theme === "dark" ? "#000" : "#f8f9ff",
-    }]} onPress={openFilePicker}>
+    },
+    selectedFiles.length === 0 && errors[item?.field] && {
+      borderColor: ERP_COLOR_CODE.ERP_ERROR
+    }
+    
+    ]} onPress={openFilePicker}>
       <MaterialIcons name="cloud-upload" size={36} color={theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR} />
       <Text style={styles.uploadSub}>Tap to browse files</Text>
     </TouchableOpacity>

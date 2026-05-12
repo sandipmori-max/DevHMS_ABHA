@@ -36,47 +36,81 @@ const StackNavigator = () => {
   };
 
   const screenOptions = {
-    headerShown: true,
-    headerBackImage: () => (
-      <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <MaterialIcons name="chevron-left" size={28} color="#fff" />
-      </View>
-    ),
-    headerStyle: {
-      backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-      elevation: 0,
-      shadowOpacity: 0,
-    },
-    headerLeftContainerStyle: {
-      paddingLeft: 6,
-    },
+  headerShown: true,
 
-    headerTintColor: ERP_COLOR_CODE.ERP_WHITE,
-    headerTitleStyle: {
-      fontSize: 14,
-      headerTitleAlign: "left",
-      fontWeight: "400",
-      color: ERP_COLOR_CODE.ERP_WHITE,
-    },
-    cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-    gestureEnabled: true,
-    gestureDirection: "horizontal",
-    transitionSpec: {
-      open: {
-        animation: "timing",
-        config: {
-          duration: 300,
-        },
+  headerTitleAlign: "left",
+
+  headerBackImage: () => (
+    <View
+      style={{
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <MaterialIcons
+        name="chevron-left"
+        size={28}
+        color="#fff"
+      />
+    </View>
+  ),
+
+  headerStyle: {
+    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+    elevation: 0,
+    shadowOpacity: 0,
+  },
+  headerBackTitleVisible: false,
+  headerLeftContainerStyle: {
+    paddingLeft: 4,
+    marginLeft: 0,
+  },
+
+  headerRightContainerStyle: {
+    paddingRight: 0,
+    marginRight: 0,
+  },
+
+  headerTitleContainerStyle: {
+    left: 0,
+    right: 0,
+    paddingHorizontal: 0,
+    marginHorizontal: 0,
+  },
+
+  headerTintColor: ERP_COLOR_CODE.ERP_WHITE,
+
+  headerTitleStyle: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: ERP_COLOR_CODE.ERP_WHITE,
+    paddingHorizontal: 0,
+    marginHorizontal: 0,
+  },
+
+  cardStyleInterpolator:
+    CardStyleInterpolators.forHorizontalIOS,
+
+  gestureEnabled: true,
+  gestureDirection: "horizontal",
+
+  transitionSpec: {
+    open: {
+      animation: "timing",
+      config: {
+        duration: 300,
       },
-      close: {
-        animation: "timing",
-        config: {
-          duration: 300,
-        },
+    },
+    close: {
+      animation: "timing",
+      config: {
+        duration: 300,
       },
     },
-    ...smoothTransition,
-  };
+  },
+
+  ...smoothTransition,
+};
 
   return (
     <Stack.Navigator

@@ -1,4 +1,4 @@
-import { ActivityIndicator, TouchableOpacity } from "react-native";
+import { ActivityIndicator, Platform, TouchableOpacity } from "react-native";
 import React from "react";
 import { MaterialIcons } from "@react-native-vector-icons/material-icons";
 import { ERPIconProps } from "./type";
@@ -22,7 +22,7 @@ const ERPIcon: React.FC<ERPIconProps> = ({
       {isLoading ? (
         <ActivityIndicator color={ERP_COLOR_CODE.ERP_ICON} size={"small"} />
       ) : (
-        <MaterialIcons name={name} color={color} size={extSize} />
+        <MaterialIcons name={name} color={color} size={Platform.OS === 'android' ? extSize - 4 : extSize} />
       )}
     </TouchableOpacity>
   );

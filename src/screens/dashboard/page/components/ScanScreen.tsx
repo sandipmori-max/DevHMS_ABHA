@@ -17,8 +17,9 @@ import { CameraScanner } from "../../../../components/CameraScanner/CameraScanne
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import { useAppSelector } from "../../../../store/hooks";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
+import InputError from "../../../../components/error/InputError";
 
-const ScanScreen = ({ item }: any) => {
+const ScanScreen = ({ item , errors}: any) => {
   const { askPermissions } = usePermissions(EPermissionTypes.CAMERA);
   const [cameraShown, setCameraShown] = useState(false);
   const [qrText, setQrText] = useState("");
@@ -137,6 +138,7 @@ const ScanScreen = ({ item }: any) => {
           />
         )}
       </View>
+       {errors[item.field] && <InputError error={errors[item?.field]} />}
     </View>
   );
 };

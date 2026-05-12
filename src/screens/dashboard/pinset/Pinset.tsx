@@ -147,8 +147,8 @@ const PinSetupScreen = () => {
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-        height: HEADER_HEIGHT,
-      },
+       },
+ 
       headerBackTitle: "",
       headerTintColor: "#fff",
       headerTitle: () => (

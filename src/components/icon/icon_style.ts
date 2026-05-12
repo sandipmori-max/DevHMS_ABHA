@@ -1,10 +1,10 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export const baseStyle = (color: string, isMenu: boolean) =>
   StyleSheet.create({
     container: {
-      height: 32,
-      width: 32,
+      height: Platform.OS === 'android' ? 28 : 32,
+      width: Platform.OS === 'android' ? 28 :  32,
       borderWidth: isMenu ? 0 : 1,
       borderColor: color,
       justifyContent: 'center',

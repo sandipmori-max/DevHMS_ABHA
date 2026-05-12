@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { ERP_COLOR_CODE } from '../../utils/constants';
 
 export const styles = StyleSheet.create({
@@ -43,7 +43,7 @@ export const styles = StyleSheet.create({
   itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    margin: 8,
+    margin: Platform.OS === 'android' ? 6 :8,
   },
   itemIcon: {
     fontSize: 18,

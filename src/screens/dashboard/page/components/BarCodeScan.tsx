@@ -8,7 +8,7 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
- 
+
 import { RESULTS } from 'react-native-permissions';
 import { usePermissions } from '../../../../permissions/usePermissions';
 import { EPermissionTypes } from '../../../../constants';
@@ -17,8 +17,9 @@ import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import { useAppSelector } from '../../../../store/hooks';
 import { BarCodeCameraScanner } from '../../../../components/CameraScanner/BarCodeCameraScanner';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
+import InputError from '../../../../components/error/InputError';
 
-const BarCodeScan = ({ item , isFromChild = false}: any) => {
+const BarCodeScan = ({ item, isFromChild = false, errors }: any) => {
   const { askPermissions } = usePermissions(EPermissionTypes.CAMERA);
   const [cameraShown, setCameraShown] = useState(false);
   const [scannedValue, setScannedValue] = useState('');
@@ -81,7 +82,7 @@ const BarCodeScan = ({ item , isFromChild = false}: any) => {
 
   return (
     <View style={{ paddingVertical: Platform.OS === 'android' ? 6 : 8 }}>
-      
+
       {/* Title */}
       <Text style={[styles.label, theme === 'dark' && { color: 'white' }]}>
         {item?.fieldtitle}
@@ -100,18 +101,18 @@ const BarCodeScan = ({ item , isFromChild = false}: any) => {
       )}
 
       {/* Main UI Area */}
-      <View style={[cameraShown && styles.container ]}>
-        
+      <View style={[cameraShown && styles.container]}>
+
         {/* Scan Button */}
         {!cameraShown && (
           <TouchableOpacity
-  onPress={takePermissions}
-  activeOpacity={0.8}
-  style={styles.squareScanCard}
->
-  <MaterialIcons name="barcode-reader" size={42} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
-  <Text style={styles.squareScanText}>Scan Barcode</Text>
-</TouchableOpacity>
+            onPress={takePermissions}
+            activeOpacity={0.8}
+            style={styles.squareScanCard}
+          >
+            <MaterialIcons name="barcode-reader" size={42} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
+            <Text style={styles.squareScanText}>Scan Barcode</Text>
+          </TouchableOpacity>
 
         )}
 
@@ -130,7 +131,10 @@ const BarCodeScan = ({ item , isFromChild = false}: any) => {
             onReadCode={handleReadCode}
           />
         )}
+
       </View>
+
+        {errors[item.field] && <InputError error={errors[item?.field]} />}
     </View>
   );
 };
@@ -161,8 +165,8 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#1976D2',
     borderRadius: 10,
-     flexDirection: 'row',
-     padding:12,
+    flexDirection: 'row',
+    padding: 12,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 10,
@@ -187,20 +191,20 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   squareScanCard: {
-  width: "100%",
-  aspectRatio: 2.8,
-  borderRadius: 12,
-   borderWidth: 1.5,
-  borderColor: ERP_COLOR_CODE.ERP_999,
-  justifyContent: "center",
-  alignItems: "center",
-  marginTop: 10,
-},
-squareScanText: {
-  marginTop: 10,
-  fontSize: 16,
-  fontWeight: "600",
-  color: ERP_COLOR_CODE.ERP_APP_COLOR,
-},
+    width: "100%",
+    aspectRatio: 2.8,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: ERP_COLOR_CODE.ERP_999,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  squareScanText: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: "600",
+    color: ERP_COLOR_CODE.ERP_APP_COLOR,
+  },
 
 });

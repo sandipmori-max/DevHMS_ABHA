@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 
 export const styles = StyleSheet.create({
@@ -94,12 +94,11 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: ERP_COLOR_CODE.ERP_222,
-    padding: 16,
-    paddingBottom: 8,
+    padding: 10, 
     backgroundColor: '#f9f9f9',
   },
   settingCard: {
-    padding: 16,
+    padding: Platform.OS === 'android' ? 12 : 16,
     borderBottomWidth: 1,
     borderBottomColor: ERP_COLOR_CODE.ERP_f0f0f0,
   },

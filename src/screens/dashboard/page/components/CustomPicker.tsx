@@ -197,7 +197,7 @@ const CustomPicker = ({
               backgroundColor: "gray",
             },
           isFromDashboard && {
-            paddingVertical: 6,
+            paddingVertical: Platform.OS === 'android' ? 4 : 6,
             borderRadius: 4,
           },
           isFromChild && {
@@ -360,7 +360,7 @@ const CustomPicker = ({
                           <MaterialIcons
                             name={getDashboardIcon(opt?.name)}
                             size={18}
-                            color={theme === 'dark' ? 'white' : 'black'}
+                            color={theme === 'dark' ? 'white' : selectedOption === opt?.name ? ERP_COLOR_CODE.ERP_APP_COLOR : 'black'}
                           />
                           <TranslatedText
                             style={[

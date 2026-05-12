@@ -98,8 +98,8 @@ const ProfileTab = () => {
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-       height: HEADER_HEIGHT,
-      },
+       },
+ 
       headerBackTitle: "",
       headerTintColor: "#fff",
       headerRight: () => (
@@ -422,7 +422,7 @@ const ProfileTab = () => {
                           ? "black"
                           : ERP_COLOR_CODE.ERP_APP_COLOR
                       }
-                      size={22}
+                      size={ Platform.OS === 'android' ?  20 : 22}
                     />
                   </View>
                   <View style={styles.settingInfo}>
@@ -457,7 +457,7 @@ const ProfileTab = () => {
                             ? "black"
                             : ERP_COLOR_CODE.ERP_APP_COLOR
                         }
-                        size={22}
+                        size={Platform.OS === 'android' ?  20 : 22}
                       />
                     </View>
                     <View style={styles.settingInfo}>

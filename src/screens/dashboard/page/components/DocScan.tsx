@@ -13,6 +13,7 @@ import {
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import { useAppSelector } from "../../../../store/hooks";
+import InputError from "../../../../components/error/InputError";
 
 const { DocumentScanner } = NativeModules;
 
@@ -46,6 +47,7 @@ interface DocScanProps {
   label?: string;
   onScanResult?: (data: any, val: any) => void;
   item?: any;
+  errors: any;
 }
 
 const DocScan: React.FC<DocScanProps> = ({
@@ -224,6 +226,13 @@ const DocScan: React.FC<DocScanProps> = ({
           </View>
         )}
       </TouchableOpacity>
+
+      { images.length === 0 && errors[item?.field] && (
+        <>
+          <InputError error={errors[item?.field]} />
+          <View style={{ height: 8 }} />
+        </>
+      )}
     </>
   );
 };

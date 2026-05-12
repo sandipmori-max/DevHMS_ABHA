@@ -10,23 +10,23 @@ export const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 12,
+    padding: Platform.OS === 'android' ? 10 : 12,
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
     borderBottomWidth: 1,
   },
   back: {
-    width: 24,
-    height: 24,
+    width: Platform.OS === 'android' ? 22 : 24,
+    height: Platform.OS === 'android' ? 22 : 24,
     tintColor: ERP_COLOR_CODE.ERP_WHITE,
   },
   title: {
-    fontSize: 18,
+    fontSize: Platform.OS === 'android' ? 16 : 18,
     fontWeight: "bold",
     color: ERP_COLOR_CODE.ERP_WHITE,
   },
   closeButton: {
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: Platform.OS === 'android' ? 6 : 8,
     borderRadius: 8,
   },
   closeButtonText: {

@@ -10,6 +10,7 @@ import {
   Dimensions,
   PanResponder,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import NoData from "../../../../components/no_data/NoData";
 import { PieChart } from "react-native-gifted-charts";
@@ -939,7 +940,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                       <View
                         style={{
                           justifyContent: "space-around",
-                          padding: 16,
+                          padding: Platform.OS === 'android' ? 12 : 16,
                           alignItems: "center",
                           flexDirection: "row",
                           borderRadius: 8,
@@ -948,8 +949,8 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                         <PieChart
                           data={chartData}
                           donut
-                          radius={90}
-                          innerRadius={80}
+                          radius={Platform.OS === 'android' ? 80 : 90}
+                          innerRadius={Platform.OS === 'android' ? 70 : 80}
                           textColor={theme === "dark" ? "#fff" : "#000"}
                           showValuesAsLabels
                           innerCircleColor={theme === "dark" ? "#000" : "#fff"}
@@ -969,7 +970,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                         />
                         <View
                           style={{
-                            marginTop: 12,
+                            marginTop: Platform.OS === 'android' ? 10 : 12,
                             gap: 12,
                             marginHorizontal: 20,
                           }}

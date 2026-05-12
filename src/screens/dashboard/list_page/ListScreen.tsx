@@ -209,9 +209,9 @@ const ListScreen = () => {
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
         // borderBottomWidth: 1,
         borderBottomColor: "#fff",
-         height: HEADER_HEIGHT,
-        
+         
       },
+ 
       headerBackTitle: "",
       headerTintColor: "#fff",
       headerTitleAlign: "left",
@@ -714,7 +714,8 @@ const ListScreen = () => {
                         name="search"
                         color={theme === "dark" ? "white" : "black"}
                       />
-                      <TextInput
+                      <View style={{flex:1, justifyContent:'space-between', flexDirection:'row'}}>
+                        <TextInput
                         style={[
                           styles.searchInput,
                           theme === "dark" && {
@@ -734,6 +735,7 @@ const ListScreen = () => {
                           <Text style={styles.clearButtonText}>✕</Text>
                         </TouchableOpacity>
                       )}
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -867,7 +869,8 @@ const ListScreen = () => {
                     name="search"
                     color={theme === "dark" ? "white" : "black"}
                   />
-                  <TextInput
+                  <View style={{flex:1, justifyContent:'space-between', flexDirection:'row'}}>
+<TextInput
                     style={[
                       styles.searchInput,
                       theme === "dark" && {
@@ -887,6 +890,8 @@ const ListScreen = () => {
                       <Text style={styles.clearButtonText}>✕</Text>
                     </TouchableOpacity>
                   )}
+                  </View>
+                  
                 </View>
               </View>
 

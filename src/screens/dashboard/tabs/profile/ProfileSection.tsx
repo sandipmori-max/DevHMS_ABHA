@@ -1,6 +1,6 @@
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Platform } from "react-native";
 import FastImage from "react-native-fast-image";
 import { useAppSelector } from "../../../../store/hooks";
 import { firstLetterUpperCase } from "../../../../utils/helpers";
@@ -58,7 +58,7 @@ const ProfileSection = ({ baseLink, user, onEditPress }: any) => {
             theme === "dark" && { backgroundColor: "#2a2a2a" },
           ]}
         >
-          <MaterialIcons name="edit" size={18} color="#fff" />
+          <MaterialIcons name="edit" size={Platform.OS === 'android' ? 16 : 18} color="#fff" />
         </TouchableOpacity>
 
         {/* INFO */}
@@ -83,7 +83,7 @@ const ProfileSection = ({ baseLink, user, onEditPress }: any) => {
             <MaterialIcons name="email" size={18} color="#6366f1" />
             <Text style={[styles.cardValue, {
               color: theme === "dark" ? 'white' : 'black'
-            }]} numberOfLines={2}>
+            }]} numberOfLines={1}>
               {user?.emailid || "-"}
             </Text>
           </View>
@@ -145,8 +145,8 @@ const styles = StyleSheet.create({
   infoCard: {
     width: "32%",
     backgroundColor: ERP_COLOR_CODE.ERP_f0f0f0,
-    borderRadius: 8,
-    padding: 10,
+    borderRadius: Platform.OS === 'android' ?  6 : 8,
+    padding: Platform.OS === 'android' ?  8 : 10,
     borderWidth: 1,
     borderColor: "#eee",
     minHeight: 70,
@@ -170,11 +170,11 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    marginHorizontal: 16,
-    marginVertical: 14,
-    borderTopRightRadius: 12,
-    borderTopLeftRadius: 12,
-    paddingBottom: 16,
+    marginHorizontal: Platform.OS === 'android' ? 14 : 16,
+    marginVertical: Platform.OS === 'android' ?  12 : 14,
+    borderTopRightRadius: Platform.OS === 'android' ?  10 : 12,
+    borderTopLeftRadius: Platform.OS === 'android' ?  10 : 12,
+    paddingBottom: Platform.OS === 'android' ? 12 : 16,
     borderBottomEndRadius: 8,
     borderBottomStartRadius: 8,
     borderWidth: 0.4,
@@ -210,9 +210,9 @@ const styles = StyleSheet.create({
     top: 16,
     borderWidth: 1,
     borderColor: "#fff",
-    width: 36,
-    height: 36,
-    borderRadius: 8,
+    width: Platform.OS === 'android' ? 30 : 36,
+    height: Platform.OS === 'android' ? 30  : 36,
+    borderRadius: Platform.OS === 'android' ? 6 : 8,
     justifyContent: "center",
     alignItems: "center",
   },
