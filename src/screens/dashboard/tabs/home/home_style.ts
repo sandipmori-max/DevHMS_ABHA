@@ -57,7 +57,7 @@ export const styles = StyleSheet.create({
   },
 
   picker: {
-    height: 220,
+    height: 220, 
   },
   logo: {
     width: 100,

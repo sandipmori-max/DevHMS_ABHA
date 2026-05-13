@@ -1316,21 +1316,16 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                         paddingVertical: 14,
                       }}
                     >
+                    
+
+
                       {/* Cancel */}
                       <TouchableOpacity
                         onPress={() => {
                           setShowDatePicker(null);
                         }}
                       >
-                        <Text
-                          style={{
-                            color: "red",
-                            fontSize: 16,
-                            fontWeight: "500",
-                          }}
-                        >
-                          Cancel
-                        </Text>
+                        <MaterialIcons  name='close' size={24} color={ERP_COLOR_CODE.ERP_ERROR} />
                       </TouchableOpacity>
 
                       {/* Title */}
@@ -1343,8 +1338,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                       >
                         {t("text89")}
                       </Text>
-
-                      {/* Done */}
+                        {/* Done */}
                       <TouchableOpacity
                         onPress={() => {
                           const formatted = formatDateForAPI(tempDate);
@@ -1359,15 +1353,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                           setShowDatePicker(null);
                         }}
                       >
-                        <Text
-                          style={{
-                            color: "#007AFF",
-                            fontSize: 16,
-                            fontWeight: "600",
-                          }}
-                        >
-                          Done
-                        </Text>
+                       <MaterialIcons  name='done' size={24} color={ERP_COLOR_CODE.ERP_green} />
                       </TouchableOpacity>
                     </View>
 
@@ -1751,24 +1737,18 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                     paddingVertical: 14,
                   }}
                 >
-                  {/* Cancel */}
+                     {/* Cancel */}
                   <TouchableOpacity
                     onPress={() => {
                       setShowDatePicker(null);
-                    }}
+                    }} 
                   >
-                    <Text
-                      style={{
-                        color: "red",
-                        fontSize: 16,
-                        fontWeight: "500",
-                      }}
-                    >
-                      Cancel
-                    </Text>
+                    <MaterialIcons  name='close' size={24} color={ERP_COLOR_CODE.ERP_ERROR} />
                   </TouchableOpacity>
+                
 
-                  {/* Title */}
+                
+                    {/* Title */}
                   <Text
                     style={{
                       color: theme === "dark" ? "white" : "black",
@@ -1779,8 +1759,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                     {t("text89")}
                   </Text>
 
-                  {/* Done */}
-                  <TouchableOpacity
+                 <TouchableOpacity
                     onPress={() => {
                       const formatted = formatDateForAPI(tempDate);
 
@@ -1794,16 +1773,10 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                       setShowDatePicker(null);
                     }}
                   >
-                    <Text
-                      style={{
-                        color: "#007AFF",
-                        fontSize: 16,
-                        fontWeight: "600",
-                      }}
-                    >
-                      Done
-                    </Text>
+                    <MaterialIcons  name='done' size={24} color={ERP_COLOR_CODE.ERP_green} />
                   </TouchableOpacity>
+
+            
                 </View>
 
                 <View style={styles.divider} />

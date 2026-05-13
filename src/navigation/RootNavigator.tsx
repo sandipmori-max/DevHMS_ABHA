@@ -47,7 +47,12 @@ export async function requestLocationPermissions(): Promise<
     );
 
     if (fine === PermissionsAndroid.RESULTS.GRANTED) {
-      // Ask background AFTER foreground
+      // Android 9 and below
+      if (Platform.Version < 29) {
+        return "granted";
+      }
+
+      // Android 10+
       const background = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION,
       );
@@ -69,7 +74,10 @@ export async function requestLocationPermissions(): Promise<
 
   if (whenInUse === RESULTS.GRANTED || whenInUse === RESULTS.LIMITED) {
     const always = await request(PERMISSIONS.IOS.LOCATION_ALWAYS);
-    return always === RESULTS.GRANTED ? "granted" : "foreground-only";
+
+    return always === RESULTS.GRANTED
+      ? "granted"
+      : "foreground-only";
   }
 
   if (whenInUse === RESULTS.BLOCKED) {
@@ -78,7 +86,6 @@ export async function requestLocationPermissions(): Promise<
 
   return "denied";
 }
-
 // ------------------------- RootNavigator -------------------------
 const RootNavigator = () => {
   const { t } = useTranslation();
@@ -295,6 +302,7 @@ const RootNavigator = () => {
     const enabled = await DeviceInfo.isLocationEnabled();
 
     const permission = await requestLocationPermissions();
+    console.log("permission", permission);
     await new Promise(res => setTimeout(res, 400));
     if (enabled && permission === "granted") {
       locationModalShownRef.current = false;
@@ -320,7 +328,11 @@ const RootNavigator = () => {
       return;
     }
 
-    if (permission === "foreground-only") {
+   if (
+      permission === "foreground-only" &&
+      Platform.OS === "android" &&
+      Platform.Version >= 29
+    ) {
       setBackgroundDeniedModal(true);
       setAlertVisible(false);
       return;

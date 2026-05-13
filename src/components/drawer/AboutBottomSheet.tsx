@@ -20,8 +20,8 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
   const translateY = useRef(new Animated.Value(400)).current;
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
-    const theme = useAppSelector((state) => state?.theme.mode);
-  
+  const theme = useAppSelector((state) => state?.theme.mode);
+
   useEffect(() => {
     if (visible) {
       translateY.setValue(400);
@@ -134,16 +134,21 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                   }]}>
                     <Text style={[styles.cardTitle, theme === "dark" && { color: "white" }]}>Address</Text>
 
-                    <View style={styles.row}>
+                    <View style={[styles.row,]}>
                       <MaterialIcons
                         name="location-on"
                         size={20}
                         color={ERP_COLOR_CODE.ERP_ERROR}
                       />
-                      <Text style={styles.text}>
+                      <Text 
+                      
+                      style={[styles.text, {
+                      width: '90%',
+                      overflow:'hidden', 
+                    }]}>
                         405, 407B Primate Complex{"\n"}
                         Opp. Gormoh Hotel, Bodakdev{"\n"}
-                        Ahmedabad - 380054, Gujarat
+                        Ahmedabad - 380054, Gujarat, India
                       </Text>
                     </View>
                   </View>
@@ -228,10 +233,10 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                           )
                         }
                         style={[styles.socialItem, theme === "dark" && {
-                           backgroundColor: '#000',
-                           borderWidth: 0.4, borderColor: 'white' 
-                          
-                          }]}
+                          backgroundColor: '#000',
+                          borderWidth: 0.4, borderColor: 'white'
+
+                        }]}
                       >
                         <MaterialIcons
                           name="business"
@@ -248,7 +253,8 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                         style={[styles.socialItem, theme === "dark" && {
                           borderColor: 'white',
                           borderWidth: 0.4,
-                          backgroundColor: '#000' }]}
+                          backgroundColor: '#000'
+                        }]}
                       >
                         <MaterialIcons
                           name="photo-camera"
@@ -387,12 +393,12 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                     onPress={() =>
                       open("https://www.facebook.com/DevERPSolutions#")
                     }
-                    style={[styles.socialItem,  theme === "dark" && {
-                  borderColor: 'white',
-                  borderWidth: 0.4,
-                  padding: 10,
-                  backgroundColor: '#000'
-                }]}
+                    style={[styles.socialItem, theme === "dark" && {
+                      borderColor: 'white',
+                      borderWidth: 0.4,
+                      padding: 10,
+                      backgroundColor: '#000'
+                    }]}
                   >
                     <MaterialIcons name="facebook" size={22} color="#1877F2" />
                     <Text style={[styles.socialText, theme === "dark" && { color: "white" }]}>Facebook</Text>
@@ -400,12 +406,12 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
 
                   <TouchableOpacity
                     onPress={() => open("https://x.com/DevERP5")}
-                    style={[styles.socialItem,  theme === "dark" && {
-                  borderColor: 'white',
-                  borderWidth: 0.4,
-                  padding: 10,
-                  backgroundColor: '#000'
-                }]}
+                    style={[styles.socialItem, theme === "dark" && {
+                      borderColor: 'white',
+                      borderWidth: 0.4,
+                      padding: 10,
+                      backgroundColor: '#000'
+                    }]}
                   >
                     <MaterialIcons
                       name="alternate-email"
@@ -421,12 +427,12 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                         "https://www.linkedin.com/in/deverp-solutions-pvt-ltd-company-286598181",
                       )
                     }
-                    style={[styles.socialItem,  theme === "dark" && {
-                  borderColor: 'white',
-                  borderWidth: 0.4,
-                  padding: 10,
-                  backgroundColor: '#000'
-                }]}
+                    style={[styles.socialItem, theme === "dark" && {
+                      borderColor: 'white',
+                      borderWidth: 0.4,
+                      padding: 10,
+                      backgroundColor: '#000'
+                    }]}
                   >
                     <MaterialIcons name="business" size={22} color="#0A66C2" />
                     <Text style={[styles.socialText, theme === "dark" && { color: "white" }]}>LinkedIn</Text>
@@ -436,12 +442,12 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                     onPress={() =>
                       open("https://www.instagram.com/deverp001/?hl=en")
                     }
-                    style={[styles.socialItem,  theme === "dark" && {
-                  borderColor: 'white',
-                  borderWidth: 0.4,
-                  padding: 10,
-                  backgroundColor: '#000'
-                }]}
+                    style={[styles.socialItem, theme === "dark" && {
+                      borderColor: 'white',
+                      borderWidth: 0.4,
+                      padding: 10,
+                      backgroundColor: '#000'
+                    }]}
                   >
                     <MaterialIcons
                       name="photo-camera"
@@ -481,10 +487,6 @@ const styles = StyleSheet.create({
     top: 0,
     zIndex: 10,
     padding: 6,
-  },
-
-  header: {
-    alignItems: "center",
   },
   sheet: {
     position: "absolute",
@@ -536,7 +538,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 14,
     marginBottom: 12,
-   },
+  },
 
   cardTitle: {
     fontSize: 16,

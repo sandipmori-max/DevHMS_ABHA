@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
   dateContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginHorizontal: Platform.OS === 'android' ? 12 :16,
+    marginHorizontal: 8,
     marginVertical: Platform.OS === 'android' ? 6 : 8,
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
   },
@@ -64,9 +64,9 @@ export const styles = StyleSheet.create({
   },
   dateButton: {
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
-    paddingHorizontal: Platform.OS === 'android' ? 10 : 12,
-    paddingVertical: Platform.OS === 'android' ? 8 :10,
-    borderRadius: Platform.OS === 'android' ? 6 : 8,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    borderRadius: 4,
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
     alignItems: 'center',

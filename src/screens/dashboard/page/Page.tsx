@@ -589,7 +589,7 @@ const PageScreen = () => {
                     } catch (err: any) {
                       setLoader(false);
                       setAlertConfig({
-                        title: t("title.title17"),
+                        title: t("title.title177"),
                         message: err,
                         type: "error",
                       });

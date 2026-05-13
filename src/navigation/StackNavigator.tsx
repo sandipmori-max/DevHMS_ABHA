@@ -21,7 +21,7 @@ import MaterialIcons from "@react-native-vector-icons/material-icons";
 import LocationTrackScreen from "../screens/dashboard/tabs/home/LocationTrack";
 import FaceCameraScreen from "../screens/dashboard/attendance/components/FaceCameraScreen";
 import PrivacyPolicyScreen from "../screens/dashboard/privacy/PrivacyPolicyScreen";
- 
+
 const Stack = createStackNavigator<any>();
 
 const StackNavigator = () => {
@@ -36,81 +36,81 @@ const StackNavigator = () => {
   };
 
   const screenOptions = {
-  headerShown: true,
+    headerShown: true,
 
-  headerTitleAlign: "left",
+    headerTitleAlign: "left",
 
-  headerBackImage: () => (
-    <View
-      style={{
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <MaterialIcons
-        name="chevron-left"
-        size={28}
-        color="#fff"
-      />
-    </View>
-  ),
+    headerBackImage: () => (
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <MaterialIcons
+          name="chevron-left"
+          size={28}
+          color="#fff"
+        />
+      </View>
+    ),
 
-  headerStyle: {
-    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-    elevation: 0,
-    shadowOpacity: 0,
-  },
-  headerBackTitleVisible: false,
-  headerLeftContainerStyle: {
-    paddingLeft: 4,
-    marginLeft: 0,
-  },
+    headerStyle: {
+      backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+      elevation: 0,
+      shadowOpacity: 0,
+    },
+    headerBackTitleVisible: false,
+    headerLeftContainerStyle: {
+      paddingLeft: 10,
+      marginLeft: 0,
+    },
 
-  headerRightContainerStyle: {
-    paddingRight: 0,
-    marginRight: 0,
-  },
+    headerRightContainerStyle: {
+      paddingRight: 0,
+      marginRight: 0,
+    },
 
-  headerTitleContainerStyle: {
-    left: 0,
-    right: 0,
-    paddingHorizontal: 0,
-    marginHorizontal: 0,
-  },
+    headerTitleContainerStyle: {
+      left: 0,
+      right: 0,
+      paddingHorizontal: 0,
+      marginHorizontal: 0,
+    },
 
-  headerTintColor: ERP_COLOR_CODE.ERP_WHITE,
+    headerTintColor: ERP_COLOR_CODE.ERP_WHITE,
 
-  headerTitleStyle: {
-    fontSize: 14,
-    fontWeight: "400",
-    color: ERP_COLOR_CODE.ERP_WHITE,
-    paddingHorizontal: 0,
-    marginHorizontal: 0,
-  },
+    headerTitleStyle: {
+      fontSize: 14,
+      fontWeight: "400",
+      color: ERP_COLOR_CODE.ERP_WHITE,
+      paddingHorizontal: 0,
+      marginHorizontal: 0,
+    },
 
-  cardStyleInterpolator:
-    CardStyleInterpolators.forHorizontalIOS,
+    cardStyleInterpolator:
+      CardStyleInterpolators.forHorizontalIOS,
 
-  gestureEnabled: true,
-  gestureDirection: "horizontal",
+    gestureEnabled: true,
+    gestureDirection: "horizontal",
 
-  transitionSpec: {
-    open: {
-      animation: "timing",
-      config: {
-        duration: 300,
+    transitionSpec: {
+      open: {
+        animation: "timing",
+        config: {
+          duration: 300,
+        },
+      },
+      close: {
+        animation: "timing",
+        config: {
+          duration: 300,
+        },
       },
     },
-    close: {
-      animation: "timing",
-      config: {
-        duration: 300,
-      },
-    },
-  },
 
-  ...smoothTransition,
-};
+    ...smoothTransition,
+  };
 
   return (
     <Stack.Navigator
@@ -194,12 +194,12 @@ const StackNavigator = () => {
         name="LocationTrack"
         component={LocationTrackScreen}
       />
-      <Stack.Screen 
-      
-      options={{  // ❌ hide back button (iOS)
-    gestureEnabled: false,    // ❌ disable swipe back (iOS)
-  }}
-      name="FaceCameraScreen" component={FaceCameraScreen} />
+      <Stack.Screen
+
+        options={{  // ❌ hide back button (iOS)
+          gestureEnabled: false,    // ❌ disable swipe back (iOS)
+        }}
+        name="FaceCameraScreen" component={FaceCameraScreen} />
       {/* <Stack.Screen
         name="Tasks"
         component={DisplayScreen}

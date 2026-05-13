@@ -177,6 +177,7 @@ export default {
     title15: "We need location access only to serve you better. Please enable it to continue.",
     title16: "Camera Status",
     title17: "Record saved",
+    title177: "Record save failed",
     title18: "Record saved successfully!",
     title19: "Privacy policy",
     title20: "Settings"

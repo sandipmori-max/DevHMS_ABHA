@@ -911,21 +911,11 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                   keyboardShouldPersistTaps="handled"
                   showsVerticalScrollIndicator={false}
                 >
-                  <Animated.View
+                  <View
                     style={[
                       styles.container,
                       theme === "dark" && { backgroundColor: "black" },
-                      {
-                        transform: [
-                          {
-                            translateY: slideAnim.interpolate({
-                              inputRange: [0, 1],
-                              outputRange: [800, 0],
-                            }),
-                          },
-                        ],
-                        opacity: slideAnim,
-                      },
+                     
                       theme === "dark" && {
                         marginTop: 0,
                       },
@@ -938,19 +928,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                       keyboardShouldPersistTaps="handled"
                       data={[""]}
                       renderItem={() => (
-                        <Animated.View
-                          style={{
-                            opacity: formAnim,
-                            transform: [
-                              {
-                                translateY: formAnim.interpolate({
-                                  inputRange: [0, 1],
-                                  outputRange: [50, 0],
-                                }),
-                              },
-                            ],
-                          }}
-                        >
+                        
                           <View style={styles.formContainer}>
                             <View
                               style={{
@@ -1434,10 +1412,9 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                               }}
                             </Formik>
                           </View>
-                        </Animated.View>
                       )}
                     />
-                  </Animated.View>
+                  </View>
                 </ScrollView>
               </>
             </KeyboardAvoidingView>

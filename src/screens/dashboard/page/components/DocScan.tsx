@@ -9,11 +9,13 @@ import {
   NativeModules,
   TouchableOpacity,
   Dimensions,
+  Platform,
 } from "react-native";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import { useAppSelector } from "../../../../store/hooks";
 import InputError from "../../../../components/error/InputError";
+import RNFS from "react-native-fs";
 
 const { DocumentScanner } = NativeModules;
 
@@ -54,6 +56,7 @@ const DocScan: React.FC<DocScanProps> = ({
   label = "Scan Document",
   onScanResult,
   item,
+  errors
 }) => {
   const [images, setImages] = useState<ScannedImage[]>([]);
   const [status, setStatus] = useState("");
@@ -71,6 +74,7 @@ const DocScan: React.FC<DocScanProps> = ({
         includeLocationExif: false,
       });
 
+      console.log("result", result)
       if (result?.didCancel) {
         setStatus("Scan cancelled");
         return;
@@ -91,9 +95,22 @@ const DocScan: React.FC<DocScanProps> = ({
         const updated = [...images, ...processed];
 
         setImages(updated);
+         console.log("updated ------ - -- - - -- -  -", updated)
         setStatus("Scan successful ✅");
 
-        const base64Data = `${item?.field}.jpeg; data:${updated[0]?.type};base64,${updated[0]?.base64}`;
+
+        let base64Data = '';
+        if(Platform.OS === 'android'){
+          const base644 = await RNFS.readFile(
+                                updated[0].uri,
+                                "base64",
+                              );
+                              base64Data = `${item?.field}.jpeg; data:${updated[0]?.type};base64,${base644}`
+        }else{
+         base64Data = `${item?.field}.jpeg; data:${updated[0]?.type};base64,${updated[0]?.base64}`
+        }
+        
+        console.log("base64Data ------ - -- -base64Data----- - -- -  -", base64Data)
         onScanResult?.(base64Data, item?.field);
       } else {
         setStatus("No image found");
@@ -126,8 +143,19 @@ const DocScan: React.FC<DocScanProps> = ({
         updated[index] = newImage;
 
         setImages(updated);
-        const base64Data = `${item?.field}.jpeg; data:${updated[0]?.type};base64,${updated[0]?.base64}`;
-        onScanResult?.(base64Data, item?.field);
+       let base64Data = '';
+        if(Platform.OS === 'android'){
+          const base644 = await RNFS.readFile(
+                                updated[0].uri,
+                                "base64",
+                              );
+                              base64Data = `${item?.field}.jpeg; data:${updated[0]?.type};base64,${base644}`
+        }else{
+         base64Data = `${item?.field}.jpeg; data:${updated[0]?.type};base64,${updated[0]?.base64}`
+        }
+        
+        console.log("base64Data ------ - -- -base64Data----- - -- -  -", base64Data)
+        onScanResult?.(base64Data, item?.field); 
       }
     } catch (e) {
       Alert.alert("Error", "Failed to replace image");
@@ -227,7 +255,7 @@ const DocScan: React.FC<DocScanProps> = ({
         )}
       </TouchableOpacity>
 
-      { images.length === 0 && errors[item?.field] && (
+      {  errors[item?.field] && (
         <>
           <InputError error={errors[item?.field]} />
           <View style={{ height: 8 }} />

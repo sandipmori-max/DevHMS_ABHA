@@ -26,6 +26,7 @@ import {
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import useTranslations from "../../../../hooks/useTranslations";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
+import RNFS from "react-native-fs";
 
 
 const { DocumentScanner } = NativeModules;
@@ -457,9 +458,21 @@ const { height, width } = useWindowDimensions();
    
 
           setCacheBuster(Date.now());
-        setBase64(
-          `${item?.field}.jpeg; data:${processed[0]?.type};base64,${processed[0]?.base64}}`,
+          if(Platform.OS === 'android'){
+                 const   base64Data = await RNFS.readFile(
+                                          processed[0].uri,
+                                          "base64",
+                                        );
+                                         setBase64(
+          `${item?.field}.jpeg; data:${processed[0]?.type};base64,${base64Data}}`,
         );
+                  }else{
+                  
+                    setBase64(
+          `${item?.field}.jpeg; data:${processed[0]?.type};base64,${processed[0]?.base64}`,
+        );
+                  }
+      
         setImageUri(processed[0]?.uri);
         } else {
         }

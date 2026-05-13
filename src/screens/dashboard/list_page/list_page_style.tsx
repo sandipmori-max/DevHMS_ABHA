@@ -269,23 +269,22 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     borderRadius: 4,
-    paddingHorizontal: 12,
-    paddingVertical: Platform.OS === 'android' ? 4 : 6,
+    paddingHorizontal: 12, 
     borderWidth: 1,
-    borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE
+    borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+    paddingVertical: 6
+
   },
   searchIcon: {
     fontSize: 16,
     marginRight: 8,
     color: ERP_COLOR_CODE.ERP_6C757D,
   },
-  searchInput: {
-    paddingVertical:  Platform.OS === 'android' ? 4 : 6,
+  searchInput: { 
     fontSize:   Platform.OS === 'android' ? 14 : 16,
     color: ERP_COLOR_CODE.ERP_1A1A1A,
   },
   clearButton: {
-    padding: 4,
     marginLeft: 8,
   },
   clearButtonText: {

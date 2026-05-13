@@ -79,7 +79,7 @@ const ListScreen = () => {
     (state) => state.auth,
   );
   const [error, setError] = useState<string | null>(null);
-
+  const [tempDate, setTempDate] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false);
   const [isTableView, setIsTableView] = useState<boolean>(false);
@@ -714,7 +714,8 @@ const ListScreen = () => {
                         name="search"
                         color={theme === "dark" ? "white" : "black"}
                       />
-                      <View style={{flex:1, justifyContent:'space-between', flexDirection:'row'}}>
+                      <View style={{flex:1,
+                         justifyContent:'space-between', flexDirection:'row'}}>
                         <TextInput
                         style={[
                           styles.searchInput,
@@ -1002,86 +1003,115 @@ const ListScreen = () => {
             </>
           )}
 
-          {showDatePicker?.show && Platform.OS === "ios" && (
-            <Modal
-              transparent
-              animationType="slide"
-              statusBarTranslucent
-              supportedOrientations={["portrait", "landscape"]}
-            >
-              <View
-                style={[
-                  styles.overlay,
-                  isLandscape && {
-                    alignContent: "center",
-                    alignItems: "center",
-                  },
-                ]}
+      
+
+           {showDatePicker?.show && Platform.OS === "ios" && (
+              <Modal
+                transparent
+                animationType="slide"
+                supportedOrientations={["portrait", "landscape"]}
+                statusBarTranslucent
               >
                 <View
                   style={[
-                    styles.sheet,
-                    theme === "dark" && {
-                      borderWidth: 1,
-                      borderColor: "white",
-                    },
-                    {
-                      width: isLandscape ? "40%" : "100%",
+                    styles.overlay,
+                    isLandscape && {
+                      alignContent: "center",
+                      alignItems: "center",
+                      // justifyContent:'center'
                     },
                   ]}
                 >
-                  {/* Divider */}
                   <View
                     style={[
+                      styles.sheet,
                       theme === "dark" && {
-                        overflow: "hidden",
+                        borderWidth: 1,
                         borderColor: "white",
                       },
                       {
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        padding: 12,
-                        alignContent: "center",
-                        alignItems: "center",
+                        width: isLandscape ? "40%" : "100%",
                       },
                     ]}
                   >
-                    <Text
-                      style={{
-                        color: theme === "dark" ? "white" : "black",
-                      }}
-                    >
-                      {t("text27")}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setShowDatePicker(null);
-                      }}
-                    >
-                      <MaterialIcons name="close" color={"black"} size={24} />
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.divider} />
+                    {/* Divider */}
 
-                  {/* Date Picker */}
-                  <DateTimePicker
-                    value={
-                      showDatePicker.type === "from" && fromDate
-                        ? parseCustomDate(fromDate)
-                        : showDatePicker.type === "to" && toDate
-                        ? parseCustomDate(toDate)
-                        : new Date()
-                    }
-                    mode="date"
-                    display="spinner"
-                    is24Hour={false}
-                    onChange={handleDateChange}
-                    style={styles.picker}
-                  />
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingHorizontal: 16,
+                        paddingVertical: 14,
+                      }}
+                    >
+                      {/* Cancel */}
+                      <TouchableOpacity
+                        onPress={() => {
+                          setShowDatePicker(null);
+                        }}
+                      >
+                        <MaterialIcons  name='close' size={24} color={ERP_COLOR_CODE.ERP_ERROR} />
+                      </TouchableOpacity>
+
+                      {/* Title */}
+                      <Text
+                        style={{
+                          color: theme === "dark" ? "white" : "black",
+                          fontSize: 16,
+                          fontWeight: "600",
+                        }}
+                      >
+                        {t("text89")}
+                      </Text>
+
+                      {/* Done */}
+                      <TouchableOpacity
+                        onPress={() => {
+                          const formatted = formatDateForAPI(tempDate);
+
+                          if (showDatePicker.type === "from") {
+                              dispatch(updateSelectedFromDateState(formatted));
+                          } else {
+                             dispatch(updateSelectedToDateState(formatted));
+                          }
+                          setShowDatePicker(null);
+                        }}
+                      >
+                        <MaterialIcons  name='done' size={24} color={ERP_COLOR_CODE.ERP_green} />
+                      </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.divider} />
+
+                    {/* Date Picker */}
+                    <DateTimePicker
+                      value={
+                        showDatePicker.type === "from" && fromDate
+                          ? parseCustomDate(fromDate)
+                          : showDatePicker.type === "to" && toDate
+                          ? parseCustomDate(toDate)
+                          : new Date()
+                      }
+                      mode="date"
+                      display="spinner"
+                      is24Hour={false}
+                      onChange={(event, selectedDate) => {
+                        if (selectedDate) {
+                          setTempDate(selectedDate);
+                        }
+                      }}
+                      style={[
+                        styles.picker,
+                        {
+                          backgroundColor: "white",
+                        },
+                      ]}
+                    />
+                  </View>
                 </View>
-              </View>
-            </Modal>
-          )}
+              </Modal>
+            )}
 
           {Platform.OS !== "ios" && showDatePicker?.show && (
             <DateTimePicker

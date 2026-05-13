@@ -66,6 +66,7 @@ const AttendanceScreen = () => {
 
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
+  const [tempDate, setTempDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState<null | {
     type: "from" | "to";
     show: boolean;
@@ -351,83 +352,115 @@ const AttendanceScreen = () => {
           </View>
         )}
 
+
         {showDatePicker?.show && Platform.OS === "ios" && (
-          <Modal
-            transparent
-            animationType="slide"
-            supportedOrientations={["portrait", "landscape"]}
-            statusBarTranslucent
-          >
-            <View
-              style={[
-                styles.overlay,
-                isLandscape && {
-                  alignContent: "center",
-                  alignItems: "center",
-                },
-              ]}
-            >
-              <View
-                style={[
-                  styles.sheet,
-                  theme === "dark" && {
-                    borderWidth: 1,
-                    borderColor: "white",
-                  },
-                ]}
+              <Modal
+                transparent
+                animationType="slide"
+                supportedOrientations={["portrait", "landscape"]}
+                statusBarTranslucent
               >
-                {/* Divider */}
                 <View
                   style={[
-                    theme === "dark" && {
-                      overflow: "hidden",
-                      borderColor: "white",
-                    },
-                    {
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      padding: 12,
+                    styles.overlay,
+                    isLandscape && {
                       alignContent: "center",
                       alignItems: "center",
+                      // justifyContent:'center'
                     },
                   ]}
                 >
-                  <Text
-                    style={{
-                      color: theme === "dark" ? "white" : "black",
-                    }}
+                  <View
+                    style={[
+                      styles.sheet,
+                      theme === "dark" && {
+                        borderWidth: 1,
+                        borderColor: "white",
+                      },
+                      {
+                        width: isLandscape ? "40%" : "100%",
+                      },
+                    ]}
                   >
-                    {t("text27")}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setShowDatePicker(null);
-                    }}
-                  >
-                    <MaterialIcons name="close" color={"black"} size={24} />
-                  </TouchableOpacity>
+                    {/* Divider */}
+
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingHorizontal: 16,
+                        paddingVertical: 14,
+                      }}
+                    >
+                      {/* Cancel */}
+                      <TouchableOpacity
+                        onPress={() => {
+                          setShowDatePicker(null);
+                        }}
+                      >
+                        <MaterialIcons  name='close' size={24} color={ERP_COLOR_CODE.ERP_ERROR} />
+                      </TouchableOpacity>
+
+                      {/* Title */}
+                      <Text
+                        style={{
+                          color: theme === "dark" ? "white" : "black",
+                          fontSize: 16,
+                          fontWeight: "600",
+                        }}
+                      >
+                        {t("text89")}
+                      </Text>
+
+                      {/* Done */}
+                      <TouchableOpacity
+                        onPress={() => {
+                          const formatted = formatDateForAPI(tempDate);
+
+                          if (showDatePicker.type === "from") {
+                            setFromDate(formatted);
+                            
+                          } else {
+                            setToDate(formatted); 
+                          }
+                          setShowDatePicker(null);
+                        }}
+                      >
+                         <MaterialIcons  name='done' size={24} color={ERP_COLOR_CODE.ERP_green} />
+                      </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.divider} />
+
+                    {/* Date Picker */}
+                    <DateTimePicker
+                      value={
+                        showDatePicker.type === "from" && fromDate
+                          ? parseCustomDate(fromDate)
+                          : showDatePicker.type === "to" && toDate
+                          ? parseCustomDate(toDate)
+                          : new Date()
+                      }
+                      mode="date"
+                      display="spinner"
+                      is24Hour={false}
+                      onChange={(event, selectedDate) => {
+                        if (selectedDate) {
+                          setTempDate(selectedDate);
+                        }
+                      }}
+                      style={[
+                        styles.picker,
+                        {
+                          backgroundColor: "white",
+                        },
+                      ]}
+                    />
+                  </View>
                 </View>
-                <View style={styles.divider} />
-
-                {/* Date Picker */}
-                <DateTimePicker
-                  value={
-                    showDatePicker.type === "from" && fromDate
-                      ? parseCustomDate(fromDate)
-                      : showDatePicker.type === "to" && toDate
-                      ? parseCustomDate(toDate)
-                      : new Date()
-                  }
-                  mode="date"
-                  display="spinner"
-                  onChange={handleDateChange}
-                  style={styles.picker}
-                />
-              </View>
-            </View>
-          </Modal>
-        )}
-
+              </Modal>
+            )}
         {Platform.OS !== "ios" && showDatePicker?.show && (
           <DateTimePicker
             value={
@@ -453,16 +486,7 @@ const AttendanceScreen = () => {
                 height: "100%",
               }}
             >
-              <View
-                style={{
-                  height: Platform.OS === "ios" ? 16 : 6,
-                  width: "100%",
-                  backgroundColor:
-                    theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-                  borderBottomLeftRadius: 12,
-                  borderBottomRightRadius: 12,
-                }}
-              ></View>
+              
               <List
                 selectedMonth={formattedMonth}
                 showFilter={showFilter}
@@ -498,18 +522,7 @@ const AttendanceScreen = () => {
                 ]}
               >
                 <>
-                  <View
-                    style={{
-                      height: Platform.OS === "ios" ? 16 : 6,
-                      width: "100%",
-                      backgroundColor:
-                        theme === "dark"
-                          ? "black"
-                          : ERP_COLOR_CODE.ERP_APP_COLOR,
-                      borderBottomLeftRadius: 12,
-                      borderBottomRightRadius: 12,
-                    }}
-                  ></View>
+                  
                   <AttendanceForm
                     setBlockAction={setBlockAction}
                     resData={resData}

@@ -174,7 +174,7 @@ const MenuTab = ({
     await insertOrUpdateBookmark(db, id, user?.id, updated);
 
     showToast(
-      updated ? `${name} bookmarked` : `${name} removed`,
+      updated ? `${name} - Bookmark added` : `${name} - Bookmark removed`,
       updated ? ERP_COLOR_CODE.ERP_green : ERP_COLOR_CODE.ERP_ERROR,
       "white",
     );

@@ -7058,3 +7058,12 @@ build safeareacontext_autolinked_build/CMakeFiles/react_codegen_safeareacontext.
   OBJECT_DIR = safeareacontext_autolinked_build/CMakeFiles/react_codegen_safeareacontext.dir
 
 
+
+
+// - 
+Location tracker - foreground + background 
+img upload - camera + gallery 
+file upload - file selection - 
+video recorder
+qr/bar code scan
+buissness card reader - camera + doc scan + gallery

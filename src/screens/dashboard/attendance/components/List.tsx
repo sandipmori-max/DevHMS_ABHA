@@ -401,13 +401,13 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                 },
                 activeFilter === filter.key
                   ? {
-                      backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-                      borderColor: ERP_COLOR_CODE.ERP_WHITE,
-                    }
+                    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                    borderColor: ERP_COLOR_CODE.ERP_WHITE,
+                  }
                   : {
-                      backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
-                      borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-                    },
+                    backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+                    borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+                  },
               ]}
             >
               <TranslatedText
@@ -735,7 +735,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                               </View>
 
                                               {rec?.status?.toLowerCase() ===
-                                              "working" ? (
+                                                "working" ? (
                                                 <View
                                                   style={{
                                                     flexDirection: "row",
@@ -762,9 +762,9 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                                 <>
                                                   {rec?.outtime &&
                                                     rec?.status?.toLowerCase() !==
-                                                      "working" &&
+                                                    "working" &&
                                                     rec?.status?.toLowerCase() !==
-                                                      "leave" && (
+                                                    "leave" && (
                                                       <View
                                                         style={{
                                                           flexDirection: "row",
@@ -801,33 +801,33 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
 
                                               {rec?.status?.toLowerCase() !==
                                                 "working" && (
-                                                <View
-                                                  style={{
-                                                    flexDirection: "row",
-                                                    alignItems: "center",
-                                                    gap: 4,
-                                                  }}
-                                                >
-                                                  <MaterialIcons
-                                                    color={
-                                                      ERP_COLOR_CODE.ERP_666
-                                                    }
-                                                    size={14}
-                                                    name="access-alarm"
-                                                  />
-                                                  <TranslatedText
-                                                    numberOfLines={1}
-                                                    text={
-                                                      formatTo12Hour(
-                                                        rec?.outtime,
-                                                      ) || "--"
-                                                    }
-                                                    style={
-                                                      styles.recordPunchTime
-                                                    }
-                                                  ></TranslatedText>
-                                                </View>
-                                              )}
+                                                  <View
+                                                    style={{
+                                                      flexDirection: "row",
+                                                      alignItems: "center",
+                                                      gap: 4,
+                                                    }}
+                                                  >
+                                                    <MaterialIcons
+                                                      color={
+                                                        ERP_COLOR_CODE.ERP_666
+                                                      }
+                                                      size={14}
+                                                      name="access-alarm"
+                                                    />
+                                                    <TranslatedText
+                                                      numberOfLines={1}
+                                                      text={
+                                                        formatTo12Hour(
+                                                          rec?.outtime,
+                                                        ) || "--"
+                                                      }
+                                                      style={
+                                                        styles.recordPunchTime
+                                                      }
+                                                    ></TranslatedText>
+                                                  </View>
+                                                )}
                                             </View>
                                           }
 
@@ -845,7 +845,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                           )}
                                           {rec?.outTime &&
                                             rec?.status?.toLowerCase() !==
-                                              "working" &&
+                                            "working" &&
                                             isLessThanRequired && (
                                               <View
                                                 style={{
@@ -927,7 +927,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
               renderItem={() => (
                 <>
                   <View
-                    {...panResponder.panHandlers}
+
                     style={{
                       flex: 1,
                       justifyContent: "center",
@@ -1050,39 +1050,59 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                       <View
                         style={{
                           flexDirection: "row",
-                          justifyContent: "center",
-                          marginVertical: 10,
                           gap: 8,
+                          padding: 8,
+                          justifyContent: 'space-between',
+                          paddingHorizontal: 34,
+                          alignContent: 'center',
+                          alignItems: 'center'
                         }}
                       >
                         <TouchableOpacity
                           onPress={() => {
                             setCurrentView("pie");
                           }}
-                          style={{
-                            width: currentView === "pie" ? 24 : 10,
-                            height: 10,
-                            borderRadius: 5,
-                            backgroundColor:
-                              currentView === "pie"
-                                ? ERP_COLOR_CODE.ERP_APP_COLOR
-                                : ERP_COLOR_CODE.ERP_BORDER_LINE,
-                          }}
-                        />
+                          style={{ padding: 10 }}
+                        >
+                          <MaterialIcons color={'gray'} name='arrow-back' size={24} />
+
+                        </TouchableOpacity>
+                        <View style={{ flexDirection: 'row', gap: 8 }}>
+
+                          <View
+
+                            style={{
+                              width: currentView === "pie" ? 24 : 10,
+                              height: 10,
+                              borderRadius: 5,
+                              backgroundColor:
+                                currentView === "pie"
+                                  ? ERP_COLOR_CODE.ERP_APP_COLOR
+                                  : ERP_COLOR_CODE.ERP_BORDER_LINE,
+                            }}
+                          />
+                          <View
+
+                            style={{
+                              width: currentView === "calendar" ? 24 : 10,
+                              height: 10,
+                              borderRadius: 5,
+                              backgroundColor:
+                                currentView === "calendar"
+                                  ? ERP_COLOR_CODE.ERP_APP_COLOR
+                                  : ERP_COLOR_CODE.ERP_BORDER_LINE,
+                            }}
+                          />
+                        </View>
+
                         <TouchableOpacity
                           onPress={() => {
                             setCurrentView("calendar");
                           }}
-                          style={{
-                            width: currentView === "calendar" ? 24 : 10,
-                            height: 10,
-                            borderRadius: 5,
-                            backgroundColor:
-                              currentView === "calendar"
-                                ? ERP_COLOR_CODE.ERP_APP_COLOR
-                                : ERP_COLOR_CODE.ERP_BORDER_LINE,
-                          }}
-                        />
+                          style={{ padding: 10 }}
+                        >
+                          <MaterialIcons color={'gray'} name='arrow-forward' size={24} />
+                        </TouchableOpacity>
                       </View>
                     </View>
                   )}
@@ -1352,7 +1372,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                               </View>
 
                                               {rec?.status?.toLowerCase() ===
-                                              "working" ? (
+                                                "working" ? (
                                                 <View
                                                   style={{
                                                     flexDirection: "row",
@@ -1377,7 +1397,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                               ) : (
                                                 rec?.outtime &&
                                                 rec?.status?.toLowerCase() !==
-                                                  "leave" && (
+                                                "leave" && (
                                                   <Text
                                                     style={[
                                                       styles.recordPunchTime,
@@ -1396,32 +1416,32 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
 
                                               {rec?.status?.toLowerCase() !==
                                                 "working" && (
-                                                <View
-                                                  style={{
-                                                    flexDirection: "row",
-                                                    gap: 4,
-                                                  }}
-                                                >
-                                                  <MaterialIcons
-                                                    color={
-                                                      ERP_COLOR_CODE.ERP_666
-                                                    }
-                                                    size={14}
-                                                    name="access-alarm"
-                                                  />
-                                                  <TranslatedText
-                                                    numberOfLines={1}
-                                                    text={
-                                                      formatTo12Hour(
-                                                        rec?.outtime,
-                                                      ) || "--"
-                                                    }
-                                                    style={
-                                                      styles.recordPunchTime
-                                                    }
-                                                  />
-                                                </View>
-                                              )}
+                                                  <View
+                                                    style={{
+                                                      flexDirection: "row",
+                                                      gap: 4,
+                                                    }}
+                                                  >
+                                                    <MaterialIcons
+                                                      color={
+                                                        ERP_COLOR_CODE.ERP_666
+                                                      }
+                                                      size={14}
+                                                      name="access-alarm"
+                                                    />
+                                                    <TranslatedText
+                                                      numberOfLines={1}
+                                                      text={
+                                                        formatTo12Hour(
+                                                          rec?.outtime,
+                                                        ) || "--"
+                                                      }
+                                                      style={
+                                                        styles.recordPunchTime
+                                                      }
+                                                    />
+                                                  </View>
+                                                )}
                                             </View>
 
                                             {/* Status */}
@@ -1443,7 +1463,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
 
                                             {rec?.outTime &&
                                               rec?.status?.toLowerCase() !==
-                                                "working" &&
+                                              "working" &&
                                               isLessThanRequired && (
                                                 <View
                                                   style={{
@@ -1472,34 +1492,34 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                         </View>
                                       </View>
                                     </TouchableOpacity>
-                                    { idx === 0 && item.records.length > 1 && (
-                                        <View
+                                    {idx === 0 && item.records.length > 1 && (
+                                      <View
+                                        style={{
+                                          alignSelf: "center",
+                                          width: 24,
+                                          marginLeft: 4,
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        <TouchableOpacity
+                                          onPress={() => toggleRecords(index)}
                                           style={{
-                                            alignSelf: "center",
-                                            width: 24,
-                                            marginLeft: 4,
-                                            justifyContent: "center",
                                             alignItems: "center",
+                                            paddingVertical: 1,
+                                            marginVertical: 4,
                                           }}
                                         >
-                                          <TouchableOpacity
-                                            onPress={() => toggleRecords(index)}
-                                            style={{
-                                              alignItems: "center",
-                                              paddingVertical: 1,
-                                              marginVertical: 4,
-                                            }}
-                                          >
-                                            <MaterialIcons
-                                              size={24}
-                                              color={ERP_COLOR_CODE.ERP_BORDER_LINE}
-                                              name={!expandedItems[index] ? "expand-more" : "expand-less"}
-                                            />
-                                          </TouchableOpacity>
-                                        </View>
-                                        )}
+                                          <MaterialIcons
+                                            size={24}
+                                            color={ERP_COLOR_CODE.ERP_BORDER_LINE}
+                                            name={!expandedItems[index] ? "expand-more" : "expand-less"}
+                                          />
+                                        </TouchableOpacity>
+                                      </View>
+                                    )}
                                   }
-                                   
+
                                   </View>
                                 );
                               })}

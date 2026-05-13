@@ -128,8 +128,7 @@ const PrivacyPolicyScreen = () => {
       headerTitle: () => (
         <Text
           numberOfLines={1}
-          style={{
-            maxWidth: 180,
+          style={{ 
             fontSize: 18,
             fontWeight: "700",
             color: "#fff",
