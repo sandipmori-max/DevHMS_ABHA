@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, Platform, useWindowDimensions, View } from "react-native";
+import { Animated, Platform, Text, useWindowDimensions, View } from "react-native";
 import FastImage from "react-native-fast-image";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -9,7 +9,7 @@ import { useAppSelector } from "../../store/hooks";
 import { useTranslation } from "react-i18next";
 import { ERP_COLOR_CODE } from "../../utils/constants";
 
-const NoData = ({ isShowTop = true }: any) => {
+const NoData = ({ isShowTop = true, text }: any) => {
   const { t } = useTranslation();
   const theme = useAppSelector((state) => state?.theme.mode);
   const { height, width } = useWindowDimensions();
@@ -192,3 +192,5 @@ const NoData = ({ isShowTop = true }: any) => {
 };
 
 export default NoData;
+
+ 

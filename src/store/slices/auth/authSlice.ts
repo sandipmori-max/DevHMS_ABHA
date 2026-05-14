@@ -437,6 +437,7 @@ const authSlice = createSlice({
         }
       })
       .addCase(getERPDashboardThunk.rejected, (state, action) => {
+        console.log("getERPDashboardThunk ----------- rejected ", )
         state.isDashboardLoading = false;
         state.error = action.payload as string;
       });

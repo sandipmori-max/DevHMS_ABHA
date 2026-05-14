@@ -14,6 +14,7 @@ import {
   PanResponder,
   AppState,
   useWindowDimensions,
+  Alert,
 } from "react-native";
 import {
   launchCamera,
@@ -84,6 +85,9 @@ const Media = ({
     try {
       let permission;
 
+      if (type === "gallery") {
+        return true;
+      }
       if (type === "camera") {
         permission =
           Platform.OS === "ios"
@@ -400,7 +404,7 @@ const Media = ({
                     console.log("Base64 Sent To Backend");
 
                     // 🧹 MEMORY CLEANUP (important for Samsung crash fix)
-                  
+
                     console.log("Memory Cleaned");
 
                     console.log("========== CAMERA SUCCESS ==========");
@@ -539,7 +543,7 @@ const Media = ({
                     console.log("Base64 Sent To Backend");
 
                     // 🧹 MEMORY CLEANUP (important for Samsung crash fix)
-                    
+
 
                     console.log("Memory Cleaned");
 
@@ -559,23 +563,54 @@ const Media = ({
           text: "Gallery",
           icon: "photo-library",
           onPress: async () => {
-            const granted = await requestPermission("gallery");
-            if (!granted) return;
 
-            launchImageLibrary(
-              { mediaType: "photo", quality: 0.5, includeBase64: true },
-              (response) => {
-                if (response.assets && response.assets.length > 0) {
-                  const asset: Asset = response.assets[0];
-                  setImageUri(asset.uri || null);
-                  setCacheBuster(Date.now());
-                  handleAttachment(
-                    `${item?.field}.jpeg; data:${asset.type};base64,${asset.base64}`,
-                    item.field,
-                  );
-                }
-              },
-            );
+
+            const granted = await requestPermission("gallery");
+            if (!granted) {
+              Alert.alert("STOP", "Permission not granted");
+              return;
+            }
+
+            setTimeout(async () => {
+              launchImageLibrary(
+                {
+                  mediaType: "photo",
+                  quality: 0.5,
+                  includeBase64: true,
+                },
+                (response) => {
+                  if (response.didCancel) {
+                    Alert.alert("CANCELLED", "User cancelled gallery");
+                    return;
+                  }
+
+                  if (response.errorCode) {
+                    Alert.alert(
+                      "ERROR",
+                      `${response.errorCode}\n${response.errorMessage}`,
+                    );
+
+                    return;
+                  }
+                  if (response.assets && response.assets.length > 0) {
+                    const asset: Asset = response.assets[0];
+                      let uri = asset.uri!;
+                      if (Platform.OS === "android" && !uri.startsWith("file://")) {
+                        uri = "file://" + uri;
+                      }
+                    setImageExists(true);
+                    setImageUri(uri || null);
+                    setCacheBuster(Date.now());
+                    handleAttachment(
+                      `${item?.field}.jpeg; data:${asset.type};base64,${asset.base64}`,
+                      item.field,
+                    );
+                  } else {
+                    Alert.alert("NO ASSETS", "No image selected");
+                  }
+                },
+              );
+            }, 400)
           },
         },
       ];

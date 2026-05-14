@@ -272,8 +272,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 12, 
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-    paddingVertical: 6
-
+    paddingVertical: 6,  
   },
   searchIcon: {
     fontSize: 16,

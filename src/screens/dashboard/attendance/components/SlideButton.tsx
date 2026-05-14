@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
@@ -34,7 +35,8 @@ const SlideButton: React.FC<SlideButtonProps> = ({
 }) => {
   const translateX = useRef(new Animated.Value(0)).current;
   const { t } = useTranslations();
-
+  const { height, width } = useWindowDimensions();
+  const isLandscape = width > height;
   // 🔹 Reset knob automatically if API fails (completed = false)
   useEffect(() => {
     if (!loading && !completed && blocked) {
@@ -77,7 +79,16 @@ const SlideButton: React.FC<SlideButtonProps> = ({
 
   return (
     <View style={styles.container}>
-      <View style={[styles.sliderContainer, { borderColor: successColor }]}>
+      <View style={[styles.sliderContainer, { borderColor: successColor ,   
+      },
+       isLandscape
+            ? {
+                width: SLIDE_WIDTH / 2.2,
+              }
+            : {
+                width: SLIDE_WIDTH ,
+              }
+      ]}>
         <Text style={styles.label}>
           {loading ? t("text.text22") : completed ? t('text.text23') : label}
         </Text>
@@ -109,15 +120,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 20,
   },
-  sliderContainer: {
-    width: SLIDE_WIDTH,
+  sliderContainer: { 
     height: SLIDER_SIZE,
     borderRadius: 6,
     borderWidth: 2,
     backgroundColor: '#f2f2f2',
     justifyContent: 'center',
-    overflow: 'hidden',
-  },
+   },
   label: {
     position: 'absolute',
     alignSelf: 'center',

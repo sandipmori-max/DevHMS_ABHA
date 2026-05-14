@@ -13,7 +13,7 @@ export enum EPermissionTypes {
   CAMERA = "camera",
 }
 
-export const ERP_APP_VERSION = "1.3.2";
+export const ERP_APP_VERSION = "1.3.2 - (1)";
 
 export const HEADER_HEIGHT = Platform.OS === 'android' ? Math.min(
   50,

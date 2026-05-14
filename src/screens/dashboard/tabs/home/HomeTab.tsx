@@ -67,6 +67,7 @@ import {
   useWindowDimensions,
   ScrollView,
   Image,
+  TouchableWithoutFeedback,
 } from "react-native";
 import TranslatedText from "./TranslatedText";
 import GreetingBottomSheet from "./GreetingBottomSheet";
@@ -90,7 +91,7 @@ import { resetSyncLocationState } from "../../../../store/slices/location/syncLo
 import { ERP_ICON } from "../../../../assets";
 import { useBaseLink } from "../../../../hooks/useBaseLink";
 import { HEADER_HEIGHT } from "../../../../constants";
-
+import { batch } from "react-redux";
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;
   return /<([a-z]+)([^>]*?)>/i.test(str);
@@ -154,6 +155,35 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     type: "from" | "to";
     show: boolean;
   }>(null);
+  const [chartType, setChartType] = useState("");
+  const [openSheet, setOpenSheet] = useState(false);
+
+  const CHART_TYPES = [
+    {
+      type: "BarChart",
+      icon: "poll",
+    },
+    {
+      type: "LineChart",
+      icon: "show-chart",
+    },
+    {
+      type: "PieChart",
+      icon: "pie-chart",
+    },
+    {
+      type: "PopulationPyramid",
+      icon: "equalizer",
+    },
+    {
+      type: "BubbleChart",
+      icon: "bubble-chart",
+    },
+  ];
+
+  const activeChart = CHART_TYPES.find(
+    (item) => item.type === chartType
+  );
 
   const { appBottomMenuList } = useAppSelector((state) => state?.auth);
   const theme = useAppSelector((state) => state?.theme.mode);
@@ -210,7 +240,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       setIsFilterVisible(true);
       setShowFull(true);
       setIsHorizontal(false);
-      return () => {};
+      return () => { };
     }, [isAuthenticated, navigation, isLandscape]),
   );
 
@@ -233,7 +263,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-       }, 
+      },
 
       headerBackTitle: "",
       headerTintColor: "#fff",
@@ -339,7 +369,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
               onPress={async () => {
                 refreshData();
               }}
-              isLoading={actionLoader}
+              isLoading={isDashboardLoading}
             />
 
             {dashboard.length > 5 && (
@@ -355,27 +385,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                 }}
               />
             )}
-            {isLandscape && (
-              <>
-                <ERPIcon
-                  name={!isHorizontal ? "list" : "apps"}
-                  onPress={() => setIsHorizontal((prev) => !prev)}
-                />
-                <ERPIcon
-                  name={!hideTab ? "fullscreen" : "fullscreen-exit"}
-                  onPress={() => {
-                    setHideTab(!hideTab);
-                  }}
-                />
-                {controls.length > 0 && (
-                  <ERPIcon
-                    name={isFilterVisible ? "close" : "filter-alt"}
-                    onPress={() => setIsFilterVisible((prev) => !prev)}
-                  />
-                )}
-              </>
-            )}
-            {!isLandscape && (
+           
               <ERPIcon
                 name={!showFull ? "more-vert" : "close"}
                 onPress={() => {
@@ -383,7 +393,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                   setShowFull(!showFull);
                 }}
               />
-            )}
           </View>
         ),
       headerLeft: () => (
@@ -421,6 +430,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     hideTab,
     isLandscape,
     controls,
+    isDashboardLoading
   ]);
 
   const accentColors = [
@@ -434,13 +444,14 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
   const refreshData = async () => {
     try {
+      dispatch(setDashboardLoading(true));
       dispatch(getERPAppConfigMenuThunk());
       if (appBottomMenuList.length === 0) {
         setAlertVisible(true);
       } else {
         setAlertVisible(false);
       }
-      setControlsLoader(true);
+      // setControlsLoader(true);
       setActionLoader(true);
       setIsRefresh(!isRefresh);
       const now = new Date();
@@ -468,10 +479,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         filtered,
       );
 
-      dispatch(
-        setActiveDashboardBranchId(filtered[0]?.value?.toString() || ""),
-      );
-      dispatch(setActiveDashboardBranch(filtered[0]?.name || ""));
+
 
       const res1 = await dispatch(
         getDDLThunk({
@@ -484,8 +492,15 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         "--------------------------------------------DDLres1 Data:",
         res1,
       );
-      dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString() || ""));
-      dispatch(setActiveDashboardType(data1[0]?.name || ""));
+      batch(() => {
+        dispatch(
+          setActiveDashboardBranchId(filtered[0]?.value?.toString() || ""),
+        );
+        dispatch(setActiveDashboardBranch(filtered[0]?.name || ""));
+        dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString() || ""));
+        dispatch(setActiveDashboardType(data1[0]?.name || ""));
+      })
+
 
       const params = {
         branch: filtered[0]?.value?.toString() || "",
@@ -493,12 +508,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         fd: fromDateStr,
         td: toDateStr,
       };
-      dispatch(getERPDashboardThunk(params));
-      const timer = setTimeout(() => {
-        setActionLoader(false);
-        setControlsLoader(false);
-        dispatch(setDashboardLoading(false));
-      }, 6000);
+      await dispatch(getERPDashboardThunk(params));
+
 
       dispatch(getLastPunchInThunk())
         .unwrap()
@@ -517,6 +528,11 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       setToDate(toDateStr);
       dispatch(setActiveDashboardFromDate(fromDateStr));
       dispatch(setActiveDashboardToDate(toDateStr));
+
+
+      const timer = setTimeout(() => {
+        dispatch(setDashboardLoading(false));
+      }, 1000);
       return () => clearTimeout(timer);
     } catch (error) {
       console.log("Error during refresh:", error);
@@ -685,6 +701,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                     index={index}
                     accentColors={accentColors}
                     isFromListPage={undefined}
+                    isForChart={chartType === '' ? false : true}
+                    chartType={chartType}
                   />
                 </View>
               ) : (
@@ -705,6 +723,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                   index={index}
                   accentColors={accentColors}
                   isFromListPage={undefined}
+                  isForChart={chartType === '' ? false : true}
+                  chartType={chartType}
                 />
               </View>
             ) : (
@@ -790,7 +810,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
   const fetchPageData = useCallback(
     async (fromDate: string, toDate: string) => {
       try {
-        setControlsLoader(true);
+        // setControlsLoader(true);
 
         const parsed = await dispatch(
           getERPPageThunk({ page: "Dashboard", id: "" }),
@@ -819,33 +839,41 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
   useFocusEffect(
     useCallback(() => {
-      // ✅ runs ONLY when screen comes into focus
+      let isMounted = true;
 
-      dispatch(
-        getERPDashboardThunk({
-          branch: auth?.dashboardBranchId,
-          type:
-            auth?.dashboardTypeId === "all" || auth?.dashboardTypeId === "ALL"
-              ? ""
-              : auth?.dashboardTypeId || "",
-          fd: auth?.dashboardFromDate || fromDate,
-          td: auth?.dashboardToDate || toDate,
-        }),
-      );
-      try {
-        dispatch(getERPAppConfigMenuThunk());
-      } catch (error) {
-        dispatch(updateAppMenuList([])); // Clear menu on error
-        console.log("Error fetching app config menu:", error);
-      }
+      const loadData = async () => {
+        try {
+          dispatch(setDashboardLoading(true));
+          await dispatch(
+            getERPDashboardThunk({
+              branch: auth?.dashboardBranchId,
+              type:
+                auth?.dashboardTypeId === "all" ||
+                  auth?.dashboardTypeId === "ALL"
+                  ? ""
+                  : auth?.dashboardTypeId || "",
+              fd: auth?.dashboardFromDate || fromDate,
+              td: auth?.dashboardToDate || toDate,
+            }),
+          );
 
-      const timer = setTimeout(() => {
-        dispatch(setDashboardLoading(false));
-      }, 6000);
+          await dispatch(getERPAppConfigMenuThunk());
+        } catch (error) {
+          dispatch(updateAppMenuList([]));
+          console.log("Error fetching app config menu:", error);
+        } finally {
+          if (isMounted) {
+            setTimeout(() => {
+              dispatch(setDashboardLoading(false));
+            }, 1000);
+          }
+        }
+      };
+
+      loadData();
 
       return () => {
-        // cleanup when screen unfocus
-        clearTimeout(timer);
+        isMounted = false;
       };
     }, [
       auth?.dashboardBranchId,
@@ -895,7 +923,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
         const data1 = res1?.data ?? [];
 
-        dispatch(
+        await dispatch(
           getERPDashboardThunk({
             branch: filtered[0]?.value?.toString() || "",
             type: data1[0]?.value?.toString() || "",
@@ -904,14 +932,42 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
           }),
         );
 
-        dispatch(
-          setActiveDashboardBranchId(filtered[0]?.value?.toString() || ""),
-        );
-        dispatch(setActiveDashboardBranch(filtered[0]?.name || ""));
-        dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString() || ""));
-        dispatch(setActiveDashboardType(data1[0]?.name || ""));
-        dispatch(setActiveDashboardFromDate(fromDate));
-        dispatch(setActiveDashboardToDate(toDate));
+        // dispatch(
+        //   setActiveDashboardBranchId(filtered[0]?.value?.toString() || ""),
+        // );
+        // dispatch(setActiveDashboardBranch(filtered[0]?.name || ""));
+        // dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString() || ""));
+        // dispatch(setActiveDashboardType(data1[0]?.name || ""));
+        // dispatch(setActiveDashboardFromDate(fromDate));
+        // dispatch(setActiveDashboardToDate(toDate));
+        batch(() => {
+          dispatch(
+            setActiveDashboardBranchId(
+              filtered[0]?.value?.toString() || "",
+            ),
+          );
+
+          dispatch(
+            setActiveDashboardBranch(
+              filtered[0]?.name || "",
+            ),
+          );
+
+          dispatch(
+            setActiveDashboardTypeId(
+              data1[0]?.value?.toString() || "",
+            ),
+          );
+
+          dispatch(
+            setActiveDashboardType(
+              data1[0]?.name || "",
+            ),
+          );
+
+          dispatch(setActiveDashboardFromDate(fromDate));
+          dispatch(setActiveDashboardToDate(toDate));
+        });
       } catch (error) {
         console.log("DDL Error:", error);
       }
@@ -1086,7 +1142,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       </View>
     );
   }
-  if (!actionLoader && filteredDashboard?.length === 0) {
+  if (!isDashboardLoading && dashboard?.length === 0) {
     return (
       <View
         style={{
@@ -1235,7 +1291,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                               isForceOpen={false}
                               isValidate={false}
                               label={item.title}
-                              selectedValue={() => {}}
+                              selectedValue={() => { }}
                               dtext={
                                 item?.title === "Branch"
                                   ? auth?.dashboardBranch || item.dtext
@@ -1316,7 +1372,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                         paddingVertical: 14,
                       }}
                     >
-                    
+
 
 
                       {/* Cancel */}
@@ -1325,7 +1381,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                           setShowDatePicker(null);
                         }}
                       >
-                        <MaterialIcons  name='close' size={24} color={ERP_COLOR_CODE.ERP_ERROR} />
+                        <MaterialIcons name='close' size={24} color={ERP_COLOR_CODE.ERP_ERROR} />
                       </TouchableOpacity>
 
                       {/* Title */}
@@ -1338,7 +1394,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                       >
                         {t("text89")}
                       </Text>
-                        {/* Done */}
+                      {/* Done */}
                       <TouchableOpacity
                         onPress={() => {
                           const formatted = formatDateForAPI(tempDate);
@@ -1353,7 +1409,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                           setShowDatePicker(null);
                         }}
                       >
-                       <MaterialIcons  name='done' size={24} color={ERP_COLOR_CODE.ERP_green} />
+                        <MaterialIcons name='done' size={24} color={ERP_COLOR_CODE.ERP_green} />
                       </TouchableOpacity>
                     </View>
 
@@ -1365,8 +1421,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                         showDatePicker.type === "from" && fromDate
                           ? parseCustomDate(fromDate)
                           : showDatePicker.type === "to" && toDate
-                          ? parseCustomDate(toDate)
-                          : new Date()
+                            ? parseCustomDate(toDate)
+                            : new Date()
                       }
                       mode="date"
                       display="spinner"
@@ -1395,8 +1451,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                   showDatePicker.type === "from" && fromDate
                     ? parseCustomDate(fromDate)
                     : showDatePicker.type === "to" && toDate
-                    ? parseCustomDate(toDate)
-                    : new Date()
+                      ? parseCustomDate(toDate)
+                      : new Date()
                 }
                 mode="date"
                 onChange={handleDateChange}
@@ -1404,7 +1460,9 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
             )}
           </View>
 
-          <NoData isShowTop={false} />
+          {
+            dashboard.length === 0 && <NoData isShowTop={false} text={"iam"} />
+          }
         </View>
       </View>
     );
@@ -1420,8 +1478,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         backgroundColor: isDashboardLoading
           ? "black"
           : theme === "dark"
-          ? "black"
-          : "white",
+            ? "black"
+            : "white",
       }}
     >
       <View
@@ -1547,7 +1605,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                             isForceOpen={false}
                             isValidate={false}
                             label={item.title}
-                            selectedValue={() => {}}
+                            selectedValue={() => { }}
                             dtext={
                               item?.title === "Branch"
                                 ? auth?.dashboardBranch || item.dtext
@@ -1660,7 +1718,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                           isForceOpen={false}
                           isValidate={false}
                           label={item.title}
-                          selectedValue={() => {}}
+                          selectedValue={() => { }}
                           dtext={
                             item?.title === "Branch"
                               ? auth?.dashboardBranch || item.dtext
@@ -1737,18 +1795,18 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                     paddingVertical: 14,
                   }}
                 >
-                     {/* Cancel */}
+                  {/* Cancel */}
                   <TouchableOpacity
                     onPress={() => {
                       setShowDatePicker(null);
-                    }} 
+                    }}
                   >
-                    <MaterialIcons  name='close' size={24} color={ERP_COLOR_CODE.ERP_ERROR} />
+                    <MaterialIcons name='close' size={24} color={ERP_COLOR_CODE.ERP_ERROR} />
                   </TouchableOpacity>
-                
 
-                
-                    {/* Title */}
+
+
+                  {/* Title */}
                   <Text
                     style={{
                       color: theme === "dark" ? "white" : "black",
@@ -1759,7 +1817,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                     {t("text89")}
                   </Text>
 
-                 <TouchableOpacity
+                  <TouchableOpacity
                     onPress={() => {
                       const formatted = formatDateForAPI(tempDate);
 
@@ -1773,10 +1831,10 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                       setShowDatePicker(null);
                     }}
                   >
-                    <MaterialIcons  name='done' size={24} color={ERP_COLOR_CODE.ERP_green} />
+                    <MaterialIcons name='done' size={24} color={ERP_COLOR_CODE.ERP_green} />
                   </TouchableOpacity>
 
-            
+
                 </View>
 
                 <View style={styles.divider} />
@@ -1787,8 +1845,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                     showDatePicker.type === "from" && fromDate
                       ? parseCustomDate(fromDate)
                       : showDatePicker.type === "to" && toDate
-                      ? parseCustomDate(toDate)
-                      : new Date()
+                        ? parseCustomDate(toDate)
+                        : new Date()
                   }
                   mode="date"
                   display="spinner"
@@ -1816,8 +1874,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
               showDatePicker.type === "from" && fromDate
                 ? parseCustomDate(fromDate)
                 : showDatePicker.type === "to" && toDate
-                ? parseCustomDate(toDate)
-                : new Date()
+                  ? parseCustomDate(toDate)
+                  : new Date()
             }
             mode="date"
             display={"spinner"}
@@ -1838,7 +1896,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         renderItem={() => {
           return (
             <>
-              {controlsLoader ? (
+              {isDashboardLoading ? (
                 <View
                   style={{
                     height: Dimensions.get("screen").height * 0.75,
@@ -1860,7 +1918,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                 >
                   <ErrorMessage message={error} isShowTop={false} />{" "}
                 </View>
-              ) : controls?.length === 0 && !isDashboardLoading ? (
+              ) : dashboard?.length === 0 && !isDashboardLoading ? (
                 <View
                   style={{
                     height: Dimensions.get("screen").height,
@@ -1869,7 +1927,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                     backgroundColor: theme === "dark" ? "black" : "white",
                   }}
                 >
-                  <NoData isShowTop={false} />
+                  <NoData isShowTop={false} text={"I_AM_"} />
                 </View>
               ) : (
                 <View
@@ -1997,6 +2055,32 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                   Dashboard
                                 </Text>
                               </View>
+
+                              {/* <View>
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    justifyContent: "flex-end",
+                                  }}
+                                >
+                                  <TouchableOpacity
+                                    onPress={() => setOpenSheet(true)}
+                                    style={{
+                                      width: 20,
+                                      height: 20,
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      backgroundColor: "#EEE",
+                                    }}
+                                  >
+                                    <MaterialIcons
+                                      name={chartType === '' ? 'table-chart' : activeChart?.icon as any}
+                                      size={22}
+                                      color="#000"
+                                    />
+                                  </TouchableOpacity>
+                                </View>
+                              </View> */}
                             </View>
                             <View
                               style={{
@@ -2049,8 +2133,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                     ? 2
                                     : 4
                                   : isHorizontal
-                                  ? 1
-                                  : 2
+                                    ? 1
+                                    : 2
                               }
                               columnWrapperStyle={
                                 !isHorizontal ? styles.columnWrapper : undefined
@@ -2641,6 +2725,100 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         message={aiMessage}
         onClose={() => setVisibleAI(false)}
       />
+      <Modal
+        visible={openSheet}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setOpenSheet(false)}
+      >
+        <TouchableWithoutFeedback
+          onPress={() => setOpenSheet(false)}
+        >
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0,0,0,0.3)",
+              justifyContent: "flex-end",
+            }}
+          >
+            <TouchableWithoutFeedback>
+              <View
+                style={{
+                  backgroundColor: "#FFF",
+                  borderTopLeftRadius: 24,
+                  borderTopRightRadius: 24,
+                  padding: 20,
+                  maxHeight: "60%",
+                }}
+              >
+                <View
+                  style={{
+                    width: 50,
+                    height: 5,
+                    backgroundColor: "#CCC",
+                    borderRadius: 10,
+                    alignSelf: "center",
+                    marginBottom: 20,
+                  }}
+                />
+
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "600",
+                    marginBottom: 20,
+                  }}
+                >
+                  Select Chart Type
+                </Text>
+
+                {CHART_TYPES.map((item) => {
+                  const active = chartType === item.type;
+
+                  return (
+                    <TouchableOpacity
+                      key={item.type}
+                      onPress={() => {
+                        setChartType(item.type);
+                        setOpenSheet(false);
+                      }}
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        paddingVertical: 8,
+                        paddingHorizontal: 8,
+                        borderRadius: 4,
+                        backgroundColor: active
+                          ? "#F2F2F2"
+                          : "#FFF",
+                        marginBottom: 2,
+                      }}
+                    >
+                      <MaterialIcons
+                        name={item.icon}
+                        size={22}
+                        color="#000"
+                      />
+
+                      <Text
+                        style={{
+                          flex: 1,
+                          marginLeft: 14,
+                          fontSize: 15,
+                          fontWeight: "500",
+                        }}
+                      >
+                        {item.type}
+                      </Text>
+
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </ScrollView>
   );
 };

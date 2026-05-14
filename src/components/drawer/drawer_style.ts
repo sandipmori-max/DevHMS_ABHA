@@ -51,12 +51,12 @@ export const styles = StyleSheet.create({
   },
   itemLabel: {
     marginLeft: 12,
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 14, 
   },
   activeText: {
     color: ERP_COLOR_CODE.ERP_007AFF,
     fontWeight: 'bold',
+     fontSize: 16,
   },
   drawerItem: {
     borderRadius: 8,

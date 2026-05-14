@@ -433,6 +433,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
             {t("account.addAccount")}
           </Text>
         </View>
+        <View style={{height: 34}}></View>
         {isLandscape ? (
           <>
             <View style={{ flexDirection: "row" }}>

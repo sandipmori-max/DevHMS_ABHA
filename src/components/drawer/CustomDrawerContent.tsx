@@ -966,7 +966,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                               : "gray"
                             : isActive
                             ? "#FFF"
-                            : "#000"
+                            : "gray"
                         }
                       />
                       <TranslatedText

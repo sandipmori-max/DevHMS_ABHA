@@ -22,7 +22,7 @@ const ERPIcon: React.FC<ERPIconProps> = ({
       {isLoading ? (
         <ActivityIndicator color={ERP_COLOR_CODE.ERP_ICON} size={"small"} />
       ) : (
-        <MaterialIcons name={name} color={color} size={Platform.OS === 'android' ? extSize - 4 : extSize} />
+        <MaterialIcons name={name} color={color} size={Platform.OS === 'android' ? extSize - 2 : extSize} />
       )}
     </TouchableOpacity>
   );

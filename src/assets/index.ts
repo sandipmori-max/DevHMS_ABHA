@@ -12,6 +12,7 @@ const ACTIVE_REPORT = require(`${ERP_BASE_URL_ICONS}/active_report.png`);
 const AUTH = require(`${ERP_BASE_URL_ICONS}/auth.png`);
 const ACTIVE_AUTH = require(`${ERP_BASE_URL_ICONS}/active_auth.png`);
 const PROFILE = require(`${ERP_BASE_URL_ICONS}/user.png`);
+const PROFILE1 = require(`${ERP_BASE_URL_ICONS}/uuser.png`);
 const ACTIVE_PROFILE = require(`${ERP_BASE_URL_ICONS}/active_user.png`);
 const BACK = require(`${ERP_BASE_URL_ICONS}/back.png`);
 const ERROR_ICON = require(`${ERP_BASE_URL_ICONS}/error.png`);
@@ -50,6 +51,7 @@ export const ERP_ICON = {
   ERROR_ICON,
   ALERT,
   EXITS,
+  PROFILE1,
   VALIDATON
  };
 

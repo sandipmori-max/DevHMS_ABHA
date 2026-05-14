@@ -4,6 +4,7 @@ import WebView from 'react-native-webview';
 import RenderHTML from 'react-native-render-html';
 import { useAppSelector } from '../../../../store/hooks';
 import FontAwesome from '@react-native-vector-icons/fontawesome';
+import DashboardChart from './DashboardChart';
 
 const AutoHeightWebView = ({
   html,
@@ -12,20 +13,24 @@ const AutoHeightWebView = ({
   isFromMenu,
   textColor,
   isFromListPage,
- }: {
+  isForChart,
+  chartType
+}: {
   html: string;
   isFromPage?: boolean;
   isHorizontal: any;
   isFromMenu: any;
   textColor: any;
   isFromListPage: any;
-   
+  isForChart: any;
+  chartType: any
+
 }) => {
   const [webViewHeight, setWebViewHeight] = useState(0);
   const { width, height } = useWindowDimensions();
   const webviewRef = useRef<WebView>(null);
   const theme = useAppSelector(state => state?.theme.mode);
-   const isLandscape = width > height;
+  const isLandscape = width > height;
   const isDark = theme === "dark";
 
   const BG = isDark ? "#000000" : "#FFFFFF";
@@ -33,8 +38,7 @@ const AutoHeightWebView = ({
   const BORDER = isDark ? "#444" : "#ccc";
   const TH_BG = isDark ? "#1A1A1A" : "#f1f1f1";
   const EVEN_ROW = isDark ? "#111" : "#fafafa";
- 
- 
+
 
   const defaultCSS = `
     <style>
@@ -55,7 +59,7 @@ const AutoHeightWebView = ({
       body > *:last-child { margin-bottom: 0 !important; }
       table {
         height: 100% !important;
-        width: ${isFromListPage ?  isLandscape ? '40%' : '89.8%' :  isFromPage ? '92%' : isLandscape ? '82%' :'88%'} !important;
+        width: ${isFromListPage ? isLandscape ? '40%' : '89.8%' : isFromPage ? '92%' : isLandscape ? '82%' : '88%'} !important;
         border-collapse: collapse !important;
         table-layout: fixed !important;
         word-break: break-word !important;
@@ -75,10 +79,10 @@ const AutoHeightWebView = ({
     </style>
   `;
 
- 
+
   const cleanedHTML = html
-  .replace(/<h[1-6]>\s*<table/gi, "<table")
-  .replace(/<\/table>\s*<\/h[1-6]>/gi, "</table>");
+    .replace(/<h[1-6]>\s*<table/gi, "<table")
+    .replace(/<\/table>\s*<\/h[1-6]>/gi, "</table>");
 
   console.log("Cleaned HTML:", cleanedHTML);
   const formattedHTML = `
@@ -92,8 +96,8 @@ const AutoHeightWebView = ({
       </head>
       <body>${cleanedHTML}</body>
     </html>
-  `; 
-  
+  `;
+
   const injectedJS = `
     (function() {
       function sendHeight() {
@@ -116,63 +120,75 @@ const AutoHeightWebView = ({
 
 
   const renderers = {
-  i: ({ tnode }) => {
-    const className = tnode?.domNode?.attribs?.class || "";
-    const match = className.match(/fa fa-([a-z-]+)/);
+    i: ({ tnode }) => {
+      const className = tnode?.domNode?.attribs?.class || "";
+      const match = className.match(/fa fa-([a-z-]+)/);
 
-    if (match) {
-      const iconName = match[1];
+      if (match) {
+        const iconName = match[1];
 
-      return (
-         <FontAwesome
-          name={iconName}
-          size={20}
-          color={iconName.includes("down") ? "red" : "green"}
-          style={{ marginHorizontal: 4 }}
-        />
-      );
-    }
+        return (
+          <FontAwesome
+            name={iconName}
+            size={20}
+            color={iconName.includes("down") ? "red" : "green"}
+            style={{ marginHorizontal: 4 }}
+          />
+        );
+      }
 
-    return null;
-  },
-};
+      return null;
+    },
+  };
 
 
   return (
     <View
       style={{
         overflow: 'hidden',
-        width:  isLandscape ?  width - 150 : width - 40,
+        width: isLandscape ? width - 150 : width - 40,
         backgroundColor: BG,
-        marginVertical:4
+        marginVertical: 4
       }}
     >
       {html.includes('<table ') ? (
-        <WebView
-          ref={webviewRef}
-          source={{ html: formattedHTML }}
-          style={{ width, 
-            height: webViewHeight || 1,
-            backgroundColor: BG 
-          }}
-          injectedJavaScript={injectedJS}
-          onMessage={event => {
-            const height = Number(event.nativeEvent.data);
-            if (!isNaN(height) && height > 0) {
-              setWebViewHeight(height);
-            }
-          }}
-          scrollEnabled={false}
-          originWhitelist={['*']}
-        />
+        <>
+          {
+            isForChart ? <>
+              <DashboardChart
+
+                isForChart={isForChart}
+                chartType={chartType}
+                html={cleanedHTML} />
+            </> : <WebView
+              ref={webviewRef}
+              source={{ html: formattedHTML }}
+              style={{
+                width,
+                height: webViewHeight || 1,
+                backgroundColor: BG
+              }}
+              injectedJavaScript={injectedJS}
+              onMessage={event => {
+                const height = Number(event.nativeEvent.data);
+                if (!isNaN(height) && height > 0) {
+                  setWebViewHeight(height);
+                }
+              }}
+              scrollEnabled={false}
+              originWhitelist={['*']}
+            />
+          }
+        </>
+
       ) : (
         <RenderHTML
-          contentWidth={width }
+          contentWidth={width}
           source={{ html }}
-            baseStyle={{  
-              borderRadius: 6, 
-              width: isLandscape ? width / 5.5 : isFromMenu ? '80%' : isHorizontal ? '100%' : width / 2.5,
-            }}
+          baseStyle={{
+            borderRadius: 6,
+            width: isLandscape ? width / 5.5 : isFromMenu ? '80%' : isHorizontal ? '100%' : width / 2.5,
+          }}
           tagsStyles={{
             p: {
               flexDirection: 'row',
@@ -202,8 +218,9 @@ const AutoHeightWebView = ({
               color: isFromMenu ? textColor : TEXT,
             },
           }}
-           renderers={renderers}
+          renderers={renderers}
         />
+
       )}
     </View>
   );

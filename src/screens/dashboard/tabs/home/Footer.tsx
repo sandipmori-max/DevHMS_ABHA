@@ -223,6 +223,8 @@ const Footer = ({
   isFromMenu,
   textColor,
   isFromListPage,
+  isForChart,
+  chartType
 }: any) => {
   const isHTML = typeof footer === "string" && /<[^>]+>/.test(footer);
   const isMarquee = footer.includes("<marquee");
@@ -238,6 +240,8 @@ const Footer = ({
         isFromMenu={isFromMenu}
         isFromPage={false}
         html={footer}
+        isForChart={isForChart}
+        chartType={chartType}
       />
     );
   } else {

@@ -240,7 +240,7 @@ const ListScreen = () => {
             />
           )}
           {
-             isLandscape && !isFromAlertCard && <ERPIcon
+            !isFromAlertCard && user?.id == "113" && <ERPIcon
               name={isTableView ? 'list' : 'apps'}
               onPress={() => {
                 setIsTableView(!isTableView);
@@ -1148,7 +1148,7 @@ const ListScreen = () => {
             <>
              {/* <AppMapView /> */}
               {
-                isLandscape && isTableView ? <>
+                isTableView ? <>
                 <TableView
                   handleDeleteNotification={handleDeleteNotification}
                   isFromAlertCard={isFromAlertCard}
