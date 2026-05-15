@@ -781,7 +781,7 @@ const Media = ({
             style={[
               styles.editBtn,
               isLandscape && {
-                   left: Dimensions.get("screen").width / 2.19,
+                   left: 206,
               },
               theme === "dark" && {
                 borderWidth: 1,

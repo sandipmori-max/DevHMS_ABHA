@@ -728,8 +728,7 @@ const openCameraV2 = (
                           }}
                         >
                           <View>
-                            {Platform.OS === "ios" ? (
-                              <SlideButtonIOS
+                            <SlideButtonIOS
                                 label={
                                   resData?.success === 1 ||
                                   resData?.success === "1"
@@ -755,35 +754,6 @@ const openCameraV2 = (
                                   );
                                 }}
                               />
-                            ) : (
-                              <SlideButton
-                                label={
-                                  resData?.success === 1 ||
-                                  resData?.success === "1"
-                                    ? `${t("text.text3")} ${t(
-                                        "attendance.checkOut",
-                                      )}`
-                                    : `${t("text.text3")} ${t(
-                                        "attendance.checkIn",
-                                      )}`
-                                }
-                                successColor={
-                                  resData?.success === 1 ||
-                                  resData?.success === "1"
-                                    ? ERP_COLOR_CODE.ERP_ERROR
-                                    : ERP_COLOR_CODE.ERP_APP_COLOR
-                                }
-                                loading={locationLoading}
-                                completed={attendanceDone}
-                                blocked={blocked}
-                                onSlideSuccess={() => {
-                                  handleStatusToggle(
-                                    setFieldValue,
-                                    handleSubmit,
-                                  );
-                                }}
-                              />
-                            )}
                           </View>
                         </Animated.View>
                       </View>

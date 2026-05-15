@@ -83,7 +83,7 @@ const SlideButton: React.FC<SlideButtonProps> = ({
       },
        isLandscape
             ? {
-                width: SLIDE_WIDTH * 0.4,
+                width: (SLIDE_WIDTH / 2.4)  ,
               }
             : {
                 width: SLIDE_WIDTH ,

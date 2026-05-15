@@ -206,7 +206,7 @@ const PageScreen = () => {
   useFocusEffect(
     useCallback(() => {
       setTapLoader(false);
-      return () => {};
+      return () => { };
     }, [navigation]),
   );
 
@@ -377,12 +377,12 @@ const PageScreen = () => {
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-           
+
       },
- 
+
       headerBackTitle: "",
       headerTintColor: "#fff",
-       headerTitleAlign: "left",
+      headerTitleAlign: "left",
       headerTitle: () => (
         <View
           style={{ flexDirection: "row", alignItems: "center", maxWidth: 210 }}
@@ -397,21 +397,21 @@ const PageScreen = () => {
             }}
             text={title || pageTitle || "Details"}
           ></TranslatedText>
-          
-            <TranslatedText
-              numberOfLines={1}
-              style={{
-                fontSize: 18,
-                fontWeight: "700",
-                color: ERP_COLOR_CODE.ERP_WHITE,
-                marginLeft: 4,
-              }}
-              text={
-                isFromNew
-                  ? `- ( ${t("text.text44")} )`
-                  : `- ( ${t("text.text45")} )`
-              }
-            ></TranslatedText> 
+
+          <TranslatedText
+            numberOfLines={1}
+            style={{
+              fontSize: 18,
+              fontWeight: "700",
+              color: ERP_COLOR_CODE.ERP_WHITE,
+              marginLeft: 4,
+            }}
+            text={
+              isFromNew
+                ? `- ( ${t("text.text44")} )`
+                : `- ( ${t("text.text45")} )`
+            }
+          ></TranslatedText>
         </View>
       ),
       headerRight: () => (
@@ -563,7 +563,7 @@ const PageScreen = () => {
                       setLoader(false);
                       setIsValidate(false);
                       try {
-                       await dispatch(getERPAppConfigMenuThunk());
+                        await dispatch(getERPAppConfigMenuThunk());
                       } catch (error) {
                         dispatch(updateAppMenuList([])); // Clear menu on error
                         console.log("Error fetching app config menu:", error);
@@ -1532,8 +1532,8 @@ const PageScreen = () => {
             label={item?.fieldtitle}
             onScanResult={(files, val) => {
               setFormValues((prev) => {
-              return { ...prev, [val]: files };
-            });
+                return { ...prev, [val]: files };
+              });
             }}
             errors={errors}
           />
@@ -1702,7 +1702,7 @@ const PageScreen = () => {
             errors={errors}
             value={value}
             showDatePicker={showDatePicker}
-            // setValue={setValue}
+          // setValue={setValue}
           />
         );
       }
@@ -1726,12 +1726,11 @@ const PageScreen = () => {
             isFromChild={isFromChild}
             id={item?.fieldtitle}
             isValidate={isValidate}
-            onFocus={() =>
-             {
-              if(!isLandscape){
-                 flatListRef.current?.scrollToIndex({ index, animated: true })
+            onFocus={() => {
+              if (!isLandscape) {
+                flatListRef.current?.scrollToIndex({ index, animated: true })
               }
-             }
+            }
             }
             item={item}
             errors={errors}
@@ -1755,7 +1754,7 @@ const PageScreen = () => {
               <Animated.View
                 entering={FadeInUp.delay(index * 70).springify()}
                 layout={Layout.springify()}
-                style={[ 
+                style={[
                   isLandscape && {
                     width: "100%",
                     flex: 1,
@@ -2023,24 +2022,24 @@ const PageScreen = () => {
                     contentContainerStyle={{ paddingBottom: keyboardHeight }}
                     keyboardShouldPersistTaps="handled"
                     numColumns={isLandscape ? 2 : 1}
-                    //  ListFooterComponent={() => {
-                    //   return (
-                    //     <ScrollView>
-                    //       {sections.map((section) => (
-                    //         <DynamicTable
-                    //           key={section.key}
-                    //           sectionKey={section.key}
-                    //           template={section.template}
-                    //           buttons={section.buttons}
-                    //           allData={allData}
-                    //           setAllData={setAllData}
-                    //           renderItem={renderItem}
-                    //         />
-                    //       ))}
-                    //     </ScrollView>
+                  //  ListFooterComponent={() => {
+                  //   return (
+                  //     <ScrollView>
+                  //       {sections.map((section) => (
+                  //         <DynamicTable
+                  //           key={section.key}
+                  //           sectionKey={section.key}
+                  //           template={section.template}
+                  //           buttons={section.buttons}
+                  //           allData={allData}
+                  //           setAllData={setAllData}
+                  //           renderItem={renderItem}
+                  //         />
+                  //       ))}
+                  //     </ScrollView>
 
-                    //   );
-                    // }}
+                  //   );
+                  // }}
                   />{" "}
                 </>
               ) : (
@@ -2067,7 +2066,8 @@ const PageScreen = () => {
                             key={colIndex}
                             style={{
                               flex: 1,
-                              marginHorizontal: 2}}
+                              marginHorizontal: 2
+                            }}
                           >
                             {renderItem({
                               item: col,
@@ -2082,28 +2082,28 @@ const PageScreen = () => {
                   contentContainerStyle={{ paddingBottom: keyboardHeight }}
                   keyboardShouldPersistTaps="handled"
                   numColumns={isLandscape ? 2 : 1}
-                  // ListFooterComponent={() => {
-                  //   return (
-                  //     <ScrollView>
-                  //       {sections.map((section) => (
-                  //         <DynamicTable
-                  //           key={section.key}
-                  //           sectionKey={section.key}
-                  //           template={section.template}
-                  //           buttons={section.buttons}
-                  //           allData={allData}
-                  //           setAllData={setAllData}
-                  //           renderItem={renderItem}
-                  //         />
-                  //       ))}
-                  //     </ScrollView>
-                  //   );
-                  // }}
+                // ListFooterComponent={() => {
+                //   return (
+                //     <ScrollView>
+                //       {sections.map((section) => (
+                //         <DynamicTable
+                //           key={section.key}
+                //           sectionKey={section.key}
+                //           template={section.template}
+                //           buttons={section.buttons}
+                //           allData={allData}
+                //           setAllData={setAllData}
+                //           renderItem={renderItem}
+                //         />
+                //       ))}
+                //     </ScrollView>
+                //   );
+                // }}
                 />
               )}
             </View>
 
-            
+
             {loader && (
               <View
                 style={{
@@ -2162,6 +2162,10 @@ const PageScreen = () => {
             onCancel={hideDateTimePicker}
             cancelTextIOS="Cancel"
             confirmTextIOS="Done"
+            modalPropsIOS={{
+              supportedOrientations: ["portrait", "landscape"],
+            }}
+
           />
         )}
 
@@ -2176,6 +2180,10 @@ const PageScreen = () => {
             is24Hour={false}
             cancelTextIOS="Cancel"
             confirmTextIOS="Done"
+            modalPropsIOS={{
+              supportedOrientations: ["portrait", "landscape"],
+            }}
+
           />
         )}
 
@@ -2215,7 +2223,7 @@ const PageScreen = () => {
           message={alertConfig.message}
           type={alertConfig.type}
           onClose={() => {
-             console.log("Alert closed 22222222222222222");
+            console.log("Alert closed 22222222222222222");
             setTapLoader(false);
             setAlertVisible(false);
             if (goBack) {

@@ -40,9 +40,13 @@ const MarqueeFooterV2 = ({ html }: any) => {
   );
 };
 
-const STORAGE_KEY = "BIRTHDAY_MODAL_DATA1";
+
 
 const MarqueeFooter = ({ html }: any) => {
+const STORAGE_KEY = "BIRTHDAY_MODAL_DATA";
+   const { user, attendanceDone: isAttendanceDone, attendanceSecurityLevel } = useAppSelector(
+      (state) => state?.auth,
+    );
   const theme = useAppSelector((state) => state?.theme.mode);
   const [visible, setVisible] = useState(false);
 
@@ -81,9 +85,10 @@ const MarqueeFooter = ({ html }: any) => {
 
           const isSameDate = parsed.date === today;
           const isSameUsers = parsed.usersKey === usersKey;
+           const isSameLoggedInUser = parsed.user.id === user?.id;
 
-          // ❌ same day + same users → don't show
-          if (isSameDate && isSameUsers) return;
+          // ❌ same day + same users + same isSameLoggedInUser → don't show
+          if (isSameDate && isSameUsers && isSameLoggedInUser) return;
         }
 
         // ✅ Show modal
@@ -108,6 +113,7 @@ const MarqueeFooter = ({ html }: any) => {
           JSON.stringify({
             date: today,
             usersKey: usersKey,
+            user: user
           })
         );
       } catch (e) {
@@ -141,7 +147,9 @@ const MarqueeFooter = ({ html }: any) => {
       {/* Modal */}
       <Modal transparent visible={visible} animationType="none">
         <View style={styles.overlay}>
-          <Pressable style={StyleSheet.absoluteFill} onPress={closeModal} />
+          <Pressable style={StyleSheet.absoluteFill} onPress={()=>{
+
+          }} />
 
           <Animated.View
             style={[

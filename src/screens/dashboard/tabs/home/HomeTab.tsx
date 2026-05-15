@@ -532,7 +532,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
       const timer = setTimeout(() => {
         dispatch(setDashboardLoading(false));
-      }, 1000);
+      }, 2000);
       return () => clearTimeout(timer);
     } catch (error) {
       console.log("Error during refresh:", error);
@@ -865,7 +865,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
           if (isMounted) {
             setTimeout(() => {
               dispatch(setDashboardLoading(false));
-            }, 1000);
+            }, 2000);
           }
         }
       };
