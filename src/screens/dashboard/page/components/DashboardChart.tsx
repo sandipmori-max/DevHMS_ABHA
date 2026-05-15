@@ -33,7 +33,7 @@ const COLORS = [
 ];
 
 
-const DashboardChart = ({ html, isForChart , chartType}: Props) => {
+const DashboardChart = ({ html, isForChart, chartType }: Props) => {
 
 
     const parsedData = useMemo(() => {
@@ -117,10 +117,7 @@ const DashboardChart = ({ html, isForChart , chartType}: Props) => {
             case "BarChart":
                 return (
                     <View
-                        style={{
-                            paddingTop: 20,
-                            paddingRight: 20,
-                        }}
+
                     >
                         <BarChart
                             stackData={barData}
@@ -152,41 +149,43 @@ const DashboardChart = ({ html, isForChart , chartType}: Props) => {
             case "LineChart":
                 return (
                     <View
-                        style={{
-                            paddingTop: 20,
-                            paddingRight: 20,
-                        }}
+                        style={{ flexDirection: 'row' }}
                     >
-                        <LineChart
-                            areaChart
-                            curved
-                            thickness={3}
-                            startFillColor={COLORS[0]}
-                            endFillColor={COLORS[0]}
-                            startOpacity={0.25}
-                            endOpacity={0.02}
-                            data={lineDataSets[0]?.data || []}
-                            data2={lineDataSets[1]?.data}
-                            data3={lineDataSets[2]?.data}
-                            data4={lineDataSets[3]?.data}
-                            color1={lineDataSets[0]?.color}
-                            color2={lineDataSets[1]?.color}
-                            color3={lineDataSets[2]?.color}
-                            color4={lineDataSets[3]?.color}
-                            maxValue={maxValue}
-                            spacing={55}
-                            initialSpacing={10}
-                            isAnimated
-                            height={240}
-                            hideRules={false}
-                            yAxisThickness={1}
-                            xAxisThickness={1}
-                            dataPointsHeight={8}
-                            dataPointsWidth={8}
-                            dataPointsRadius={4}
-                            textColor1="#000"
-                            textShiftY={-8}
-                        />
+                        <View style={{
+                            width: "100%",
+
+                        }}>
+                            <LineChart
+                                areaChart
+                                curved
+                                thickness={3}
+                                startFillColor={COLORS[0]}
+                                endFillColor={COLORS[0]}
+                                startOpacity={0.25}
+                                endOpacity={0.02}
+                                data={lineDataSets[0]?.data || []}
+                                data2={lineDataSets[1]?.data}
+                                data3={lineDataSets[2]?.data}
+                                data4={lineDataSets[3]?.data}
+                                color1={lineDataSets[0]?.color}
+                                color2={lineDataSets[1]?.color}
+                                color3={lineDataSets[2]?.color}
+                                color4={lineDataSets[3]?.color}
+                                maxValue={maxValue}
+                                spacing={110}
+                                initialSpacing={10}
+                                isAnimated
+                                height={240}
+                                hideRules={false}
+                                yAxisThickness={1}
+                                xAxisThickness={1}
+                                dataPointsHeight={8}
+                                dataPointsWidth={8}
+                                dataPointsRadius={4}
+                                textColor1="#000"
+                                textShiftY={8}
+                            />
+                        </View>
                     </View>
                 );
 
@@ -208,6 +207,7 @@ const DashboardChart = ({ html, isForChart , chartType}: Props) => {
                         >
                             <View style={{
                                 width: "50%",
+                                left: -12
                             }}>
                                 <PieChart
                                     data={pieData}
@@ -224,6 +224,9 @@ const DashboardChart = ({ html, isForChart , chartType}: Props) => {
                             <View
                                 style={{
                                     width: "50%",
+                                    justifyContent: 'center',
+                                    alignContent: 'center',
+                                    alignItems: 'center'
                                 }}
                             >
                                 {pieData.map((item, index) => {
@@ -239,9 +242,9 @@ const DashboardChart = ({ html, isForChart , chartType}: Props) => {
                                                 flexDirection: "row",
                                                 alignItems: "center",
                                                 backgroundColor: "#F7F7F7",
-                                                borderRadius: 1,
-                                                marginBottom: 12,
-                                                paddingHorizontal: 12,
+                                                borderRadius: 4,
+                                                padding: 8,
+                                                marginVertical: 2
                                             }}
                                         >
                                             {/* Color Dot */}
@@ -303,8 +306,7 @@ const DashboardChart = ({ html, isForChart , chartType}: Props) => {
                 return (
                     <View
                         style={{
-                            paddingTop: 20,
-                            paddingRight: 20,
+                            left: -20,
                         }}
                     >
                         <PopulationPyramid
@@ -327,7 +329,6 @@ const DashboardChart = ({ html, isForChart , chartType}: Props) => {
                 return (
                     <View
                         style={{
-                            paddingTop: 10,
                             alignItems: "center",
                             justifyContent: "center",
                         }}

@@ -179,6 +179,10 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       type: "BubbleChart",
       icon: "bubble-chart",
     },
+    {
+      type: "Default",
+      icon: "autorenew",
+    },
   ];
 
   const activeChart = CHART_TYPES.find(
@@ -385,14 +389,14 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                 }}
               />
             )}
-           
-              <ERPIcon
-                name={!showFull ? "more-vert" : "close"}
-                onPress={() => {
-                  setIsFilterVisible(false);
-                  setShowFull(!showFull);
-                }}
-              />
+
+            <ERPIcon
+              name={!showFull ? "more-vert" : "close"}
+              onPress={() => {
+                setIsFilterVisible(false);
+                setShowFull(!showFull);
+              }}
+            />
           </View>
         ),
       headerLeft: () => (
@@ -2055,8 +2059,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                   Dashboard
                                 </Text>
                               </View>
-
-                              {/* <View>
+                                  {/* {
+                                    !isLandscape &&  <View>
                                 <View
                                   style={{
                                     flexDirection: "row",
@@ -2066,8 +2070,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                   <TouchableOpacity
                                     onPress={() => setOpenSheet(true)}
                                     style={{
-                                      width: 20,
-                                      height: 20,
+                                      width: 18,
+                                      height: 18,
                                       justifyContent: "center",
                                       alignItems: "center",
                                       backgroundColor: "#EEE",
@@ -2075,12 +2079,14 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                   >
                                     <MaterialIcons
                                       name={chartType === '' ? 'table-chart' : activeChart?.icon as any}
-                                      size={22}
+                                      size={16}
                                       color="#000"
                                     />
                                   </TouchableOpacity>
                                 </View>
-                              </View> */}
+                              </View>
+                                  } */}
+                             
                             </View>
                             <View
                               style={{
@@ -2779,8 +2785,14 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                     <TouchableOpacity
                       key={item.type}
                       onPress={() => {
-                        setChartType(item.type);
-                        setOpenSheet(false);
+                        if (item?.type === 'Default') {
+                          setChartType('');
+                          setOpenSheet(false);
+                        } else {
+                          setChartType(item.type);
+                          setOpenSheet(false);
+                        }
+
                       }}
                       style={{
                         flexDirection: "row",

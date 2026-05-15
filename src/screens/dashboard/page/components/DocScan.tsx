@@ -275,6 +275,7 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
     width: "100%",
     backgroundColor: "#f8f9ff",
+    marginBottom: 8,
   },
   singleCard: {
     width: Dimensions.get("window").width - 29,
