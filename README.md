@@ -7067,3 +7067,6 @@ file upload - file selection -
 video recorder
 qr/bar code scan
 buissness card reader - camera + doc scan + gallery
+
+
+date picker - ios side - update

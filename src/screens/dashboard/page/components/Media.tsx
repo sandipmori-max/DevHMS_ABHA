@@ -780,6 +780,9 @@ const Media = ({
             onPress={handleChooseImage}
             style={[
               styles.editBtn,
+              isLandscape && {
+                   left: Dimensions.get("screen").width / 2.19,
+              },
               theme === "dark" && {
                 borderWidth: 1,
                 borderColor: "white",

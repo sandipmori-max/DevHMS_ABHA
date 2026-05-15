@@ -269,7 +269,7 @@ const openCameraV2 = (
     if (locationLoading) return;
 
     const hasPermission = await requestCameraAndLocationPermission();
-await new Promise(res => setTimeout(res, 400));
+      await new Promise(res => setTimeout(res, 400));
     if (!hasPermission) {
       pendingCameraAction.current = { setFieldValue, handleSubmit };
       setAlertConfig({
@@ -297,7 +297,7 @@ await new Promise(res => setTimeout(res, 400));
 
         console.log('res++++++++++++++++++++++++++++++', res);
         let { latitude, longitude, accuracy } = res;
-
+        
         // 🎯 Accuracy check (optional but recommended)
         if (accuracy && accuracy > 150) {
           throw new Error('Low accuracy location');

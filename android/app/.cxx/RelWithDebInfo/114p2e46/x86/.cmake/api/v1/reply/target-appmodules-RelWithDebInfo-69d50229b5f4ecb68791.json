@@ -423,6 +423,18 @@
 		},
 		{
 			"backtrace" : 4,
+			"id" : "react_codegen_rnasyncstorage::@1596841e19ec5b9eeffe"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNDateTimePickerCGen::@59b70ddc31ba2f8ef1d2"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNCGeolocationSpec::@1b959fcb56e23f7716ba"
+		},
+		{
+			"backtrace" : 4,
 			"id" : "react_codegen_RNCNetInfoSpec::@c36c96bfd5b5770618a5"
 		},
 		{
@@ -460,18 +472,6 @@
 		{
 			"backtrace" : 4,
 			"id" : "react_codegen_RNPermissionsSpec::@7ad697819b753921c957"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_rnasyncstorage::@1596841e19ec5b9eeffe"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_RNDateTimePickerCGen::@59b70ddc31ba2f8ef1d2"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_RNCGeolocationSpec::@1b959fcb56e23f7716ba"
 		},
 		{
 			"backtrace" : 4,

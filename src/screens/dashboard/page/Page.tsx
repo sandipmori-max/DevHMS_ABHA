@@ -1727,7 +1727,11 @@ const PageScreen = () => {
             id={item?.fieldtitle}
             isValidate={isValidate}
             onFocus={() =>
-              flatListRef.current?.scrollToIndex({ index, animated: true })
+             {
+              if(!isLandscape){
+                 flatListRef.current?.scrollToIndex({ index, animated: true })
+              }
+             }
             }
             item={item}
             errors={errors}
