@@ -14,7 +14,8 @@ const AutoHeightWebView = ({
   textColor,
   isFromListPage,
   isForChart,
-  chartType
+  chartType,
+  accentColors
 }: {
   html: string;
   isFromPage?: boolean;
@@ -23,7 +24,8 @@ const AutoHeightWebView = ({
   textColor: any;
   isFromListPage: any;
   isForChart: any;
-  chartType: any
+  chartType: any;
+  accentColors: any
 
 }) => {
   const [webViewHeight, setWebViewHeight] = useState(0);
@@ -119,6 +121,8 @@ const AutoHeightWebView = ({
   `;
 
 
+  
+
   const renderers = {
     i: ({ tnode }) => {
       const className = tnode?.domNode?.attribs?.class || "";
@@ -141,7 +145,16 @@ const AutoHeightWebView = ({
     },
   };
 
+  console.log("html", html)
+const cleanedHtml1 = html
+  // remove onclick
+  .replace(/onclick='[^']*'/gi, "")
 
+  // remove button completely
+  .replace(/<button[\s\S]*?<\/button>/gi, "")
+
+  // show hidden section
+  .replace(/display:none/gi, "display:block");
   return (
     <View
       style={{
@@ -156,7 +169,7 @@ const AutoHeightWebView = ({
           {
             isForChart ? <>
               <DashboardChart
-
+                accentColors={textColor}
                 isForChart={isForChart}
                 chartType={chartType}
                 html={cleanedHTML} />

@@ -134,7 +134,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                           style={{
                             width: 12,
                             height: 12,
-                            borderRadius: 8,
+                            borderRadius: 4,
                             backgroundColor: item.color,
                             marginRight: 6,
                             flexDirection: "row",
@@ -215,7 +215,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                             style={{
                               width: 12,
                               height: 12,
-                              borderRadius: 8,
+                              borderRadius: 4,
                               backgroundColor: item.color,
                               marginRight: 6,
                               flexDirection: "row",
@@ -280,7 +280,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                       style={{
                         width: 12,
                         height: 12,
-                        borderRadius: 8,
+                        borderRadius: 4,
                         backgroundColor: item.color,
                         marginRight: 6,
                         flexDirection: "row",

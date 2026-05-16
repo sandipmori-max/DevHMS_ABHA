@@ -2,6 +2,7 @@ import MaterialIcons from "@react-native-vector-icons/material-icons";
 import React, { useMemo, useState } from "react";
 import {
     Modal,
+    Platform,
     ScrollView,
     Text,
     TouchableOpacity,
@@ -16,26 +17,29 @@ import {
     PieChart,
     PopulationPyramid,
 } from "react-native-gifted-charts";
+import { ERP_COLOR_CODE } from "../../../../utils/constants";
 
 type Props = {
     html: string;
     chartType: any;
-    isForChart: any
+    isForChart: any;
+    accentColors: any
 };
 
-const COLORS = [
-    "#4CAF50",
-    "#2196F3",
-    "#FF9800",
-    "#9C27B0",
-    "#F44336",
-    "#009688",
-];
 
 
-const DashboardChart = ({ html, isForChart, chartType }: Props) => {
 
+const DashboardChart = ({ html, isForChart, chartType, accentColors }: Props) => {
 
+    console.log("accentColors----", accentColors)
+    const COLORS = [
+        "#4CAF50",
+        "#2196F3",
+        accentColors,
+        "#9C27B0",
+        "#F44336",
+        "#009688",
+    ];
     const parsedData = useMemo(() => {
         if (!html) return null;
 
@@ -117,19 +121,17 @@ const DashboardChart = ({ html, isForChart, chartType }: Props) => {
             case "BarChart":
                 return (
                     <View
-
                     >
                         <BarChart
                             stackData={barData}
-                            stacked={false}
-                            barWidth={20}
+                            barWidth={28}
                             spacing={28}
                             roundedTop
                             roundedBottom
                             noOfSections={5}
                             maxValue={maxValue}
                             isAnimated
-                            height={240}
+                            height={120}
                             hideRules={false}
                             xAxisThickness={1}
                             yAxisThickness={1}
@@ -138,7 +140,7 @@ const DashboardChart = ({ html, isForChart, chartType }: Props) => {
                                 fontSize: 11,
                             }}
                             xAxisLabelTextStyle={{
-                                color: "#777",
+                                color: ERP_COLOR_CODE.ERP_APP_COLOR,
                                 fontSize: 11,
                             }}
                             showGradient
@@ -207,18 +209,43 @@ const DashboardChart = ({ html, isForChart, chartType }: Props) => {
                         >
                             <View style={{
                                 width: "50%",
-                                left: -12
+                                left: Platform.OS === 'android' ? -14 : -12
                             }}>
                                 <PieChart
                                     data={pieData}
                                     donut
-                                    radius={80}
-                                    innerRadius={58}
+                                    radius={Platform.OS === 'android' ? 68 : 74}
+                                    innerRadius={Platform.OS === 'android' ? 52 : 60}
                                     innerCircleColor="#FFF"
                                     focusOnPress
                                     strokeColor="#FFF"
                                     strokeWidth={2}
                                     showText={false}
+                                    centerLabelComponent={() => (
+                                        <>
+                                            <Text
+                                                style={{
+                                                    textAlign: "center",
+                                                    fontSize: 14,
+                                                    color:
+                                                        'black'
+                                                }}
+                                            >
+                                                Total
+                                            </Text>
+                                            <Text
+                                                style={{
+                                                    textAlign: "center",
+                                                    fontSize: 14,
+                                                    fontWeight: "bold",
+                                                    color:
+                                                        'black'
+                                                }}
+                                            >
+                                                {totalValue}
+                                            </Text>
+                                        </>
+                                    )}
                                 />
                             </View>
                             <View
@@ -252,7 +279,7 @@ const DashboardChart = ({ html, isForChart, chartType }: Props) => {
                                                 style={{
                                                     width: 14,
                                                     height: 14,
-                                                    borderRadius: 7,
+                                                    borderRadius: 4,
                                                     backgroundColor: item.color,
                                                     marginRight: 12,
                                                 }}

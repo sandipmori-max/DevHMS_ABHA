@@ -263,6 +263,8 @@ export const styles = StyleSheet.create({
 
   searchContainer: {
     marginBottom: 0,
+    justifyContent:'space-between',
+    flexDirection:'row'
   },
   searchInputContainer: {
     flexDirection: 'row',
@@ -272,7 +274,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 12, 
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-    paddingVertical: 6,  
+    width: '89%'
   },
   searchIcon: {
     fontSize: 16,

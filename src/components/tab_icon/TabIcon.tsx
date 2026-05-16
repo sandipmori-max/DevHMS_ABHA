@@ -24,7 +24,6 @@ const TabIcon: React.FC<TabIconProps & { focused: boolean }> = ({
   const baseLink = useBaseLink();
 
   const [imageExists, setImageExists] = useState(true);
-
   return (
     <View style={styles.container}>
       {focused && (

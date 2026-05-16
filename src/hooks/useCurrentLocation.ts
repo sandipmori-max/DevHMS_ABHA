@@ -77,7 +77,7 @@
         setError("Location permission denied");
         return;
       }
-
+      await new Promise(res => setTimeout(res, 400));
       const res =
         await NativeModules.LocationModule.getCurrentLocation();
 

@@ -59,6 +59,7 @@ subtitle: {
     marginBottom: 8,
     textAlign: "center",
     fontFamily: "Handlee-Regular",
+    paddingHorizontal: 12
   },
   subtitle: {
     color: ERP_COLOR_CODE.ERP_BLACK,

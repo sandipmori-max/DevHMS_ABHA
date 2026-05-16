@@ -75,7 +75,13 @@ const STORAGE_KEY = "BIRTHDAY_MODAL_DATA";
   useEffect(() => {
     const checkModal = async () => {
       try {
-        const today = new Date().toISOString().split("T")[0];
+        const now = new Date();
+
+      const today = `${now.getFullYear()}-${String(
+        now.getMonth() + 1
+      ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
+      console.log("today", today)
         const usersKey = users.join(",");
 
         const stored = await AsyncStorage.getItem(STORAGE_KEY);
@@ -86,7 +92,7 @@ const STORAGE_KEY = "BIRTHDAY_MODAL_DATA";
           const isSameDate = parsed.date === today;
           const isSameUsers = parsed.usersKey === usersKey;
            const isSameLoggedInUser = parsed.user.id === user?.id;
-
+            console.log("sSameDate && isSameUsers && isSameLoggedInUser", isSameDate && isSameUsers && isSameLoggedInUser)
           // ❌ same day + same users + same isSameLoggedInUser → don't show
           if (isSameDate && isSameUsers && isSameLoggedInUser) return;
         }
@@ -250,6 +256,7 @@ const Footer = ({
         html={footer}
         isForChart={isForChart}
         chartType={chartType}
+        accentColors={accentColors}
       />
     );
   } else {

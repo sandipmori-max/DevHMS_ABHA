@@ -372,6 +372,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
               name="refresh"
               onPress={async () => {
                 refreshData();
+                setChartType("")
+                
               }}
               isLoading={isDashboardLoading}
             />
@@ -707,6 +709,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                     isFromListPage={undefined}
                     isForChart={chartType === '' ? false : true}
                     chartType={chartType}
+                    
                   />
                 </View>
               ) : (
@@ -2059,33 +2062,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                   Dashboard
                                 </Text>
                               </View>
-                                  {/* {
-                                    !isLandscape &&  <View>
-                                <View
-                                  style={{
-                                    flexDirection: "row",
-                                    justifyContent: "flex-end",
-                                  }}
-                                >
-                                  <TouchableOpacity
-                                    onPress={() => setOpenSheet(true)}
-                                    style={{
-                                      width: 18,
-                                      height: 18,
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                      backgroundColor: "#EEE",
-                                    }}
-                                  >
-                                    <MaterialIcons
-                                      name={chartType === '' ? 'table-chart' : activeChart?.icon as any}
-                                      size={16}
-                                      color="#000"
-                                    />
-                                  </TouchableOpacity>
-                                </View>
-                              </View>
-                                  } */}
+                                  
                              
                             </View>
                             <View

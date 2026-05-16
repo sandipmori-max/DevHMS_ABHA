@@ -155,7 +155,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
       <StatusBar hidden />
 
       {/* TOP LEFT SVG */}
-      <Animated.View
+      {/* <Animated.View
         style={{
           position: "absolute",
           top: 0,
@@ -171,7 +171,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
           height="100%"
           uri="https://res.cloudinary.com/dht4ddwtn/image/upload/v1741437043/Group_119_a7nurz.svg"
         />
-      </Animated.View>
+      </Animated.View> */}
 
       {/* TOP RIGHT SVG */}
       <Animated.View

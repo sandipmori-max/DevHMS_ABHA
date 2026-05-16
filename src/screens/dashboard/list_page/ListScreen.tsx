@@ -58,6 +58,8 @@ import { getDDLThunk } from "../../../store/slices/dropdown/thunk";
 import TableView from "./components/TableView";
 import AppMapView from "./components/AppMapView";
 import { HEADER_HEIGHT } from "../../../constants";
+import GroupFilterModal from "./components/GroupFilterModal";
+import SortingFilterModal from "./components/SortingFilterModal";
 
 const ListScreen = () => {
   const route = useRoute<RouteProp<ListRouteParams, "List">>();
@@ -84,6 +86,11 @@ const ListScreen = () => {
   const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false);
   const [isTableView, setIsTableView] = useState<boolean>(false);
   const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [sortConfig, setSortConfig] =
+    useState<{
+      key: string;
+      order: "asc" | "desc";
+    } | null>(null);
   const [alertVisible, setAlertVisible] = useState(false);
   const [actionLoaders, setActionLoader] = useState(false);
   const [parsedError, setParsedError] = useState<any>();
@@ -91,6 +98,29 @@ const ListScreen = () => {
   const [tapLoader, setTapLoader] = useState(false);
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
+  const [primaryGroupKey, setPrimaryGroupKey] =
+    useState("");
+
+  const [secondaryGroupKey, setSecondaryGroupKey] =
+    useState("");
+  const [groupModalVisible1, setGroupModalVisible1] =
+    useState(false);
+  const [groupModalVisible2, setGroupModalVisible2] =
+    useState(false);
+
+  const [sortingVisible, setSortingVisible] =
+    useState(false);
+  const [sortingKey, setSortingKey] =
+    useState("");
+
+  const availableKeys = Object.keys(
+    filteredData?.[0] || {},
+  ).filter(
+    (key) =>
+      key !== "id" &&
+      key !== "html" &&
+      !key.startsWith("btn_"),
+  );
   useEffect(() => {
     return () => {
       setTapLoader(false);
@@ -198,7 +228,7 @@ const ListScreen = () => {
       // dispatch(updateSelectedToDateState(""));
       // dispatch(updateSelectedBranchesState([]));
       setTapLoader(false);
-      return () => {};
+      return () => { };
     }, [navigation]),
   );
 
@@ -209,9 +239,9 @@ const ListScreen = () => {
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
         // borderBottomWidth: 1,
         borderBottomColor: "#fff",
-        
+
       },
- 
+
       headerBackTitle: "",
       headerTintColor: "#fff",
       headerTitleAlign: "left",
@@ -224,7 +254,7 @@ const ListScreen = () => {
             fontWeight: "700",
             color: theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_WHITE,
           }}
-          text={pageTitle || "List Data"}
+          text={!isLandscape && isTableView ? '' : pageTitle || "List Data"}
         ></TranslatedText>
       ),
       headerRight: () => (
@@ -240,10 +270,37 @@ const ListScreen = () => {
             />
           )}
           {
-            !isFromAlertCard && user?.id == "113" && <ERPIcon
+            !isFromAlertCard && <ERPIcon
               name={isTableView ? 'list' : 'apps'}
               onPress={() => {
                 setIsTableView(!isTableView);
+              }}
+            />
+          }
+
+          {
+            isTableView && <ERPIcon
+              name={'G1'}
+              onPress={() => {
+                setGroupModalVisible1(true)
+              }}
+            />
+          }
+          {
+            primaryGroupKey && isTableView && <ERPIcon
+              name={'G2'}
+              onPress={() => {
+                setGroupModalVisible2(true)
+              }}
+            />
+          }
+
+          {
+            isTableView && <ERPIcon
+              name={'add'}
+              onPress={() => {
+                setTapLoader(true);
+                handleItemPressed({}, pageParamsName, pageTitle);
               }}
             />
           }
@@ -255,6 +312,7 @@ const ListScreen = () => {
               }}
             />
           )}
+
         </>
       ),
     });
@@ -266,8 +324,61 @@ const ListScreen = () => {
     isTableView,
     actionLoaders,
     error,
-    isLandscape
+    isLandscape,
+    groupModalVisible1,
+    groupModalVisible2,
+    primaryGroupKey,
+    secondaryGroupKey
   ]);
+
+  const handleSort = (key: string) => {
+    let order: "asc" | "desc" = "asc";
+
+    // TOGGLE
+    if (
+      sortConfig?.key === key &&
+      sortConfig?.order === "asc"
+    ) {
+      order = "desc";
+    }
+
+    const sortedData = [...filteredData].sort(
+      (a: any, b: any) => {
+        const valueA = a?.[key];
+        const valueB = b?.[key];
+
+        // NULL SAFETY
+        if (valueA == null) return 1;
+        if (valueB == null) return -1;
+
+        // NUMBER SORT
+        if (
+          typeof valueA === "number" &&
+          typeof valueB === "number"
+        ) {
+          return order === "asc"
+            ? valueA - valueB
+            : valueB - valueA;
+        }
+
+        // STRING SORT
+        return order === "asc"
+          ? String(valueA).localeCompare(
+            String(valueB),
+          )
+          : String(valueB).localeCompare(
+            String(valueA),
+          );
+      },
+    );
+
+    setFilteredData(sortedData);
+
+    setSortConfig({
+      key,
+      order,
+    });
+  };
 
   const fetchPageData = async () => {
     try {
@@ -312,7 +423,7 @@ const ListScreen = () => {
   };
 
   useEffect(() => {
-    if(parsedConfig?.branchwise === 1 || parsedConfig?.branchwise === "1") {
+    if (parsedConfig?.branchwise === 1 || parsedConfig?.branchwise === "1") {
       fetchPageData();
     }
   }, [navigation, parsedConfig]);
@@ -391,9 +502,12 @@ const ListScreen = () => {
 
   const onRefresh = async () => {
     try {
-      setSearchQuery("");
+      setSearchQuery("")
+      setSortingKey("")
+      setPrimaryGroupKey("")
+      setSecondaryGroupKey("")
       getCurrentMonthRange();
-    } catch (e) {}
+    } catch (e) { }
   };
 
   const handleSearchChange = (text: string) => {
@@ -648,6 +762,8 @@ const ListScreen = () => {
     onRefresh();
   };
 
+
+
   if (parsedError) {
     return (
       <View
@@ -672,18 +788,38 @@ const ListScreen = () => {
         theme === "dark" && { backgroundColor: "black" },
       ]}
     >
-      {!isFilterVisible && (
-        <View
-          style={{
-            height: 4,
-            width: "100%",
-            backgroundColor:
-              theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-            borderBottomLeftRadius: 12,
-            borderBottomRightRadius: 12,
-          }}
-        ></View>
-      )}
+
+
+      {
+        !isLandscape && !isFilterVisible && isTableView && <View style={{
+          width: '100%',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+        }}>
+          <Text style={{
+            color: 'white',
+            paddingTop: 6,
+            paddingBottom: 8,
+            width: '60%',
+
+            fontSize: 16,
+            fontWeight: '700',
+            paddingLeft: 10,
+
+          }}>{pageTitle}</Text>
+
+          <Text style={{
+            color: 'white',
+            paddingTop: 6,
+            paddingBottom: 8,
+            paddingRight: 10,
+            fontSize: 16,
+            fontWeight: '700',
+            alignSelf: 'flex-end',
+          }}>Rows - {filteredData.length}</Text>
+        </View>
+      }
 
       {isFilterVisible && (
         <View
@@ -714,29 +850,57 @@ const ListScreen = () => {
                         name="search"
                         color={theme === "dark" ? "white" : "black"}
                       />
-                      <View style={{flex:1,
-                         justifyContent:'space-between', flexDirection:'row'}}>
+                      <View style={{
+                        flex: 1,
+                        justifyContent: 'space-between', flexDirection: 'row'
+                      }}>
                         <TextInput
-                        style={[
-                          styles.searchInput,
-                          theme === "dark" && {
-                            color: "white",
-                          },
-                        ]}
-                        placeholder={`Search in list...`}
-                        value={searchQuery}
-                        onChangeText={handleSearchChange}
-                        placeholderTextColor={ERP_COLOR_CODE.ERP_6C757D}
-                      />
-                      {searchQuery.length > 0 && (
-                        <TouchableOpacity
-                          onPress={clearSearch}
-                          style={styles.clearButton}
-                        >
-                          <Text style={styles.clearButtonText}>✕</Text>
-                        </TouchableOpacity>
-                      )}
+                          style={{
+                            flex: 1,
+                            backgroundColor: "#f0f0f0",
+                            borderRadius: 8,
+                            paddingHorizontal: 12,
+                            height: 36,
+                          }}
+                          placeholder={`Search in list...`}
+                          value={searchQuery}
+                          onChangeText={handleSearchChange}
+                          placeholderTextColor={ERP_COLOR_CODE.ERP_6C757D}
+                        />
+                        {searchQuery.length > 0 && (
+                          <TouchableOpacity
+                            onPress={clearSearch}
+                            style={styles.clearButton}
+                          >
+                            <Text style={styles.clearButtonText}>✕</Text>
+                          </TouchableOpacity>
+                        )}
                       </View>
+                    </View>
+                    <View style={{
+                      borderRadius: 2,
+                      justifyContent: 'center',
+                      alignContent: 'center',
+                      alignItems: 'center',
+                      height: 38, 
+                      width: 34,
+                      backgroundColor: 'white'
+                    }}>
+                      <ERPIcon
+                        name={
+                          sortingKey
+                            ? sortConfig?.order === "asc"
+                              ? "keyboard-double-arrow-down"
+                              : "keyboard-double-arrow-up"
+                            : "sort-by-alpha"
+                        }
+                        onPress={() => {
+                          setSortingVisible(true)
+                        }}
+
+                        color="black"
+                        isMenu={true}
+                      />
                     </View>
                   </View>
                 </View>
@@ -806,7 +970,7 @@ const ListScreen = () => {
                   )}
                 </View>
               </View>
-               {(parsedConfig?.branchwise === 1 ||
+              {(parsedConfig?.branchwise === 1 ||
                 parsedConfig?.branchwise === "1") &&
                 controls
                   .filter((x) => x.ctltype !== "DATE" && x.field !== "userid")
@@ -819,7 +983,7 @@ const ListScreen = () => {
                             isForceOpen={false}
                             isValidate={false}
                             label={item.title}
-                            selectedValue={() => {}}
+                            selectedValue={() => { }}
                             dtext={"Branch"}
                             onValueChange={(i) => {
                               console.log("i-------++++++++++++++++++++++++++++++----------", i);
@@ -856,6 +1020,36 @@ const ListScreen = () => {
             </>
           ) : (
             <>
+              {
+                isTableView && <View style={{
+                  width: '100%',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+                }}>
+                  <Text style={{
+                    color: 'white',
+                    paddingTop: 6,
+                    paddingBottom: 8,
+                    width: '60%',
+
+                    fontSize: 16,
+                    fontWeight: '700',
+                    paddingLeft: 10,
+
+                  }}>{pageTitle}</Text>
+
+                  <Text style={{
+                    color: 'white',
+                    paddingTop: 6,
+                    paddingBottom: 8,
+                    paddingRight: 10,
+                    fontSize: 16,
+                    fontWeight: '700',
+                    alignSelf: 'flex-end',
+                  }}>Rows - {filteredData.length}</Text>
+                </View>
+              }
               <View style={styles.searchContainer}>
                 <View
                   style={[
@@ -870,29 +1064,51 @@ const ListScreen = () => {
                     name="search"
                     color={theme === "dark" ? "white" : "black"}
                   />
-                  <View style={{flex:1, justifyContent:'space-between', flexDirection:'row'}}>
-<TextInput
-                    style={[
-                      styles.searchInput,
-                      theme === "dark" && {
-                        color: "white",
-                      },
-                    ]}
-                    placeholder={`Search in list...`}
-                    value={searchQuery}
-                    onChangeText={handleSearchChange}
-                    placeholderTextColor={ERP_COLOR_CODE.ERP_6C757D}
-                  />
-                  {searchQuery.length > 0 && (
-                    <TouchableOpacity
-                      onPress={clearSearch}
-                      style={styles.clearButton}
-                    >
-                      <Text style={styles.clearButtonText}>✕</Text>
-                    </TouchableOpacity>
-                  )}
+                  <View style={{ flex: 1, justifyContent: 'space-between', flexDirection: 'row' }}>
+                    <TextInput
+                      style={{
+                        borderRadius: 8,
+                        paddingHorizontal: 12,
+                        height: 36,
+                      }}
+                      placeholder={`Search in list...`}
+                      value={searchQuery}
+                      onChangeText={handleSearchChange}
+                      placeholderTextColor={ERP_COLOR_CODE.ERP_6C757D}
+                    />
+                    {searchQuery.length > 0 && (
+                      <TouchableOpacity
+                        onPress={clearSearch}
+                        style={styles.clearButton}
+                      >
+                        <Text style={styles.clearButtonText}>✕</Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
-                  
+
+                </View>
+                <View style={{
+                  borderRadius: 2,
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  alignItems: 'center',
+                  height: 38, width: 34,
+                  backgroundColor: 'white'
+                }}>
+                  <ERPIcon
+                    name={
+                      sortingKey
+                        ? sortConfig?.order === "asc"
+                          ? "keyboard-double-arrow-down"
+                          : "keyboard-double-arrow-up"
+                        : "sort-by-alpha"
+                    } onPress={() => {
+                      setSortingVisible(true)
+                    }}
+
+                    color="black"
+                    isMenu={true}
+                  />
                 </View>
               </View>
 
@@ -966,7 +1182,7 @@ const ListScreen = () => {
                             isForceOpen={false}
                             isValidate={false}
                             label={item.title}
-                            selectedValue={() => {}}
+                            selectedValue={() => { }}
                             dtext={"Branch"}
                             onValueChange={(i) => {
                               console.log("i-------++++++++++++++++++++++++++++++----------", i);
@@ -1003,115 +1219,115 @@ const ListScreen = () => {
             </>
           )}
 
-      
 
-           {showDatePicker?.show && Platform.OS === "ios" && (
-              <Modal
-                transparent
-                animationType="slide"
-                supportedOrientations={["portrait", "landscape"]}
-                statusBarTranslucent
+
+          {showDatePicker?.show && Platform.OS === "ios" && (
+            <Modal
+              transparent
+              animationType="slide"
+              supportedOrientations={["portrait", "landscape"]}
+              statusBarTranslucent
+            >
+              <View
+                style={[
+                  styles.overlay,
+                  isLandscape && {
+                    alignContent: "center",
+                    alignItems: "center",
+                    // justifyContent:'center'
+                  },
+                ]}
               >
                 <View
                   style={[
-                    styles.overlay,
-                    isLandscape && {
-                      alignContent: "center",
-                      alignItems: "center",
-                      // justifyContent:'center'
+                    styles.sheet,
+                    theme === "dark" && {
+                      borderWidth: 1,
+                      borderColor: "white",
+                    },
+                    {
+                      width: isLandscape ? "40%" : "100%",
                     },
                   ]}
                 >
-                  <View
-                    style={[
-                      styles.sheet,
-                      theme === "dark" && {
-                        borderWidth: 1,
-                        borderColor: "white",
-                      },
-                      {
-                        width: isLandscape ? "40%" : "100%",
-                      },
-                    ]}
-                  >
-                    {/* Divider */}
+                  {/* Divider */}
 
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        paddingHorizontal: 16,
-                        paddingVertical: 14,
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      paddingHorizontal: 16,
+                      paddingVertical: 14,
+                    }}
+                  >
+                    {/* Cancel */}
+                    <TouchableOpacity
+                      onPress={() => {
+                        setShowDatePicker(null);
                       }}
                     >
-                      {/* Cancel */}
-                      <TouchableOpacity
-                        onPress={() => {
-                          setShowDatePicker(null);
-                        }}
-                      >
-                        <MaterialIcons  name='close' size={24} color={ERP_COLOR_CODE.ERP_ERROR} />
-                      </TouchableOpacity>
+                      <MaterialIcons name='close' size={24} color={ERP_COLOR_CODE.ERP_ERROR} />
+                    </TouchableOpacity>
 
-                      {/* Title */}
-                      <Text
-                        style={{
-                          color: theme === "dark" ? "white" : "black",
-                          fontSize: 16,
-                          fontWeight: "600",
-                        }}
-                      >
-                        {t("text89")}
-                      </Text>
+                    {/* Title */}
+                    <Text
+                      style={{
+                        color: theme === "dark" ? "white" : "black",
+                        fontSize: 16,
+                        fontWeight: "600",
+                      }}
+                    >
+                      {t("text89")}
+                    </Text>
 
-                      {/* Done */}
-                      <TouchableOpacity
-                        onPress={() => {
-                          const formatted = formatDateForAPI(tempDate);
+                    {/* Done */}
+                    <TouchableOpacity
+                      onPress={() => {
+                        const formatted = formatDateForAPI(tempDate);
 
-                          if (showDatePicker.type === "from") {
-                              dispatch(updateSelectedFromDateState(formatted));
-                          } else {
-                             dispatch(updateSelectedToDateState(formatted));
-                          }
-                          setShowDatePicker(null);
-                        }}
-                      >
-                        <MaterialIcons  name='done' size={24} color={ERP_COLOR_CODE.ERP_green} />
-                      </TouchableOpacity>
-                    </View>
+                        if (showDatePicker.type === "from") {
+                          dispatch(updateSelectedFromDateState(formatted));
+                        } else {
+                          dispatch(updateSelectedToDateState(formatted));
+                        }
+                        setShowDatePicker(null);
+                      }}
+                    >
+                      <MaterialIcons name='done' size={24} color={ERP_COLOR_CODE.ERP_green} />
+                    </TouchableOpacity>
+                  </View>
 
-                    <View style={styles.divider} />
+                  <View style={styles.divider} />
 
-                    {/* Date Picker */}
-                    <DateTimePicker
-                      value={
-                        showDatePicker.type === "from" && fromDate
-                          ? parseCustomDate(fromDate)
-                          : showDatePicker.type === "to" && toDate
+                  {/* Date Picker */}
+                  <DateTimePicker
+                    value={
+                      showDatePicker.type === "from" && fromDate
+                        ? parseCustomDate(fromDate)
+                        : showDatePicker.type === "to" && toDate
                           ? parseCustomDate(toDate)
                           : new Date()
+                    }
+                    mode="date"
+                    display="spinner"
+                    is24Hour={false}
+                    onChange={(event, selectedDate) => {
+                      if (selectedDate) {
+                        setTempDate(selectedDate);
                       }
-                      mode="date"
-                      display="spinner"
-                      is24Hour={false}
-                      onChange={(event, selectedDate) => {
-                        if (selectedDate) {
-                          setTempDate(selectedDate);
-                        }
-                      }}
-                      style={[
-                        styles.picker,
-                        {
-                          backgroundColor: "white",
-                        },
-                      ]}
-                    />
-                  </View>
+                    }}
+                    style={[
+                      styles.picker,
+                      {
+                        backgroundColor: "white",
+                      },
+                    ]}
+                  />
                 </View>
-              </Modal>
-            )}
+              </View>
+            </Modal>
+          )}
 
           {Platform.OS !== "ios" && showDatePicker?.show && (
             <DateTimePicker
@@ -1119,8 +1335,8 @@ const ListScreen = () => {
                 showDatePicker?.type === "from" && fromDate
                   ? parseCustomDate(fromDate)
                   : showDatePicker?.type === "to" && toDate
-                  ? parseCustomDate(toDate)
-                  : new Date()
+                    ? parseCustomDate(toDate)
+                    : new Date()
               }
               mode="date"
               display="spinner"
@@ -1146,29 +1362,31 @@ const ListScreen = () => {
             <FullViewLoader />
           ) : (
             <>
-             {/* <AppMapView /> */}
+              {/* <AppMapView /> */}
               {
                 isTableView ? <>
-                <TableView
-                  handleDeleteNotification={handleDeleteNotification}
-                  isFromAlertCard={isFromAlertCard}
-                  configData={configData}
-                  filteredData={filteredData}
-                  loadingListId={loadingListId}
-                  totalAmount={totalAmount}
-                  totalQty={totalQty}
-                  isFromBusinessCard={isFromBusinessCard}
-                  pageParamsName={pageParamsName}
-                  handleItemPressed={handleItemPressed}
-                  parsedConfig={parsedConfig}
-                  pageName={pageName}
-                  setIsFilterVisible={setIsFilterVisible}
-                  setSearchQuery={setSearchQuery}
-                  handleActionButtonPressed={handleActionButtonPressed}
-                  isLoadingMore={isLoadingMore}
-                  loadMore={loadMore}
-                />
-                </>  : <ReadableView
+                  <TableView
+                    handleDeleteNotification={handleDeleteNotification}
+                    isFromAlertCard={isFromAlertCard}
+                    configData={configData}
+                    filteredData={filteredData}
+                    loadingListId={loadingListId}
+                    totalAmount={totalAmount}
+                    totalQty={totalQty}
+                    isFromBusinessCard={isFromBusinessCard}
+                    pageParamsName={pageParamsName}
+                    handleItemPressed={handleItemPressed}
+                    parsedConfig={parsedConfig}
+                    pageName={pageName}
+                    setIsFilterVisible={setIsFilterVisible}
+                    setSearchQuery={setSearchQuery}
+                    handleActionButtonPressed={handleActionButtonPressed}
+                    isLoadingMore={isLoadingMore}
+                    loadMore={loadMore}
+                    primaryGroupKey={primaryGroupKey}
+                    secondaryGroupKey={secondaryGroupKey}
+                  />
+                </> : <ReadableView
                   handleDeleteNotification={handleDeleteNotification}
                   isFromAlertCard={isFromAlertCard}
                   configData={configData}
@@ -1188,7 +1406,7 @@ const ListScreen = () => {
                   loadMore={loadMore}
                 />
               }
-              
+
             </>
           )}
         </>
@@ -1197,7 +1415,7 @@ const ListScreen = () => {
       {(parsedConfig?.newentry === 1 || parsedConfig?.newentry === "1") &&
         !isFromAlertCard &&
         !loadingListId &&
-        configData && (
+        configData && !isTableView && (
           <Animated.View
             style={{
               transform: [{ scale: pressAnim }],
@@ -1211,8 +1429,8 @@ const ListScreen = () => {
                     filteredData.length === 0
                       ? 40
                       : totalAmount === 0
-                      ? 64
-                      : 78,
+                        ? 64
+                        : 78,
                 },
                 theme === "dark" && {
                   backgroundColor: "white",
@@ -1222,7 +1440,7 @@ const ListScreen = () => {
                 {
                   backgroundColor:
                     theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-                }, 
+                },
               ]}
               onPressIn={onPressIn}
               onPressOut={onPressOut}
@@ -1291,6 +1509,69 @@ const ListScreen = () => {
         onCancel={() => setApiError(false)}
         actionLoader={actionLoader}
         closeHide={undefined}
+      />
+      <GroupFilterModal
+        visible={groupModalVisible1}
+        onClose={() =>
+          setGroupModalVisible1(false)
+        }
+        data={filteredData}
+        selectedKey={primaryGroupKey}
+        onSelectKey={(key: string) => {
+          setPrimaryGroupKey(key);
+        }}
+      />
+      <GroupFilterModal
+        visible={groupModalVisible2}
+        onClose={() =>
+          setGroupModalVisible2(false)
+        }
+        data={filteredData}
+        selectedKey={secondaryGroupKey}
+        onSelectKey={(key: string) => {
+          setSecondaryGroupKey(key);
+        }}
+      />
+      <SortingFilterModal
+        visible={sortingVisible}
+        onClose={() =>
+          setSortingVisible(false)
+        }
+        title="Sort By"
+        data={availableKeys}
+        selectedValue={sortingKey}
+        onSelect={(key: string) => {
+          setSortingKey(key);
+          handleSort(key);
+        }}
+        renderRight={(item: string) => {
+          const isSelected =
+            sortingKey === item;
+
+          if (!isSelected) {
+            return (
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: "#9ca3af",
+                }}
+              >
+              </Text>
+            );
+          }
+
+          return (
+            <MaterialIcons
+              name={
+                sortConfig?.order === "asc"
+                  ? "keyboard-double-arrow-down"
+                  : "keyboard-double-arrow-up"
+              }
+              size={20}
+              color="#2563eb"
+            />
+          );
+        }}
       />
     </View>
   );

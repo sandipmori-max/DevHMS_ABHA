@@ -84,7 +84,7 @@ export default function DashboardListSheet({
             style={{
               width: 12,
               height: 12,
-              borderRadius: 6,
+              borderRadius: 4,
               marginRight: 10,
               backgroundColor: item.color,
             }}

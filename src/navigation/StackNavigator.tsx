@@ -27,7 +27,7 @@ const Stack = createStackNavigator<any>();
 const StackNavigator = () => {
   const { isPinLoaded } = useAppSelector((state) => state?.auth);
   const smoothTransition = {
-    gestureEnabled: true,
+    gestureEnabled: Platform.OS === 'ios' ? true : false,
     cardStyleInterpolator: ({ current }) => ({
       cardStyle: {
         opacity: current.progress,
@@ -62,7 +62,7 @@ const StackNavigator = () => {
     },
     headerBackTitleVisible: false,
     headerLeftContainerStyle: {
-      paddingLeft: 10,
+      paddingLeft: Platform.OS === 'ios'  ? 10 : 6,
       marginLeft: 0,
     },
 
@@ -91,7 +91,7 @@ const StackNavigator = () => {
     cardStyleInterpolator:
       CardStyleInterpolators.forHorizontalIOS,
 
-    gestureEnabled: true,
+     gestureEnabled: Platform.OS === 'ios' ? true : false,
     gestureDirection: "horizontal",
 
     transitionSpec: {
