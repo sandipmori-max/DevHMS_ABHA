@@ -16,6 +16,7 @@ import RNFS from "react-native-fs";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import { useAppSelector } from "../../../../store/hooks";
+import LableInfo from "./LableInfo";
 
 const MAX_DURATION_MS = 20000;
 const MAX_SIZE_MB = 25;
@@ -138,21 +139,9 @@ export default function VideoRecorder({ item }: any) {
   if (!showCamera) {
     return (
       <View>
-        <Text style={[styles.label, theme === "dark" && { color: "white" }]}>
-          {item?.fieldtitle}
-        </Text>
-
-        {item?.tooltip !== item?.fieldtitle && (
-          <Text
-            style={[styles.subLabel, theme === "dark" && { color: "white" }]}
-          >
-            {item?.tooltip}
-          </Text>
-        )}
-
-        {item?.mandatory === "1" && (
-          <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
-        )}
+        <LableInfo  
+        item={item}
+        theme={theme} />
 
         <TouchableOpacity
           style={styles.squareCard}

@@ -18,6 +18,7 @@ import { useAppSelector } from '../../../../store/hooks';
 import { BarCodeCameraScanner } from '../../../../components/CameraScanner/BarCodeCameraScanner';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import InputError from '../../../../components/error/InputError';
+import LableInfo from './LableInfo';
 
 const BarCodeScan = ({ item, isFromChild = false, errors }: any) => {
   const { askPermissions } = usePermissions(EPermissionTypes.CAMERA);
@@ -84,21 +85,9 @@ const BarCodeScan = ({ item, isFromChild = false, errors }: any) => {
     <View style={{ paddingVertical: Platform.OS === 'android' ? 6 : 8 }}>
 
       {/* Title */}
-      <Text style={[styles.label, theme === 'dark' && { color: 'white' }]}>
-        {item?.fieldtitle}
-      </Text>
-
-      {/* Tooltip */}
-      {item?.tooltip !== item?.fieldtitle && (
-        <Text style={[styles.subLabel, theme === 'dark' && { color: 'white' }]}>
-          {item?.tooltip}
-        </Text>
-      )}
-
-      {/* Mandatory */}
-      {item?.mandatory === '1' && (
-        <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
-      )}
+      <LableInfo isFromChild={isFromChild}
+        item={item}
+        theme={theme}  />
 
       {/* Main UI Area */}
       <View style={[cameraShown && styles.container]}>

@@ -20,6 +20,8 @@ import useTranslations from "../../../../hooks/useTranslations";
 import InputError from "../../../../components/error/InputError";
 import NoData from "../../../../components/no_data/NoData";
 import TranslatedText from "../../tabs/home/TranslatedText";
+import InfoTooltip from "./Tooltip";
+import LableInfo from "./LableInfo";
 
 const AjaxPicker = ({
   isValidate,
@@ -124,37 +126,10 @@ const AjaxPicker = ({
 
   return (
     <View style={{ marginBottom: Platform.OS === 'android' ? 6 : 8 }}>
-      {!isFromChild && (
-        <View style={{ flexDirection: "row" }}>
-          <TranslatedText
-            numberOfLines={1}
-            style={[
-              styles.label,
-              theme === "dark" && {
-                color: "white",
-              },
-            ]}
-            text={label}
-          ></TranslatedText>
-          {item?.tooltip !== label && (
-            <Text
-              numberOfLines={1}
-              style={[
-                styles.label,
-                theme === "dark" && {
-                  color: "white",
-                },
-              ]}
-            >
-              {" "}
-              - ( {item?.tooltip} ){" "}
-            </Text>
-          )}
-          {item?.mandatory === "1" && (
-            <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
-          )}
-        </View>
-      )}
+       <LableInfo isFromChild={isFromChild}
+        item={item}
+        theme={theme} 
+        />
 
       <TouchableOpacity
         style={[

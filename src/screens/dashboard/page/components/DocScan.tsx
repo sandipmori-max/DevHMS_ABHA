@@ -16,6 +16,7 @@ import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import { useAppSelector } from "../../../../store/hooks";
 import InputError from "../../../../components/error/InputError";
 import RNFS from "react-native-fs";
+import LableInfo from "./LableInfo";
 
 const { DocumentScanner } = NativeModules;
 
@@ -164,34 +165,9 @@ const DocScan: React.FC<DocScanProps> = ({
 
   return (
     <>
-      <View style={{ flexDirection: "row" }}>
-        <Text
-          style={[
-            styles.label,
-            theme === "dark" && {
-              color: "white",
-            },
-          ]}
-        >
-          {item?.fieldtitle}
-        </Text>
-        {item?.tooltip !== item?.fieldtitle && (
-          <Text
-            style={[
-              styles.label,
-              theme === "dark" && {
-                color: "white",
-              },
-            ]}
-          >
-            {" "}
-            - ( {item?.tooltip} ){" "}
-          </Text>
-        )}
-        {item?.mandatory === "1" && (
-          <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
-        )}
-      </View>
+      <LableInfo 
+        item={item}
+        theme={theme} />
       <TouchableOpacity
         onPress={() => {
           if (images.length === 0) {

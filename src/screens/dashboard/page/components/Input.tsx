@@ -5,6 +5,7 @@ import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import { useAppSelector } from "../../../../store/hooks";
 import ShortAction from "./ShortAction";
 import InputError from "../../../../components/error/InputError";
+import LableInfo from "./LableInfo";
 
 const Input = ({
   id,
@@ -25,39 +26,10 @@ const Input = ({
 
   return (
     <View style={{ marginBottom:  Platform.OS === 'android' ? 6  : 8 }}>
-      {
-        !isFromChild && <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <View style={{ flexDirection: "row" }}>
-          <Text
-            style={[
-              styles.label,
-              theme === "dark" && {
-                color: "white",
-              },
-            ]}
-          >
-            {item?.fieldtitle}
-          </Text>
-          {item?.fieldtitle !== item?.tooltip && (
-            <Text
-              style={[
-                styles.label,
-                theme === "dark" && {
-                  color: "white",
-                },
-              ]}
-            >
-              {" "}
-              - ( {item?.tooltip} )
-            </Text>
-          )}
-          {item?.mandatory === "1" && (
-            <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
-          )}
-        </View>
-        <ShortAction item={item} value={value} />
-      </View>
-      }
+      <LableInfo isFromChild={isFromChild}
+        item={item}
+        theme={theme}
+        value={value} />
       
       <TextInput
         id={id}

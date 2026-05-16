@@ -6,6 +6,7 @@ import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { formatDateHr } from "../../../../utils/helpers";
 import { useAppSelector } from "../../../../store/hooks";
 import InputError from "../../../../components/error/InputError";
+import LableInfo from "./LableInfo";
 
 const DateTimeRow = ({
   isValidate,
@@ -19,36 +20,10 @@ const DateTimeRow = ({
 
   return (
     <View style={{ marginBottom: Platform.OS === 'android' ? 6  : 8 }}>
-      {
-        !isFromChild &&   <View style={{ flexDirection: "row" }}>
-        <Text
-          style={[
-            styles.label,
-            theme === "dark" && {
-              color: "white",
-            },
-          ]}
-        >
-          {item?.fieldtitle}
-        </Text>
-        {item?.fieldtitle !== item?.tooltip && (
-          <Text
-            style={[
-              styles.label,
-              theme === "dark" && {
-                color: "white",
-              },
-            ]}
-          >
-            {" "}
-            - ( {item?.tooltip} )
-          </Text>
-        )}
-        {item?.mandatory === "1" && (
-          <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
-        )}
-      </View>
-      }
+      <LableInfo isFromChild={isFromChild}
+        item={item}
+        theme={theme}
+        value={value} />
     
       <TouchableOpacity
         style={[

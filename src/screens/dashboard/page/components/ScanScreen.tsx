@@ -18,6 +18,7 @@ import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import { useAppSelector } from "../../../../store/hooks";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import InputError from "../../../../components/error/InputError";
+import LableInfo from "./LableInfo";
 
 const ScanScreen = ({ item , errors}: any) => {
   const { askPermissions } = usePermissions(EPermissionTypes.CAMERA);
@@ -89,21 +90,9 @@ const ScanScreen = ({ item , errors}: any) => {
 
   return (
     <View style={{ paddingVertical: Platform.OS === 'android' ? 6 : 8 }}>
-      {/* Field Label */}
-      <Text style={[styles.label, theme === "dark" && { color: "white" }]}>
-        {item?.fieldtitle}
-      </Text>
-
-      {/* Tooltip */}
-      {item?.tooltip !== item?.fieldtitle && (
-        <Text style={[styles.subLabel, theme === "dark" && { color: "white" }]}>
-          {item?.tooltip}
-        </Text>
-      )}
-
-      {item?.mandatory === "1" && (
-        <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
-      )}
+      <LableInfo  
+        item={item}
+        theme={theme}  />
 
       {/* Scan Button or Camera */}
       <View style={[cameraShown && styles.container]}>

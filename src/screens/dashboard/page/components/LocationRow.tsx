@@ -7,6 +7,7 @@ import MaterialIcons from "@react-native-vector-icons/material-icons";
 import useTranslations from "../../../../hooks/useTranslations";
 import ShortAction from "./ShortAction";
 import { useAppSelector } from "../../../../store/hooks";
+import LableInfo from "./LableInfo";
 
 const LocationRow = ({
   locationEnabled,
@@ -59,39 +60,10 @@ const LocationRow = ({
 
   return (
     <View style={{ marginBottom: Platform.OS === 'android' ? 6 : 8 }}>
-      {
-        !isFromChild &&  <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <View style={{ flexDirection: "row" }}>
-          <Text
-            style={[
-              styles.label,
-              theme === "dark" && {
-                color: "white",
-              },
-            ]}
-          >
-            {item?.fieldtitle}
-          </Text>
-          {item?.fieldtitle !== item?.tooltip && (
-            <Text
-              style={[
-                styles.label,
-                theme === "dark" && {
-                  color: "white",
-                },
-              ]}
-            >
-              {" "}
-              - ( {item?.tooltip} )
-            </Text>
-          )}
-          {item?.mandatory === "1" && (
-            <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
-          )}
-        </View>
-        {!error && <ShortAction item={item} value={address} />}
-      </View>
-      }
+      <LableInfo isFromChild={isFromChild}
+        item={item}
+        theme={theme}
+        value={value} />
     
 
       {/* Address / Loading / Error */}

@@ -1,14 +1,16 @@
 import { View, Text, Platform } from "react-native";
 import React from "react";
 import { styles } from "../page_style";
-import {  ERP_COLOR_CODE } from "../../../../utils/constants";
+import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import {
-  formatDateHr, 
+  formatDateHr,
 } from "../../../../utils/helpers";
 import { useAppSelector } from "../../../../store/hooks";
 import ShortAction from "./ShortAction";
+import InfoTooltip from "./Tooltip";
+import LableInfo from "./LableInfo";
 
-const Disabled = ({ item, value, type , isFromChild = false}: any) => {
+const Disabled = ({ item, value, type, isFromChild = false }: any) => {
   console.log("item", item?.title)
   const theme = useAppSelector((state) => state?.theme.mode);
 
@@ -26,53 +28,11 @@ const Disabled = ({ item, value, type , isFromChild = false}: any) => {
 
   return (
     <View style={{ marginBottom: Platform.OS === 'android' ? 6 : 8 }}>
-      {
-        !isFromChild &&   <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-          }}
-        >
-          <Text
-            style={[
-              styles.label,
-              theme === "dark" && {
-                color: "white",
-              },
-            ]}
-          >
-            {item?.fieldtitle}
-          </Text>
-          {item?.fieldtitle !== item?.tooltip && (
-            <Text
-              numberOfLines={1}
-              style={[
-                {
-                  maxWidth: 130
-                },
-                styles.label,
-                theme === "dark" && {
-                  color: "white",
-                },
-              ]}
-            >
-              {" "}
-              - ( {item?.tooltip} )
-            </Text>
-          )}
-          {item?.mandatory === "1" && (
-            <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
-          )}
-        </View>
-        <ShortAction item={item} value={value} />
-      </View>
-      }
-    
+      <LableInfo isFromChild={isFromChild}
+        item={item}
+        theme={theme}
+        value={value} />
+
       <View
         style={[
           styles.disabledBox,
@@ -80,7 +40,7 @@ const Disabled = ({ item, value, type , isFromChild = false}: any) => {
             backgroundColor: 'gray',
           },
           isFromChild && {
-            padding : 9,
+            padding: 9,
             borderRadius: 4,
           }
         ]}

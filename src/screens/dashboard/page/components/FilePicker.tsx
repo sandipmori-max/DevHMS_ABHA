@@ -16,6 +16,7 @@ import { Linking } from "react-native";
 import useTranslations from "../../../../hooks/useTranslations";
 import { useAppSelector } from "../../../../store/hooks";
 import InputError from "../../../../components/error/InputError";
+import LableInfo from "./LableInfo";
 
 interface FileType {
   name: string;
@@ -154,35 +155,9 @@ const openFilePicker = async () => {
 
   return (
  <View style={[styles.container, theme === "dark" && { backgroundColor: "#000" }]}>
-  <View style={{ flexDirection: "row" }}>
-          <Text
-            style={[
-              styles.label,
-              theme === "dark" && {
-                 color: theme === "dark" ? "#fff" : "#000",
-                 
-              },
-            ]}
-          >
-            {item?.fieldtitle}
-          </Text>
-          {item?.tooltip !== item?.fieldtitle && (
-            <Text
-              style={[
-                styles.label,
-                theme === "dark" && {
-                  color: "white",
-                },
-              ]}
-            >
-              {" "}
-              - ( {item?.tooltip} ){" "}
-            </Text>
-          )}
-          {item?.mandatory === "1" && (
-            <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
-          )}
-        </View>
+ <LableInfo  
+        item={item}
+        theme={theme} />
 
   {/* Upload Area */}
   {selectedFiles.length === 0 && (

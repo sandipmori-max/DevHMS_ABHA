@@ -29,6 +29,7 @@ import { useTranslation } from "react-i18next";
 import InputError from "../../../../components/error/InputError";
 import ImageResizer from "@bam.tech/react-native-image-resizer";
 import RNFS from "react-native-fs";
+import LableInfo from "./LableInfo";
 
 const Media = ({
   isValidate,
@@ -663,34 +664,9 @@ const Media = ({
   // -------------------- JSX --------------------
   return (
     <>
-      <View style={{ flexDirection: "row" }}>
-        <Text
-          style={[
-            styles.label,
-            theme === "dark" && {
-              color: "white",
-            },
-          ]}
-        >
-          {item?.fieldtitle}
-        </Text>
-        {item?.tooltip !== item?.fieldtitle && (
-          <Text
-            style={[
-              styles.label,
-              theme === "dark" && {
-                color: "white",
-              },
-            ]}
-          >
-            {" "}
-            - ( {item?.tooltip} ){" "}
-          </Text>
-        )}
-        {item?.mandatory === "1" && (
-          <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
-        )}
-      </View>
+        <LableInfo  
+        item={item}
+        theme={theme}  />
       <TouchableOpacity
         onPress={() => {
           if (!imageExists) {
