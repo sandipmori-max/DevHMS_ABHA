@@ -24,7 +24,7 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
   iconColor = "#989898",
 }) => {
   const [visible, setVisible] = useState(false);
- const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   return (
     <>

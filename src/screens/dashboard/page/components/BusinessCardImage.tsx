@@ -67,7 +67,7 @@ const { height, width } = useWindowDimensions();
     const base =
       imageUri ||
       `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${
-        type === "small" ? `d_${item?.text}` : item?.text
+        type === "small" ? `${item?.text}` : item?.text
       }`;
     return `${base}?cb=${cacheBuster}`;
   };

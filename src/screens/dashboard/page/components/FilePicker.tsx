@@ -102,7 +102,7 @@ const openFilePicker = async () => {
     const attachment = `${file.name}; data:${file.type};base64,${fileBase64}`;
 
     // ✅ Pass as array if your API expects array
-    handleAttachment([attachment], item.field);
+    handleAttachment(attachment, item.field);
 
     // ✅ Store selected file
     setSelectedFiles((prev) => [...prev, file]);

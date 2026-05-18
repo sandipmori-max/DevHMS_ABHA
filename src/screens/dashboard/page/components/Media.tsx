@@ -73,7 +73,7 @@ const Media = ({
   const getImageUri = (type: "small" | "large") => {
     const base =
       imageUri ||
-      `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${type === "small" ? `d_${item?.text}` : item?.text
+      `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${type === "small" ? `${item?.text}` : `${item?.text}`
       }`;
     console.log("Generated image URI:", base);
     return `${base}?cb=${cacheBuster}`;
@@ -281,147 +281,7 @@ const Media = ({
   // },[])
   // -------------------- Render Media Options --------------------
   const renderMedia = () => {
-    if (item?.ctltype === "IMAGE") {
-      return [
-        {
-          text: "Camera",
-          icon: "photo-camera",
-
-          onPress: async () => {
-            try {
-              console.log("========== CAMERA START ==========");
-
-              const granted = await requestPermission("camera");
-              console.log("Camera Permission:", granted);
-
-              if (!granted) {
-                console.log("Permission Denied");
-                return;
-              }
-
-              launchCamera(
-                {
-                  mediaType: "photo",
-                  // ⚡ IMPORTANT FIX: avoid base64 at capture time
-                  includeBase64: false,
-                  quality: 0.5,
-                  maxWidth: 800,
-                  maxHeight: 800,
-                  saveToPhotos: false,
-                },
-                async (response) => {
-                  try {
-                    console.log("Camera Response Received");
-
-                    if (response?.didCancel) {
-                      console.log("User Cancelled Camera");
-                      return;
-                    }
-
-                    if (response?.errorCode) {
-                      console.log(
-                        "Camera Error:",
-                        response?.errorCode,
-                        response?.errorMessage,
-                      );
-                      return;
-                    }
-
-                    if (!response?.assets?.length) {
-                      console.log("No Assets Found");
-                      return;
-                    }
-
-                    const asset = response.assets[0];
-
-                    console.log("Original Asset:", {
-                      uri: asset?.uri,
-                      type: asset?.type,
-                      fileName: asset?.fileName,
-                      fileSize: asset?.fileSize,
-                      width: asset?.width,
-                      height: asset?.height,
-                    });
-
-                    if (!asset?.uri) {
-                      console.log("Asset URI Missing");
-                      return;
-                    }
-
-                    let finalUri = asset.uri;
-                    let finalBase64 = "";
-
-                    // 📦 STEP 1: estimate size safely (fallback using fileSize if available)
-                    const approxSizeMB =
-                      asset.fileSize ? asset.fileSize / 1024 / 1024 : 0;
-
-                    console.log("Approx Image Size:", approxSizeMB.toFixed(2), "MB");
-
-                    // ⚡ STEP 2: compress ALWAYS for safety (not only >5MB)
-                    console.log("Compressing Image...");
-
-                    const resizedImage =
-                      await ImageResizer.createResizedImage(
-                        asset.uri,
-                        800,
-                        800,
-                        "JPEG",
-                        70, // better quality than 40
-                        0,
-                      );
-
-                    console.log("Compressed Image Path:", resizedImage.uri);
-
-                    // ⚡ STEP 3: convert to base64 AFTER compression
-                    finalBase64 = await RNFS.readFile(
-                      resizedImage.uri,
-                      "base64",
-                    );
-
-                    const compressedSizeMB =
-                      (finalBase64.length * 3) / 4 / 1024 / 1024;
-
-                    console.log(
-                      "Final Base64 Size:",
-                      compressedSizeMB.toFixed(2),
-                      "MB",
-                    );
-
-                    finalUri = resizedImage.uri;
-
-                    // 🧠 UI UPDATE
-                    setImageExists(true);
-                    setImageUri(finalUri);
-                    setCacheBuster(Date.now());
-
-                    console.log("Image State Updated");
-
-                    // 🚀 SEND TO BACKEND
-                    handleAttachment(
-                      `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
-                      item?.field,
-                    );
-
-                    console.log("Base64 Sent To Backend");
-
-                    // 🧹 MEMORY CLEANUP (important for Samsung crash fix)
-
-                    console.log("Memory Cleaned");
-
-                    console.log("========== CAMERA SUCCESS ==========");
-                  } catch (err) {
-                    console.log("Image Process Error:", JSON.stringify(err, null, 2));
-                    setImageExists(false);
-                  }
-                },
-              );
-            } catch (error) {
-              console.log("Camera Launch Error:", JSON.stringify(error, null, 2));
-            }
-          }
-        },
-      ];
-    } else if (item?.ctltype === "PHOTO") {
+    if (item?.field?.startsWith("gallary_camera_") && item?.ctltype === "IMAGE") {
       return [
         {
           text: "Camera",
@@ -595,15 +455,19 @@ const Media = ({
                   }
                   if (response.assets && response.assets.length > 0) {
                     const asset: Asset = response.assets[0];
-                      let uri = asset.uri!;
-                      if (Platform.OS === "android" && !uri.startsWith("file://")) {
-                        uri = "file://" + uri;
-                      }
+                    let uri = asset.uri!;
+                    if (Platform.OS === "android" && !uri.startsWith("file://")) {
+                      uri = "file://" + uri;
+                    }
                     setImageExists(true);
                     setImageUri(uri || null);
                     setCacheBuster(Date.now());
+                    // handleAttachment(
+                    //   `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
+                    //   item?.field,
+                    // );
                     handleAttachment(
-                      `${item?.field}.jpeg; data:${asset.type};base64,${asset.base64}`,
+                      `${item?.field}.jpeg;data:${asset.type};base64,${asset.base64}`,
                       item.field,
                     );
                   } else {
@@ -615,8 +479,149 @@ const Media = ({
           },
         },
       ];
+    } else if (item?.ctltype === "IMAGE" && !item?.field?.startsWith("gallary_camera_")) {
+      return [
+        {
+          text: "Camera",
+          icon: "photo-camera",
+
+          onPress: async () => {
+            try {
+              console.log("========== CAMERA START ==========");
+
+              const granted = await requestPermission("camera");
+              console.log("Camera Permission:", granted);
+
+              if (!granted) {
+                console.log("Permission Denied");
+                return;
+              }
+
+              launchCamera(
+                {
+                  mediaType: "photo",
+                  // ⚡ IMPORTANT FIX: avoid base64 at capture time
+                  includeBase64: false,
+                  quality: 0.5,
+                  maxWidth: 800,
+                  maxHeight: 800,
+                  saveToPhotos: false,
+                },
+                async (response) => {
+                  try {
+                    console.log("Camera Response Received");
+
+                    if (response?.didCancel) {
+                      console.log("User Cancelled Camera");
+                      return;
+                    }
+
+                    if (response?.errorCode) {
+                      console.log(
+                        "Camera Error:",
+                        response?.errorCode,
+                        response?.errorMessage,
+                      );
+                      return;
+                    }
+
+                    if (!response?.assets?.length) {
+                      console.log("No Assets Found");
+                      return;
+                    }
+
+                    const asset = response.assets[0];
+
+                    console.log("Original Asset:", {
+                      uri: asset?.uri,
+                      type: asset?.type,
+                      fileName: asset?.fileName,
+                      fileSize: asset?.fileSize,
+                      width: asset?.width,
+                      height: asset?.height,
+                    });
+
+                    if (!asset?.uri) {
+                      console.log("Asset URI Missing");
+                      return;
+                    }
+
+                    let finalUri = asset.uri;
+                    let finalBase64 = "";
+
+                    // 📦 STEP 1: estimate size safely (fallback using fileSize if available)
+                    const approxSizeMB =
+                      asset.fileSize ? asset.fileSize / 1024 / 1024 : 0;
+
+                    console.log("Approx Image Size:", approxSizeMB.toFixed(2), "MB");
+
+                    // ⚡ STEP 2: compress ALWAYS for safety (not only >5MB)
+                    console.log("Compressing Image...");
+
+                    const resizedImage =
+                      await ImageResizer.createResizedImage(
+                        asset.uri,
+                        800,
+                        800,
+                        "JPEG",
+                        70, // better quality than 40
+                        0,
+                      );
+
+                    console.log("Compressed Image Path:", resizedImage.uri);
+
+                    // ⚡ STEP 3: convert to base64 AFTER compression
+                    finalBase64 = await RNFS.readFile(
+                      resizedImage.uri,
+                      "base64",
+                    );
+
+                    const compressedSizeMB =
+                      (finalBase64.length * 3) / 4 / 1024 / 1024;
+
+                    console.log(
+                      "Final Base64 Size:",
+                      compressedSizeMB.toFixed(2),
+                      "MB",
+                    );
+
+                    finalUri = resizedImage.uri;
+
+                    // 🧠 UI UPDATE
+                    setImageExists(true);
+                    setImageUri(finalUri);
+                    setCacheBuster(Date.now());
+
+                    console.log("Image State Updated");
+
+                    // 🚀 SEND TO BACKEND
+                    handleAttachment(
+                      `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
+                      item?.field,
+                    );
+
+                    console.log("Base64 Sent To Backend");
+
+                    // 🧹 MEMORY CLEANUP (important for Samsung crash fix)
+
+                    console.log("Memory Cleaned");
+
+                    console.log("========== CAMERA SUCCESS ==========");
+                  } catch (err) {
+                    console.log("Image Process Error:", JSON.stringify(err, null, 2));
+                    setImageExists(false);
+                  }
+                },
+              );
+            } catch (error) {
+              console.log("Camera Launch Error:", JSON.stringify(error, null, 2));
+            }
+          }
+        },
+      ];
+    } else {
+      return [];
     }
-    return [];
   };
 
   const handleChooseImage = () => {
@@ -664,9 +669,9 @@ const Media = ({
   // -------------------- JSX --------------------
   return (
     <>
-        <LableInfo  
+      <LableInfo
         item={item}
-        theme={theme}  />
+        theme={theme} />
       <TouchableOpacity
         onPress={() => {
           if (!imageExists) {
@@ -757,7 +762,7 @@ const Media = ({
             style={[
               styles.editBtn,
               isLandscape && {
-                   left: 206,
+                left: 206,
               },
               theme === "dark" && {
                 borderWidth: 1,

@@ -269,14 +269,14 @@ const ListScreen = () => {
               isLoading={actionLoaders}
             />
           )}
-          {
+          {/* {
             !isFromAlertCard && <ERPIcon
               name={isTableView ? 'list' : 'apps'}
               onPress={() => {
-                setIsTableView(!isTableView);
+                // setIsTableView(!isTableView);
               }}
             />
-          }
+          } */}
 
           {
             isTableView && <ERPIcon
@@ -815,7 +815,6 @@ const ListScreen = () => {
             paddingBottom: 8,
             paddingRight: 10,
             fontSize: 16,
-            fontWeight: '700',
             alignSelf: 'flex-end',
           }}>Rows - {filteredData.length}</Text>
         </View>
@@ -1045,7 +1044,7 @@ const ListScreen = () => {
                     paddingBottom: 8,
                     paddingRight: 10,
                     fontSize: 16,
-                    fontWeight: '700',
+                    
                     alignSelf: 'flex-end',
                   }}>Rows - {filteredData.length}</Text>
                 </View>
