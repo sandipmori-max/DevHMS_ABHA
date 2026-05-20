@@ -98,11 +98,12 @@ const AttendanceForm = ({ setBlockAction, resData, isFromDashboard }: any) => {
             setAlertVisible(false);
             const { setFieldValue, handleSubmit } = pendingCameraAction.current;
             pendingCameraAction.current = null;
-            if(ATTENDANCE_LEVEL === 0){
-              openCameraV2(setFieldValue, handleSubmit);
-            }else{
-              openCamera(setFieldValue, handleSubmit);
-            }
+            // if(ATTENDANCE_LEVEL === 0){
+            //   openCameraV2(setFieldValue, handleSubmit);
+            // }else{
+            //   openCamera(setFieldValue, handleSubmit);
+            // }
+            openCamera(setFieldValue, handleSubmit);
           }
         }
       },
@@ -311,11 +312,12 @@ const openCameraV2 = (
         setLocationLoading(false);
 
         // 📸 Continue flow
-        if (ATTENDANCE_LEVEL === 0) {
-          openCameraV2(setFieldValue, handleSubmit);
-        } else {
-          openCamera(setFieldValue, handleSubmit);
-        }
+        // if (ATTENDANCE_LEVEL === 0) {
+        //   openCameraV2(setFieldValue, handleSubmit);
+        // } else {
+        //   openCamera(setFieldValue, handleSubmit);
+        // }
+        openCamera(setFieldValue, handleSubmit);
       } catch (err) {
         console.log('Native failed → fallback to JS', err);
 
@@ -330,11 +332,12 @@ const openCameraV2 = (
 
             setLocationLoading(false);
 
-            if (ATTENDANCE_LEVEL === 0) {
-              openCameraV2(setFieldValue, handleSubmit);
-            } else {
-              openCamera(setFieldValue, handleSubmit);
-            }
+            // if (ATTENDANCE_LEVEL === 0) {
+            //   openCameraV2(setFieldValue, handleSubmit);
+            // } else {
+            //   openCamera(setFieldValue, handleSubmit);
+            // }
+            openCamera(setFieldValue, handleSubmit);
           },
           error => {
             console.log('FINAL ERROR:', error);

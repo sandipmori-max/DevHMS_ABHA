@@ -74,7 +74,7 @@ const SortingFilterModal: React.FC<Props> = ({
                        fontWeight: "700",
                      }}
                    >
-                     Select Group By
+                     Select sort by
                    </Text>
        
                      <TouchableOpacity 

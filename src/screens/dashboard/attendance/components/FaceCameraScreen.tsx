@@ -304,8 +304,8 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
         device={device}
         isActive={true}
         photo={true}
-        frameProcessor={frameProcessor}
-        frameProcessorFps={3}
+        frameProcessor={ATTENDANCE_LEVEL === 1 ? frameProcessor : undefined}
+        frameProcessorFps={ATTENDANCE_LEVEL === 1 ? 3 : undefined}
         format={format}
       />
 
@@ -336,7 +336,9 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
           <MaterialIcons name="arrow-back" size={26} color="#fff" />
         </TouchableOpacity>
 
-        <Text style={styles.title}>Face Verification</Text>
+        {
+          ATTENDANCE_LEVEL === 1 ?   <Text style={styles.title}>Face Verification</Text> :  <Text style={styles.title}>Click photo</Text>
+        }
 
         <View style={{ width: 30 }} />
       </View>
@@ -345,15 +347,16 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
           style={[
             styles.faceFrame,
             !isLandscape && {
-              borderWidth: 1,
+              borderWidth: ATTENDANCE_LEVEL === 1 ? 1 : 0,
 
-              borderColor: faceDetected ? "#00ff00" : "#ff3b30",
+              borderColor:  ATTENDANCE_LEVEL === 1 ? faceDetected ? "#00ff00" : "#ff3b30" : "",
             },
           ]}
         />
       </View>
 
-      <View
+{
+  ATTENDANCE_LEVEL === 1  &&  <View
         style={[
           styles.messageContainer,
           isLandscape && {
@@ -365,12 +368,14 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
           {faceDetected ? "Face Detected" : "Align your face in the frame"}
         </Text>
       </View>
+}
+     
 
       <View style={styles.bottomContainer}>
         <TouchableOpacity
-          disabled={!faceDetected}
-          onPress={ATTENDANCE_LEVEL === 1 ? takePhoto : takePhotov2}
-          style={[styles.captureOuter, { opacity: faceDetected ? 1 : 0.4 }]}
+          disabled={ATTENDANCE_LEVEL === 1 ? !faceDetected : false }
+          onPress={takePhoto }
+          style={[styles.captureOuter, { opacity: ATTENDANCE_LEVEL === 1 ? faceDetected ? 1 : 0.4 : 1 }]}
         >
           <View style={styles.captureInner} />
         </TouchableOpacity>

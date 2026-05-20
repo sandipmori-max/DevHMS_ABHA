@@ -2,107 +2,731 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Keyboard List Navigation</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>Mobile App Development | DevERP Solutions</title>
+
+  <meta
+    name="description"
+    content="Enterprise Mobile App Development Services by DevERP Solutions. Build scalable Android & iOS applications with Flutter, React Native and Xamarin."
+  />
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    rel="stylesheet"
+  />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
 
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
+      font-family: "Poppins", sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.7;
     }
 
-    .list-container {
-      width: 300px;
-      height: 400px;
-      overflow-y: auto;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      position: relative;
-      outline: none;
+    a {
+      text-decoration: none;
     }
 
-    .list-item {
-      padding: 10px 14px;
-      border-bottom: 1px solid #eee;
-      transition: 0.2s;
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: auto;
     }
 
-    .list-item.active {
-      background: #007bff;
+    /* NAVBAR */
+
+    header {
+      background: white;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    nav {
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+      color: #2563eb;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+    }
+
+    .nav-links a {
+      color: #334155;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #2563eb;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      background: #2563eb;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-2px);
+    }
+
+    /* HERO */
+
+    .hero {
+      padding: 100px 0;
+      background:
+        linear-gradient(
+          rgba(15,23,42,0.8),
+          rgba(15,23,42,0.8)
+        ),
+        url("https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1400&auto=format&fit=crop")
+        center/cover;
       color: white;
     }
 
-    /* bottom fade indicator */
-    .bottom-indicator {
-      position: sticky;
-      bottom: 0;
-      height: 40px;
-      background: linear-gradient(to top, rgba(0,0,0,0.25), transparent);
-      pointer-events: none;
-      display: none;
+    .hero-content {
+      max-width: 700px;
+    }
+
+    .hero h1 {
+      font-size: 58px;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      margin-bottom: 35px;
+      color: #cbd5e1;
+    }
+
+    /* SECTION */
+
+    section {
+      padding: 90px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-title h2 {
+      font-size: 40px;
+      margin-bottom: 15px;
+      color: #0f172a;
+    }
+
+    .section-title p {
+      color: #64748b;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    /* CARDS */
+
+    .grid {
+      display: grid;
+      gap: 25px;
+    }
+
+    .services-grid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .card {
+      background: white;
+      padding: 35px;
+      border-radius: 24px;
+      transition: 0.3s;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+    }
+
+    .card i {
+      font-size: 40px;
+      color: #2563eb;
+      margin-bottom: 20px;
+    }
+
+    .card h3 {
+      margin-bottom: 15px;
+      font-size: 24px;
+    }
+
+    .card p {
+      color: #64748b;
+    }
+
+    /* TECH STACK */
+
+    .tech-stack {
+      background: #0f172a;
+      color: white;
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      margin-top: 50px;
+    }
+
+    .tech-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+    }
+
+    .tech-card i {
+      font-size: 45px;
+      margin-bottom: 20px;
+      color: #60a5fa;
+    }
+
+    /* PROCESS */
+
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 30px;
+    }
+
+    .process-box {
+      text-align: center;
+      background: white;
+      padding: 35px;
+      border-radius: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    .process-number {
+      width: 70px;
+      height: 70px;
+      background: #2563eb;
+      color: white;
+      border-radius: 50%;
+      margin: auto auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    /* FEATURES */
+
+    .features {
+      background: #eff6ff;
+    }
+
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+    }
+
+    .feature-item {
+      background: white;
+      padding: 25px;
+      border-radius: 18px;
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    .feature-item i {
+      color: #2563eb;
+      font-size: 24px;
+      margin-top: 5px;
+    }
+
+    /* CTA */
+
+    .cta {
+      background: linear-gradient(
+        135deg,
+        #2563eb,
+        #1e40af
+      );
+      color: white;
+      text-align: center;
+      border-radius: 30px;
+      padding: 80px 30px;
+    }
+
+    .cta h2 {
+      font-size: 42px;
+      margin-bottom: 20px;
+    }
+
+    .cta p {
+      max-width: 700px;
+      margin: auto auto 35px;
+      color: #dbeafe;
+    }
+
+    .btn-light {
+      background: white;
+      color: #2563eb;
+      padding: 14px 30px;
+      border-radius: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    /* FOOTER */
+
+    footer {
+      background: #020617;
+      color: white;
+      padding: 70px 0 30px;
+      margin-top: 100px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      margin-bottom: 50px;
+    }
+
+    footer h3 {
+      margin-bottom: 20px;
+    }
+
+    footer p,
+    footer a {
+      color: #cbd5e1;
+      font-size: 15px;
+    }
+
+    .socials {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .socials a {
+      width: 42px;
+      height: 42px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .copyright {
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 25px;
+      color: #94a3b8;
+    }
+
+    /* MOBILE */
+
+    @media(max-width: 768px) {
+
+      .hero h1 {
+        font-size: 42px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .section-title h2 {
+        font-size: 32px;
+      }
+
+      .cta h2 {
+        font-size: 32px;
+      }
+
     }
   </style>
 </head>
+
 <body>
 
-<h3>⬆️⬇️ Use Arrow Keys</h3>
+  <!-- HEADER -->
 
-<div id="list" class="list-container" tabindex="0">
-  <!-- items will be injected -->
-  <div id="bottomFade" class="bottom-indicator"></div>
-</div>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">DevERP</div>
 
-<script>
-  const list = document.getElementById("list");
-  const bottomFade = document.getElementById("bottomFade");
+        <div class="nav-links">
+          <a href="#">Home</a>
+          <a href="#">Services</a>
+          <a href="#">Products</a>
+          <a href="#">About</a>
+          <a href="#">Contact</a>
+        </div>
 
-  let selectedIndex = 0;
-  const items = [];
+        <a href="#" class="btn-primary">
+          Get Quote
+        </a>
+      </nav>
+    </div>
+  </header>
 
-  // ✅ Create 250 dummy items
-  for (let i = 0; i < 250; i++) {
-    const div = document.createElement("div");
-    div.className = "list-item";
-    div.innerText = "Item " + (i + 1);
+  <!-- HERO -->
 
-    list.insertBefore(div, bottomFade);
-    items.push(div);
-  }
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
 
-  // ✅ set active item
-  function updateActive() {
-    items.forEach((el, i) => {
-      el.classList.toggle("active", i === selectedIndex);
-    });
+        <h1>
+          Enterprise Mobile App Development
+        </h1>
 
-    items[selectedIndex].scrollIntoView({
-      behavior: "smooth",
-      block: "nearest"
-    });
-  }
+        <p>
+          Build scalable Android & iOS applications with Flutter,
+          React Native and Xamarin. Deliver secure, modern and
+          high-performance mobile experiences for your business.
+        </p>
 
-  updateActive();
+        <a href="#" class="btn-primary">
+          Start Your Project
+        </a>
 
-  // ✅ keyboard navigation
-  list.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowDown") {
-      selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
-      updateActive();
-    }
+      </div>
+    </div>
+  </section>
 
-    if (e.key === "ArrowUp") {
-      selectedIndex = Math.max(selectedIndex - 1, 0);
-      updateActive();
-    }
-  });
+  <!-- SERVICES -->
 
-  // ✅ scroll indicator logic
-  list.addEventListener("scroll", () => {
-    const isAtBottom =
-      list.scrollHeight - list.scrollTop === list.clientHeight;
+  <section>
+    <div class="container">
 
-    bottomFade.style.display = isAtBottom ? "none" : "block";
-  });
-</script>
+      <div class="section-title">
+        <h2>Our Mobile App Services</h2>
+
+        <p>
+          We create enterprise-grade mobile applications
+          tailored to your business workflow and ERP ecosystem.
+        </p>
+      </div>
+
+      <div class="grid services-grid">
+
+        <div class="card">
+          <i class="fa-brands fa-android"></i>
+          <h3>Android App Development</h3>
+          <p>
+            High-performance Android applications with modern UI,
+            API integration and secure architecture.
+          </p>
+        </div>
+
+        <div class="card">
+          <i class="fa-brands fa-apple"></i>
+          <h3>iOS App Development</h3>
+          <p>
+            Elegant and scalable iOS applications optimized for
+            iPhone and iPad devices.
+          </p>
+        </div>
+
+        <div class="card">
+          <i class="fa-solid fa-layer-group"></i>
+          <h3>Cross Platform Apps</h3>
+          <p>
+            Save development time and cost with Flutter and
+            React Native applications.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+
+  <section class="tech-stack">
+    <div class="container">
+
+      <div class="section-title">
+        <h2 style="color:white;">
+          Technologies We Use
+        </h2>
+
+        <p style="color:#cbd5e1;">
+          Modern technologies for scalable enterprise applications.
+        </p>
+      </div>
+
+      <div class="tech-grid">
+
+        <div class="tech-card">
+          <i class="fa-brands fa-react"></i>
+          <h3>React Native</h3>
+        </div>
+
+        <div class="tech-card">
+          <i class="fa-solid fa-mobile-screen"></i>
+          <h3>Flutter</h3>
+        </div>
+
+        <div class="tech-card">
+          <i class="fa-brands fa-microsoft"></i>
+          <h3>Xamarin</h3>
+        </div>
+
+        <div class="tech-card">
+          <i class="fa-solid fa-cloud"></i>
+          <h3>Cloud Integration</h3>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+
+  <section>
+    <div class="container">
+
+      <div class="section-title">
+        <h2>Development Process</h2>
+
+        <p>
+          Transparent and efficient development cycle.
+        </p>
+      </div>
+
+      <div class="process-grid">
+
+        <div class="process-box">
+          <div class="process-number">1</div>
+          <h3>Requirement Analysis</h3>
+          <p>
+            Understanding business goals and workflows.
+          </p>
+        </div>
+
+        <div class="process-box">
+          <div class="process-number">2</div>
+          <h3>UI/UX Design</h3>
+          <p>
+            Modern and user-friendly mobile interfaces.
+          </p>
+        </div>
+
+        <div class="process-box">
+          <div class="process-number">3</div>
+          <h3>Development</h3>
+          <p>
+            Agile development with scalable architecture.
+          </p>
+        </div>
+
+        <div class="process-box">
+          <div class="process-number">4</div>
+          <h3>Deployment</h3>
+          <p>
+            App Store & Play Store publishing support.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+
+  <section class="features">
+    <div class="container">
+
+      <div class="section-title">
+        <h2>Why Choose DevERP</h2>
+
+        <p>
+          Enterprise-focused mobile application development.
+        </p>
+      </div>
+
+      <div class="feature-list">
+
+        <div class="feature-item">
+          <i class="fa-solid fa-check"></i>
+
+          <div>
+            <h3>ERP Integration</h3>
+            <p>
+              Seamless connectivity with ERP and enterprise systems.
+            </p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <i class="fa-solid fa-shield-halved"></i>
+
+          <div>
+            <h3>Secure Architecture</h3>
+            <p>
+              Enterprise-grade authentication and data protection.
+            </p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <i class="fa-solid fa-bolt"></i>
+
+          <div>
+            <h3>High Performance</h3>
+            <p>
+              Optimized applications with smooth user experience.
+            </p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <i class="fa-solid fa-headset"></i>
+
+          <div>
+            <h3>Dedicated Support</h3>
+            <p>
+              Reliable support and long-term maintenance services.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+
+  <section>
+    <div class="container">
+
+      <div class="cta">
+
+        <h2>
+          Ready To Build Your Mobile App?
+        </h2>
+
+        <p>
+          Let’s create powerful Android & iOS applications
+          for your business with modern technologies and
+          enterprise-grade architecture.
+        </p>
+
+        <a href="#" class="btn-light">
+          Contact Us
+        </a>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    <div class="container">
+
+      <div class="footer-grid">
+
+        <div>
+          <h3>DevERP Solutions</h3>
+
+          <p>
+            Enterprise software and mobile application
+            development company delivering scalable
+            business solutions worldwide.
+          </p>
+
+          <div class="socials">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+
+        <div>
+          <h3>Services</h3>
+
+          <p>Android App Development</p>
+          <p>iOS App Development</p>
+          <p>Flutter Development</p>
+          <p>React Native Development</p>
+        </div>
+
+        <div>
+          <h3>Contact</h3>
+
+          <p>
+            405 Primate Complex,<br />
+            Bodakdev, Ahmedabad,<br />
+            Gujarat, India
+          </p>
+
+          <p>
+            info@deverp.com
+          </p>
+
+          <p>
+            +91 79 3531 2554
+          </p>
+        </div>
+
+      </div>
+
+      <div class="copyright">
+        © 2026 DevERP Solutions Pvt. Ltd.
+        All Rights Reserved.
+      </div>
+
+    </div>
+
+  </footer>
 
 </body>
 </html>

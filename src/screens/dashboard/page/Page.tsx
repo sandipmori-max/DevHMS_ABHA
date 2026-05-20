@@ -1883,12 +1883,14 @@ const PageScreen = () => {
     };
 
     const isPairable = (item) => {
+      console.log("+++++++++++++-item", item)
       return (
         (item?.ddl && item?.ddl !== "" && item?.ajax === 0) ||
         (item?.ddl && item?.ddl !== "" && item?.ajax === 1) ||
         (item?.disabled === "1" && item.fieldtitle.length < 20) ||
         item?.ctltype === "DATE" ||
-        item?.ctltype === "BOOL"
+        item?.ctltype === "BOOL" || item?.ctltype === "NUMERIC" ||
+        (item?.ctltype === "STRING" && item.size < 256)
       );
     };
 

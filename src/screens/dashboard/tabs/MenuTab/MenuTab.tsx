@@ -554,7 +554,7 @@ const MenuTab = ({
           style={{ position: "absolute", top: 0, right: 0 }}
         >
           <MaterialIcons
-            color={theme === "dark" ? "white" : "black"}
+            color={theme === "dark" ? "white" : "gray"}
             name={bookmarks[item.id] ? "bookmark" : "bookmark-outline"}
             size={20}
           />
@@ -651,7 +651,6 @@ const MenuTab = ({
     return <FullViewLoader isShowTop={theme === "dark" ? false : true} />;
   if (error) return <ErrorMessage message={error} isShowTop={false} />;
   if (list.length === 0) return <NoData />;
-
   return (
     <View
       style={{

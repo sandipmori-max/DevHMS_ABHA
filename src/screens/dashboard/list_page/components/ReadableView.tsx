@@ -245,7 +245,7 @@ const ReadableView = ({
                 parsedConfig?.editentry === 1 ||
                 parsedConfig?.editentry === "1"
               ) {
-                setIsFilterVisible(false);
+                // setIsFilterVisible(false);
                 setSearchQuery("");
                 navigation.navigate("Page", {
                   item,
@@ -383,7 +383,7 @@ const ReadableView = ({
                     fontWeight: "800",
                     fontSize: 12,
                     color:
-                      theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_BLACK,
+                      theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR,
                     alignSelf: "flex-end",
                     alignItems: "flex-end",
                     textAlign: "right",

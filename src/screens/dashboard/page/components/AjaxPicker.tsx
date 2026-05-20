@@ -160,7 +160,7 @@ const AjaxPicker = ({
             borderRadius: 4,
           },
           item?.disabled == "1" && {
-            paddingVertical: Platform.OS === 'android' ? 5 : 7,
+            paddingVertical: 4,
           },
         ]}
         onPress={() => {

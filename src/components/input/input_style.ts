@@ -3,7 +3,7 @@ import { ERP_COLOR_CODE } from '../../utils/constants';
 
 export const styles = StyleSheet.create({
   inputContainer: {
-    marginBottom: Platform.OS === 'android' ? 4 : 6,
+    marginBottom: 1
   },
   inputLabel: {
     fontSize: 14,
@@ -26,7 +26,7 @@ export const styles = StyleSheet.create({
   toggleButton: {
     position: 'absolute',
     right: 14,
-    top: -4,
+    top: -1,
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
@@ -34,11 +34,9 @@ export const styles = StyleSheet.create({
   helperText: {
     fontSize: 12,
     color: ERP_COLOR_CODE.ERP_666,
-    marginTop: 4,
   },
   errorText: {
     fontSize: 12,
     color: ERP_COLOR_CODE.ERP_ERROR,
-    marginTop: 4,
   },
 });

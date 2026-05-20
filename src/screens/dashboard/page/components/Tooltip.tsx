@@ -21,7 +21,7 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
   text,
   title = "Tooltip",
   iconSize = 20,
-  iconColor = "#989898",
+  iconColor = "#d6cece",
 }) => {
   const [visible, setVisible] = useState(false);
   const { height, width } = useWindowDimensions();  
@@ -32,6 +32,7 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => setVisible(true)}
+        style={{bottom: 4}}
       >
         <MaterialIcons
           name="info-outline"

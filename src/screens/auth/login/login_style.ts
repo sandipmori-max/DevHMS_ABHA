@@ -69,7 +69,7 @@ export const styles = StyleSheet.create({
   },
   loginButton: {
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-    padding:  Platform.OS === 'android' ? 12 : 16,
+    padding:  10,
     borderRadius: 8,
     marginBottom: 20, 
     marginTop: 8,
@@ -88,8 +88,7 @@ export const styles = StyleSheet.create({
   },
   loginButtonText: {
     color: '#FFF',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16, 
     textAlign: 'center',
 
   },

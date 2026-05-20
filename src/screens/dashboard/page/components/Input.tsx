@@ -25,73 +25,100 @@ const Input = ({
   const [isInputEdit, setIsInputEdit] = useState(false);
 
   return (
-    <View style={{ marginBottom:  Platform.OS === 'android' ? 6  : 8 }}>
+    <View style={{ marginBottom: Platform.OS === 'android' ? 6 : 8 }}>
       <LableInfo isFromChild={isFromChild}
         item={item}
         theme={theme}
         value={value} />
-      
-      <TextInput
-        id={id}
-        multiline={
-          item?.size > 100
-            ? true
-            : value?.length > 40
-            ? true
-            : item?.title === "Card Text"
-            ? true
-            : false
-        }
-        editable
-        scrollEnabled
+      <View
         style={[
-          styles.textInput,
-          item?.size > 100 && { minHeight: 80, textAlignVertical: "top" },
-          errors[item.field] && { borderColor: ERP_COLOR_CODE.ERP_ERROR },
+          {
+            flexDirection: "row",
+            alignItems: "center",
+            borderWidth: 0.8,
+            borderRadius: 6,
+            paddingRight: 6,
+            backgroundColor: theme === "dark" ? "black" : "white",
+            borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE
+          },
+
+          errors[item.field] && {
+            borderColor: ERP_COLOR_CODE.ERP_ERROR,
+          },
+
           value && {
             borderColor: "green",
-            borderWidth: 0.8,
           },
+
           isInputEdit && {
             borderColor: "#81b5e4",
-            borderWidth: 0.8,
           },
-          isValidate &&
-            item?.mandatory === "1" &&
-            value && {
-              borderColor: "green",
-              borderWidth: 0.8,
-            },
-          theme === "dark" && {
-            backgroundColor: "black",
-          },
-          theme === "dark" &&
-            value && {
-              color: "white",
-            },
+
           item?.borderColor && {
             borderColor: item?.borderColor,
           },
-          isFromChild && {
-            padding : 6,
-            borderRadius: 4,
-          }
         ]}
-        keyboardType={item?.ctltype === "NUMERIC" ? "number-pad" : "default"}
-        value={value.toString()}
-        onChangeText={(text) => setValue(text)}
-        placeholder={`Enter ${item?.fieldtitle}`}
-        onFocus={(e) => {
-          setIsInputEdit(true);
-          onFocus(e);
-        }}
-        onBlur={() => {
-          if (!value) {
-            setIsInputEdit(false);
+      >
+        <TextInput
+          id={id}
+          multiline={
+            item?.size > 100
+              ? true
+              : value?.length > 40
+                ? true
+                : item?.title === "Card Text"
+                  ? true
+                  : false
           }
-        }}
-        placeholderTextColor={theme === "dark" ? "white" : "gray"}
-      />
+          editable
+          scrollEnabled
+          style={[
+            styles.textInput,
+            {
+              flex: 1,
+              borderWidth: 0,
+              backgroundColor: "transparent",
+            },
+
+            item?.size > 100 && {
+              minHeight: 80,
+              textAlignVertical: "top",
+            },
+
+            theme === "dark" &&
+            value && {
+              color: "white",
+            },
+
+            isFromChild && {
+              padding: 6,
+              borderRadius: 4,
+            },
+          ]}
+          keyboardType={
+            item?.ctltype === "NUMERIC"
+              ? "number-pad"
+              : "default"
+          }
+          value={value.toString()}
+          onChangeText={(text) => setValue(text)}
+          placeholder={`Enter ${item?.fieldtitle}`}
+          onFocus={(e) => {
+            setIsInputEdit(true);
+            onFocus(e);
+          }}
+          onBlur={() => {
+            if (!value) {
+              setIsInputEdit(false);
+            }
+          }}
+          placeholderTextColor={
+            theme === "dark" ? "white" : "gray"
+          }
+        />
+
+        <ShortAction item={item} value={value} />
+      </View>
       {errors[item.field] && <InputError error={errors[item?.field]} />}
     </View>
   );

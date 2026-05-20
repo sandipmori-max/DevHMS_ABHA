@@ -93,6 +93,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(false);
   const [listData, setListData] = useState<any[]>([]);
+  console.log("listData---------------- ",listData)
   const [parsedError, setParsedError] = useState<any>();
   const [showModal, setShowModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -206,7 +207,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
   };
 
   const priority = {
-    "LWP-Approved": 6,
+    "LWP-Approved": 7,
     "LWP-Apply": 6,
     Leave: 5,
     Half: 4,
@@ -940,17 +941,17 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                       <View
                         style={{
                           justifyContent: "space-around",
-                          padding: Platform.OS === 'android' ? 12 : 16,
                           alignItems: "center",
                           flexDirection: "row",
                           borderRadius: 8,
+                          marginTop: 12
                         }}
                       >
                         <PieChart
                           data={chartData}
                           donut
-                          radius={Platform.OS === 'android' ? 80 : 90}
-                          innerRadius={Platform.OS === 'android' ? 70 : 80}
+                          radius={70}
+                          innerRadius={60}
                           textColor={theme === "dark" ? "#fff" : "#000"}
                           showValuesAsLabels
                           innerCircleColor={theme === "dark" ? "#000" : "#fff"}
@@ -959,8 +960,6 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                               style={{
                                 color: theme === "dark" ? "#fff" : "#000",
                                 textAlign: "center",
-                                fontSize: 18,
-                                fontWeight: "600",
                               }}
                             >
                               {uniqueByDate.length + `\n`}
@@ -988,7 +987,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                                 style={{
                                   width: 12,
                                   height: 12,
-                                  borderRadius: 6,
+                                  borderRadius: 4,
                                   backgroundColor: c.color,
                                 }}
                               />
@@ -1015,8 +1014,6 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                             elevation: 2,
                             backgroundColor:
                               theme === "dark" ? "black" : "white",
-                            borderWidth: 1,
-                            borderColor: theme === "dark" ? "white" : "black",
                           }}
                           monthFormat={"MMMM yyyy"}
                           hideExtraDays={false}
@@ -1051,7 +1048,6 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                         style={{
                           flexDirection: "row",
                           gap: 8,
-                          padding: 8,
                           justifyContent: 'space-between',
                           paddingHorizontal: 34,
                           alignContent: 'center',

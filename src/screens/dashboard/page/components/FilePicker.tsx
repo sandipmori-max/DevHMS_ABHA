@@ -243,6 +243,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#f8f9ff",
+    marginBottom: 6
   },
 
   uploadTitle: {

@@ -50,6 +50,8 @@ const Disabled = ({ item, value, type, isFromChild = false }: any) => {
         >
           {getDisplayValue()}
         </Text>
+
+                          <ShortAction item={item} value={value} />
       </View>
     </View>
   );

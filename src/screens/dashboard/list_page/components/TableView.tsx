@@ -34,8 +34,6 @@ const TableView = ({
   totalQty,
   isFromBusinessCard,
   parsedConfig,
-
-  // NEW
   primaryGroupKey = "",
   secondaryGroupKey = "",
 }: any) => {
@@ -50,6 +48,8 @@ const TableView = ({
     (state) => state?.theme?.mode,
   );
 
+  console.log("primaryGroupKey++++++++++++", primaryGroupKey)
+  console.log("secondaryGroupKey++++++++++", secondaryGroupKey)
   /* ================= STATE ================= */
 
   const [collapsedGroups, setCollapsedGroups] =
@@ -437,7 +437,7 @@ const TableView = ({
             parsedConfig?.editentry ===
               "1"
           ) {
-            setIsFilterVisible(false);
+            // setIsFilterVisible(false);
 
             setSearchQuery("");
 

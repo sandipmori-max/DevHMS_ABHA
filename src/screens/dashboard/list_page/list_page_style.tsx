@@ -274,7 +274,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 12, 
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-    width: '89%'
+    width: '100%'
   },
   searchIcon: {
     fontSize: 16,
@@ -286,6 +286,7 @@ export const styles = StyleSheet.create({
     color: ERP_COLOR_CODE.ERP_1A1A1A,
   },
   clearButton: {
+    top: 10,
     marginLeft: 8,
   },
   clearButtonText: {

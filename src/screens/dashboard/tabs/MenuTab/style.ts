@@ -74,13 +74,11 @@ export const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    // fontWeight: "500",
     marginBottom: 6,
     textAlign: "center",
   },
   titleV2: {
     fontSize: 14,
-    // fontWeight: "500",
     marginBottom: 2,
     textAlign: "center",
   },

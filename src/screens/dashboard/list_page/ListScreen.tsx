@@ -113,6 +113,8 @@ const ListScreen = () => {
   const [sortingKey, setSortingKey] =
     useState("");
 
+ 
+
   const availableKeys = Object.keys(
     filteredData?.[0] || {},
   ).filter(
@@ -228,6 +230,7 @@ const ListScreen = () => {
       // dispatch(updateSelectedToDateState(""));
       // dispatch(updateSelectedBranchesState([]));
       setTapLoader(false);
+      
       return () => { };
     }, [navigation]),
   );
@@ -270,10 +273,10 @@ const ListScreen = () => {
             />
           )}
           {/* {
-            !isFromAlertCard && <ERPIcon
+            filteredData.length > 0 && !isFromAlertCard && <ERPIcon
               name={isTableView ? 'list' : 'apps'}
               onPress={() => {
-                // setIsTableView(!isTableView);
+                setIsTableView(!isTableView);
               }}
             />
           } */}
@@ -696,6 +699,7 @@ const ListScreen = () => {
   useFocusEffect(
     useCallback(() => {
       fetchListDataV2();
+       
     }, [fetchListDataV2, selectedBranchIds, toDate, fromDate]),
   );
 
@@ -708,8 +712,11 @@ const ListScreen = () => {
     if (!parsedConfig) {
       return;
     }
-    setIsFilterVisible(false);
+    setSortingKey("")
+    setSortConfig(null)
+    // setIsFilterVisible(false);
     setSearchQuery("");
+
     if (parsedConfig?.editentry === 1 || parsedConfig?.editentry === "1") {
       navigation.navigate("Page", {
         item,
@@ -762,7 +769,7 @@ const ListScreen = () => {
     onRefresh();
   };
 
-
+   
 
   if (parsedError) {
     return (
@@ -842,6 +849,9 @@ const ListScreen = () => {
                         theme === "dark" && {
                           backgroundColor: "black",
                         },
+                        filteredData.length > 0 &&{
+                          width: '89%'
+                        }
                       ]}
                     >
                       <MaterialIcons
@@ -876,14 +886,15 @@ const ListScreen = () => {
                         )}
                       </View>
                     </View>
-                    <View style={{
+                    {
+                      filteredData.length > 0 && <View style={{
                       borderRadius: 2,
                       justifyContent: 'center',
                       alignContent: 'center',
                       alignItems: 'center',
                       height: 38, 
                       width: 34,
-                      backgroundColor: 'white'
+                      backgroundColor: theme === 'dark' ? 'black' : 'white'
                     }}>
                       <ERPIcon
                         name={
@@ -897,10 +908,12 @@ const ListScreen = () => {
                           setSortingVisible(true)
                         }}
 
-                        color="black"
-                        isMenu={true}
+                        color={theme === 'dark'  ? 'white' : "black"}
+                        isMenu={ theme === 'dark'  ? false : true}
                       />
                     </View>
+                    }
+                    
                   </View>
                 </View>
 
@@ -925,7 +938,7 @@ const ListScreen = () => {
                             <MaterialIcons
                               name="calendar-today"
                               size={18}
-                              color="#000"
+                              color={theme === 'dark'  ? 'white' : "black"}
                               style={{ marginRight: 8 }}
                             />
                             <TranslatedText
@@ -956,7 +969,7 @@ const ListScreen = () => {
                             <MaterialIcons
                               name="calendar-today"
                               size={18}
-                              color="#000"
+                              color={theme === 'dark'  ? 'white' : "black"}
                               style={{ marginRight: 8 }}
                             />
                             <Text style={styles.dateButtonText}>
@@ -1024,7 +1037,7 @@ const ListScreen = () => {
                   width: '100%',
                   flexDirection: 'row',
                   justifyContent: 'space-between',
-                  backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+                  backgroundColor: theme === 'dark' ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR
                 }}>
                   <Text style={{
                     color: 'white',
@@ -1049,13 +1062,17 @@ const ListScreen = () => {
                   }}>Rows - {filteredData.length}</Text>
                 </View>
               }
-              <View style={styles.searchContainer}>
+              <View style={[styles.searchContainer, 
+              ]}>
                 <View
                   style={[
                     styles.searchInputContainer,
                     theme === "dark" && {
                       backgroundColor: "black",
                     },
+                    filteredData.length > 0 &&{
+                      width: '89%'
+                    }
                   ]}
                 >
                   <MaterialIcons
@@ -1086,13 +1103,14 @@ const ListScreen = () => {
                   </View>
 
                 </View>
-                <View style={{
+                {
+                  filteredData.length > 0 &&   <View style={{
                   borderRadius: 2,
                   justifyContent: 'center',
                   alignContent: 'center',
                   alignItems: 'center',
                   height: 38, width: 34,
-                  backgroundColor: 'white'
+                  backgroundColor: theme === 'dark' ? 'black' : 'white'
                 }}>
                   <ERPIcon
                     name={
@@ -1104,11 +1122,12 @@ const ListScreen = () => {
                     } onPress={() => {
                       setSortingVisible(true)
                     }}
-
-                    color="black"
-                    isMenu={true}
+                    color={theme === 'dark'  ? 'white' : "black"}
+                    isMenu={ theme === 'dark'  ? false : true}
                   />
                 </View>
+                }
+              
               </View>
 
               {(parsedConfig?.period === 1 || parsedConfig?.period === "1") && (
@@ -1128,13 +1147,15 @@ const ListScreen = () => {
                         <MaterialIcons
                           name="calendar-today"
                           size={18}
-                          color="#000"
+                          color={theme === 'dark'  ? 'white' : "black"}
                           style={{ marginRight: 8 }}
                         />
                         <TranslatedText
                           numberOfLines={1}
                           text={fromDate || t("msg.msg9")}
-                          style={styles.dateButtonText}
+                          style={[styles.dateButtonText, 
+                            
+                          ]}
                         ></TranslatedText>
                       </View>
                     </TouchableOpacity>
@@ -1156,7 +1177,7 @@ const ListScreen = () => {
                         <MaterialIcons
                           name="calendar-today"
                           size={18}
-                          color="#000"
+                         color={theme === 'dark'  ? 'white' : "black"}
                           style={{ marginRight: 8 }}
                         />
                         <Text style={styles.dateButtonText}>
