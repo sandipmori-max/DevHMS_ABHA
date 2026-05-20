@@ -80,7 +80,7 @@ const Input = ({
               backgroundColor: "transparent",
             },
 
-            item?.size > 100 && {
+            item?.size > 255 && {
               minHeight: 80,
               textAlignVertical: "top",
             },
