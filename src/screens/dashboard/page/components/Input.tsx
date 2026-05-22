@@ -15,7 +15,8 @@ const Input = ({
   value,
   setValue,
   onFocus,
-  isFromChild = false
+  isFromChild = false,
+  isFromNew
 }: any) => {
   const theme = useAppSelector((state) => state?.theme.mode);
 
@@ -24,6 +25,7 @@ const Input = ({
   }, [value]);
   const [isInputEdit, setIsInputEdit] = useState(false);
 
+  console.log("item input -------"  , item)
   return (
     <View style={{ marginBottom: Platform.OS === 'android' ? 6 : 8 }}>
       <LableInfo isFromChild={isFromChild}
@@ -62,7 +64,7 @@ const Input = ({
         <TextInput
           id={id}
           multiline={
-            item?.size > 100
+            item?.size > 128
               ? true
               : value?.length > 40
                 ? true
@@ -116,8 +118,10 @@ const Input = ({
             theme === "dark" ? "white" : "gray"
           }
         />
-
-        <ShortAction item={item} value={value} />
+        {
+          !isFromNew &&   <ShortAction item={item} value={value} />
+        }
+      
       </View>
       {errors[item.field] && <InputError error={errors[item?.field]} />}
     </View>

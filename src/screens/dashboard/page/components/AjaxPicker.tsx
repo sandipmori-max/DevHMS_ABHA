@@ -99,6 +99,8 @@ const AjaxPicker = ({
   };
 
   const handleSelect = (opt: any) => {
+
+    console.log("opt", opt)
     const afterDash = item?.ddl?.split("-")[1];
     const arr = afterDash?.split(",");
 
@@ -109,27 +111,26 @@ const AjaxPicker = ({
     }, {});
 
     onValueChange({
-      [item?.dfield]:
+      [item?.dfield.replace("[", "").replace("]", "")]:
         opt[`${item?.ddlfield.toLowerCase()}id`] ??
         opt[`${item?.field}id`] ??
-        opt[item?.field],
+        opt[item?.field.replace("[", "").replace("]", "")],
 
-      [item?.dfield || item?.ddlfield.toLowerCase()]:
-        opt[item?.ddlfield.toLowerCase()] ?? opt[item?.dfield],
+      [item?.dfield.replace("[", "").replace("]", "") || item?.ddlfield.toLowerCase().replace("[", "").replace("]", "")]:
+        opt[item?.ddlfield.toLowerCase().replace("[", "").replace("]", "")] ?? opt[item?.dfield.replace("[", "").replace("]", "")],
 
       ...result,
     });
-
-    setSelectedOption(opt[item?.ddlfield.toLowerCase()] ?? opt[item?.dfield]);
+    setSelectedOption(opt[item?.ddlfield.toLowerCase().replace("[", "").replace("]", "")] ?? opt[item?.dfield.replace("[", "").replace("]", "")]);
     setOpen(false);
   };
 
   return (
     <View style={{ marginBottom: Platform.OS === 'android' ? 6 : 8 }}>
-       <LableInfo isFromChild={isFromChild}
+      <LableInfo isFromChild={isFromChild}
         item={item}
-        theme={theme} 
-        />
+        theme={theme}
+      />
 
       <TouchableOpacity
         style={[
@@ -139,11 +140,11 @@ const AjaxPicker = ({
             borderColor: ERP_COLOR_CODE.ERP_ERROR,
           },
           isValidate &&
-            item?.mandatory === "1" &&
-            selectedOption && {
-              borderColor: "green",
-              borderWidth: 0.8,
-            },
+          item?.mandatory === "1" &&
+          selectedOption && {
+            borderColor: "green",
+            borderWidth: 0.8,
+          },
           theme === "dark" && {
             backgroundColor: "black",
             borderWidth: 1,
@@ -152,9 +153,9 @@ const AjaxPicker = ({
             backgroundColor: item?.background,
           },
           item?.disabled == "1" &&
-            theme === "dark" && {
-              backgroundColor: "gray",
-            },
+          theme === "dark" && {
+            backgroundColor: "gray",
+          },
           isFromChild && {
             padding: 6,
             borderRadius: 4,
@@ -178,8 +179,8 @@ const AjaxPicker = ({
               theme === "dark"
                 ? "white"
                 : selectedOption
-                ? ERP_COLOR_CODE.ERP_BLACK
-                : ERP_COLOR_CODE.ERP_888,
+                  ? ERP_COLOR_CODE.ERP_BLACK
+                  : ERP_COLOR_CODE.ERP_888,
             flex: 1,
           }}
         ></TranslatedText>
@@ -306,12 +307,19 @@ const AjaxPicker = ({
                 >
                   {options?.length > 0 ? (
                     options?.map((opt: any, i: number) => {
+
+                      console.log("opt-=-=-=-=-=------------", opt)
                       const entries = Object.entries(opt).filter(
-                        ([key]) => !key.toLowerCase().includes("id"),
+                        ([key, value]) =>
+                          value !== null && 
+                          value !== undefined &&
+                          String(value).trim() !== "" &&
+                          !key.startsWith("[") &&
+                          !key.endsWith("]")
                       );
-
+                      console.log("entries-=-=-=-=-=------------", entries)
                       const isGrid = entries.length >= 3;
-
+                      console.log("isGrid-=-=-=-=-=------------", isGrid)
                       return (
                         <TouchableOpacity
                           key={i}
@@ -328,6 +336,7 @@ const AjaxPicker = ({
                             style={{
                               flexDirection: isGrid ? "row" : "column",
                               flexWrap: isGrid ? "wrap" : "nowrap",
+
                             }}
                           >
                             {entries?.map(([key, value], idx) => (
@@ -359,7 +368,7 @@ const AjaxPicker = ({
                                     },
                                   ]}
                                   numberOfLines={1}
-                                  text={String(value)}
+                                  text={String(`${value}`)}
                                 ></TranslatedText>
                               </View>
                             ))}

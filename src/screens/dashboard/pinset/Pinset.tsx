@@ -34,7 +34,6 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setIsPinLoaded } from "../../../store/slices/auth/authSlice";
 import { useTranslation } from "react-i18next";
 import ERPIcon from "../../../components/icon/ERPIcon";
-import { HEADER_HEIGHT } from "../../../constants";
 
 const { width } = Dimensions.get("screen");
 

@@ -8,7 +8,6 @@ import {
   Text,
   useWindowDimensions,
   SectionList,
-  Platform,
 } from "react-native";
 import React, {
   useEffect,
@@ -51,7 +50,6 @@ import {
 import TranslatedText from "../home/TranslatedText";
 import { styles } from "./style";
 import { formatDateForAPI } from "../../../../utils/helpers";
-import { HEADER_HEIGHT } from "../../../../constants";
 const accentColors = [
   "#dbe0f5ff",
   "#c8f3edff",

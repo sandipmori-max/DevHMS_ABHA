@@ -109,6 +109,7 @@ const LocationRow = ({
               alignContent: "center",
               alignItems: "center",
               flexDirection: "row",
+              width: "100%",
               justifyContent: "space-between",
             }}
           >
@@ -128,7 +129,7 @@ const LocationRow = ({
                   backgroundColor:
                     theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR,
                   borderRadius: 6,
-                  alignSelf: "flex-start",
+                  alignSelf: "flex-end",
                 }}
                 onPress={refetch}
               >

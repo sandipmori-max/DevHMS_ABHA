@@ -2,7 +2,6 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -17,10 +16,6 @@ import {
   AppState,
   useWindowDimensions,
   ActivityIndicator,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
 } from "react-native";
 import {
   RouteProp,
@@ -49,7 +44,6 @@ import AjaxPicker from "./components/AjaxPicker";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import {
   applyActionsToControls,
-  applyFormula,
   evaluateRulesWithActions,
   parseCustomDatePage,
   requestCameraPermission,
@@ -74,11 +68,8 @@ import BarCodeScan from "./components/BarCodeScan";
 import TranslatedText from "../tabs/home/TranslatedText";
 import { setReloadApp } from "../../../store/slices/reloadApp/reloadAppSlice";
 import { updateAppMenuList } from "../../../store/slices/auth/authSlice";
-import FastImage from "react-native-fast-image";
-import MaterialIcons from "@react-native-vector-icons/material-icons";
-import DynamicTable from "./components/DynamicTable";
 import DocScan from "./components/DocScan";
-import { HEADER_HEIGHT } from "../../../constants";
+import DisabledDateTime from "./components/DisabledDateTime";
 
 type PageRouteParams = { PageScreen: { item: any } };
 
@@ -454,10 +445,19 @@ const PageScreen = () => {
                       rules = myScript;
                     }
 
-                    const { actions, messages } = evaluateRulesWithActions(
+
+                    const { actions, messages , fieldErrors} = evaluateRulesWithActions(
                       rules,
                       formValues,
                     );
+                    console.log("fieldErrors ----- ", fieldErrors)
+                    if(fieldErrors.length > 0){
+                        setTapLoader(false);
+                        setScriptErrorMessage(fieldErrors);
+                        setIsVisibleScriptError(true);
+                        return;
+                    }
+
                     const hasButtonSaveEnable = actions.some(
                       (item) => item?.field === "buttonSave",
                     );
@@ -1646,6 +1646,18 @@ const PageScreen = () => {
           </>
         );
       }
+       //Disabled + Date time
+      // else if (item?.disabled === "1" && (item?.ctltype === "DATETIME" || item?.ctltype === "DATE") &&  (item?.field.includes("starttime") || item?.field.includes("endtime"))) {
+      //   content = (
+      //     <DisabledDateTime
+      //       isFromChild={isFromChild}
+      //       item={item}
+      //       value={value}
+      //       type={item?.ctltype}
+      //     />
+      //   );
+      // }
+
       //Disabled
       else if (item?.disabled === "1" && item?.ajax !== 1) {
         content = (
@@ -1736,6 +1748,7 @@ const PageScreen = () => {
             errors={errors}
             value={value}
             setValue={setValue}
+            isFromNew={isFromNew}
           />
         );
       }

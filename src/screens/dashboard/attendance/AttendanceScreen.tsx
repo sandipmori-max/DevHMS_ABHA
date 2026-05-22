@@ -40,7 +40,6 @@ import useTranslations from "../../../hooks/useTranslations";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ERP_GIF } from "../../../assets";
 import TranslatedText from "../tabs/home/TranslatedText";
-import { HEADER_HEIGHT } from "../../../constants";
 
 const AttendanceScreen = () => {
   const route = useRoute();

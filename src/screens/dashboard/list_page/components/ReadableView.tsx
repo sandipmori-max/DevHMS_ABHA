@@ -567,7 +567,7 @@ const ReadableView = ({
                 style={{
                   flexDirection: "row",
                   flexWrap: "wrap",
-                  marginTop: 0,
+                  marginTop: 8,
                   gap: 1,
                 }}
               >

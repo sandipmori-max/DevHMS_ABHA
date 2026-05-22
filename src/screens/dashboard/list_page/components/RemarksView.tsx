@@ -51,7 +51,7 @@ const RemarksView = ({ remarks }) => {
           fontSize: 13,
           lineHeight: 18,
         }}
-        text={remarks}
+        text={remarks.replace(" ", "").replace("\n", "")}
       />
 
       {/* Expand Button */}
@@ -59,8 +59,7 @@ const RemarksView = ({ remarks }) => {
         <TouchableOpacity
           onPress={toggleExpand}
           activeOpacity={0.7}
-          style={{
-            marginTop: 8,
+          style={{ 
             flexDirection: "row",
             alignItems: "center",
             alignSelf: "flex-start",

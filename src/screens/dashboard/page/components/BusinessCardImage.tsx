@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import {
   useWindowDimensions,
   NativeModules
 } from "react-native";
-import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import { launchImageLibrary } from "react-native-image-picker";
 import TextRecognition from "@react-native-ml-kit/text-recognition";
 import {
   check,
@@ -27,6 +27,8 @@ import MaterialIcons from "@react-native-vector-icons/material-icons";
 import useTranslations from "../../../../hooks/useTranslations";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import RNFS from "react-native-fs";
+import ImageResizer from "@bam.tech/react-native-image-resizer";
+import { useNavigation } from "@react-navigation/native";
 
 
 const { DocumentScanner } = NativeModules;
@@ -55,13 +57,15 @@ const BusinessCardView = ({
   baseLink,
   infoData,
 }: any) => {
+
+  const navigation = useNavigation();
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [base64, setBase64] = useState(false);
   const [cacheBuster, setCacheBuster] = useState(Date.now());
   const [showPicker, setShowPicker] = useState(false);
   const { t } = useTranslations();
-const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
   const getImageUri = (type: "small" | "large") => {
     const base =
@@ -153,30 +157,110 @@ const { height, width } = useWindowDimensions();
     setShowPicker(false);
 
     setTimeout(async () => {
-      const res = await launchCamera({
-        mediaType: "photo",
-        quality: 0.4,
-        includeBase64: true,
-        maxWidth: 500,
-        maxHeight: 500,
-        saveToPhotos: false,
-      });
+      navigation.navigate("FaceCameraScreen", {
+                onCapture: async (photoPath) => {
+                  setTimeout(async () => {
+                    try {
+                      console.log("========== CAMERA START ==========");
 
-      if (res.didCancel) return;
 
-      if (res.assets && res.assets.length > 0) {
-        const asset = res.assets[0];
-        let uri = asset.uri!;
-        if (Platform.OS === "android" && !uri.startsWith("file://")) {
-          uri = "file://" + uri;
-        }
+                      if (!photoPath) {
+                        console.log("Photo Path Missing");
+                        return;
+                      }
 
-        setCacheBuster(Date.now());
+                      // ✅ SAFE URI
+                      const originalUri = photoPath.startsWith("file://")
+                        ? photoPath
+                        : `file://${photoPath}`;
+
+                      console.log("Original Photo:", originalUri);
+
+                      let finalUri = originalUri;
+                      let finalBase64 = "";
+
+                      // ⚡ STEP 1: COMPRESS IMAGE
+                      console.log("Compressing Image...");
+
+                      let resizedImage;
+
+                      try {
+                        resizedImage = await ImageResizer.createResizedImage(
+                          originalUri,
+                          800,
+                          800,
+                          "JPEG",
+                          70,
+                          0,
+                        );
+                      } catch (err) {
+                        console.log("⚠️ Primary compression failed, fallback...");
+
+                        resizedImage = await ImageResizer.createResizedImage(
+                          originalUri,
+                          600,
+                          600,
+                          "JPEG",
+                          50,
+                          0,
+                        );
+                      }
+
+                      console.log("Compressed Image:", resizedImage.uri);
+
+                      // ⚡ STEP 2: BASE64 AFTER COMPRESSION
+                      finalBase64 = await RNFS.readFile(
+                        resizedImage.uri.replace("file://", ""),
+                        "base64",
+                      );
+
+                      const compressedSizeMB =
+                        (finalBase64.length * 3) / 4 / 1024 / 1024;
+
+                      console.log(
+                        "Final Base64 Size:",
+                        compressedSizeMB.toFixed(2),
+                        "MB",
+                      );
+
+                      finalUri = resizedImage.uri;
+
+                       setCacheBuster(Date.now());
         setBase64(
-          `${item?.field}.jpeg; data:${asset.type};base64,${asset.base64}`,
+          `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`
         );
-        setImageUri(uri);
-      }
+        setImageUri(finalUri);
+                      // setImageExists(true);
+                      // setImageUri(finalUri);
+                      // setCacheBuster(Date.now());
+
+                      // console.log("Image State Updated");
+
+                      // // 🚀 SEND TO BACKEND
+                      // handleAttachment(
+                      //   `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
+                      //   item?.field,
+                      // );
+
+
+                      console.log("========== CAMERA SUCCESS ==========");
+                    } catch (error) {
+                      console.log(
+                        "Image Process Error:",
+                        JSON.stringify(error, null, 2),
+                      );
+                      setImageUri('');
+                      // setImageExists(false);
+
+                    }
+                  }, 300);
+                },
+
+                isFromDashboard: false,
+                isBackActive: true,
+                isFromAttendance: false,
+              });
+
     }, 400);
   };
 
@@ -485,13 +569,15 @@ const { height, width } = useWindowDimensions();
 
   return (
     <ScrollView>
-      <Text style={styles.title}>{t("title.title9")}</Text>
+      <Text style={styles.title}>{item?.fieldtitle}</Text>
 
       <View style={[styles.cardContainer,  ]}>
   <TouchableOpacity
     activeOpacity={0.85}
     onPress={() => setShowPicker(true)}
-    style={styles.card}
+    style={[styles.card, {
+      borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+    }]}
   >
     {loading ? (
       <View style={styles.loaderContainer}>
@@ -508,7 +594,7 @@ const { height, width } = useWindowDimensions();
         {/* Overlay */}
         {
           !imageUri &&  <View style={styles.overlay}>
-          <MaterialIcons name="cloud-upload" size={26} color="#000" />
+          <MaterialIcons name="cloud-upload" size={28} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
           <Text style={styles.overlayText}>
             {imageUri ? "Change Image" : "Upload Image"}
           </Text>
@@ -591,8 +677,8 @@ card: {
   height: 180,
   borderRadius: 8,
   overflow: "hidden",
-  backgroundColor: "#f5f5f5",
-  borderWidth: 1,
+  backgroundColor: "#f8f9ff",
+  borderWidth: 2,
   borderStyle: "dashed",
 },
 
@@ -606,7 +692,7 @@ overlay: {
   bottom: 0,
   width: "100%",
   paddingVertical: 10,
-  backgroundColor: "rgba(198, 193, 193, 0.4)",
+  backgroundColor: "rgba(212, 199, 199, 0.4)",
   alignItems: "center",
 },
 
@@ -631,7 +717,7 @@ loaderContainer: {
   justifyContent: "center",
   alignItems: "center",
 },
-  title: { fontSize: 16, fontWeight: "bold", marginTop: 10 },
+  title: { fontSize: 16, fontWeight: "bold", marginTop: 2 },
   imageThumb: {
     borderWidth: 1,
     borderColor: "#ccc",

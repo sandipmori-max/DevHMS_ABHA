@@ -19,11 +19,9 @@ import {
   getERPDashboardThunk,
   getERPListDataThunk,
   getERPPageThunk,
-  logoutUserThunk,
-  switchAccountThunk,
 } from "../../../../store/slices/auth/thunk";
 import ErrorMessage from "../../../../components/error/Error";
-import { ERP_COLOR_CODE, setERPAppColor } from "../../../../utils/constants";
+import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import Footer from "./Footer";
 import PieChartSection from "./chartData";
@@ -33,23 +31,19 @@ import {
   getDashboardAI,
   getWorkedHours,
   isLatePunchIn,
-  isTokenValid,
   parseCustomDate,
 } from "../../../../utils/helpers";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 import CustomPicker from "../../page/components/CustomPicker";
 import {
-  clearAuthState,
   setActiveDashboardBranch,
   setActiveDashboardBranchId,
   setActiveDashboardFromDate,
   setActiveDashboardToDate,
   setActiveDashboardType,
   setActiveDashboardTypeId,
-  setDashboard,
   setDashboardLoading,
-  setEmptyMenu,
   updateAppMenuList,
 } from "../../../../store/slices/auth/authSlice";
 import {
@@ -66,7 +60,6 @@ import {
   Platform,
   useWindowDimensions,
   ScrollView,
-  Image,
   TouchableWithoutFeedback,
 } from "react-native";
 import TranslatedText from "./TranslatedText";
@@ -75,22 +68,6 @@ import { getDDLThunk } from "../../../../store/slices/dropdown/thunk";
 import CustomAlert from "../../../../components/alert/CustomAlert";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import { getLastPunchInThunk } from "../../../../store/slices/attendance/thunk";
-import {
-  createAccountsTable,
-  getActiveAccount,
-  getDBConnection,
-  logoutUser,
-} from "../../../../utils/sqlite";
-import { DevERPService } from "../../../../services/api";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useApi } from "../../../../hooks/useApi";
-import { resetAjaxState } from "../../../../store/slices/ajax/ajaxSlice";
-import { resetAttendanceState } from "../../../../store/slices/attendance/attendanceSlice";
-import { resetDropdownState } from "../../../../store/slices/dropdown/dropdownSlice";
-import { resetSyncLocationState } from "../../../../store/slices/location/syncLocationSlice";
-import { ERP_ICON } from "../../../../assets";
-import { useBaseLink } from "../../../../hooks/useBaseLink";
-import { HEADER_HEIGHT } from "../../../../constants";
 import { batch } from "react-redux";
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;

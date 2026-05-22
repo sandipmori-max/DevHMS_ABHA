@@ -17,7 +17,6 @@ import {
   Alert,
 } from "react-native";
 import {
-  launchCamera,
   launchImageLibrary,
   Asset,
 } from "react-native-image-picker";
@@ -30,6 +29,7 @@ import InputError from "../../../../components/error/InputError";
 import ImageResizer from "@bam.tech/react-native-image-resizer";
 import RNFS from "react-native-fs";
 import LableInfo from "./LableInfo";
+import { useNavigation } from "@react-navigation/native";
 
 const Media = ({
   isValidate,
@@ -40,6 +40,7 @@ const Media = ({
   isFromNew,
   errors,
 }: any) => {
+  const navigation = useNavigation();
   const { t } = useTranslation();
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -167,101 +168,102 @@ const Media = ({
 
               pendingCameraAction.current = false;
 
+              navigation.navigate("FaceCameraScreen", {
+                onCapture: async (photoPath) => {
+                  setTimeout(async () => {
+                    try {
+                      console.log("========== CAMERA START ==========");
 
 
-              launchCamera(
-                {
-                  mediaType: "photo",
-                  // ⚡ IMPORTANT FIX: avoid base64 at capture time
-                  includeBase64: false,
-                  quality: 0.5,
-                  maxWidth: 800,
-                  maxHeight: 800,
-                  saveToPhotos: false,
-                },
-                async (response) => {
-                  try {
+                      if (!photoPath) {
+                        console.log("Photo Path Missing");
+                        return;
+                      }
 
-                    if (response?.didCancel) {
-                      return;
-                    }
+                      // ✅ SAFE URI
+                      const originalUri = photoPath.startsWith("file://")
+                        ? photoPath
+                        : `file://${photoPath}`;
 
-                    if (response?.errorCode) {
+                      console.log("Original Photo:", originalUri);
 
-                      return;
-                    }
+                      let finalUri = originalUri;
+                      let finalBase64 = "";
 
-                    if (!response?.assets?.length) {
-                      return;
-                    }
+                      // ⚡ STEP 1: COMPRESS IMAGE
+                      console.log("Compressing Image...");
 
-                    const asset = response.assets[0];
+                      let resizedImage;
 
-                    if (!asset?.uri) {
-
-                      return;
-                    }
-
-                    let finalUri = asset.uri;
-
-                    let finalBase64 = asset.base64 || "";
-
-                    const base64SizeInMB =
-                      (finalBase64.length * 3) / 4 / 1024 / 1024;
-
-
-                    // AUTO COMPRESS
-                    if (base64SizeInMB > 5) {
-
-                      const resizedImage =
-                        await ImageResizer.createResizedImage(
-                          asset.uri,
-                          500,
-                          500,
+                      try {
+                        resizedImage = await ImageResizer.createResizedImage(
+                          originalUri,
+                          800,
+                          800,
                           "JPEG",
-                          40,
+                          70,
                           0,
                         );
+                      } catch (err) {
+                        console.log("⚠️ Primary compression failed, fallback...");
 
+                        resizedImage = await ImageResizer.createResizedImage(
+                          originalUri,
+                          600,
+                          600,
+                          "JPEG",
+                          50,
+                          0,
+                        );
+                      }
 
-                      const compressedBase64 = await RNFS.readFile(
-                        resizedImage.uri,
+                      console.log("Compressed Image:", resizedImage.uri);
+
+                      // ⚡ STEP 2: BASE64 AFTER COMPRESSION
+                      finalBase64 = await RNFS.readFile(
+                        resizedImage.uri.replace("file://", ""),
                         "base64",
                       );
 
-                      const compressedSize =
-                        (compressedBase64.length * 3) / 4 / 1024 / 1024;
+                      const compressedSizeMB =
+                        (finalBase64.length * 3) / 4 / 1024 / 1024;
+
+                      console.log(
+                        "Final Base64 Size:",
+                        compressedSizeMB.toFixed(2),
+                        "MB",
+                      );
 
                       finalUri = resizedImage.uri;
+                      setImageExists(true);
+                      setImageUri(finalUri);
+                      setCacheBuster(Date.now());
 
-                      finalBase64 = compressedBase64;
+                      console.log("Image State Updated");
+
+                      // 🚀 SEND TO BACKEND
+                      handleAttachment(
+                        `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
+                        item?.field,
+                      );
+
+
+                      console.log("========== CAMERA SUCCESS ==========");
+                    } catch (error) {
+                      console.log(
+                        "Image Process Error:",
+                        JSON.stringify(error, null, 2),
+                      );
+                      setImageExists(false);
+
                     }
-
-                    // UPDATE UI
-                    setImageUri(finalUri);
-
-                    setImageExists(true);
-
-                    setCacheBuster(Date.now());
-
-
-
-                    // SEND TO BACKEND
-                    handleAttachment(
-                      `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
-                      item.field,
-                    );
-
-
-                    // CLEAN MEMORY
-                    response.assets = [];
-
-                  } catch (err) {
-                    setImageExists(false);
-
-                  }
+                  }, 300);
                 },
-              );
+
+                isFromDashboard: false,
+                isBackActive: true,
+                isFromAttendance: false,
+              });
             }
           }
 
@@ -287,7 +289,7 @@ const Media = ({
           text: "Camera",
           icon: "photo-camera",
 
-          onPress: async () => {
+           onPress: async () => {
             try {
               console.log("========== CAMERA START ==========");
 
@@ -299,122 +301,102 @@ const Media = ({
                 return;
               }
 
-              launchCamera(
-                {
-                  mediaType: "photo",
-                  includeBase64: false,
-                  quality: 0.5,
-                  maxWidth: 800,
-                  maxHeight: 800,
-                  saveToPhotos: false,
-                },
-                async (response) => {
-                  try {
-                    console.log("Camera Response Received");
+              navigation.navigate("FaceCameraScreen", {
+                onCapture: async (photoPath) => {
+                  setTimeout(async () => {
+                    try {
+                      console.log("========== CAMERA START ==========");
 
-                    if (response?.didCancel) {
-                      console.log("User Cancelled Camera");
-                      return;
-                    }
 
-                    if (response?.errorCode) {
+                      if (!photoPath) {
+                        console.log("Photo Path Missing");
+                        return;
+                      }
+
+                      // ✅ SAFE URI
+                      const originalUri = photoPath.startsWith("file://")
+                        ? photoPath
+                        : `file://${photoPath}`;
+
+                      console.log("Original Photo:", originalUri);
+
+                      let finalUri = originalUri;
+                      let finalBase64 = "";
+
+                      // ⚡ STEP 1: COMPRESS IMAGE
+                      console.log("Compressing Image...");
+
+                      let resizedImage;
+
+                      try {
+                        resizedImage = await ImageResizer.createResizedImage(
+                          originalUri,
+                          800,
+                          800,
+                          "JPEG",
+                          70,
+                          0,
+                        );
+                      } catch (err) {
+                        console.log("⚠️ Primary compression failed, fallback...");
+
+                        resizedImage = await ImageResizer.createResizedImage(
+                          originalUri,
+                          600,
+                          600,
+                          "JPEG",
+                          50,
+                          0,
+                        );
+                      }
+
+                      console.log("Compressed Image:", resizedImage.uri);
+
+                      // ⚡ STEP 2: BASE64 AFTER COMPRESSION
+                      finalBase64 = await RNFS.readFile(
+                        resizedImage.uri.replace("file://", ""),
+                        "base64",
+                      );
+
+                      const compressedSizeMB =
+                        (finalBase64.length * 3) / 4 / 1024 / 1024;
+
                       console.log(
-                        "Camera Error:",
-                        response?.errorCode,
-                        response?.errorMessage,
-                      );
-                      return;
-                    }
-
-                    if (!response?.assets?.length) {
-                      console.log("No Assets Found");
-                      return;
-                    }
-
-                    const asset = response.assets[0];
-
-                    console.log("Original Asset:", {
-                      uri: asset?.uri,
-                      type: asset?.type,
-                      fileName: asset?.fileName,
-                      fileSize: asset?.fileSize,
-                      width: asset?.width,
-                      height: asset?.height,
-                    });
-
-                    if (!asset?.uri) {
-                      console.log("Asset URI Missing");
-                      return;
-                    }
-
-                    let finalUri = asset.uri;
-                    let finalBase64 = "";
-
-                    // 📦 STEP 1: estimate size safely (fallback using fileSize if available)
-                    const approxSizeMB =
-                      asset.fileSize ? asset.fileSize / 1024 / 1024 : 0;
-
-                    console.log("Approx Image Size:", approxSizeMB.toFixed(2), "MB");
-
-                    // ⚡ STEP 2: compress ALWAYS for safety (not only >5MB)
-                    console.log("Compressing Image...");
-
-                    const resizedImage =
-                      await ImageResizer.createResizedImage(
-                        asset.uri,
-                        800,
-                        800,
-                        "JPEG",
-                        70, // better quality than 40
-                        0,
+                        "Final Base64 Size:",
+                        compressedSizeMB.toFixed(2),
+                        "MB",
                       );
 
-                    console.log("Compressed Image Path:", resizedImage.uri);
+                      finalUri = resizedImage.uri;
+                      setImageExists(true);
+                      setImageUri(finalUri);
+                      setCacheBuster(Date.now());
 
-                    // ⚡ STEP 3: convert to base64 AFTER compression
-                    finalBase64 = await RNFS.readFile(
-                      resizedImage.uri,
-                      "base64",
-                    );
+                      console.log("Image State Updated");
 
-                    const compressedSizeMB =
-                      (finalBase64.length * 3) / 4 / 1024 / 1024;
-
-                    console.log(
-                      "Final Base64 Size:",
-                      compressedSizeMB.toFixed(2),
-                      "MB",
-                    );
-
-                    finalUri = resizedImage.uri;
-
-                    // 🧠 UI UPDATE
-                    setImageExists(true);
-                    setImageUri(finalUri);
-                    setCacheBuster(Date.now());
-
-                    console.log("Image State Updated");
-
-                    // 🚀 SEND TO BACKEND
-                    handleAttachment(
-                      `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
-                      item?.field,
-                    );
-
-                    console.log("Base64 Sent To Backend");
-
-                    // 🧹 MEMORY CLEANUP (important for Samsung crash fix)
+                      // 🚀 SEND TO BACKEND
+                      handleAttachment(
+                        `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
+                        item?.field,
+                      );
 
 
-                    console.log("Memory Cleaned");
+                      console.log("========== CAMERA SUCCESS ==========");
+                    } catch (error) {
+                      console.log(
+                        "Image Process Error:",
+                        JSON.stringify(error, null, 2),
+                      );
+                      setImageExists(false);
 
-                    console.log("========== CAMERA SUCCESS ==========");
-                  } catch (err) {
-                    console.log("Image Process Error:", JSON.stringify(err, null, 2));
-                    setImageExists(false);
-                  }
+                    }
+                  }, 300);
                 },
-              );
+
+                isFromDashboard: false,
+                isBackActive: true,
+                isFromAttendance: false,
+              });
             } catch (error) {
               console.log("Camera Launch Error:", JSON.stringify(error, null, 2));
             }
@@ -497,122 +479,102 @@ const Media = ({
                 return;
               }
 
-              launchCamera(
-                {
-                  mediaType: "photo",
-                  // ⚡ IMPORTANT FIX: avoid base64 at capture time
-                  includeBase64: false,
-                  quality: 0.5,
-                  maxWidth: 800,
-                  maxHeight: 800,
-                  saveToPhotos: false,
-                },
-                async (response) => {
-                  try {
-                    console.log("Camera Response Received");
+              navigation.navigate("FaceCameraScreen", {
+                onCapture: async (photoPath) => {
+                  setTimeout(async () => {
+                    try {
+                      console.log("========== CAMERA START ==========");
 
-                    if (response?.didCancel) {
-                      console.log("User Cancelled Camera");
-                      return;
-                    }
 
-                    if (response?.errorCode) {
+                      if (!photoPath) {
+                        console.log("Photo Path Missing");
+                        return;
+                      }
+
+                      // ✅ SAFE URI
+                      const originalUri = photoPath.startsWith("file://")
+                        ? photoPath
+                        : `file://${photoPath}`;
+
+                      console.log("Original Photo:", originalUri);
+
+                      let finalUri = originalUri;
+                      let finalBase64 = "";
+
+                      // ⚡ STEP 1: COMPRESS IMAGE
+                      console.log("Compressing Image...");
+
+                      let resizedImage;
+
+                      try {
+                        resizedImage = await ImageResizer.createResizedImage(
+                          originalUri,
+                          800,
+                          800,
+                          "JPEG",
+                          70,
+                          0,
+                        );
+                      } catch (err) {
+                        console.log("⚠️ Primary compression failed, fallback...");
+
+                        resizedImage = await ImageResizer.createResizedImage(
+                          originalUri,
+                          600,
+                          600,
+                          "JPEG",
+                          50,
+                          0,
+                        );
+                      }
+
+                      console.log("Compressed Image:", resizedImage.uri);
+
+                      // ⚡ STEP 2: BASE64 AFTER COMPRESSION
+                      finalBase64 = await RNFS.readFile(
+                        resizedImage.uri.replace("file://", ""),
+                        "base64",
+                      );
+
+                      const compressedSizeMB =
+                        (finalBase64.length * 3) / 4 / 1024 / 1024;
+
                       console.log(
-                        "Camera Error:",
-                        response?.errorCode,
-                        response?.errorMessage,
-                      );
-                      return;
-                    }
-
-                    if (!response?.assets?.length) {
-                      console.log("No Assets Found");
-                      return;
-                    }
-
-                    const asset = response.assets[0];
-
-                    console.log("Original Asset:", {
-                      uri: asset?.uri,
-                      type: asset?.type,
-                      fileName: asset?.fileName,
-                      fileSize: asset?.fileSize,
-                      width: asset?.width,
-                      height: asset?.height,
-                    });
-
-                    if (!asset?.uri) {
-                      console.log("Asset URI Missing");
-                      return;
-                    }
-
-                    let finalUri = asset.uri;
-                    let finalBase64 = "";
-
-                    // 📦 STEP 1: estimate size safely (fallback using fileSize if available)
-                    const approxSizeMB =
-                      asset.fileSize ? asset.fileSize / 1024 / 1024 : 0;
-
-                    console.log("Approx Image Size:", approxSizeMB.toFixed(2), "MB");
-
-                    // ⚡ STEP 2: compress ALWAYS for safety (not only >5MB)
-                    console.log("Compressing Image...");
-
-                    const resizedImage =
-                      await ImageResizer.createResizedImage(
-                        asset.uri,
-                        800,
-                        800,
-                        "JPEG",
-                        70, // better quality than 40
-                        0,
+                        "Final Base64 Size:",
+                        compressedSizeMB.toFixed(2),
+                        "MB",
                       );
 
-                    console.log("Compressed Image Path:", resizedImage.uri);
+                      finalUri = resizedImage.uri;
+                      setImageExists(true);
+                      setImageUri(finalUri);
+                      setCacheBuster(Date.now());
 
-                    // ⚡ STEP 3: convert to base64 AFTER compression
-                    finalBase64 = await RNFS.readFile(
-                      resizedImage.uri,
-                      "base64",
-                    );
+                      console.log("Image State Updated");
 
-                    const compressedSizeMB =
-                      (finalBase64.length * 3) / 4 / 1024 / 1024;
+                      // 🚀 SEND TO BACKEND
+                      handleAttachment(
+                        `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
+                        item?.field,
+                      );
 
-                    console.log(
-                      "Final Base64 Size:",
-                      compressedSizeMB.toFixed(2),
-                      "MB",
-                    );
 
-                    finalUri = resizedImage.uri;
+                      console.log("========== CAMERA SUCCESS ==========");
+                    } catch (error) {
+                      console.log(
+                        "Image Process Error:",
+                        JSON.stringify(error, null, 2),
+                      );
+                      setImageExists(false);
 
-                    // 🧠 UI UPDATE
-                    setImageExists(true);
-                    setImageUri(finalUri);
-                    setCacheBuster(Date.now());
-
-                    console.log("Image State Updated");
-
-                    // 🚀 SEND TO BACKEND
-                    handleAttachment(
-                      `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
-                      item?.field,
-                    );
-
-                    console.log("Base64 Sent To Backend");
-
-                    // 🧹 MEMORY CLEANUP (important for Samsung crash fix)
-
-                    console.log("Memory Cleaned");
-
-                    console.log("========== CAMERA SUCCESS ==========");
-                  } catch (err) {
-                    console.log("Image Process Error:", JSON.stringify(err, null, 2));
-                    setImageExists(false);
-                  }
+                    }
+                  }, 300);
                 },
-              );
+
+                isFromDashboard: false,
+                isBackActive: true,
+                isFromAttendance: false,
+              });
             } catch (error) {
               console.log("Camera Launch Error:", JSON.stringify(error, null, 2));
             }

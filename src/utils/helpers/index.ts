@@ -2,6 +2,7 @@ import { ERP_GIF, ERP_ICON } from "../../assets";
 import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import moment from "moment";
 import {
+  Alert,
   Dimensions,
   Linking,
   PermissionsAndroid,
@@ -113,11 +114,13 @@ export const requestCameraAndLocationPermission =
       const locationStatus = await check(locationPerm);
 
       let cameraGranted = false;
+
       if (cameraStatus === RESULTS.GRANTED) {
         cameraGranted = true;
       } else if (cameraStatus === RESULTS.DENIED) {
         const res = await request(cameraPerm);
         cameraGranted = res === RESULTS.GRANTED;
+
         if (!cameraGranted) {
           return false;
         }
@@ -126,24 +129,17 @@ export const requestCameraAndLocationPermission =
       }
 
       let locationGranted = false;
+
       if (locationStatus === RESULTS.GRANTED) {
         locationGranted = true;
       } else if (locationStatus === RESULTS.DENIED) {
         const res = await request(locationPerm);
         locationGranted = res === RESULTS.GRANTED;
-        // if (!locationGranted) {
-        //   Alert.alert('Location Permission Denied', 'Location access is required for this feature.');
-        // }
-        return false;
+
+        if (!locationGranted) {
+          return false;
+        }
       } else if (locationStatus === RESULTS.BLOCKED) {
-        // Alert.alert(
-        //   'Location Permission Blocked',
-        //   'Location access has been permanently denied. Please enable it in Settings.',
-        //   [
-        //     { text: 'Cancel', style: 'cancel' },
-        //     { text: 'Open Settings', onPress: () => Linking.openSettings() },
-        //   ],
-        // );
         return false;
       }
 
@@ -306,6 +302,7 @@ export const parseCustomDate = (dateStr: string): Date => {
   ].indexOf(monthStr);
   return new Date(Number(year), month, Number(day));
 };
+
 export const parseCustomDatePage = (dateStr: string): Date => {
   if (!dateStr) return new Date();
 
@@ -393,6 +390,7 @@ export const formatDate = (dateStr) => {
   if (moment().subtract(1, "day").isSame(date, "day")) return "Yesterday";
   return date.format("MMM DD, YYYY");
 };
+
 export function formatDateHr(input, isFullDate) {
   if (!input) return input;
 
@@ -451,6 +449,7 @@ function buildFormatted(date, isFullDate) {
 export const isTokenValid = (tokenValidTill: string) => {
   return new Date(tokenValidTill).getTime() > Date.now();
 };
+
 export async function requestLocationPermissions(): Promise<
   "granted" | "foreground-only" | "denied" | "blocked"
 > {
@@ -627,12 +626,61 @@ export const goToSettings = () => {
   }
 };
 
-export const handlePhonePress = (phoneNumber: string) => {
-  Linking.openURL(`tel:${phoneNumber}`);
+export const handlePhonePress = async (phoneNumber: string) => {
+  const cleanedNumber = phoneNumber?.trim();
+
+  // Validate
+  if (!cleanedNumber) {
+    Alert.alert("Invalid Phone Number", "Phone number is empty.");
+    return;
+  }
+
+  const phoneRegex = /^[0-9+\-\s()]+$/;
+
+  if (!phoneRegex.test(cleanedNumber)) {
+    Alert.alert("Invalid Phone Number", "Please enter a valid phone number.");
+    return;
+  }
+
+  const url = `tel:${cleanedNumber}`;
+
+  const supported = await Linking.canOpenURL(url);
+
+  if (!supported) {
+    Alert.alert("Error", "Calling is not supported on this device.");
+    return;
+  }
+
+  Linking.openURL(url);
 };
 
-export const handleEmailPress = (emailAddress: any) => {
-  Linking.openURL(`mailto:${emailAddress}`);
+export const handleEmailPress = async (emailAddress: string) => {
+  const cleanedEmail = emailAddress?.trim();
+
+  // Validate
+  if (!cleanedEmail) {
+    Alert.alert("Invalid Email", "Email address is empty.");
+    return;
+  }
+
+  const emailRegex =
+    /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
+  if (!emailRegex.test(cleanedEmail)) {
+    Alert.alert("Invalid Email", "Please enter a valid email address.");
+    return;
+  }
+
+  const url = `mailto:${cleanedEmail}`;
+
+  const supported = await Linking.canOpenURL(url);
+
+  if (!supported) {
+    Alert.alert("Error", "Email app is not available on this device.");
+    return;
+  }
+
+  Linking.openURL(url);
 };
 export const handleLocationPress = (location: string) => {
   if (!location) return;
@@ -1009,48 +1057,109 @@ export const applyActionsToControls = (controls, actions) => {
   });
 };
 
-const collectFailedMessages = (condition, values, messages = []) => {
+const collectFailedMessages = (
+  condition,
+  values,
+  messages = []
+) => {
   if (!condition) return messages;
 
-  // Nested rules case
-  if (condition.logic && Array.isArray(condition.rules)) {
+  // nested rules
+  if (
+    condition.logic &&
+    Array.isArray(condition.rules)
+  ) {
     condition.rules.forEach((rule) => {
       collectFailedMessages(rule, values, messages);
     });
+
     return messages;
   }
 
-  // Leaf rule
-  const isValid = evaluateCondition(condition, values);
+  // leaf rule
+  const isValid = evaluateCondition(
+    condition,
+    values
+  );
 
   if (!isValid && condition.message) {
-    messages.push(condition.message);
+    messages.push({
+      field: condition.left,
+      message: condition.message,
+    });
   }
 
   return messages;
 };
 
-export const evaluateRulesWithActions = (rules, formValues, logic = "AND") => {
-  if (!rules) return { isValid: true, actions: [], messages: [] };
+export const evaluateRulesWithActions = (
+  rules,
+  formValues,
+  logic = "AND"
+) => {
+  if (!rules) {
+    return {
+      isValid: true,
+      actions: [],
+      messages: [],
+      fieldErrors: [],
+    };
+  }
 
-  const ruleArray = Array.isArray(rules) ? rules : [rules];
+  const ruleArray = Array.isArray(rules)
+    ? rules
+    : [rules];
 
   const results = [];
+
   let actions = [];
   let messages = [];
+  let fieldErrors = [];
 
   ruleArray.forEach((rule) => {
-    const isValid = evaluateRules(rule, formValues);
+    const isValid = evaluateRules(
+      rule,
+      formValues
+    );
+
     results.push(isValid);
 
-    actions = actions.concat(collectActionsFromRule2(rule, formValues));
-    messages = messages.concat(collectFailedMessages(rule, formValues));
+    actions = actions.concat(
+      collectActionsFromRule2(
+        rule,
+        formValues
+      )
+    );
+
+    const failedMessages =
+      collectFailedMessages(
+        rule,
+        formValues
+      );
+
+    messages = messages.concat(
+      failedMessages.map(
+        (x) => x.message
+      )
+    );
+
+    // 🔥 field validations
+    fieldErrors = fieldErrors.concat(
+    failedMessages.map((x) => x.message)
+  );
   });
 
   const finalResult =
-    logic === "OR" ? results.some(Boolean) : results.every(Boolean);
+    logic === "OR"
+      ? results.some(Boolean)
+      : results.every(Boolean);
 
-  return { isValid: finalResult, actions, messages };
+  return {
+    isValid: finalResult,
+    actions,
+    messages,
+    fieldErrors,
+  };
 };
 
 export const evaluateFormula = (formula, values) => {

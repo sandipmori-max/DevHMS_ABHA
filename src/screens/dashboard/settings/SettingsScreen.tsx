@@ -51,7 +51,7 @@ import { resetAttendanceState } from "../../../store/slices/attendance/attendanc
 import { resetDropdownState } from "../../../store/slices/dropdown/dropdownSlice";
 import { resetSyncLocationState } from "../../../store/slices/location/syncLocationSlice";
 import { Easing } from "react-native";
-import { ERP_APP_VERSION, HEADER_HEIGHT } from "../../../constants";
+import { ERP_APP_VERSION } from "../../../constants";
 import { setReloadApp } from "../../../store/slices/reloadApp/reloadAppSlice";
 
 interface SettingItem {

@@ -32,11 +32,12 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
   let ATTENDANCE_LEVEL = attendanceSecurityLevel
     ? parseInt(attendanceSecurityLevel)
     : 0;
-  const { onCapture, isFromDashboard } = route.params;
+  const { onCapture, isFromDashboard, isBackActive, isFromAttendance } = route.params;
   const camera = useRef(null);
-
-  const device = useCameraDevice("front");
-  const baseLink = useBaseLink();
+  const [cameraPosition, setCameraPosition] = useState<"front" | "back">(
+    "front",
+  );
+  const device = useCameraDevice(cameraPosition); const baseLink = useBaseLink();
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
     title: "",
@@ -54,7 +55,9 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
     };
     getPermission();
   }, []);
-
+  const toggleCamera = () => {
+    setCameraPosition(prev => (prev === "front" ? "back" : "front"));
+  };
   const { detectFaces } = useFaceDetector({
     performanceMode: "fast",
     landmarkMode: "all",
@@ -304,8 +307,8 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
         device={device}
         isActive={true}
         photo={true}
-        frameProcessor={ATTENDANCE_LEVEL === 1 ? frameProcessor : undefined}
-        frameProcessorFps={ATTENDANCE_LEVEL === 1 ? 3 : undefined}
+        frameProcessor={ isFromAttendance ? ATTENDANCE_LEVEL === 1 ? frameProcessor : undefined : undefined}
+        frameProcessorFps={isFromAttendance ? ATTENDANCE_LEVEL === 1 ? 3 : undefined : undefined}
         format={format}
       />
 
@@ -337,7 +340,7 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
         </TouchableOpacity>
 
         {
-          ATTENDANCE_LEVEL === 1 ?   <Text style={styles.title}>Face Verification</Text> :  <Text style={styles.title}>Click photo</Text>
+         isFromAttendance && ATTENDANCE_LEVEL === 1 ? <Text style={styles.title}>Face Verification</Text> : <Text style={styles.title}>Capture photo</Text>
         }
 
         <View style={{ width: 30 }} />
@@ -347,38 +350,62 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
           style={[
             styles.faceFrame,
             !isLandscape && {
-              borderWidth: ATTENDANCE_LEVEL === 1 ? 1 : 0,
+              borderWidth: isFromAttendance && ATTENDANCE_LEVEL === 1 ? 1 : 0,
 
-              borderColor:  ATTENDANCE_LEVEL === 1 ? faceDetected ? "#00ff00" : "#ff3b30" : "",
+              borderColor: isFromAttendance && ATTENDANCE_LEVEL === 1 ? faceDetected ? "#00ff00" : "#ff3b30" : "",
             },
           ]}
         />
       </View>
 
-{
-  ATTENDANCE_LEVEL === 1  &&  <View
-        style={[
-          styles.messageContainer,
-          isLandscape && {
-            top: 50,
-          },
-        ]}
-      >
-        <Text style={styles.message}>
-          {faceDetected ? "Face Detected" : "Align your face in the frame"}
-        </Text>
-      </View>
-}
-     
+      {
+       isFromAttendance && ATTENDANCE_LEVEL === 1 && <View
+          style={[
+            styles.messageContainer,
+            isLandscape && {
+              top: 50,
+            },
+          ]}
+        >
+          <Text style={styles.message}>
+            {faceDetected ? "Face Detected" : "Align your face in the frame"}
+          </Text>
+        </View>
+      }
+
 
       <View style={styles.bottomContainer}>
-        <TouchableOpacity
-          disabled={ATTENDANCE_LEVEL === 1 ? !faceDetected : false }
-          onPress={takePhoto }
-          style={[styles.captureOuter, { opacity: ATTENDANCE_LEVEL === 1 ? faceDetected ? 1 : 0.4 : 1 }]}
+        <View
+          style={[styles.captureOuter2,]}
         >
-          <View style={styles.captureInner} />
+
+        </View>
+
+        <TouchableOpacity
+          disabled={isFromAttendance && ATTENDANCE_LEVEL === 1 ? !faceDetected : false}
+          onPress={takePhoto}
+          style={[styles.captureOuter, { opacity: isFromAttendance && ATTENDANCE_LEVEL === 1 ? faceDetected ? 1 : 0.4 : 1 }]}
+        >
+          <View style={styles.captureInner} >
+            <MaterialIcons name="camera" size={24} color="#000" />
+          </View>
         </TouchableOpacity>
+        {
+          isBackActive ? <TouchableOpacity
+            onPress={toggleCamera}
+            style={[styles.captureOuter, { opacity: isFromAttendance && ATTENDANCE_LEVEL === 1 ? faceDetected ? 1 : 0.4 : 1 }]}
+          >
+            <View style={styles.captureInner3} >
+              <MaterialIcons name="settings-backup-restore" size={34} color="#000" />
+            </View>
+          </TouchableOpacity> : <View
+            style={[styles.captureOuter2,]}
+          >
+
+          </View>
+        }
+
+
       </View>
 
       <CustomAlert
@@ -465,23 +492,42 @@ const styles = StyleSheet.create({
     bottom: 60,
     width: "100%",
     alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 40,
   },
 
-  captureOuter: {
+  captureOuter2: {
     width: 80,
     height: 80,
-    borderRadius: 40,
-    borderWidth: 5,
-    borderColor: "#fff",
+    borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
   },
-
+  captureOuter: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
+    borderWidth: 4,
+    borderColor: "#d8d4d4",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+captureInner3: {
+    width: 55,
+    height: 55,
+    borderRadius: 10,
+    backgroundColor: "#d8d4d4",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   captureInner: {
     width: 55,
     height: 55,
-    borderRadius: 30,
+    borderRadius: 10,
     backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

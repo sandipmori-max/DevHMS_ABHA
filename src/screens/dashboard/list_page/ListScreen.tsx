@@ -56,8 +56,6 @@ import {
 } from "../../../store/slices/auth/authSlice";
 import { getDDLThunk } from "../../../store/slices/dropdown/thunk";
 import TableView from "./components/TableView";
-import AppMapView from "./components/AppMapView";
-import { HEADER_HEIGHT } from "../../../constants";
 import GroupFilterModal from "./components/GroupFilterModal";
 import SortingFilterModal from "./components/SortingFilterModal";
 
@@ -273,13 +271,14 @@ const ListScreen = () => {
             />
           )}
           {/* {
-            filteredData.length > 0 && !isFromAlertCard && <ERPIcon
+             <ERPIcon
               name={isTableView ? 'list' : 'apps'}
               onPress={() => {
+                onRefresh();
                 setIsTableView(!isTableView);
               }}
             />
-          } */}
+          }  */}
 
           {
             isTableView && <ERPIcon
@@ -699,7 +698,6 @@ const ListScreen = () => {
   useFocusEffect(
     useCallback(() => {
       fetchListDataV2();
-       
     }, [fetchListDataV2, selectedBranchIds, toDate, fromDate]),
   );
 

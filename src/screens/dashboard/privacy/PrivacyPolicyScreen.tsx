@@ -6,7 +6,6 @@ import React, {
   useState,
 } from "react";
 import {
-  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -20,9 +19,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useAppSelector } from "../../../store/hooks";
 import useTranslations from "../../../hooks/useTranslations";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import ERPIcon from "../../../components/icon/ERPIcon";
 import { useBaseLink } from "../../../hooks/useBaseLink";
-import { HEADER_HEIGHT } from "../../../constants";
 
 const PrivacyPolicyScreen = () => {
   const navigation = useNavigation<any>();
@@ -74,11 +71,7 @@ const PrivacyPolicyScreen = () => {
     return defaultUrl;
   }, [passedUrl, isFromChart, item, token, baseLink]);
 
-  // Reload on landscape
-  useEffect(() => {
-    reloadWebView();
-  }, [isLandscape]);
-
+  
   // Cleanup
   useEffect(() => {
     return () => {
