@@ -14,7 +14,8 @@ import useFcmToken from '../../../../hooks/useFcmToken';
 import { ERP_COLOR_CODE } from '../../../../utils/constants';
 import { erpAddAccountValidationSchema } from '../../../../utils/validations/add_accounts';
 import TranslatedText from '../../../dashboard/tabs/home/TranslatedText';
- 
+import DeviceInfo from "react-native-device-info";
+
 const LoginForm: React.FC<LoginFormProps> = ({
   deviceId,
   isLoading,
