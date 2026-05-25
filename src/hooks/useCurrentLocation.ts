@@ -4,12 +4,14 @@
     useCallback,
     useRef,
   } from "react";
+import Geolocation from "@react-native-community/geolocation";
 
   import {
     PermissionsAndroid,
     Platform,
     NativeModules,
   } from "react-native";
+import DeviceInfo from "react-native-device-info";
 
   type Coords = {
     latitude: number;
@@ -73,13 +75,50 @@
       setError(null);
 
       const hasPermission = await requestLocationPermission();
+      console.log("Location permission:", hasPermission);
       if (!hasPermission) {
         setError("Location permission denied");
         return;
       }
       await new Promise(res => setTimeout(res, 400));
-      const res =
-        await NativeModules.LocationModule.getCurrentLocation();
+       const androidVersion = parseInt(DeviceInfo.getSystemVersion(), 10);
+        if (androidVersion <= 9 && Platform.OS === "android") {
+          Geolocation.getCurrentPosition(
+            position => {
+              const { latitude, longitude } = position.coords;
+              setCoords({ latitude, longitude, accuracy });
+              setAddress(`${latitude},${longitude}`);
+            },
+            error => {
+              console.log('FINAL ERROR:', error);
+
+              let message = '';
+
+              switch (error.code) {
+                case 1:
+                  message = 'Location permission denied';
+                  break;
+                case 2:
+                  message = 'Location unavailable (GPS/Network issue)';
+                  break;
+                case 3:
+                  message = 'Location timeout (slow network)';
+                  break;
+                default:
+                  message = error?.message || 'Failed to fetch location';
+              }
+              setError(message);
+            },
+            {
+              enableHighAccuracy: false,
+              timeout: 10000,
+              maximumAge: 10000,
+            },
+          );
+          return;
+        }
+          
+      const res = await NativeModules.LocationModule.getCurrentLocation();
 
       const { latitude, longitude, accuracy } = res;
 

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Animated, Text, View, Dimensions, StyleSheet, Modal, Pressable, TouchableOpacity } from "react-native";
+import { Animated, Text, View, Dimensions, StyleSheet, Modal, Pressable, TouchableOpacity, Platform } from "react-native";
 import AutoHeightWebView from "../../page/components/AutoHeightWebView";
 import TranslatedText from "./TranslatedText";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
@@ -43,10 +43,10 @@ const MarqueeFooterV2 = ({ html }: any) => {
 
 
 const MarqueeFooter = ({ html }: any) => {
-const STORAGE_KEY = "BIRTHDAY_MODAL_DATA";
-   const { user, attendanceDone: isAttendanceDone, attendanceSecurityLevel } = useAppSelector(
-      (state) => state?.auth,
-    );
+  const STORAGE_KEY = "BIRTHDAY_MODAL_DATA";
+  const { user, attendanceDone: isAttendanceDone, attendanceSecurityLevel } = useAppSelector(
+    (state) => state?.auth,
+  );
   const theme = useAppSelector((state) => state?.theme.mode);
   const [visible, setVisible] = useState(false);
 
@@ -77,50 +77,61 @@ const STORAGE_KEY = "BIRTHDAY_MODAL_DATA";
       try {
         const now = new Date();
 
-      const today = `${now.getFullYear()}-${String(
-        now.getMonth() + 1
-      ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+        const today = `${now.getFullYear()}-${String(
+          now.getMonth() + 1
+        ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-      console.log("today", today)
-        const usersKey = users.join(",");
+        const usersKey = [...users].sort().join(",");
 
         const stored = await AsyncStorage.getItem(STORAGE_KEY);
 
         if (stored) {
-          const parsed = JSON.parse(stored);
+          let parsed = null;
 
-          const isSameDate = parsed.date === today;
-          const isSameUsers = parsed.usersKey === usersKey;
-           const isSameLoggedInUser = parsed.user.id === user?.id;
-            console.log("sSameDate && isSameUsers && isSameLoggedInUser", isSameDate && isSameUsers && isSameLoggedInUser)
-          // ❌ same day + same users + same isSameLoggedInUser → don't show
-          if (isSameDate && isSameUsers && isSameLoggedInUser) return;
+          try {
+            parsed = JSON.parse(stored);
+          } catch (e) {
+            parsed = null;
+          }
+
+          if (parsed) {
+            const isSameDate = parsed?.date === today;
+            const isSameUsers = parsed?.usersKey === usersKey;
+            const isSameLoggedInUser =
+              parsed?.user?.id === user?.id;
+
+            if (
+              isSameDate &&
+              isSameUsers &&
+              isSameLoggedInUser
+            ) {
+              return;
+            }
+          }
         }
 
-        // ✅ Show modal
         setVisible(true);
 
         Animated.parallel([
           Animated.timing(opacityAnim, {
             toValue: 1,
             duration: 300,
-            useNativeDriver: true,
+            useNativeDriver: Platform.OS === "ios",
           }),
           Animated.spring(scaleAnim, {
             toValue: 1,
             friction: 6,
-            useNativeDriver: true,
+            useNativeDriver: Platform.OS === "ios",
           }),
         ]).start();
 
-        // ✅ Save data
         await AsyncStorage.setItem(
           STORAGE_KEY,
           JSON.stringify({
             date: today,
-            usersKey: usersKey,
-            user: user
-          })
+            usersKey,
+            user,
+          }),
         );
       } catch (e) {
         console.log("Storage error", e);
@@ -153,7 +164,7 @@ const STORAGE_KEY = "BIRTHDAY_MODAL_DATA";
       {/* Modal */}
       <Modal transparent visible={visible} animationType="none">
         <View style={styles.overlay}>
-          <Pressable style={StyleSheet.absoluteFill} onPress={()=>{
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => {
 
           }} />
 
@@ -288,7 +299,7 @@ const styles = StyleSheet.create({
     width: "85%",
     borderRadius: 12,
     padding: 18,
-   },
+  },
 
   iconWrapper: {
     position: "absolute",
@@ -297,7 +308,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ff9800",
     padding: 12,
     borderRadius: 50,
-   },
+  },
 
   header: {
     marginTop: 10,

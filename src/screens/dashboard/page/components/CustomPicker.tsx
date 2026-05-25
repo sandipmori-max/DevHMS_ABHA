@@ -22,6 +22,7 @@ import InputError from "../../../../components/error/InputError";
 import NoData from "../../../../components/no_data/NoData";
 import TranslatedText from "../../tabs/home/TranslatedText";
 import { getDashboardIcon } from "../../../../utils/helpers";
+import LableInfo from "./LableInfo";
 
 const CustomPicker = ({
   isValidate,
@@ -120,46 +121,13 @@ const CustomPicker = ({
   return (
     <View style={{ marginBottom: isFromDashboard ? 2 : Platform.OS === 'android' ? 6  :8 }}>
       {/* Label */}
-      {!isFromChild && !isFromDashboard && !isForceOpen && (
-        <TranslatedText
-          numberOfLines={1}
-          text={label}
-          style={{ color: "white", marginBottom: 4 }}
-        ></TranslatedText>
-      )}
-
-      {!isFromChild && isForceOpen && (
-        <View style={{ flexDirection: "row" }}>
-          <TranslatedText
-            numberOfLines={1}
-            text={label}
-            style={[
-              styles.label,
-              theme === "dark" && { color: "white" },
-              {
-                maxWidth: 120,
-              },
-            ]}
-          ></TranslatedText>
-          {label.length > 40 && item?.tooltip !== label && (
-            <TranslatedText
-              numberOfLines={1}
-              text={`- ( ${item?.tooltip} )`}
-              style={[
-                styles.label,
-                theme === "dark" && { color: "white" },
-                {
-                  maxWidth: 80,
-                },
-              ]}
-            ></TranslatedText>
-          )}
-          {item?.mandatory === "1" && (
-            <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
-          )}
-        </View>
-      )}
-
+     
+      <LableInfo 
+      isFromDashboard={isFromDashboard}
+      isFromChild={isFromChild}
+        item={item}
+        theme={theme}
+      />
       {/* Picker Touch */}
       <TouchableOpacity
         style={[

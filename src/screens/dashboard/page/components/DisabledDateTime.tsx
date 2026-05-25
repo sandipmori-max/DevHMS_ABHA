@@ -1,16 +1,14 @@
-import { View, Text, Platform } from "react-native";
-import React from "react";
+import { View, Text, Platform, TouchableOpacity } from "react-native";
 import { styles } from "../page_style";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import {
   formatDateHr,
 } from "../../../../utils/helpers";
 import { useAppSelector } from "../../../../store/hooks";
-import ShortAction from "./ShortAction";
-import InfoTooltip from "./Tooltip";
+
 import LableInfo from "./LableInfo";
 
-const DisabledDateTime = ({ item, value, type, isFromChild = false }: any) => {
+const DisabledDateTime = ({ item, value, type, isFromChild = false, handleOnSubmit }: any) => {
   console.log("item", item?.title)
   const theme = useAppSelector((state) => state?.theme.mode);
 
@@ -26,6 +24,12 @@ const DisabledDateTime = ({ item, value, type, isFromChild = false }: any) => {
     return value || "-";
   };
 
+  const handleTimeGet = () => {
+    const now = new Date();
+    const formatted = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+    handleOnSubmit(item, formatted);
+  };
+
   return (
     <View style={{ marginBottom: Platform.OS === 'android' ? 6 : 8 }}>
       <LableInfo isFromChild={isFromChild}
@@ -38,10 +42,11 @@ const DisabledDateTime = ({ item, value, type, isFromChild = false }: any) => {
           styles.disabledBox,
           theme === "dark" && {
             backgroundColor: 'gray',
-          },
-          isFromChild && {
-            padding: 9,
-            borderRadius: 4,
+          }, 
+          {
+            justifyContent: 'space-between',
+            flexDirection: 'row',
+             alignItems: 'center',
           }
         ]}
       >
@@ -51,22 +56,24 @@ const DisabledDateTime = ({ item, value, type, isFromChild = false }: any) => {
           {getDisplayValue()}
         </Text>
 
-         <View style={{
-            height: 30, 
-            justifyContent:'center',
-            alignItems:'center',
-             backgroundColor: 'blue',
-             borderRadius: 4,
-             paddingHorizontal: 8,
-         }}>
+        <TouchableOpacity
+          onPress={handleTimeGet}
+          style={{
+            height: 30,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'blue',
+            borderRadius: 4,
+            paddingHorizontal: 8,
+          }}>
           <Text style={{
             color: 'white',
           }}>
             {
               item?.field.includes("starttime") ? "Start Time" : "End Time"
             }
-           </Text>
-         </View>
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

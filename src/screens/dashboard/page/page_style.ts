@@ -52,6 +52,7 @@ export const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
 
   label: {
+    width:'100%',
     fontSize: 14,
     marginBottom: 6,
     fontWeight: "600",
@@ -79,7 +80,8 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
     borderRadius: 6,
-    padding: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 6,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -118,7 +120,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
     borderRadius: 6,
-    padding: 8,
+    padding: 6,
     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
     flexDirection: "row",
     justifyContent: "space-between",

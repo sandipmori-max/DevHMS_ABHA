@@ -447,22 +447,6 @@
 		},
 		{
 			"backtrace" : 4,
-			"id" : "react_codegen_VectorIconsMaterialIcons::@31616434fa1e3b43792c"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_RNCConfigSpec::@89f1b79ed4954e2f2cff"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_RNHoleView::@573ebd2154dd082a3488"
-		},
-		{
-			"backtrace" : 4,
 			"id" : "react_codegen_RNImagePickerSpec::@f66ee9a2efecfb28bee4"
 		},
 		{
@@ -488,6 +472,22 @@
 		{
 			"backtrace" : 4,
 			"id" : "react_codegen_rnsvg::@4f40eb209d0c0b4a3b65"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_VectorIconsMaterialIcons::@31616434fa1e3b43792c"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNCConfigSpec::@89f1b79ed4954e2f2cff"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNHoleView::@573ebd2154dd082a3488"
 		},
 		{
 			"backtrace" : 4,

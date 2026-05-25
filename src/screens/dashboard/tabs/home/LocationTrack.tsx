@@ -3,6 +3,7 @@ import { View, Text, FlatList, StyleSheet, SafeAreaView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Geolocation from "@react-native-community/geolocation";
 import { addLocation } from "../../../../store/slices/auth/authSlice";
+import { useCurrentAddress } from "../../../../hooks/useCurrentLocation";
 
 const LocationTrackScreen = () => {
   const dispatch = useDispatch();
@@ -13,6 +14,8 @@ const LocationTrackScreen = () => {
   const timerRef = useRef(null);
 
   const getCurrentLocation = () => {
+
+
     Geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
@@ -36,8 +39,18 @@ const LocationTrackScreen = () => {
       },
     );
   };
+  const {
+        coords,
+        address: hookAddress,
+        loading,
+        error,
+        refetch,
+      } = useCurrentAddress();
+      console.log("useCurrentAddress", coords, hookAddress, loading, error);
 
   useEffect(() => {
+    
+
     getCurrentLocation();
 
     intervalRef.current = setInterval(() => {

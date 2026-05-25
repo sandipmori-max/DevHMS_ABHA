@@ -82,7 +82,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     device: deviceId,
   };
 
-  const handleLoginSubmit = async (values: typeof initialFormValues) => {
+ const handleLoginSubmit = async (values: typeof initialFormValues) => {
     try {
       const companyValidation = await validateCompanyCode(() =>
         DevERPService.validateCompanyCode(values.company_code),
@@ -91,10 +91,17 @@ const LoginForm: React.FC<LoginFormProps> = ({
       if (!companyValidation?.isValid) return;
 
       let currentFcmToken = '';
+      const androidVersion = parseInt(DeviceInfo.getSystemVersion(), 10);
      
-      if(Platform.OS !== 'ios'){
-        currentFcmToken= fcmToken || (await getMessaging().getToken());
+      if(androidVersion <= 9  && Platform.OS !== 'ios'){
+        currentFcmToken= '';
+      }else if (androidVersion >= 10  && Platform.OS !== 'ios'){
+         currentFcmToken= fcmToken || (await getMessaging().getToken())
+      } else {
+        currentFcmToken= '';
       }
+        
+
       DevERPService.setDevice(deviceId);
 
       const loginResult = await loginWithERP(() =>
@@ -125,7 +132,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
       console.log("error --------------------- ", e)
     }
   };
-
+  
   return (
     <>
       {(validationError || erpLoginError) && (

@@ -6,6 +6,7 @@ import { ERP_COLOR_CODE } from '../../../../utils/constants'
  
 const LableInfo = ({
   isFromChild,
+  isFromDashboard,
   item,
   theme,
   value
@@ -13,7 +14,7 @@ const LableInfo = ({
   return (
     <>
       {
-        !isFromChild && <View
+       !isFromDashboard && !isFromChild && <View
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
@@ -29,10 +30,13 @@ const LableInfo = ({
               item?.fieldtitle !== item?.tooltip ?
                 <View style={{
                   flexDirection: "row",
-                  justifyContent: 'space-between',
-                  width: '100%'
+                  justifyContent: 'space-between', 
+                 width:'100%',
+                 overflow:'hidden',
                 }}>
-                  <View style={{ flexDirection: 'row', gap: 4 }}>
+                  <View style={{ 
+                     gap: 4,
+                      }}>
                     <Text
                       style={[
                         styles.label,
@@ -41,12 +45,12 @@ const LableInfo = ({
                         },
                       ]}
                     >
-                      {item?.fieldtitle}
-                    </Text>
-
-                    {item?.mandatory === "1" && (
+                      {item?.fieldtitle}  {item?.mandatory === "1" && (
                       <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
                     )}
+                    </Text>
+
+                   
                   </View>
                   <>
 
@@ -55,7 +59,8 @@ const LableInfo = ({
                       justifyContent: 'center',
                       alignContent: 'center',
                       alignItems: 'center',
-                      flexDirection: 'row', gap: 2
+                      flexDirection: 'row', 
+                      gap: 2
                     }}> 
                       {item?.fieldtitle !== item?.tooltip && (
                         <InfoTooltip text={item.tooltip} />
@@ -74,12 +79,12 @@ const LableInfo = ({
                         },
                       ]}
                     >
-                      {item?.fieldtitle}
-                    </Text>
-
-                    {item?.mandatory === "1" && (
+                      {item?.fieldtitle} {item?.mandatory === "1" && (
                       <Text style={{ color: ERP_COLOR_CODE.ERP_ERROR }}>*</Text>
                     )}
+                    </Text>
+
+                   
                   </View>
                 </View>
             }

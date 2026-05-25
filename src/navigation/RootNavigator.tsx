@@ -148,42 +148,46 @@ const RootNavigator = () => {
     }
   };
 
+  const app_id = user?.app_id;
+ // ------------------------- Device Setup -------------------------
+  const init = async () => {
+    const name =
+      Platform.OS === "ios"
+        ? DeviceInfo.getModel() + " " + (await DeviceInfo.getUniqueId())
+        : await DeviceInfo.getDeviceName();
+    await AsyncStorage.setItem("device", name);
+    await DevERPService.initialize();
+    try {
+      dispatch(setLoading(true));
+      await dispatch(checkAuthStateThunk()).unwrap();
+      if (isAuthenticated) {
+      try {
+        dispatch(getERPAppConfigMenuThunk());
+      } catch (error) {
+        dispatch(updateAppMenuList([]));
+        console.log("Error fetching app config menu:", error);
+      }
+    }
+    } catch (err) {
+      if (err === "token_expired") {
+        console.log("Token expired during initialization. Logging out.");
+        // 👉 logout logic here
+      } else {
+        console.log("Other error:", err);
+      }
+    } finally {
+      dispatch(setLoading(false));
+    }
+    
+  };
 
   useEffect(() => {
-    if (!isAuthenticated) return;
-
-    // Start checking every 1 second
-    locationServiceIntervalRef.current = setInterval(() => {
-      try {
-        dispatch(getLastPunchInThunk())
-          .unwrap()
-          .then((res) => {
-            if (res?.success === 1 || res?.success === "1") {
-              dispatch(updateAttendanceState(true));
-              checkLocationServiceOnly();
-            } else {
-              dispatch(updateAttendanceState(false));
-            }
-          })
-          .catch((err) => {
-            dispatch(updateAttendanceState(false));
-          });
-      } catch (error) {
-        dispatch(updateAttendanceState(false));
-
-        console.log("error ", error);
-      }
-    }, 1000);
-
+    init();
     return () => {
-      // Cleanup on logout / unmount
-      if (locationServiceIntervalRef.current) {
-        clearInterval(locationServiceIntervalRef.current);
-        locationServiceIntervalRef.current = null;
-      }
+      dispatch(setReloadApp());
+      dispatch(updatePinVerifyLoadedState(false));
     };
-  }, [isAuthenticated, reLoading]);
-  const app_id = user?.app_id;
+  }, []);
 
   useEffect(() => {
     const fetchDeviceName = async () => {
@@ -206,7 +210,6 @@ const RootNavigator = () => {
 
       try {
         dispatch(setLoading(true));
-
         await dispatch(checkAuthStateThunk()).unwrap();
       } catch (err) {
         if (err === "token_expired") {
@@ -257,43 +260,46 @@ const RootNavigator = () => {
     return () => sub.remove();
   }, [isAuthenticated, reLoading]);
 
+
+    useEffect(() => {
+    if (!isAuthenticated) return;
+
+    // Start checking every 1 second
+    locationServiceIntervalRef.current = setInterval(() => {
+      try {
+        dispatch(getLastPunchInThunk())
+          .unwrap()
+          .then((res) => {
+            if (res?.success === 1 || res?.success === "1") {
+              dispatch(updateAttendanceState(true));
+              checkLocationServiceOnly();
+            } else {
+              dispatch(updateAttendanceState(false));
+            }
+          })
+          .catch((err) => {
+            dispatch(updateAttendanceState(false));
+          });
+      } catch (error) {
+        dispatch(updateAttendanceState(false));
+
+        console.log("error ", error);
+      }
+    }, 1000);
+
+    return () => {
+      // Cleanup on logout / unmount
+      if (locationServiceIntervalRef.current) {
+        clearInterval(locationServiceIntervalRef.current);
+        locationServiceIntervalRef.current = null;
+      }
+    };
+  }, [isAuthenticated, reLoading]);
+
   // ------------------------- Language -------------------------
   useEffect(() => {
     changeLanguage(langCode);
   }, [langCode]);
-
-  // ------------------------- Device Setup -------------------------
-  const init = async () => {
-    const name =
-      Platform.OS === "ios"
-        ? DeviceInfo.getModel() + " " + (await DeviceInfo.getUniqueId())
-        : await DeviceInfo.getDeviceName();
-    await AsyncStorage.setItem("device", name);
-    await DevERPService.initialize();
-    try {
-      dispatch(setLoading(true));
-
-      await dispatch(checkAuthStateThunk()).unwrap();
-      if (isAuthenticated) {
-      try {
-        dispatch(getERPAppConfigMenuThunk());
-      } catch (error) {
-        dispatch(updateAppMenuList([]));
-        console.log("Error fetching app config menu:", error);
-      }
-    }
-    } catch (err) {
-      if (err === "token_expired") {
-        console.log("Token expired during initialization. Logging out.");
-        // 👉 logout logic here
-      } else {
-        console.log("Other error:", err);
-      }
-    } finally {
-      dispatch(setLoading(false));
-    }
-    
-  };
 
   // ------------------------- Check Location -------------------------
   const checkLocation = async () => {
@@ -372,14 +378,6 @@ const RootNavigator = () => {
     }
   };
 
-  useEffect(() => {
-    init();
-    return () => {
-      dispatch(setReloadApp());
-      dispatch(updatePinVerifyLoadedState(false));
-    };
-  }, []);
-
   // ------------------------- Focus -------------------------
   useEffect(() => {
     if (isAuthenticated) {
@@ -422,6 +420,7 @@ const RootNavigator = () => {
       return () => clearTimeout(timer);
     }
   }, [isAuthenticated, reLoading]);
+  
   // ------------------------- Render -------------------------
   if (isLoading) return <FullViewLoader />;
 

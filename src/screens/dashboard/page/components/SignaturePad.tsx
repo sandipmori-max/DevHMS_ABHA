@@ -70,7 +70,7 @@ const SignaturePad: React.FC = ({
           theme === "dark" && {
             color: "white",
           },
-          { marginVertical: 8, fontWeight: "600" },
+          { marginBottom: 8, fontWeight: "600" },
         ]}
       >
         {item?.fieldtitle}
@@ -82,15 +82,15 @@ const SignaturePad: React.FC = ({
           flexDirection: "row",
           width: "100%",
           padding: 4,
-          borderWidth: 1,
+          borderWidth: 1.5,
           borderStyle: "dashed",
           borderRadius: 8,
           borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-          backgroundColor: "white",
+          backgroundColor: theme === "dark" ? "#000" : "#f8f9ff",
         }}
       >
         <View></View>
-        <View style={{ height: 100, width: 100, backgroundColor: "white" }}>
+        <View style={{ height: 100, width: 100,  backgroundColor: theme === "dark" ? "#000" : "#f8f9ff", }}>
           <Image
             source={{ uri: getImageUri() }}
             style={styles.imageThumb}
@@ -215,7 +215,7 @@ export default SignaturePad;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: Platform.OS === 'android' ? 4 : 6,
+    marginTop: 0, 
   },
   container2: {
     position: 'absolute',

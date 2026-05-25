@@ -446,16 +446,16 @@ const PageScreen = () => {
                     }
 
 
-                    const { actions, messages , fieldErrors} = evaluateRulesWithActions(
+                    const { actions, messages, fieldErrors } = evaluateRulesWithActions(
                       rules,
                       formValues,
                     );
                     console.log("fieldErrors ----- ", fieldErrors)
-                    if(fieldErrors.length > 0){
-                        setTapLoader(false);
-                        setScriptErrorMessage(fieldErrors);
-                        setIsVisibleScriptError(true);
-                        return;
+                    if (fieldErrors.length > 0) {
+                      setTapLoader(false);
+                      setScriptErrorMessage(fieldErrors);
+                      setIsVisibleScriptError(true);
+                      return;
                     }
 
                     const hasButtonSaveEnable = actions.some(
@@ -1646,14 +1646,21 @@ const PageScreen = () => {
           </>
         );
       }
-       //Disabled + Date time
-      // else if (item?.disabled === "1" && (item?.ctltype === "DATETIME" || item?.ctltype === "DATE") &&  (item?.field.includes("starttime") || item?.field.includes("endtime"))) {
+      // Disabled + Date time
+      //
+      // else if (item?.disabled === "1" && (item?.ctltype === "DATETIME" || item?.ctltype === "DATE") && (item?.field.includes("starttime") || item?.field.includes("endtime"))) {
       //   content = (
       //     <DisabledDateTime
       //       isFromChild={isFromChild}
       //       item={item}
       //       value={value}
       //       type={item?.ctltype}
+      //       handleOnSubmit={(item, val) => {
+      //         console.log("DisabledDateTime onSubmit 👉", val);
+      //         setFormValues((prev) => {
+      //           return { ...prev, [item?.field]: val };
+      //         });
+      //       }}
       //     />
       //   );
       // }
@@ -1902,8 +1909,9 @@ const PageScreen = () => {
         (item?.ddl && item?.ddl !== "" && item?.ajax === 1) ||
         (item?.disabled === "1" && item.fieldtitle.length < 20) ||
         item?.ctltype === "DATE" ||
-        item?.ctltype === "BOOL" || item?.ctltype === "NUMERIC" ||
-        (item?.ctltype === "STRING" && item.size < 256)
+        item?.ctltype === "BOOL" ||
+        (item?.ctltype === "STRING" && item.size < 256) ||
+        (item?.ctltype === "NUMERIC")
       );
     };
 

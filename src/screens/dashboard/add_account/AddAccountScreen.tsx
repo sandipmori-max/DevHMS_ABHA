@@ -213,7 +213,6 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
       onClose();
     });
   };
-
   const handleAddAccount = async (values: {
     company_code: string;
     user: string;
@@ -246,11 +245,16 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
         setLoader(false);
         return;
       }
-
-      const currentFcmToken =
-        Platform.OS === "ios"
-          ? ""
-          : fcmToken || (await getMessaging().getToken());
+      let currentFcmToken = '';
+      const androidVersion = parseInt(DeviceInfo.getSystemVersion(), 10);
+      
+      if(androidVersion <= 9  && Platform.OS !== 'ios'){
+        currentFcmToken= '';
+      }else if (androidVersion >= 10  && Platform.OS !== 'ios'){
+         currentFcmToken= fcmToken || (await getMessaging().getToken())
+      } else {
+        currentFcmToken= '';
+      }
 
       const loginResult = await loginWithERP(() =>
         DevERPService.loginToERP({

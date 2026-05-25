@@ -39,10 +39,11 @@ import { updateAttendanceState } from "../../../../store/slices/auth/authSlice";
 import SlideButtonIOS from "./SlideButtonIOS";
 import RNFS from "react-native-fs";
 import ImageResizer from "@bam.tech/react-native-image-resizer";
+import { launchCamera } from "react-native-image-picker";
 
 const AttendanceForm = ({ setBlockAction, resData, isFromDashboard }: any) => {
   console.log("isFromDashboard", isFromDashboard)
-   const { user, attendanceDone: isAttendanceDone, attendanceSecurityLevel } = useAppSelector(
+  const { user, attendanceDone: isAttendanceDone, attendanceSecurityLevel } = useAppSelector(
     (state) => state?.auth,
   );
   let ATTENDANCE_LEVEL = attendanceSecurityLevel ? parseInt(attendanceSecurityLevel) : 0;
@@ -51,7 +52,7 @@ const AttendanceForm = ({ setBlockAction, resData, isFromDashboard }: any) => {
   const [img, setImg] = useState("");
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
- const formikRef = useRef(null);
+  const formikRef = useRef(null);
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const baseLink = useBaseLink();
@@ -91,7 +92,7 @@ const AttendanceForm = ({ setBlockAction, resData, isFromDashboard }: any) => {
       async (nextAppState) => {
         if (nextAppState === "active" && pendingCameraAction.current) {
           const hasPermission = await requestCameraAndLocationPermission();
-         await new Promise(res => setTimeout(res, 400));
+          await new Promise(res => setTimeout(res, 400));
           if (hasPermission) {
             setIsSettingVisible(false);
             setAlertVisible(false);
@@ -110,15 +111,15 @@ const AttendanceForm = ({ setBlockAction, resData, isFromDashboard }: any) => {
     return () => subscription.remove();
   }, []);
 
-useEffect(() => {
-  const handleCamera = async () => {
-    if (!isFromDashboard || !formikRef.current) return;
-    const { setFieldValue, handleSubmit } = formikRef.current;
-     handleStatusToggle(setFieldValue, handleSubmit);
-  };
+  useEffect(() => {
+    const handleCamera = async () => {
+      if (!isFromDashboard || !formikRef.current) return;
+      const { setFieldValue, handleSubmit } = formikRef.current;
+      handleStatusToggle(setFieldValue, handleSubmit);
+    };
 
-  handleCamera();
-}, [isFromDashboard]);
+    handleCamera();
+  }, [isFromDashboard]);
 
   const openCamera = (setFieldValue, handleSubmit) => {
     setLocationLoading(false);
@@ -151,10 +152,9 @@ useEffect(() => {
             if (base64) {
               setFieldValue(
                 "imageBase64",
-                `${
-                  resData?.success === 1 || resData?.success === "1"
-                    ? "punchOut.jpeg"
-                    : "punchIn.jpeg"
+                `${resData?.success === 1 || resData?.success === "1"
+                  ? "punchOut.jpeg"
+                  : "punchIn.jpeg"
                 }; data:image/jpeg;base64,${base64}`,
               );
             }
@@ -175,10 +175,83 @@ useEffect(() => {
       isFromDashboard: isFromDashboard,
       isBackActive: false,
       isFromAttendance: true,
-
     });
   };
- 
+  const openCameraV2 = (
+    setFieldValue: (field: keyof AttendanceFormValues, value: any) => void,
+    handleSubmit: () => void,
+  ) => {
+    setTimeout(() => {
+      launchCamera(
+        {
+          mediaType: "photo",
+
+          // ⚡ keep base64 OFF from camera (we generate after resize)
+          includeBase64: false,
+
+          quality: 0.5,
+          maxWidth: 800,
+          maxHeight: 800,
+          saveToPhotos: false,
+        },
+        async (response) => {
+          try {
+            if (response?.didCancel || response?.errorCode) {
+              setLocationLoading(false);
+              setBlockAction(false);
+              return;
+            }
+
+            const asset = response?.assets?.[0];
+
+            if (!asset?.uri) return;
+
+            let finalUri = asset.uri;
+            let finalBase64 = "";
+
+            // 📌 STEP 1: Resize image (IMPORTANT FIX)
+            const resizedImage = await ImageResizer.createResizedImage(
+              asset.uri,
+              800, // width
+              800, // height
+              "JPEG",
+              60,  // quality
+              0,
+            );
+
+            finalUri = resizedImage.uri;
+
+            // 📌 STEP 2: Convert resized image to base64
+            const RNFS = require("react-native-fs");
+
+            finalBase64 = await RNFS.readFile(resizedImage.uri, "base64");
+
+            setStatusImage(finalUri);
+
+            // 📌 STEP 3: Prepare payload
+            const fileName =
+              resData?.success === 1 || resData?.success === "1"
+                ? "punchOut.jpeg"
+                : "punchIn.jpeg";
+
+            setFieldValue(
+              "imageBase64",
+              `${fileName};data:${asset.type};base64,${finalBase64}`,
+            );
+
+            // 📌 STEP 4: Submit safely
+            setTimeout(() => {
+              handleSubmit();
+            }, 300);
+          } catch (err) {
+            console.log("Camera Error:", err);
+            setLocationLoading(false);
+            setBlockAction(false);
+          }
+        },
+      );
+    }, 800); // 🔥 300–700ms ideal
+  };
   const handleStatusToggle = async (
     setFieldValue: (field: keyof AttendanceFormValues, value: any) => void,
     handleSubmit: () => void,
@@ -198,7 +271,7 @@ useEffect(() => {
     if (locationLoading) return;
 
     const hasPermission = await requestCameraAndLocationPermission();
-      await new Promise(res => setTimeout(res, 400));
+    await new Promise(res => setTimeout(res, 400));
     if (!hasPermission) {
       pendingCameraAction.current = { setFieldValue, handleSubmit };
       setAlertConfig({
@@ -217,16 +290,63 @@ useEffect(() => {
     setBlocked(false);
     setLocationLoading(true);
 
- const getLocationWithRetry = async () => {
+    const getLocationWithRetry = async () => {
       setLocationLoading(true);
 
       try {
         // ⚡ STEP 1: Native fast location
+        const androidVersion = parseInt(DeviceInfo.getSystemVersion(), 10);
+        if (androidVersion <= 9 && Platform.OS === "android") {
+          Geolocation.getCurrentPosition(
+            position => {
+              const { latitude, longitude } = position.coords;
+              setUserLocation({ latitude, longitude });
+              setFieldValue('latitude', String(latitude));
+              setFieldValue('longitude', String(longitude));
+              setLocationLoading(false);
+              openCamera(setFieldValue, handleSubmit);
+            },
+            error => {
+              console.log('FINAL ERROR:', error);
+
+              let message = '';
+
+              switch (error.code) {
+                case 1:
+                  message = 'Location permission denied';
+                  break;
+                case 2:
+                  message = 'Location unavailable (GPS/Network issue)';
+                  break;
+                case 3:
+                  message = 'Location timeout (slow network)';
+                  break;
+                default:
+                  message = error?.message || t('msg.msg5');
+              }
+
+              setAlertConfig({
+                title: t('errors.locationError'),
+                message,
+                type: 'error',
+              });
+
+              setAlertVisible(true);
+              setLocationLoading(false);
+            },
+            {
+              enableHighAccuracy: false,
+              timeout: 10000,
+              maximumAge: 10000,
+            },
+          );
+          return;
+        }
         const res = await NativeModules.LocationModule.getCurrentLocation();
 
         console.log('res++++++++++++++++++++++++++++++', res);
         let { latitude, longitude, accuracy } = res;
-        
+
         // 🎯 Accuracy check (optional but recommended)
         if (accuracy && accuracy > 150) {
           throw new Error('Low accuracy location');
@@ -404,7 +524,7 @@ useEffect(() => {
       }}
     >
       <Formik
-      innerRef={formikRef}
+        innerRef={formikRef}
         initialValues={{
           name: user?.name,
           latitude: userLocation ? String(userLocation?.latitude) : "",
@@ -464,11 +584,11 @@ useEffect(() => {
                   type: "location",
                 });
 
-                 setTimeout(() => {
-                    setAlertMapVisible(false);
-                    dispatch(setReloadApp());
-                    navigation.goBack();
-                  }, 1500);
+                setTimeout(() => {
+                  setAlertMapVisible(false);
+                  dispatch(setReloadApp());
+                  navigation.goBack();
+                }, 1500);
               }, 1100);
             })
             .catch((err) => {
@@ -660,31 +780,31 @@ useEffect(() => {
                         >
                           <View>
                             <SlideButtonIOS
-                                label={
-                                  resData?.success === 1 ||
+                              label={
+                                resData?.success === 1 ||
                                   resData?.success === "1"
-                                    ? `${t("text.texti3")} ${t(
-                                        "attendance.checkOut",
-                                      )}`
-                                    : `${t("text.texti3")} ${t(
-                                        "attendance.checkIn",
-                                      )}`
-                                }
-                                successColor={
-                                  resData?.success === 1 ||
+                                  ? `${t("text.texti3")} ${t(
+                                    "attendance.checkOut",
+                                  )}`
+                                  : `${t("text.texti3")} ${t(
+                                    "attendance.checkIn",
+                                  )}`
+                              }
+                              successColor={
+                                resData?.success === 1 ||
                                   resData?.success === "1"
-                                    ? ERP_COLOR_CODE.ERP_ERROR
-                                    : ERP_COLOR_CODE.ERP_APP_COLOR
-                                }
-                                loading={locationLoading}
-                                completed={attendanceDone}
-                                onSlideSuccess={() => {
-                                  handleStatusToggle(
-                                    setFieldValue,
-                                    handleSubmit,
-                                  );
-                                }}
-                              />
+                                  ? ERP_COLOR_CODE.ERP_ERROR
+                                  : ERP_COLOR_CODE.ERP_APP_COLOR
+                              }
+                              loading={locationLoading}
+                              completed={attendanceDone}
+                              onSlideSuccess={() => {
+                                handleStatusToggle(
+                                  setFieldValue,
+                                  handleSubmit,
+                                );
+                              }}
+                            />
                           </View>
                         </Animated.View>
                       </View>
@@ -852,8 +972,8 @@ useEffect(() => {
                           label={
                             resData?.success === 1 || resData?.success === "1"
                               ? `${t("text.texti3")} ${t(
-                                  "attendance.checkOut",
-                                )}`
+                                "attendance.checkOut",
+                              )}`
                               : `${t("text.texti3")} ${t("attendance.checkIn")}`
                           }
                           successColor={
