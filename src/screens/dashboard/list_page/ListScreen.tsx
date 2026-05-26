@@ -58,6 +58,7 @@ import { getDDLThunk } from "../../../store/slices/dropdown/thunk";
 import TableView from "./components/TableView";
 import GroupFilterModal from "./components/GroupFilterModal";
 import SortingFilterModal from "./components/SortingFilterModal";
+import DeviceInfo from "react-native-device-info";
 
 const ListScreen = () => {
   const route = useRoute<RouteProp<ListRouteParams, "List">>();
@@ -70,7 +71,8 @@ const ListScreen = () => {
     error: actionError,
     response: actionResponse,
   } = useAppSelector((state) => state.page);
-
+ const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   const { t } = useTranslations();
   const [loadingListId, setLoadingListId] = useState<string | null>(null);
   const [listData, setListData] = useState<any[]>([]);
@@ -249,12 +251,11 @@ const ListScreen = () => {
       headerTitle: () => (
         <TranslatedText
           numberOfLines={1}
-          style={{
-            maxWidth: 180,
+          style={[{ 
             fontSize: 18,
             fontWeight: "700",
             color: theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_WHITE,
-          }}
+          }, !isIpad && { maxWidth: 180 }]}
           text={!isLandscape && isTableView ? '' : pageTitle || "List Data"}
         ></TranslatedText>
       ),

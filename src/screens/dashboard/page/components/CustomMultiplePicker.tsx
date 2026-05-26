@@ -9,6 +9,7 @@ import {
   ScrollView,
   useWindowDimensions,
   TextInput,
+  Platform,
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { styles } from "../page_style";
@@ -24,6 +25,7 @@ import {
   updateSelectedBranchesState,
   updateSelectedBranchIdsState,
 } from "../../../../store/slices/auth/authSlice";
+import DeviceInfo from "react-native-device-info";
 
 const CustomMultiplePicker = ({
   isValidate,
@@ -164,7 +166,8 @@ const CustomMultiplePicker = ({
     onValueChange(selectedBranches);
     closeBottomSheet();
   };
-
+    const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   return (
     <View style={{ marginVertical: 0 }}>
       {/* LABEL */}
@@ -212,7 +215,7 @@ const CustomMultiplePicker = ({
               top: slideAnim,
               height: SCREEN_HEIGHT * 0.75,
               backgroundColor: theme === "dark" ? "black" : "white",
-              width: isLandscape ? "50%" : "100%",
+              width: isIpad ? '60%' : isLandscape ? "50%" : "100%",
               padding: 16,
               borderTopLeftRadius: 12,
               borderTopRightRadius: 12,
@@ -220,7 +223,7 @@ const CustomMultiplePicker = ({
               borderColor:
                 theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR,
             },
-            isLandscape ? { left: "25%" } : null,
+            (isLandscape || isIpad) ? { left: "20%" } : null,
           ]}
         >
           {/* HEADER */}

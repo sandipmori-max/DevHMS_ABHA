@@ -23,6 +23,7 @@ import NoData from "../../../../components/no_data/NoData";
 import TranslatedText from "../../tabs/home/TranslatedText";
 import { getDashboardIcon } from "../../../../utils/helpers";
 import LableInfo from "./LableInfo";
+import DeviceInfo from "react-native-device-info";
 
 const CustomPicker = ({
   isValidate,
@@ -118,6 +119,8 @@ const CustomPicker = ({
     Math.max(contentHeight + 80, MIN_HEIGHT), // +80 header + padding
     MAX_HEIGHT,
   );
+      const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   return (
     <View style={{ marginBottom: isFromDashboard ? 2 : Platform.OS === 'android' ? 6  :8 }}>
       {/* Label */}
@@ -226,17 +229,17 @@ const CustomPicker = ({
               padding: 16,
               borderWidth: 1,
               borderColor: theme === "dark" ? "white" : "black",
-              width: isLandscape ? "50%" : "100%",
+              width: (isIpad || isLandscape) ? "50%" : "100%",
               justifyContent: "flex-end",
             },
-            !isLandscape && {
+           !isIpad && !isLandscape && {
               left: 0,
               right: 0,
             },
-            isLandscape && {
+            (isIpad || isLandscape ) && {
               right: width * 0.25,
               justifyContent: "center",
-            },
+            }, 
           ]}
         >
           <View
@@ -246,7 +249,7 @@ const CustomPicker = ({
                 justifyContent: "space-between",
                 padding: 4,
               },
-              isLandscape && {
+              (isIpad || isLandscape ) && {
                 alignContent: "center",
                 alignItems: "center",
               },

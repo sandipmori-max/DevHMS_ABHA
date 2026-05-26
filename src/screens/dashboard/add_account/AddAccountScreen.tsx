@@ -89,7 +89,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
   const formAnim = useRef(new Animated.Value(0)).current; // form container
   const buttonAnim = useRef(new Animated.Value(0)).current; // Add button
   const backdropAnim = useRef(new Animated.Value(0)).current;
-
+  const isIpad =
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   useEffect(() => {
     setLoader(false);
   }, [visible]);
@@ -247,13 +248,13 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
       }
       let currentFcmToken = '';
       const androidVersion = parseInt(DeviceInfo.getSystemVersion(), 10);
-      
-      if(androidVersion <= 9  && Platform.OS !== 'ios'){
-        currentFcmToken= '';
-      }else if (androidVersion >= 10  && Platform.OS !== 'ios'){
-         currentFcmToken= fcmToken || (await getMessaging().getToken())
+
+      if (androidVersion <= 9 && Platform.OS !== 'ios') {
+        currentFcmToken = fcmToken || (await getMessaging().getToken()) || '';
+      } else if (androidVersion >= 10 && Platform.OS !== 'ios') {
+        currentFcmToken = fcmToken || (await getMessaging().getToken())
       } else {
-        currentFcmToken= '';
+        currentFcmToken = '';
       }
 
       const loginResult = await loginWithERP(() =>
@@ -394,9 +395,10 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
     >
       <ImageBackground
         source={theme === "dark" ? "black" : ERP_GIF.BACK_IMG}
-        style={{
+        style={[{
           height: Dimensions.get("screen").height,
-        }}
+        },
+        ]}
         resizeMode="cover"
       >
         <View
@@ -437,10 +439,10 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
             {t("account.addAccount")}
           </Text>
         </View>
-        <View style={{height: 34}}></View>
+        <View style={{ height: 34 }}></View>
         {isLandscape ? (
           <>
-            <View style={{ flexDirection: "row" }}>
+            <View style={[{ flexDirection: "row" }, isIpad && { padding: 40 ,  }]}>
               <View
                 style={{
                   width: "46%",
@@ -467,8 +469,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                         !imageExists
                           ? ERP_ICON.APP_LOGO
                           : {
-                              uri: `${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`,
-                            }
+                            uri: `${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`,
+                          }
                       }
                       // source={ERP_ICON.APP_LOGO}
                       style={[
@@ -497,7 +499,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                 </>
               </View>
 
-              <View style={{ width: "50%", height: 320, padding: 2 }}>
+              <View style={{ width: "50%", height: isIpad ?450 : 320 , padding: 2 }}>
                 <KeyboardAvoidingView
                   style={{ flex: 1 }}
                   behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -585,10 +587,10 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                     paddingLeft: 12,
                                   },
                                   touched?.company_code &&
-                                    errors?.company_code && {
-                                      borderColor: ERP_COLOR_CODE.ERP_ERROR,
-                                      borderWidth: 0.8,
-                                    },
+                                  errors?.company_code && {
+                                    borderColor: ERP_COLOR_CODE.ERP_ERROR,
+                                    borderWidth: 0.8,
+                                  },
                                   isInputEditCC && {
                                     borderColor: "#81b5e4",
                                     borderWidth: 0.8,
@@ -678,10 +680,10 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                     paddingLeft: 12,
                                   },
                                   touched?.user &&
-                                    errors?.user && {
-                                      borderColor: ERP_COLOR_CODE.ERP_ERROR,
-                                      borderWidth: 0.8,
-                                    },
+                                  errors?.user && {
+                                    borderColor: ERP_COLOR_CODE.ERP_ERROR,
+                                    borderWidth: 0.8,
+                                  },
                                   isInputEditUSer && {
                                     borderColor: "#81b5e4",
                                     borderWidth: 0.8,
@@ -767,10 +769,10 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                     paddingLeft: 12,
                                   },
                                   touched?.password &&
-                                    errors?.password && {
-                                      borderColor: ERP_COLOR_CODE.ERP_ERROR,
-                                      borderWidth: 0.8,
-                                    },
+                                  errors?.password && {
+                                    borderColor: ERP_COLOR_CODE.ERP_ERROR,
+                                    borderWidth: 0.8,
+                                  },
                                   isInputEditPass && {
                                     borderColor: "#81b5e4",
                                     borderWidth: 0.8,
@@ -920,10 +922,13 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                     style={[
                       styles.container,
                       theme === "dark" && { backgroundColor: "black" },
-                     
+
                       theme === "dark" && {
                         marginTop: 0,
                       },
+                      isIpad && {
+                        padding: 80,
+                      }
                     ]}
                   >
                     <FlatList
@@ -933,490 +938,502 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                       keyboardShouldPersistTaps="handled"
                       data={[""]}
                       renderItem={() => (
-                        
-                          <View style={styles.formContainer}>
-                            <View
-                              style={{
-                                alignContent: "center",
-                                alignSelf: "center",
-                                borderRadius: 20,
-                                height: 100,
-                                width: 140,
-                                marginBottom: 12,
-                                backgroundColor: "white",
-                              }}
-                            >
-                              <FastImage
-                                source={
-                                  !imageExists
-                                    ? ERP_ICON.APP_LOGO
-                                    : {
-                                        uri: `${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`,
-                                      }
-                                }
-                                // source={ERP_ICON.APP_LOGO}
-                                style={[
-                                  styles.logo,
-                                  {
-                                    marginTop: 0,
-                                  },
-                                  user?.company_code
-                                    ?.toLowerCase()
-                                    ?.includes("deverp") && {
-                                    width: 80,
-                                    height: 80,
-                                    marginTop: 10,
-                                  },
-                                ]}
-                                onError={() => {
-                                  setImageExists(false);
-                                }}
-                                resizeMode="contain"
-                              />
-                            </View>
 
-                            <Text
+                        <View style={styles.formContainer}>
+                          <View
+                            style={{
+                              alignContent: "center",
+                              alignSelf: "center",
+                              borderRadius: 20,
+                              height: 100,
+                              width: 140,
+                              marginBottom: 12,
+                              backgroundColor: "white",
+                            }}
+                          >
+                            <FastImage
+                              source={
+                                !imageExists
+                                  ? ERP_ICON.APP_LOGO
+                                  : {
+                                    uri: `${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`,
+                                  }
+                              }
+                              // source={ERP_ICON.APP_LOGO}
                               style={[
-                                styles.subtitle,
-                                theme === "dark" && { color: "white" },
+                                styles.logo,
+                                {
+                                  marginTop: 0,
+                                },
+                                user?.company_code
+                                  ?.toLowerCase()
+                                  ?.includes("deverp") && {
+                                  width: 80,
+                                  height: 80,
+                                  marginTop: 10,
+                                },
                               ]}
-                            >
-                              {t("account.msg")}
-                            </Text>
-
-                            <Formik
-                              initialValues={{
-                                company_code: "",
-                                user: "",
-                                password: "",
+                              onError={() => {
+                                setImageExists(false);
                               }}
-                              validationSchema={erpAddAccountValidationSchema(
-                                t,
-                              )}
-                              onSubmit={handleAddAccount}
-                            >
-                              {({
-                                handleChange,
-                                handleBlur,
-                                handleSubmit,
-                                values,
-                                errors,
-                                touched,
-                              }) => {
-                                useEffect(() => {
-                                  if (
-                                    touched?.company_code &&
-                                    errors?.company_code
-                                  ) {
-                                    ccErrorAnim.setValue(0);
-                                    Animated.timing(ccErrorAnim, {
-                                      toValue: 1,
-                                      duration: 280,
-                                      easing: Easing.out(Easing.ease),
-                                      useNativeDriver: true,
-                                    }).start();
-                                  }
-                                }, [
-                                  touched?.company_code,
-                                  errors?.company_code,
-                                ]);
+                              resizeMode="contain"
+                            />
+                          </View>
 
-                                useEffect(() => {
-                                  if (touched?.user && errors?.user) {
-                                    userErrorAnim.setValue(0);
-                                    Animated.timing(userErrorAnim, {
-                                      toValue: 1,
-                                      duration: 280,
-                                      easing: Easing.out(Easing.ease),
-                                      useNativeDriver: true,
-                                    }).start();
-                                  }
-                                }, [touched?.user, errors?.user]);
+                          <Text
+                            style={[
+                              styles.subtitle,
+                              theme === "dark" && { color: "white" },
+                            ]}
+                          >
+                            {t("account.msg")}
+                          </Text>
 
-                                useEffect(() => {
-                                  if (touched?.password && errors?.password) {
-                                    passErrorAnim.setValue(0);
-                                    Animated.timing(passErrorAnim, {
-                                      toValue: 1,
-                                      duration: 280,
-                                      easing: Easing.out(Easing.ease),
-                                      useNativeDriver: true,
-                                    }).start();
-                                  }
-                                }, [touched?.password, errors?.password]);
+                          <Formik
+                            initialValues={{
+                              company_code: "",
+                              user: "",
+                              password: "",
+                            }}
+                            validationSchema={erpAddAccountValidationSchema(
+                              t,
+                            )}
+                            onSubmit={handleAddAccount}
+                          >
+                            {({
+                              handleChange,
+                              handleBlur,
+                              handleSubmit,
+                              values,
+                              errors,
+                              touched,
+                            }) => {
+                              useEffect(() => {
+                                if (
+                                  touched?.company_code &&
+                                  errors?.company_code
+                                ) {
+                                  ccErrorAnim.setValue(0);
+                                  Animated.timing(ccErrorAnim, {
+                                    toValue: 1,
+                                    duration: 280,
+                                    easing: Easing.out(Easing.ease),
+                                    useNativeDriver: true,
+                                  }).start();
+                                }
+                              }, [
+                                touched?.company_code,
+                                errors?.company_code,
+                              ]);
 
-                                return (
-                                  <>
-                                    {/* Company Code Input */}
-                                    <View style={styles.inputContainer}>
-                                      <Text
+                              useEffect(() => {
+                                if (touched?.user && errors?.user) {
+                                  userErrorAnim.setValue(0);
+                                  Animated.timing(userErrorAnim, {
+                                    toValue: 1,
+                                    duration: 280,
+                                    easing: Easing.out(Easing.ease),
+                                    useNativeDriver: true,
+                                  }).start();
+                                }
+                              }, [touched?.user, errors?.user]);
+
+                              useEffect(() => {
+                                if (touched?.password && errors?.password) {
+                                  passErrorAnim.setValue(0);
+                                  Animated.timing(passErrorAnim, {
+                                    toValue: 1,
+                                    duration: 280,
+                                    easing: Easing.out(Easing.ease),
+                                    useNativeDriver: true,
+                                  }).start();
+                                }
+                              }, [touched?.password, errors?.password]);
+
+                              return (
+                                <>
+                                  {/* Company Code Input */}
+                                  <View style={styles.inputContainer}>
+                                    <Text
+                                      style={[
+                                        styles.inputLabel,
+                                        theme === "dark" && {
+                                          color: "white",
+                                        },
+                                      ]}
+                                    >
+                                      {t("account.companyCode")}
+                                    </Text>
+                                    <View
+                                      style={[
+                                        styles.inputContainer,
+                                        {
+                                          justifyContent: "center",
+                                          alignContent: "center",
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          borderRadius: 8,
+                                          borderWidth: 1,
+                                          borderColor:
+                                            ERP_COLOR_CODE.ERP_BORDER_LINE,
+                                          paddingLeft: 12,
+                                        },
+                                        touched?.company_code &&
+                                        errors?.company_code && {
+                                          borderColor:
+                                            ERP_COLOR_CODE.ERP_ERROR,
+                                          borderWidth: 0.8,
+                                        },
+                                        isInputEditCC && {
+                                          borderColor: "#81b5e4",
+                                          borderWidth: 0.8,
+                                        },
+                                        values?.company_code && {
+                                          borderColor: "green",
+                                          borderWidth: 0.8,
+                                        },
+                                        theme === "dark" && {
+                                          backgroundColor: "black",
+                                        },
+                                      ]}
+                                    >
+                                      <MaterialIcons
+                                        name="closed-caption-off"
+                                        size={20}
+                                        color={ERP_COLOR_CODE.ERP_999}
+                                      />
+                                      <TextInput
                                         style={[
-                                          styles.inputLabel,
-                                          theme === "dark" && {
-                                            color: "white",
-                                          },
-                                        ]}
-                                      >
-                                        {t("account.companyCode")}
-                                      </Text>
-                                      <View
-                                        style={[
-                                          styles.inputContainer,
-                                          {
-                                            justifyContent: "center",
-                                            alignContent: "center",
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                            borderRadius: 8,
-                                            borderWidth: 1,
-                                            borderColor:
-                                              ERP_COLOR_CODE.ERP_BORDER_LINE,
-                                            paddingLeft: 12,
-                                          },
-                                          touched?.company_code &&
-                                            errors?.company_code && {
-                                              borderColor:
-                                                ERP_COLOR_CODE.ERP_ERROR,
-                                              borderWidth: 0.8,
-                                            },
-                                          isInputEditCC && {
-                                            borderColor: "#81b5e4",
-                                            borderWidth: 0.8,
-                                          },
-                                          values?.company_code && {
-                                            borderColor: "green",
-                                            borderWidth: 0.8,
-                                          },
+                                          styles.input,
                                           theme === "dark" && {
                                             backgroundColor: "black",
-                                          },
-                                        ]}
-                                      >
-                                        <MaterialIcons
-                                          name="closed-caption-off"
-                                          size={20}
-                                          color={ERP_COLOR_CODE.ERP_999}
-                                        />
-                                        <TextInput
-                                          style={[
-                                            styles.input,
-                                            theme === "dark" && {
-                                              backgroundColor: "black",
-                                              color: "white",
-                                            },
-                                          ]}
-                                          placeholder={t(
-                                            "auth.enterCompanyCode",
-                                          )}
-                                          placeholderTextColor={
-                                            ERP_COLOR_CODE.ERP_999
-                                          }
-                                          autoCapitalize="none"
-                                          onChangeText={handleChange(
-                                            "company_code",
-                                          )}
-                                          value={values?.company_code}
-                                          onFocus={() => setIsInputEditCC(true)}
-                                          onBlur={() => {
-                                            if (!values?.company_code) {
-                                              handleBlur("company_code");
-                                              setIsInputEditCC(false);
-                                            }
-                                          }}
-                                        />
-                                      </View>
-                                      {touched?.company_code &&
-                                        errors?.company_code && (
-                                          <Animated.Text
-                                            style={[
-                                              styles.errorText,
-                                              {
-                                                opacity: ccErrorAnim,
-                                                transform: [
-                                                  {
-                                                    translateX:
-                                                      ccErrorAnim.interpolate({
-                                                        inputRange: [0, 1],
-                                                        outputRange: [-38, 0], // slide from LEFT
-                                                      }),
-                                                  },
-                                                ],
-                                              },
-                                            ]}
-                                          >
-                                            {errors?.company_code}
-                                          </Animated.Text>
-                                        )}
-                                    </View>
-
-                                    {/* User Input */}
-                                    <View style={styles.inputContainer}>
-                                      <Text
-                                        style={[
-                                          styles.inputLabel,
-                                          theme === "dark" && {
                                             color: "white",
                                           },
-                                        ]}
-                                      >
-                                        {t("auth.user")}
-                                      </Text>
-                                      <View
-                                        style={[
-                                          styles.inputContainer,
-                                          {
-                                            justifyContent: "center",
-                                            alignContent: "center",
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                            borderRadius: 8,
-                                            borderWidth: 1,
-                                            borderColor:
-                                              ERP_COLOR_CODE.ERP_BORDER_LINE,
-                                            paddingLeft: 12,
-                                          },
-                                          touched?.user &&
-                                            errors?.user && {
-                                              borderColor:
-                                                ERP_COLOR_CODE.ERP_ERROR,
-                                              borderWidth: 0.8,
-                                            },
-                                          isInputEditUSer && {
-                                            borderColor: "#81b5e4",
-                                            borderWidth: 0.8,
-                                          },
-                                          values?.user && {
-                                            borderColor: "green",
-                                            borderWidth: 0.8,
-                                          },
-                                        ]}
-                                      >
-                                        <MaterialIcons
-                                          name="person"
-                                          size={20}
-                                          color={ERP_COLOR_CODE.ERP_999}
-                                        />
-                                        <TextInput
-                                          style={[
-                                            styles.input,
-                                            theme === "dark" && {
-                                              backgroundColor: "black",
-                                              color: "white",
-                                            },
-                                          ]}
-                                          placeholder={t("auth.enterUser")}
-                                          placeholderTextColor={
-                                            ERP_COLOR_CODE.ERP_999
+                                          isIpad && {
+                                            paddingVertical: 16,
                                           }
-                                          autoCapitalize="none"
-                                          onChangeText={handleChange("user")}
-                                          value={values?.user}
-                                          onFocus={() =>
-                                            setIsInputEditUser(true)
+                                        ]}
+                                        placeholder={t(
+                                          "auth.enterCompanyCode",
+                                        )}
+                                        placeholderTextColor={
+                                          ERP_COLOR_CODE.ERP_999
+                                        }
+                                        autoCapitalize="none"
+                                        onChangeText={handleChange(
+                                          "company_code",
+                                        )}
+                                        value={values?.company_code}
+                                        onFocus={() => setIsInputEditCC(true)}
+                                        onBlur={() => {
+                                          if (!values?.company_code) {
+                                            handleBlur("company_code");
+                                            setIsInputEditCC(false);
                                           }
-                                          onBlur={() => {
-                                            if (!values?.user) {
-                                              handleBlur("user");
-                                              setIsInputEditUser(false);
-                                            }
-                                          }}
-                                        />
-                                      </View>
-                                      {touched?.user && errors?.user && (
+                                        }}
+                                      />
+                                    </View>
+                                    {touched?.company_code &&
+                                      errors?.company_code && (
                                         <Animated.Text
                                           style={[
                                             styles.errorText,
                                             {
-                                              opacity: userErrorAnim,
+                                              opacity: ccErrorAnim,
                                               transform: [
                                                 {
                                                   translateX:
-                                                    userErrorAnim.interpolate({
+                                                    ccErrorAnim.interpolate({
                                                       inputRange: [0, 1],
-                                                      outputRange: [-38, 0],
+                                                      outputRange: [-38, 0], // slide from LEFT
                                                     }),
                                                 },
                                               ],
                                             },
                                           ]}
                                         >
-                                          {errors?.user}
+                                          {errors?.company_code}
                                         </Animated.Text>
                                       )}
-                                    </View>
+                                  </View>
 
-                                    {/* Password Input */}
-                                    <View style={styles.inputContainer}>
-                                      <Text
-                                        style={[
-                                          styles.inputLabel,
-                                          theme === "dark" && {
-                                            color: "white",
-                                          },
-                                        ]}
-                                      >
-                                        {t("auth.password")}
-                                      </Text>
-                                      <View
-                                        style={[
-                                          styles.inputContainer,
-                                          {
-                                            justifyContent: "center",
-                                            alignContent: "center",
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                            borderRadius: 8,
-                                            borderWidth: 1,
-                                            borderColor:
-                                              ERP_COLOR_CODE.ERP_BORDER_LINE,
-                                            paddingLeft: 12,
-                                          },
-                                          touched?.password &&
-                                            errors?.password && {
-                                              borderColor:
-                                                ERP_COLOR_CODE.ERP_ERROR,
-                                              borderWidth: 0.8,
-                                            },
-                                          isInputEditPass && {
-                                            borderColor: "#81b5e4",
-                                            borderWidth: 0.8,
-                                          },
-                                          values?.password && {
-                                            borderColor: "green",
-                                            borderWidth: 0.8,
-                                          },
-                                        ]}
-                                      >
-                                        <MaterialIcons
-                                          name="password"
-                                          size={20}
-                                          color={ERP_COLOR_CODE.ERP_999}
-                                        />
-                                        <TextInput
-                                          style={[
-                                            styles.input1,
-                                            theme === "dark" && {
-                                              backgroundColor: "black",
-                                              color: "white",
-                                            },
-                                          ]}
-                                          placeholder={t("auth.enterPassword")}
-                                          secureTextEntry={!showPassword}
-                                          placeholderTextColor={
-                                            ERP_COLOR_CODE.ERP_999
-                                          }
-                                          value={values?.password}
-                                          onChangeText={handleChange(
-                                            "password",
-                                          )}
-                                          onFocus={() =>
-                                            setIsInputEditPass(true)
-                                          }
-                                          onBlur={() => {
-                                            if (!values?.password) {
-                                              handleBlur("password");
-                                              setIsInputEditPass(false);
-                                            }
-                                          }}
-                                        />
-                                        <TouchableOpacity
-                                          onPress={() =>
-                                            setShowPassword((s) => !s)
-                                          }
-                                          style={styles.toggleButton}
-                                        >
-                                          <MaterialIcons
-                                            name={
-                                              !showPassword
-                                                ? "visibility-off"
-                                                : "visibility"
-                                            }
-                                            color={ERP_COLOR_CODE.ERP_999}
-                                            size={20}
-                                          />
-                                        </TouchableOpacity>
-                                      </View>
-                                      {touched?.password &&
-                                        errors?.password && (
-                                          <Animated.Text
-                                            style={[
-                                              styles.errorText,
-                                              {
-                                                opacity: passErrorAnim,
-                                                transform: [
-                                                  {
-                                                    translateX:
-                                                      passErrorAnim.interpolate(
-                                                        {
-                                                          inputRange: [0, 1],
-                                                          outputRange: [-38, 0],
-                                                        },
-                                                      ),
-                                                  },
-                                                ],
-                                              },
-                                            ]}
-                                          >
-                                            {errors?.password}
-                                          </Animated.Text>
-                                        )}
-                                    </View>
-
-                                    {/* Add Button */}
-
-                                    <TouchableOpacity
+                                  {/* User Input */}
+                                  <View style={styles.inputContainer}>
+                                    <Text
                                       style={[
-                                        styles.addButton,
-                                        {
-                                          backgroundColor:
-                                            theme === "dark"
-                                              ? "white"
-                                              : ERP_COLOR_CODE.ERP_APP_COLOR,
-                                        },
-                                        loader && styles.disabledButton,
+                                        styles.inputLabel,
                                         theme === "dark" && {
-                                          backgroundColor: "white",
-                                          borderColor: "white",
-                                          borderWidth: 1,
+                                          color: "white",
                                         },
                                       ]}
-                                      onPress={() => handleSubmit()}
-                                      onPressIn={onPressIn}
-                                      onPressOut={onPressOut}
-                                      disabled={loader}
-                                      activeOpacity={1} // avoid opacity conflict
+                                    >
+                                      {t("auth.user")}
+                                    </Text>
+                                    <View
+                                      style={[
+                                        styles.inputContainer,
+                                        {
+                                          justifyContent: "center",
+                                          alignContent: "center",
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          borderRadius: 8,
+                                          borderWidth: 1,
+                                          borderColor:
+                                            ERP_COLOR_CODE.ERP_BORDER_LINE,
+                                          paddingLeft: 12,
+                                        },
+                                        touched?.user &&
+                                        errors?.user && {
+                                          borderColor:
+                                            ERP_COLOR_CODE.ERP_ERROR,
+                                          borderWidth: 0.8,
+                                        },
+                                        isInputEditUSer && {
+                                          borderColor: "#81b5e4",
+                                          borderWidth: 0.8,
+                                        },
+                                        values?.user && {
+                                          borderColor: "green",
+                                          borderWidth: 0.8,
+                                        },
+                                      ]}
                                     >
                                       <MaterialIcons
-                                        name="person-add-alt"
-                                        size={24}
-                                        color={
-                                          theme === "dark"
-                                            ? "black"
-                                            : ERP_COLOR_CODE.ERP_WHITE
-                                        }
+                                        name="person"
+                                        size={20}
+                                        color={ERP_COLOR_CODE.ERP_999}
                                       />
-                                      <Text
+                                      <TextInput
                                         style={[
-                                          styles.addButtonText,
+                                          styles.input,
                                           theme === "dark" && {
-                                            color: "black",
+                                            backgroundColor: "black",
+                                            color: "white",
+                                          },
+                                           isIpad && {
+                                            paddingVertical: 16,
+                                          }
+                                        ]}
+                                        placeholder={t("auth.enterUser")}
+                                        placeholderTextColor={
+                                          ERP_COLOR_CODE.ERP_999
+                                        }
+                                        autoCapitalize="none"
+                                        onChangeText={handleChange("user")}
+                                        value={values?.user}
+                                        onFocus={() =>
+                                          setIsInputEditUser(true)
+                                        }
+                                        onBlur={() => {
+                                          if (!values?.user) {
+                                            handleBlur("user");
+                                            setIsInputEditUser(false);
+                                          }
+                                        }}
+                                      />
+                                    </View>
+                                    {touched?.user && errors?.user && (
+                                      <Animated.Text
+                                        style={[
+                                          styles.errorText,
+                                          {
+                                            opacity: userErrorAnim,
+                                            transform: [
+                                              {
+                                                translateX:
+                                                  userErrorAnim.interpolate({
+                                                    inputRange: [0, 1],
+                                                    outputRange: [-38, 0],
+                                                  }),
+                                              },
+                                            ],
                                           },
                                         ]}
                                       >
-                                        {loader
-                                          ? t("account.adding")
-                                          : t("account.add")}
-                                      </Text>
-                                    </TouchableOpacity>
+                                        {errors?.user}
+                                      </Animated.Text>
+                                    )}
+                                  </View>
 
-                                    {/* <Text style={styles.note}>
+                                  {/* Password Input */}
+                                  <View style={styles.inputContainer}>
+                                    <Text
+                                      style={[
+                                        styles.inputLabel,
+                                        theme === "dark" && {
+                                          color: "white",
+                                        },
+                                      ]}
+                                    >
+                                      {t("auth.password")}
+                                    </Text>
+                                    <View
+                                      style={[
+                                        styles.inputContainer,
+                                        {
+                                          justifyContent: "center",
+                                          alignContent: "center",
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          borderRadius: 8,
+                                          borderWidth: 1,
+                                          borderColor:
+                                            ERP_COLOR_CODE.ERP_BORDER_LINE,
+                                          paddingLeft: 12,
+                                        },
+                                        touched?.password &&
+                                        errors?.password && {
+                                          borderColor:
+                                            ERP_COLOR_CODE.ERP_ERROR,
+                                          borderWidth: 0.8,
+                                        },
+                                        isInputEditPass && {
+                                          borderColor: "#81b5e4",
+                                          borderWidth: 0.8,
+                                        },
+                                        values?.password && {
+                                          borderColor: "green",
+                                          borderWidth: 0.8,
+                                        },
+                                      ]}
+                                    >
+                                      <MaterialIcons
+                                        name="password"
+                                        size={20}
+                                        color={ERP_COLOR_CODE.ERP_999}
+                                      />
+                                      <TextInput
+                                        style={[
+                                          styles.input1,
+                                          theme === "dark" && {
+                                            backgroundColor: "black",
+                                            color: "white",
+                                          },
+                                           isIpad && {
+                                            paddingVertical: 16,
+                                          }
+                                        ]}
+                                        placeholder={t("auth.enterPassword")}
+                                        secureTextEntry={!showPassword}
+                                        placeholderTextColor={
+                                          ERP_COLOR_CODE.ERP_999
+                                        }
+                                        value={values?.password}
+                                        onChangeText={handleChange(
+                                          "password",
+                                        )}
+                                        onFocus={() =>
+                                          setIsInputEditPass(true)
+                                        }
+                                        onBlur={() => {
+                                          if (!values?.password) {
+                                            handleBlur("password");
+                                            setIsInputEditPass(false);
+                                          }
+                                        }}
+                                      />
+                                      <TouchableOpacity
+                                        onPress={() =>
+                                          setShowPassword((s) => !s)
+                                        }
+                                        style={styles.toggleButton}
+                                      >
+                                        <MaterialIcons
+                                          name={
+                                            !showPassword
+                                              ? "visibility-off"
+                                              : "visibility"
+                                          }
+                                          color={ERP_COLOR_CODE.ERP_999}
+                                          size={20}
+                                        />
+                                      </TouchableOpacity>
+                                    </View>
+                                    {touched?.password &&
+                                      errors?.password && (
+                                        <Animated.Text
+                                          style={[
+                                            styles.errorText,
+                                            {
+                                              opacity: passErrorAnim,
+                                              transform: [
+                                                {
+                                                  translateX:
+                                                    passErrorAnim.interpolate(
+                                                      {
+                                                        inputRange: [0, 1],
+                                                        outputRange: [-38, 0],
+                                                      },
+                                                    ),
+                                                },
+                                              ],
+                                            },
+                                          ]}
+                                        >
+                                          {errors?.password}
+                                        </Animated.Text>
+                                      )}
+                                  </View>
+
+                                  {/* Add Button */}
+
+                                  <TouchableOpacity
+                                    style={[
+                                      styles.addButton,
+                                      {
+                                        backgroundColor:
+                                          theme === "dark"
+                                            ? "white"
+                                            : ERP_COLOR_CODE.ERP_APP_COLOR,
+                                      },
+                                      loader && styles.disabledButton,
+                                      theme === "dark" && {
+                                        backgroundColor: "white",
+                                        borderColor: "white",
+                                        borderWidth: 1,
+                                      },
+                                       isIpad && {
+                                            paddingVertical: 16,
+                                          }
+                                    ]}
+                                    onPress={() => handleSubmit()}
+                                    onPressIn={onPressIn}
+                                    onPressOut={onPressOut}
+                                    disabled={loader}
+                                    activeOpacity={1} // avoid opacity conflict
+                                  >
+                                    <MaterialIcons
+                                      name="person-add-alt"
+                                      size={24}
+                                      color={
+                                        theme === "dark"
+                                          ? "black"
+                                          : ERP_COLOR_CODE.ERP_WHITE
+                                      }
+                                    />
+                                    <Text
+                                      style={[
+                                        styles.addButtonText,
+                                        theme === "dark" && {
+                                          color: "black",
+                                        },
+                                      ]}
+                                    >
+                                      {loader
+                                        ? t("account.adding")
+                                        : t("account.add")}
+                                    </Text>
+                                  </TouchableOpacity>
+
+                                  {/* <Text style={styles.note}>
                                       {t("account.msg1")}
                                     </Text> */}
-                                  </>
-                                );
-                              }}
-                            </Formik>
-                          </View>
+                                </>
+                              );
+                            }}
+                          </Formik>
+                        </View>
                       )}
                     />
                   </View>

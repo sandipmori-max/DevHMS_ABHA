@@ -8,6 +8,7 @@ import {
   Text,
   useWindowDimensions,
   SectionList,
+  Platform,
 } from "react-native";
 import React, {
   useEffect,
@@ -50,6 +51,7 @@ import {
 import TranslatedText from "../home/TranslatedText";
 import { styles } from "./style";
 import { formatDateForAPI } from "../../../../utils/helpers";
+import DeviceInfo from "react-native-device-info"; 
 const accentColors = [
   "#dbe0f5ff",
   "#c8f3edff",
@@ -90,7 +92,8 @@ const MenuTab = ({
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
   const [showStarsOnly, setShowStarsOnly] = useState(false);
   const [showFull, setShowFull] = useState(false);
-
+ const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [filteredList, setFilteredList] = useState(allList);
@@ -316,7 +319,6 @@ const MenuTab = ({
               <ERPIcon name="search" onPress={() => setShowSearch(true)} />
             )}
 
-            {isLandscape && (
               <>
                 <ERPIcon
                   name={isHorizontal ? "dashboard" : "list"}
@@ -344,14 +346,8 @@ const MenuTab = ({
                   onPress={() => setHideTab(!hideTab)}
                 />
               </>
-            )}
 
-            {!isLandscape && (
-              <ERPIcon
-                name={!showFull ? "more-vert" : "close"}
-                onPress={() => setShowFull(!showFull)}
-              />
-            )}
+            
           </View>
         ),
 
@@ -732,7 +728,8 @@ const MenuTab = ({
             )}
             renderItem={({ item, index, section }) => {
               const items = section.data;
-              const chunkSize = isLandscape ? 4 : 3;
+                const chunkSize = isIpad ? isLandscape ? 6 : 4 : isLandscape ? 4 : 3;
+
 
               // sirf first index pe pura section render karo
               if (index !== 0) return null;
@@ -751,7 +748,7 @@ const MenuTab = ({
                         <View
                           key={childIndex}
                           style={{
-                            width: isLandscape ? "25%" : "33%",
+                            width: isIpad ? isLandscape ? "16.6%" : "25%" : isLandscape ? "25%" : "33%",
                           }}
                         >
                           {renderItem({ item: child, index: childIndex })}
@@ -776,21 +773,22 @@ const MenuTab = ({
             keyboardShouldPersistTaps="handled"
             renderItem={renderItem}
             numColumns={
-              isLandscape
-                ? isHorizontal
-                  ? 2
-                  : 4
-                : isHorizontal
-                ? 1
-                : list.length > 8
-                ? 4
-                : 2
-            }
-            columnWrapperStyle={
-              !isHorizontal ? styles.columnWrapper : undefined
-            }
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
+                isIpad ? isLandscape ? 4 : 3 :
+                isLandscape
+                  ? isHorizontal
+                    ? 2
+                    : 4
+                  : isHorizontal
+                  ? 1
+                  : list.length > 8
+                  ? 4
+                  : 2
+              }
+              columnWrapperStyle={
+                !isHorizontal ? styles.columnWrapper : undefined
+              }
+              contentContainerStyle={styles.listContent}
+              showsVerticalScrollIndicator={false}
           />
         </>
       )}

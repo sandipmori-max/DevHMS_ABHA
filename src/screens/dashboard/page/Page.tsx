@@ -123,6 +123,8 @@ export async function requestLocationPermissions(): Promise<
 const PageScreen = () => {
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
+    const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const flatListRef = useRef<FlatList>(null);
@@ -376,7 +378,9 @@ const PageScreen = () => {
       headerTitleAlign: "left",
       headerTitle: () => (
         <View
-          style={{ flexDirection: "row", alignItems: "center", maxWidth: 210 }}
+          style={[{ flexDirection: "row", alignItems: "center",  }, !isIpad && {
+            maxWidth: 210
+          }]}
         >
           <TranslatedText
             numberOfLines={1}
@@ -2044,7 +2048,7 @@ const PageScreen = () => {
                     renderItem={renderItem}
                     contentContainerStyle={{ paddingBottom: keyboardHeight }}
                     keyboardShouldPersistTaps="handled"
-                    numColumns={isLandscape ? 2 : 1}
+                   numColumns={ isIpad ? (isLandscape ? 3 : 1) : (isLandscape ? 2 : 1) }
                   //  ListFooterComponent={() => {
                   //   return (
                   //     <ScrollView>

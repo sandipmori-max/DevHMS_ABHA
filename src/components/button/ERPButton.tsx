@@ -1,10 +1,10 @@
 import React, { useRef } from 'react';
-import { TouchableOpacity, Text, ActivityIndicator, Animated } from 'react-native';
+import { TouchableOpacity, Text, ActivityIndicator, Animated, Platform } from 'react-native';
 import { ERPButtonProps } from './type';
 import { styles } from './style';
 import { ERP_COLOR_CODE } from '../../utils/constants';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
-import TranslatedText from '../../screens/dashboard/tabs/home/TranslatedText';
+import TranslatedText from '../../screens/dashboard/tabs/home/TranslatedText'; 
 
 const ERPButton: React.FC<ERPButtonProps> = ({
   text = '',
@@ -16,6 +16,8 @@ const ERPButton: React.FC<ERPButtonProps> = ({
   activeOpacity = 0.8,
   isLoading
 }) => {
+  
+   
   const pressAnim = useRef(new Animated.Value(1)).current;
   const onPressIn = () => {
     Animated.spring(pressAnim, {

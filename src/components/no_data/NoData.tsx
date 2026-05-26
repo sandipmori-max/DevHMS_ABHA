@@ -8,6 +8,7 @@ import { styles } from "./no_data_style";
 import { useAppSelector } from "../../store/hooks";
 import { useTranslation } from "react-i18next";
 import { ERP_COLOR_CODE } from "../../utils/constants";
+import DeviceInfo from "react-native-device-info";
 
 const NoData = ({ isShowTop = true, text }: any) => {
   const { t } = useTranslation();
@@ -21,7 +22,8 @@ const NoData = ({ isShowTop = true, text }: any) => {
   const subtitleTranslateX = useRef(new Animated.Value(20)).current;
 
   const [shouldRender, setShouldRender] = useState(false);
-
+  const isIpad =
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   useFocusEffect(
     useCallback(() => {
       opacity.setValue(0);
@@ -157,8 +159,8 @@ const NoData = ({ isShowTop = true, text }: any) => {
                 style={[
                   styles.image,
                   {
-                    width: width * 0.6,
-                    height: width * 0.6,
+                    width: isIpad ? 150 : width * 0.6,
+                    height: isIpad ? 150 : width * 0.6,
                   },
                 ]}
                 resizeMode="contain"

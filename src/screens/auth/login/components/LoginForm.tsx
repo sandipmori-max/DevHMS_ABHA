@@ -26,7 +26,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const { token: fcmToken } = useFcmToken();
 
   const [focusedField, setFocusedField] = useState<string | null>(null);
-
+ const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   const {
     execute: validateCompanyCode,
     loading: validationLoading,
@@ -95,9 +96,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
       const androidVersion = parseInt(DeviceInfo.getSystemVersion(), 10);
      
       if(androidVersion <= 9  && Platform.OS !== 'ios'){
-        currentFcmToken= '';
+        currentFcmToken= fcmToken || (await getMessaging().getToken()) || '';
       }else if (androidVersion >= 10  && Platform.OS !== 'ios'){
-         currentFcmToken= fcmToken || (await getMessaging().getToken())
+         currentFcmToken= fcmToken || (await getMessaging().getToken()) || '';
       } else {
         currentFcmToken= '';
       }
@@ -222,7 +223,12 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 disabled={isLoading || validationLoading || erpLoginLoading}
                 style={[styles.loginButton, {
                     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-                }]}
+                },
+                isIpad && {
+                  paddingVertical: 18,
+                }
+              
+              ]}
                 textStyle={styles.loginButtonText}
               />
             </Animated.View>

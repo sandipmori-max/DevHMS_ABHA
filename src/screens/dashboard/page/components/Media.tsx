@@ -30,6 +30,7 @@ import ImageResizer from "@bam.tech/react-native-image-resizer";
 import RNFS from "react-native-fs";
 import LableInfo from "./LableInfo";
 import { useNavigation } from "@react-navigation/native";
+import DeviceInfo from "react-native-device-info";
 
 const Media = ({
   isValidate,
@@ -59,7 +60,9 @@ const Media = ({
     message: "",
     type: "info" as "error" | "success" | "info",
   });
-
+ const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+   
   console.log("Media Rendered with imageUri:", imageUri, "and errors:", errors);
   const scale = useRef(new Animated.Value(1)).current;
   const translateX = useRef(new Animated.Value(0)).current;
@@ -723,7 +726,7 @@ const Media = ({
             onPress={handleChooseImage}
             style={[
               styles.editBtn,
-              isLandscape && {
+             (isIpad ||  isLandscape) && {
                 left: 206,
               },
               theme === "dark" && {
@@ -767,7 +770,7 @@ const Media = ({
           <View
             style={[
               styles.fullscreenModalOverlay,
-              isLandscape && {
+              (isIpad || isLandscape) && {
                 alignContent: "center",
                 alignItems: "center",
               },
@@ -777,7 +780,7 @@ const Media = ({
               style={[
                 styles.fullscreenModalContent,
                 {
-                  width: isLandscape ? "50%" : "100%",
+                  width:  (isIpad || isLandscape) ? "50%" : "100%",
                 },
               ]}
             >
@@ -849,7 +852,7 @@ const Media = ({
           <View
             style={[
               styles.modalOverlay,
-              isLandscape && {
+              (isIpad || isLandscape) && {
                 alignContent: "center",
                 alignItems: "center",
               },
@@ -864,7 +867,7 @@ const Media = ({
                   backgroundColor: "black",
                 },
                 {
-                  width: isLandscape ? "50%" : "100%",
+                  width:  (isIpad || isLandscape) ? "50%" : "100%",
                 },
               ]}
             >

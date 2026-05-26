@@ -22,6 +22,7 @@ import NoData from "../../../../components/no_data/NoData";
 import TranslatedText from "../../tabs/home/TranslatedText";
 import InfoTooltip from "./Tooltip";
 import LableInfo from "./LableInfo";
+import DeviceInfo from "react-native-device-info";
 
 const AjaxPicker = ({
   isValidate,
@@ -46,7 +47,8 @@ const AjaxPicker = ({
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
   const { user } = useAppSelector((state) => state?.auth);
-
+    const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   useEffect(() => {
     const timer = setTimeout(() => {
       if (open) {
@@ -201,7 +203,7 @@ const AjaxPicker = ({
           <View
             style={[
               styles.overlay,
-              isLandscape && {
+              (isLandscape || isIpad) && {
                 alignContent: "center",
                 alignItems: "center",
               },
@@ -223,7 +225,7 @@ const AjaxPicker = ({
                   borderColor: "white",
                 },
                 {
-                  width: isLandscape ? "50%" : "100%",
+                  width: isIpad ? '60%' : isLandscape ? "50%" : "100%",
                 },
               ]}
             >

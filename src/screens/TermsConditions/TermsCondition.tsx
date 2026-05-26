@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ERP_COLOR_CODE } from "../../utils/constants";
+import DeviceInfo from "react-native-device-info";
 
 const TermsAndConsent = ({ onAccept }: any) => {
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -24,7 +25,8 @@ const TermsAndConsent = ({ onAccept }: any) => {
     }
     setShowLocationModal(true);
   };
-
+ const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   const handleLocationAgree = async () => {
     setLocationAccepted(true);
     setShowLocationModal(false);
@@ -356,7 +358,7 @@ const TermsAndConsent = ({ onAccept }: any) => {
         <View
           style={[
             styles.modalOverlay,
-            isLandscape && {
+            (isLandscape || isIpad)  && {
               alignContent: "center",
               alignItems: "center",
             },
@@ -366,8 +368,9 @@ const TermsAndConsent = ({ onAccept }: any) => {
             style={[
               styles.modalBox,
               {
-                width: isLandscape ? "50%" : "100%",
+                width: isIpad ? '50%' : isLandscape ? "50%" : "100%",
               },
+              
             ]}
           >
             <Text style={styles.modalTitle}>

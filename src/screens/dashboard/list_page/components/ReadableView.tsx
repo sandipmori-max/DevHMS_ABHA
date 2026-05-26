@@ -25,6 +25,7 @@ import useTranslations from "../../../../hooks/useTranslations";
 import ImageBottomSheetModal from "../../../../components/bottomsheet/ImageBottomSheetModal";
 import RemarksView from "./RemarksView";
 import MemoizedFooterView from "./MemoizedFooterView";
+import DeviceInfo from "react-native-device-info";
 
 if (
   Platform.OS === "android" &&
@@ -113,7 +114,8 @@ const ReadableView = ({
     loadingListId,
     filteredData,
   );
-
+ const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   const slideAnim = useRef(new Animated.Value(300)).current; // right se start
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -221,7 +223,7 @@ const ReadableView = ({
               theme === "dark"
                 ? ERP_COLOR_CODE.ERP_BORDER
                 : ERP_COLOR_CODE.ERP_999,
-            width: isLandscape ? "48%" : "96%",
+            width: isIpad ? isLandscape ? '32%' : '48%' : isLandscape ? "48%" : "96%",
             overflow: "hidden",
           }}
         >
@@ -662,8 +664,8 @@ const ReadableView = ({
         renderItem={({ item, index }) => (
           <RenderCard item={item} index={index} />
         )}
-        key={isLandscape ? "landscape" : "portrait"}
-        numColumns={isLandscape ? 2 : 1}
+        key={isIpad ? isLandscape ? "ipad-list" : "ipad-landscape" : isLandscape ? "landscape" : "portrait"}
+        numColumns={isIpad ? isLandscape ? 3 : 2 : isLandscape ? 2 : 1}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         onEndReached={loadMore}

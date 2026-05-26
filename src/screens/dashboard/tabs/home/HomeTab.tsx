@@ -69,6 +69,7 @@ import CustomAlert from "../../../../components/alert/CustomAlert";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import { getLastPunchInThunk } from "../../../../store/slices/attendance/thunk";
 import { batch } from "react-redux";
+import DeviceInfo from "react-native-device-info";
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;
   return /<([a-z]+)([^>]*?)>/i.test(str);
@@ -184,7 +185,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         (item?.data || "").toLowerCase().includes(text),
     );
   }, [searchText, dashboard]);
-
+ const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   const htmlItems = filteredDashboard.filter((item) =>
     hasHtmlContent(item.data),
   );
@@ -1629,7 +1631,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
           </View>
         )}
 
-        {!isLandscape && isFilterVisible && (
+        { !isLandscape && isFilterVisible && (
           <>
             <View
               style={[

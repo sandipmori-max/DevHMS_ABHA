@@ -6,6 +6,7 @@ import {
   Animated,
   Easing,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SvgUri } from "react-native-svg";
@@ -17,6 +18,7 @@ import { useAppSelector } from "../../store/hooks";
 import useTranslations from "../../hooks/useTranslations";
 import { firstLetterUpperCase } from "../../utils/helpers";
 import { ERP_COLOR_CODE } from "../../utils/constants";
+import DeviceInfo from "react-native-device-info";
 
 const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   // EXISTING ANIMATIONS
@@ -25,7 +27,8 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   const textTranslateY = useRef(new Animated.Value(40)).current;
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
   const greetingOpacity = useRef(new Animated.Value(0)).current;
-
+ const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   // NEW SPLASH ANIMATIONS
   const topImageAnim = useRef(new Animated.Value(-200)).current;
   const bottomImageAnim = useRef(new Animated.Value(200)).current;
@@ -326,7 +329,10 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
           >
             <Image
               source={user?.companyLogo || ERP_ICON.APP_LOGO}
-              style={styles.logo}
+              style={[styles.logo, isIpad && {
+                  height: 90,
+                  width: 90,
+              }]}
               resizeMode="contain"
             />
           </Animated.View>

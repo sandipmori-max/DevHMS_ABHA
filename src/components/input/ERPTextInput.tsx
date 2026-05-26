@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   Animated,
+  Platform,
 } from "react-native";
 import { ERPTextInputProps } from "./type";
 import { styles } from "./input_style";
@@ -12,6 +13,7 @@ import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ERP_COLOR_CODE } from "../../utils/constants";
 import { Easing } from "react-native";
 import TranslatedText from "../../screens/dashboard/tabs/home/TranslatedText";
+import DeviceInfo from "react-native-device-info";
 
 const ERPTextInput: React.FC<ERPTextInputProps> = ({
   label,
@@ -33,7 +35,8 @@ const ERPTextInput: React.FC<ERPTextInputProps> = ({
 }) => {
   const [showPassword, setShowPassword] = useState(!secureTextEntry);
   const errorAnim = useRef(new Animated.Value(0)).current;
-
+ const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   useEffect(() => {
     if (touched && error) {
       errorAnim.setValue(0);
@@ -99,6 +102,10 @@ const ERPTextInput: React.FC<ERPTextInputProps> = ({
               styles.input,
               inputStyle,
               { paddingRight: showToggle && secureTextEntry ? 36 : 12 },
+              isIpad && {
+                paddingVertical: 16,
+                borderRadius: 10
+              }
             ]}
             secureTextEntry={secureTextEntry && !showPassword}
             {...rest}

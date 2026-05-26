@@ -46,7 +46,8 @@ const LoginScreen = ({ navigation, route }: any) => {
     type: "info" as "error" | "success" | "info",
   });
   const [keyboardHeight, setKeyboardHeight] = useState(0);
-
+ const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   useEffect(() => {
     const fetchDeviceName = async () => {
       const name = Platform.OS === 'ios' ? DeviceInfo.getModel() + " " + await DeviceInfo.getUniqueId() : await DeviceInfo.getDeviceName();
@@ -153,6 +154,10 @@ const LoginScreen = ({ navigation, route }: any) => {
                       paddingHorizontal: 0,
                       padding: 0,
                     },
+                    isIpad && {
+                      padding: 80,
+                      marginTop: 100
+                    }
                   ]}
                 >
                   {isLandscape ? (
