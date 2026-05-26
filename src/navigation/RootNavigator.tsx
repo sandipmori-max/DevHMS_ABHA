@@ -162,7 +162,7 @@ const RootNavigator = () => {
       await dispatch(checkAuthStateThunk()).unwrap();
       if (isAuthenticated) {
       try {
-        dispatch(getERPAppConfigMenuThunk());
+       await dispatch(getERPAppConfigMenuThunk());
       } catch (error) {
         dispatch(updateAppMenuList([]));
         console.log("Error fetching app config menu:", error);

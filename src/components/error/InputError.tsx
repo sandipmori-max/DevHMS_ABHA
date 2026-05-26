@@ -35,7 +35,7 @@ const InputError = ({ error }: any) => {
             },
           ]}
         >
-          {error}
+        - {error}
         </Animated.Text>
       )}
     </View>

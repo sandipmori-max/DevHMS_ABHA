@@ -341,7 +341,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
       onClose();
       setLoader(false);
       try {
-        dispatch(getERPAppConfigMenuThunk());
+       await dispatch(getERPAppConfigMenuThunk());
       } catch (error) {
         dispatch(updateAppMenuList([])); // Clear menu on error
         console.log("Error fetching app config menu:", error);

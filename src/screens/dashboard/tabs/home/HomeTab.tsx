@@ -430,7 +430,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
   const refreshData = async () => {
     try {
       dispatch(setDashboardLoading(true));
-      dispatch(getERPAppConfigMenuThunk());
+     await dispatch(getERPAppConfigMenuThunk());
       if (appBottomMenuList.length === 0) {
         setAlertVisible(true);
       } else {

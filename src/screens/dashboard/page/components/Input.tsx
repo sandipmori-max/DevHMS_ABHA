@@ -24,8 +24,8 @@ const Input = ({
     setValue(value);
   }, [value]);
   const [isInputEdit, setIsInputEdit] = useState(false);
-
-  console.log("item input -------"  , item)
+  const [maxLengthError, setMaxLengthError] = useState("");
+ 
   return (
     <View style={{ marginBottom: Platform.OS === 'android' ? 6 : 8 }}>
       <LableInfo isFromChild={isFromChild}
@@ -62,6 +62,7 @@ const Input = ({
         ]}
       >
         <TextInput
+          maxLength={item?.size > 0 ? item?.size : 100}
           id={id}
           multiline={
             item?.size > 128
@@ -103,7 +104,47 @@ const Input = ({
               : "default"
           }
           value={value.toString()}
-          onChangeText={(text) => setValue(text)}
+          onChangeText={(text) => {
+
+  // Only numbers allowed for NUMERIC type
+  if (item?.ctltype === "NUMERIC") {
+     // Check invalid characters
+    const hasInvalidChar = /[^0-9]/.test(text);
+
+    // Remove non-numeric chars
+    const numericText = text.replace(/[^0-9]/g, "");
+
+    setValue(numericText);
+
+    // Invalid character error
+    if (hasInvalidChar) {
+      setMaxLengthError("Only numbers are allowed");
+    }
+    // Max length error
+    else if ( item?.size > 0 && numericText.length >= item?.size) {
+      setMaxLengthError(
+        `Maximum ${item?.size} digits allowed`
+      );
+    }
+    // Clear error
+    else {
+      setMaxLengthError("");
+    }
+
+    return;
+  }
+
+  // Normal text input
+  setValue(text);
+
+  if (item?.size > 0 && text.length >= item?.size) {
+    setMaxLengthError(
+      `Maximum ${item?.size} characters allowed`
+    );
+  } else {
+    setMaxLengthError("");
+  }
+}}
           placeholder={`Enter ${item?.fieldtitle}`}
           onFocus={(e) => {
             setIsInputEdit(true);
@@ -124,6 +165,18 @@ const Input = ({
       
       </View>
       {errors[item.field] && <InputError error={errors[item?.field]} />}
+
+       {!!maxLengthError && (
+        <Text
+          style={{
+            color: ERP_COLOR_CODE.ERP_ERROR,
+            fontSize: 12,
+            marginTop: 4, 
+          }}
+        >
+         - {maxLengthError}
+        </Text>
+      )}
     </View>
   );
 };
