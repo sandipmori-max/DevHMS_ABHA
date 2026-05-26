@@ -626,60 +626,17 @@ export const goToSettings = () => {
   }
 };
 
-export const handlePhonePress = async (phoneNumber: string) => {
-  const cleanedNumber = phoneNumber?.trim();
-
-  // Validate
-  if (!cleanedNumber) {
-    Alert.alert("Invalid Phone Number", "Phone number is empty.");
-    return;
-  }
-
-  const phoneRegex = /^[0-9+\-\s()]+$/;
-
-  if (!phoneRegex.test(cleanedNumber)) {
-    Alert.alert("Invalid Phone Number", "Please enter a valid phone number.");
-    return;
-  }
-
-  const url = `tel:${cleanedNumber}`;
-
-  const supported = await Linking.canOpenURL(url);
-
-  if (!supported) {
-    Alert.alert("Error", "Calling is not supported on this device.");
-    return;
-  }
-
+export const handlePhonePress = async (phoneNumber: string) => { 
+ 
+  const url = `tel:${phoneNumber}`;
+  console.log("Constructed phone URL:", url);
+  
+  console.log("Opening dialer with URL:", url);
   Linking.openURL(url);
 };
 
 export const handleEmailPress = async (emailAddress: string) => {
-  const cleanedEmail = emailAddress?.trim();
-
-  // Validate
-  if (!cleanedEmail) {
-    Alert.alert("Invalid Email", "Email address is empty.");
-    return;
-  }
-
-  const emailRegex =
-    /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-
-  if (!emailRegex.test(cleanedEmail)) {
-    Alert.alert("Invalid Email", "Please enter a valid email address.");
-    return;
-  }
-
-  const url = `mailto:${cleanedEmail}`;
-
-  const supported = await Linking.canOpenURL(url);
-
-  if (!supported) {
-    Alert.alert("Error", "Email app is not available on this device.");
-    return;
-  }
-
+  const url = `mailto:${emailAddress}`;
   Linking.openURL(url);
 };
 export const handleLocationPress = (location: string) => {

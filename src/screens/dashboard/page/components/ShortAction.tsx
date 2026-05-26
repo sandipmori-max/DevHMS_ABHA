@@ -19,7 +19,9 @@ const ShortAction = ({ item, value }: any) => {
       {value && (title?.includes("mobile no") || title?.includes("phone")) && (
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={() => handlePhonePress(value)}
+          onPress={async () => {
+            await handlePhonePress(value);
+          }}
         >
           <MaterialIcons
             color={theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR}
