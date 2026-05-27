@@ -592,3 +592,26 @@
     }
   ]
 }
+
+--- prescrption ---
+
+	let response;
+	try {
+	response = pm.response.json();
+	
+	let inner = response.d ? JSON.parse(response.d) : response;
+	console.log(inner);
+	
+	const template = `<pre>{{pretty}}</pre>`;
+	function createPayload() {
+	return { pretty: JSON.stringify(inner, null, 2) };
+	}
+	pm.visualizer.set(template, createPayload());
+	pm.test("Response parsed and visualized successfully", function () {
+	pm.expect(inner).to.be.an('object');
+	});
+	} catch (e) {
+	pm.test("Response parsing failed", function () {
+	pm.expect.fail("Parsing error: " + e.message);
+	});
+	}
