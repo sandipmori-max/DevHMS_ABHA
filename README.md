@@ -7061,13 +7061,25 @@ build safeareacontext_autolinked_build/CMakeFiles/react_codegen_safeareacontext.
 
 
 // - 
-Location tracker - foreground + background 
+location tracker - native code foreground + background 
 img upload - camera + gallery 
 file upload - file selection - 
 video recorder
 qr/bar code scan
 buissness card reader - camera + doc scan + gallery
+documents scan - native code - auto or manual capture 
+face detection - camera 
+single list page
+single entry page - dynamic fields
+sorting A/D
+filter Group1 + Group2 / Date wise / branch wise 
+search with input
+digital sign - draw sign 
 
+
+- android/ios app develop and developer acc create and approval - manage
+- Tv/iPad/Tab/Mobile - ios+android
+- 
 
 date picker - ios side - update
 
