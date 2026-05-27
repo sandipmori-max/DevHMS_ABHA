@@ -615,3 +615,101 @@
 	pm.expect.fail("Parsing error: " + e.message);
 	});
 	}
+
+  ---- for page -----
+
+  try {
+
+    const response = pm.response.json();
+
+    let raw = response.d;
+
+    // Remove script field before JSON.parse
+    raw = raw.replace(
+        /"script":"<script[\s\S]*?<\/script>",/g,
+        ""
+    );
+
+    // Parse cleaned JSON
+    const parsedData = JSON.parse(raw);
+
+    // Visualizer
+    const template = `
+        <pre style="
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            padding: 12px;
+            background: #f4f4f4;
+            border-radius: 6px;
+            font-size: 12px;
+        ">
+{{data}}
+        </pre>
+    `;
+
+    pm.visualizer.set(template, {
+        data: JSON.stringify(parsedData, null, 2)
+    });
+
+} catch (err) {
+
+    console.log(err);
+
+    pm.visualizer.set(
+        "<h3 style='color:red'>Parsing Error</h3><pre>{{msg}}</pre>",
+        { msg: err.message }
+    );
+}
+
+{
+      "dtlid": "500018622",
+      "id": "100000463",
+      "seqno": "6",
+      "field": "cityid",
+      "dfield": "city",
+      "fieldtitle": "City",
+      "title": "City",
+      "text": "",
+      "dtext": "",
+      "defaultvalue": "",
+      "tooltip": "CountryID",
+      "size": "",
+      "ctltype": "NUMERIC",
+      "ddl": "ViewCity_Mst-City,CityID,State,Country,[City]",
+      "ddlfield": "City,State,Country,City",
+      "ddlwhere": "1=1",
+      "ajax": "1",
+      "visible": "0",
+      "refcol": "0",
+      "mandatory": "1",
+      "disabled": "0"
+    },
+
+
+     {
+      "dtlid": "500019422",
+      "id": "100000463",
+      "seqno": "6",
+      "field": "cityid",
+      "dfield": "city",
+      "fieldtitle": "City",
+      "title": "City",
+      "text": "",
+      "dtext": "",
+      "defaultvalue": "",
+      "tooltip": "CountryID",
+      "size": "",
+      "ctltype": "NUMERIC",
+      "ddl": "ViewCity_Mst-City,CityID,State,Country,[City]",
+      "ddlfield": "City,State,Country,City",
+      "ddlwhere": "1=1",
+      "ajax": "1",
+      "visible": "0",
+      "refcol": "0",
+      "mandatory": "1",
+      "disabled": "0"
+    },
+
+    ViewCity_Mst
+    ViewState_Mst
+    ViewCountry_Mst
