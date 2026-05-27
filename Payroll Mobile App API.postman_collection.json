@@ -1,0 +1,594 @@
+{
+  "info": {
+    "_postman_id": "468d5794-22e5-459b-a951-f859eca79ebc",
+    "name": "Payroll Mobile App API",
+    "description": "Postman collection for Payroll Mobile App APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "48137594",
+    "_collection_link": "https://go.postman.co/collection/48137594-468d5794-22e5-459b-a951-f859eca79ebc?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "getLink",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"monocrete\"\n}"
+            },
+            "url": {
+              "raw": "{{supportBaseUrl}}/appcode.aspx/getLink",
+              "host": [
+                "{{supportBaseUrl}}"
+              ],
+              "path": [
+                "appcode.aspx",
+                "getLink"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "setAppID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user\": \"{{username}}\",\n  \"pass\": \"{{password}}\",\n  \"appid\": \"{{appid}}\",\n  \"firebaseid\": \"{{firebaseid}}\",\n  \"device\": \"{{device}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/setAppID",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "setAppID"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAuth",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appid\": \"{{appid}}\",\n  \"device\": \"{{device}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/getAuth",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "getAuth"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "getMenu",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/getMenu",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "getMenu"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getDB",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/getDB",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "getDB"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Attendance",
+      "item": [
+        {
+          "name": "Punch In",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\",\n  \"page\": \"punhin\",\n  \"data\": \"{\\\"ID\\\":\\\"{{employeeId}}\\\", \\\"EmployeeId\\\":\\\"{{employeeId}}\\\",\\\"InDate\\\":\\\"\\\",\\\"InImage\\\":\\\"\\\",\\\"InRemarks\\\":\\\"\\\",\\\"InLocation\\\":{\\\"lat\\\":\\\"\\\",\\\"long\\\":\\\"\\\"},\\\"CUID\\\":\\\"{{employeeId}}\\\"}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/savePage",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "savePage"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Punch Out",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\",\n  \"page\": \"punhout\",\n  \"data\": \"{\\\"ID\\\":\\\"{{employeeId}}\\\", \\\"EmployeeId\\\":\\\"{{employeeId}}\\\",\\\"OutDate\\\":\\\"\\\",\\\"OutImage\\\":\\\"\\\",\\\"OutRemarks\\\":\\\"\\\",\\\"OutLocation\\\":{\\\"lat\\\":\\\"\\\",\\\"long\\\":\\\"\\\"},\\\"CUID\\\":\\\"{{employeeId}}\\\"}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/savePage",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "savePage"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Last Punch In",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/getLastPunchIn",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "getLastPunchIn"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Location",
+      "item": [
+        {
+          "name": "Sync Location",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\",\n  \"location\": \"45.5556,12.6655\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/syncLocation",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "syncLocation"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Management",
+      "item": [
+        {
+          "name": "Save",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"page\": \"EmployeeMaster\",\n  \"token\": \"{{token}}\",\n  \"data\": \"{...employee data...}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/savePage",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "savePage"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\",\n  \"id\": \"{{employeeId}}\",\n  \"remark\": \"delete remark\",\n  \"page\": \"EmployeeMaster\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pageDelete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pageDelete"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auth",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\",\n  \"id\": \"{{employeeId}}\",\n  \"remarks\": \"1=1\",\n  \"page\": \"EmployeeMaster\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pageAuth",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pageAuth"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DeAuth",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\",\n  \"id\": \"{{employeeId}}\",\n  \"remarks\": \"1=1\",\n  \"page\": \"EmployeeMaster\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pageDeAuth",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pageDeAuth"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\",\n  \"id\": \"{{employeeId}}\",\n  \"remarks\": \"1=1\",\n  \"page\": \"EmployeeMaster\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pageCancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pageCancel"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Utilities",
+      "item": [
+        {
+          "name": "Get Dropdown",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\",\n  \"dtlid\": \"1081\",\n  \"where\": \"PropTypeName=~Gender~\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/getDDL",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "getDDL"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Ajax",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\",\n  \"dtlid\": \"1072\",\n  \"where\": \"Status=~A~\",\n  \"search\": \"dadfdfdfdd\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/getAjax",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "getAjax"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Page Or List",
+      "item": [
+        {
+          "name": "Get List",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\",\n  \"page\": \"SalaryTemplateMst\",\n  \"fd\": \"02-Aug-2025\",\n  \"td\": \"30-Aug-2025\",\n  \"param\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/getListData",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "getListData"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Page",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\",\n  \"page\": \"SalaryTemplateMst\",\n  \"id\": \"11\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/getPage",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "getPage"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get List Config",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Get App menu",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "supportBaseUrl",
+      "value": "https://support.deverp.net/devws"
+    },
+    {
+      "key": "baseUrl",
+      "value": "https://payroll.deverp.net/devws/msp_api.aspx"
+    },
+    {
+      "key": "username",
+      "value": "suresh"
+    },
+    {
+      "key": "password",
+      "value": "suresh"
+    },
+    {
+      "key": "appid",
+      "value": "appid"
+    },
+    {
+      "key": "firebaseid",
+      "value": "firebaseid"
+    },
+    {
+      "key": "device",
+      "value": "device"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "employeeId",
+      "value": ""
+    }
+  ]
+}
