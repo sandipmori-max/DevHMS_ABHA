@@ -81,6 +81,9 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
+  const TOTAL_TIME = 3 * 60; // 3 min in seconds
+
+  const [remainingTime, setRemainingTime] = useState(TOTAL_TIME);
   const [controls, setControls] = useState<any[]>([]);
   const [controlsLoader, setControlsLoader] = useState<any>(false);
   const [alertVisible, setAlertVisible] = useState(true);
@@ -185,8 +188,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         (item?.data || "").toLowerCase().includes(text),
     );
   }, [searchText, dashboard]);
- const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+  const isIpad =
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   const htmlItems = filteredDashboard.filter((item) =>
     hasHtmlContent(item.data),
   );
@@ -195,6 +198,12 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
   const textItems = filteredDashboard.filter(
     (item) => item.data && !hasHtmlContent(item.data),
   );
+
+  const formatTime = time => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
 
   useEffect(() => {
     if (!dashboard || aiCalled.current) return;
@@ -250,154 +259,202 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
       headerBackTitle: "",
       headerTintColor: "#fff",
-      headerTitle: () =>
-        showSearch ? (
-          <View
+      headerTitle: () => {
+        return (<>
+          {
+              Platform.isTV ? <>
+                <Text style={{ color: ERP_COLOR_CODE.ERP_WHITE, fontSize: 16, fontWeight: '600' }}>
+                  {user?.companyName || ''}
+                </Text>
+              </> : <>
+                {
+                  showSearch ? (
+                    <View
+                      style={{
+                        width: isLandscape ? width - 170 : width - 70,
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      <TextInput
+                        value={searchText}
+                        onChangeText={setSearchText}
+                        autoFocus={true}
+                        placeholder={t("text83")}
+                        style={{
+                          flex: 1,
+                          backgroundColor: "#f0f0f0",
+                          borderRadius: 8,
+                          paddingHorizontal: 12,
+                          height: 36,
+                        }}
+                      />
+                      <TouchableOpacity
+                        onPress={() => {
+                          setShowSearch(false);
+                          setSearchText("");
+                        }}
+                      >
+                        <MaterialIcons
+                          name="clear"
+                          size={24}
+                          color={ERP_COLOR_CODE.ERP_WHITE}
+                          style={{ marginLeft: 8 }}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <>
+                      <Text
+                        numberOfLines={1}
+                        style={{
+                          color: "#fff",
+                          fontSize: 18,
+                          fontWeight: "600",
+                        }}
+                      >
+                        {t("text84")}
+                      </Text>
+                    </>
+                  )
+                }
+              </>
+          }
+        </>)
+      }
+      ,
+      headerRight: () => {
+        return (
+          <>
+            {
+              Platform.isTV ? <>
+                <>
+                  <Text style={{ color: '#fff', fontSize: 12 }}>
+                    Next refresh in {formatTime(remainingTime)}
+                  </Text>
+
+                  <ERPIcon
+                    name="refresh"
+                    onPress={async () => {
+                      refreshData();
+                      setChartType("")
+                    }}
+                    isLoading={actionLoader}
+                  />
+                  <ERPIcon
+                    name={!isHorizontal ? 'list' : 'apps'}
+                    onPress={() => setIsHorizontal(prev => !prev)}
+                  />
+                </>
+
+              </> : <>
+                {
+                  !showSearch && (
+                    <View style={{ flexDirection: "row", alignItems: "center" }}>
+                      {/* ✅ ANIMATED ICONS */}
+                      <Animated.View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          opacity: fadeAnim,
+                          transform: [
+                            {
+                              translateY: fadeAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [-10, 0],
+                              }),
+                            },
+                            {
+                              scale: fadeAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [0.8, 1],
+                              }),
+                            },
+                          ],
+                        }}
+                      >
+                        {showFull && (
+                          <>
+                            <ERPIcon
+                              name={!isHorizontal ? "list" : "apps"}
+                              onPress={() => setIsHorizontal((prev) => !prev)}
+                            />
+                            {controls.length > 0 && (
+                              <ERPIcon
+                                name={isFilterVisible ? "close" : "filter-alt"}
+                                onPress={() => setIsFilterVisible((prev) => !prev)}
+                              />
+                            )}
+
+                            <ERPIcon
+                              name={!hideTab ? "fullscreen" : "fullscreen-exit"}
+                              onPress={() => {
+                                setHideTab(!hideTab);
+                              }}
+                            />
+                          </>
+                        )}
+                      </Animated.View>
+                      <ERPIcon
+                        name="refresh"
+                        onPress={async () => {
+                          refreshData();
+                          setChartType("")
+
+                        }}
+                        isLoading={isDashboardLoading}
+                      />
+
+                      {dashboard.length > 5 && (
+                        <ERPIcon name="search" onPress={() => setShowSearch(true)} />
+                      )}
+
+                      {attendanceDone && user?.id == "113" && (
+                        <ERPIcon
+                          color={"green"}
+                          name={"location-on"}
+                          onPress={() => {
+                            navigation.navigate("LocationTrack");
+                          }}
+                        />
+                      )}
+
+                      <ERPIcon
+                        name={!showFull ? "more-vert" : "close"}
+                        onPress={() => {
+                          setIsFilterVisible(false);
+                          setShowFull(!showFull);
+                        }}
+                      />
+                    </View>
+                  )
+                }
+              </>
+            }
+          </>
+        )
+      },
+
+      headerLeft: () => (
+        !Platform.isTV && (
+          <TouchableOpacity
+            onPress={() => navigation?.openDrawer()}
             style={{
-              width: isLandscape ? width - 170 : width - 70,
-              flexDirection: "row",
+              height: 46,
+              width: 46,
+              justifyContent: "center",
+              alignContent: "center",
               alignItems: "center",
             }}
           >
-            <TextInput
-              value={searchText}
-              onChangeText={setSearchText}
-              autoFocus={true}
-              placeholder={t("text83")}
-              style={{
-                flex: 1,
-                backgroundColor: "#f0f0f0",
-                borderRadius: 8,
-                paddingHorizontal: 12,
-                height: 36,
-              }}
-            />
-            <TouchableOpacity
-              onPress={() => {
-                setShowSearch(false);
-                setSearchText("");
-              }}
-            >
-              <MaterialIcons
-                name="clear"
-                size={24}
-                color={ERP_COLOR_CODE.ERP_WHITE}
-                style={{ marginLeft: 8 }}
-              />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <>
-            <Text
-              numberOfLines={1}
-              style={{
-                color: "#fff",
-                fontSize: 18,
-                fontWeight: "600",
-              }}
-            >
-              {t("text84")}
-            </Text>
-          </>
-        ),
-      headerRight: () =>
-        !showSearch && (
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            {/* ✅ ANIMATED ICONS */}
-            <Animated.View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                opacity: fadeAnim,
-                transform: [
-                  {
-                    translateY: fadeAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [-10, 0],
-                    }),
-                  },
-                  {
-                    scale: fadeAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.8, 1],
-                    }),
-                  },
-                ],
-              }}
-            >
-              {showFull && (
-                <>
-                  <ERPIcon
-                    name={!isHorizontal ? "list" : "apps"}
-                    onPress={() => setIsHorizontal((prev) => !prev)}
-                  />
-                  {controls.length > 0 && (
-                    <ERPIcon
-                      name={isFilterVisible ? "close" : "filter-alt"}
-                      onPress={() => setIsFilterVisible((prev) => !prev)}
-                    />
-                  )}
-
-                  <ERPIcon
-                    name={!hideTab ? "fullscreen" : "fullscreen-exit"}
-                    onPress={() => {
-                      setHideTab(!hideTab);
-                    }}
-                  />
-                </>
-              )}
-            </Animated.View>
             <ERPIcon
-              name="refresh"
-              onPress={async () => {
-                refreshData();
-                setChartType("")
-                
-              }}
-              isLoading={isDashboardLoading}
+              extSize={24}
+              isMenu={true}
+              name="menu"
+              onPress={() => navigation?.openDrawer()}
             />
-
-            {dashboard.length > 5 && (
-              <ERPIcon name="search" onPress={() => setShowSearch(true)} />
-            )}
-
-            {attendanceDone && user?.id == "113" && (
-              <ERPIcon
-                color={"green"}
-                name={"location-on"}
-                onPress={() => {
-                  navigation.navigate("LocationTrack");
-                }}
-              />
-            )}
-
-            <ERPIcon
-              name={!showFull ? "more-vert" : "close"}
-              onPress={() => {
-                setIsFilterVisible(false);
-                setShowFull(!showFull);
-              }}
-            />
-          </View>
-        ),
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => navigation?.openDrawer()}
-          style={{
-            height: 46,
-            width: 46,
-            justifyContent: "center",
-            alignContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <ERPIcon
-            extSize={24}
-            isMenu={true}
-            name="menu"
-            onPress={() => navigation?.openDrawer()}
-          />
-        </TouchableOpacity>
+          </TouchableOpacity>
+        )
       ),
     });
   }, [
@@ -415,7 +472,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     hideTab,
     isLandscape,
     controls,
-    isDashboardLoading
+    isDashboardLoading,
+    remainingTime
   ]);
 
   const accentColors = [
@@ -430,7 +488,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
   const refreshData = async () => {
     try {
       dispatch(setDashboardLoading(true));
-     await dispatch(getERPAppConfigMenuThunk());
+      await dispatch(getERPAppConfigMenuThunk());
       if (appBottomMenuList.length === 0) {
         setAlertVisible(true);
       } else {
@@ -688,7 +746,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                     isFromListPage={undefined}
                     isForChart={chartType === '' ? false : true}
                     chartType={chartType}
-                    
+
                   />
                 </View>
               ) : (
@@ -1328,7 +1386,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                 <View
                   style={[
                     styles.overlay,
-                    (isLandscape  || isIpad) && {
+                    (isLandscape || isIpad) && {
                       alignContent: "center",
                       alignItems: "center",
                       // justifyContent:'center'
@@ -1631,7 +1689,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
           </View>
         )}
 
-        { !isLandscape && isFilterVisible && (
+        {!isLandscape && isFilterVisible && (
           <>
             <View
               style={[
@@ -2041,8 +2099,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                   Dashboard
                                 </Text>
                               </View>
-                                  
-                             
+
+
                             </View>
                             <View
                               style={{
@@ -2066,7 +2124,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                     isFromMenu: true,
                                   })
                                 }
-                                numColumns={isIpad ? 2 :  1}
+                                numColumns={isIpad ? 2 : 1}
                                 showsVerticalScrollIndicator={false}
                               />
                             </View>

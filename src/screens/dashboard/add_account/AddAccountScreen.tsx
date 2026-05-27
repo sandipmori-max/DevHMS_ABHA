@@ -90,7 +90,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
   const buttonAnim = useRef(new Animated.Value(0)).current; // Add button
   const backdropAnim = useRef(new Animated.Value(0)).current;
   const isIpad =
-    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   useEffect(() => {
     setLoader(false);
   }, [visible]);

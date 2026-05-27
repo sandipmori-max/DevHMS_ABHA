@@ -23,7 +23,7 @@ const NoData = ({ isShowTop = true, text }: any) => {
 
   const [shouldRender, setShouldRender] = useState(false);
   const isIpad =
-    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   useFocusEffect(
     useCallback(() => {
       opacity.setValue(0);

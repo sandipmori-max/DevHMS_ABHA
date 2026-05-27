@@ -26,7 +26,7 @@ const TermsAndConsent = ({ onAccept }: any) => {
     setShowLocationModal(true);
   };
  const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   const handleLocationAgree = async () => {
     setLocationAccepted(true);
     setShowLocationModal(false);

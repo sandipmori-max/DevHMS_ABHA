@@ -120,7 +120,7 @@ const CustomPicker = ({
     MAX_HEIGHT,
   );
       const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   return (
     <View style={{ marginBottom: isFromDashboard ? 2 : Platform.OS === 'android' ? 6  :8 }}>
       {/* Label */}

@@ -27,7 +27,7 @@ export default function DashboardListSheet({
   const contentOpacity = useRef(new Animated.Value(0)).current;
   const theme = useAppSelector((state) => state.theme.mode);
   const isIpad =
-    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   useEffect(() => {
     if (visible) {
       Animated.sequence([

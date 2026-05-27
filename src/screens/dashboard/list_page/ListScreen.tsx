@@ -72,7 +72,7 @@ const ListScreen = () => {
     response: actionResponse,
   } = useAppSelector((state) => state.page);
   const isIpad =
-    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   const { t } = useTranslations();
   const [loadingListId, setLoadingListId] = useState<string | null>(null);
   const [listData, setListData] = useState<any[]>([]);

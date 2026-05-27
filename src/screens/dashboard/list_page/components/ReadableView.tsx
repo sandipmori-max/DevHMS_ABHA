@@ -115,7 +115,7 @@ const ReadableView = ({
     filteredData,
   );
  const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   const slideAnim = useRef(new Animated.Value(300)).current; // right se start
 
   const fadeAnim = useRef(new Animated.Value(0)).current;

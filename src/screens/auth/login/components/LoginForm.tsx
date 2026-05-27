@@ -27,7 +27,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
   const [focusedField, setFocusedField] = useState<string | null>(null);
  const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   const {
     execute: validateCompanyCode,
     loading: validationLoading,

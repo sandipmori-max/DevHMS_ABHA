@@ -28,7 +28,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
   const greetingOpacity = useRef(new Animated.Value(0)).current;
  const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   // NEW SPLASH ANIMATIONS
   const topImageAnim = useRef(new Animated.Value(-200)).current;
   const bottomImageAnim = useRef(new Animated.Value(200)).current;

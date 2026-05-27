@@ -124,7 +124,7 @@ const PageScreen = () => {
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
     const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const flatListRef = useRef<FlatList>(null);

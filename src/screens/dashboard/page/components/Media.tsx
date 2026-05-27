@@ -61,7 +61,7 @@ const Media = ({
     type: "info" as "error" | "success" | "info",
   });
  const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
    
   console.log("Media Rendered with imageUri:", imageUri, "and errors:", errors);
   const scale = useRef(new Animated.Value(1)).current;

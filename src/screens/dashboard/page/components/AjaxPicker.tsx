@@ -48,7 +48,7 @@ const AjaxPicker = ({
   const { t } = useTranslations();
   const { user } = useAppSelector((state) => state?.auth);
     const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   useEffect(() => {
     const timer = setTimeout(() => {
       if (open) {

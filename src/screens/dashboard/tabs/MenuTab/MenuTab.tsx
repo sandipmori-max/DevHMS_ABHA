@@ -93,7 +93,7 @@ const MenuTab = ({
   const [showStarsOnly, setShowStarsOnly] = useState(false);
   const [showFull, setShowFull] = useState(false);
  const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [filteredList, setFilteredList] = useState(allList);

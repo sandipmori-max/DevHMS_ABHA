@@ -167,7 +167,7 @@ const CustomMultiplePicker = ({
     closeBottomSheet();
   };
     const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   return (
     <View style={{ marginVertical: 0 }}>
       {/* LABEL */}

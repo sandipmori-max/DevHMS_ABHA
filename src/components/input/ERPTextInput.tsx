@@ -36,7 +36,7 @@ const ERPTextInput: React.FC<ERPTextInputProps> = ({
   const [showPassword, setShowPassword] = useState(!secureTextEntry);
   const errorAnim = useRef(new Animated.Value(0)).current;
  const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   useEffect(() => {
     if (touched && error) {
       errorAnim.setValue(0);

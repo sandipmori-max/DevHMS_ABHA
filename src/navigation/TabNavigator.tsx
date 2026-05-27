@@ -55,7 +55,18 @@ const TabNavigator = () => {
         tabBarActiveTintColor:
           theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR,
         tabBarInactiveTintColor: 'gray',
-        tabBarStyle: {
+        tabBarStyle: Platform.isTV ? {
+          backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+          borderTopWidth: 1,
+          borderTopColor: '#E5E5EA',
+          height: 46,
+          paddingBottom: 5,
+          paddingTop: 5,
+          width: '28%',
+          alignContent: 'center',
+          alignItems: 'center',
+          alignSelf: 'center',
+         } : {
           display: hidden ? "none" : "flex",
           backgroundColor:
             theme === "dark" ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
@@ -63,6 +74,7 @@ const TabNavigator = () => {
           paddingBottom: 5,
           paddingTop: 5,
         },
+        tabBarShowLabel : !Platform.isTV,
         headerStyle: {
           backgroundColor:
             theme === "dark" ? 'black' : ERP_COLOR_CODE.ERP_APP_COLOR,

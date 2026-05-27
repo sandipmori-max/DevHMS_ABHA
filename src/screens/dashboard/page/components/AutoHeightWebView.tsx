@@ -36,7 +36,7 @@ const AutoHeightWebView = ({
   const isLandscape = width > height;
   const isDark = theme === "dark";
    const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
 
   const BG = isDark ? "#000000" : "#FFFFFF";
   const TEXT = isDark ? "#FFFFFF" : "#222222";

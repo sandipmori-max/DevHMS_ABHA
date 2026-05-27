@@ -47,7 +47,7 @@ const LoginScreen = ({ navigation, route }: any) => {
   });
   const [keyboardHeight, setKeyboardHeight] = useState(0);
  const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   useEffect(() => {
     const fetchDeviceName = async () => {
       const name = Platform.OS === 'ios' ? DeviceInfo.getModel() + " " + await DeviceInfo.getUniqueId() : await DeviceInfo.getDeviceName();
@@ -123,6 +123,7 @@ const LoginScreen = ({ navigation, route }: any) => {
   };
 
   return (
+
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView
         style={{ flex: 1, backgroundColor: ERP_COLOR_CODE.ERP_WHITE }}

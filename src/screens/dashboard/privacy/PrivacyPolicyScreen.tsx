@@ -6,6 +6,7 @@ import React, {
   useState,
 } from "react";
 import {
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -24,6 +25,7 @@ import { useBaseLink } from "../../../hooks/useBaseLink";
 const PrivacyPolicyScreen = () => {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
+  const isTV = Platform.isTV;
 
   const theme = useAppSelector((state) => state.theme.mode);
   const { t } = useTranslations();
@@ -111,6 +113,7 @@ const PrivacyPolicyScreen = () => {
   // Header config
   useLayoutEffect(() => {
     navigation.setOptions({
+       headerShown: !isTV,
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
@@ -119,7 +122,8 @@ const PrivacyPolicyScreen = () => {
       headerTintColor: "#fff",
       headerBackTitle: "",
       headerTitle: () => (
-        <Text
+       !isTV && (
+         <Text
           numberOfLines={1}
           style={{ 
             fontSize: 18,
@@ -131,7 +135,7 @@ const PrivacyPolicyScreen = () => {
             (isFromChart
               ? t("text.text52")
               : item?.name || t("title.title19"))}
-        </Text>
+        </Text>)
       ),
       headerRight: () => (
         <>

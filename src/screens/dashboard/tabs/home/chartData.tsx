@@ -30,7 +30,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const isIpad =
-    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   return (
     pieChartData?.length > 0 && (
       <View

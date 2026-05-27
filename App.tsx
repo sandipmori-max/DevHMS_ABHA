@@ -36,6 +36,7 @@ import FullViewLoader from "./src/components/loader/FullViewLoader";
 import TermsAndConsent from "./src/screens/TermsConditions/TermsCondition";
 import { useAppSelector } from "./src/store/hooks";
 import ExitBottomSheet from "./src/components/ExitBottomSheet";
+import RootNavigatorTvOS from "./src/navigation/RootNavigatorTvOs";
 // import { useAppUpdate } from "./src/hooks/useAppUpdate";
 // import UpdateModal from "./src/components/appUpdate/UpdateModal";
 
@@ -193,7 +194,9 @@ const AppContent = () => {
           }]}
         >
           <NavigationContainer>
-            <RootNavigator />
+            {
+              Platform.isTV ? <RootNavigatorTvOS /> : <RootNavigator />
+            } 
           </NavigationContainer>
         </SafeAreaView>
       </Animated.View>
