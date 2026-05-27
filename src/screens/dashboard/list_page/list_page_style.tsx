@@ -287,7 +287,7 @@ export const styles = StyleSheet.create({
   },
   clearButton: {
     top: 10,
-    marginLeft: 8,
+    marginRight: -8,
   },
   clearButtonText: {
     fontSize: 16,

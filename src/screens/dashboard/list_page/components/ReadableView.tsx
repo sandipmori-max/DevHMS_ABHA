@@ -470,7 +470,7 @@ const ReadableView = ({
                         color: theme === "dark" ? "white" : "black",
                       }}
                     >
-                      {address}
+                      {address.replace(/\\n/g, "\n")}
                     </Text>
                   </View>
                 )}

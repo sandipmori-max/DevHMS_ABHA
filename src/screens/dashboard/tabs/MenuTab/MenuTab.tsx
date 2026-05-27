@@ -617,7 +617,7 @@ const MenuTab = ({
             style={[
               list.length > 8 ? styles.titleV2 : styles.title,
               {
-                maxWidth: isHorizontal ? 220 : "auto",
+                maxWidth: isHorizontal ? (isIpad ? 140 : 220) : "auto",
                 textAlign: isHorizontal ? "left" : "center",
               },
               theme === "dark" && { color: "white" },

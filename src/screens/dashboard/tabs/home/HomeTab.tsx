@@ -1328,7 +1328,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                 <View
                   style={[
                     styles.overlay,
-                    isLandscape && {
+                    (isLandscape  || isIpad) && {
                       alignContent: "center",
                       alignItems: "center",
                       // justifyContent:'center'
@@ -1343,7 +1343,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                         borderColor: "white",
                       },
                       {
-                        width: isLandscape ? "40%" : "100%",
+                        width: (isLandscape || isIpad) ? "40%" : "100%",
                       },
                     ]}
                   >
@@ -1751,7 +1751,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
             <View
               style={[
                 styles.overlay,
-                isLandscape && {
+                (isLandscape || isIpad) && {
                   alignContent: "center",
                   alignItems: "center",
                   // justifyContent:'center'
@@ -1766,7 +1766,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                     borderColor: "white",
                   },
                   {
-                    width: isLandscape ? "40%" : "100%",
+                    width: (isLandscape || isIpad) ? "40%" : "100%",
                   },
                 ]}
               >
@@ -2066,6 +2066,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                     isFromMenu: true,
                                   })
                                 }
+                                numColumns={isIpad ? 2 :  1}
                                 showsVerticalScrollIndicator={false}
                               />
                             </View>

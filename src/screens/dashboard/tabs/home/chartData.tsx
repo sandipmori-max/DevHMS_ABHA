@@ -13,6 +13,7 @@ import { useAppSelector } from "../../../../store/hooks";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import TranslatedText from "./TranslatedText";
 import DashboardListSheet from "./DashboardListSheet";
+import DeviceInfo from "react-native-device-info";
 
 const MAX_ITEMS_PER_LIST = 5;
 
@@ -28,7 +29,8 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
   const [isVisibleFullMode, setIsVisibleFullMode] = useState(false);
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
-
+  const isIpad =
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   return (
     pieChartData?.length > 0 && (
       <View
@@ -44,7 +46,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
         <View
           style={{
             flexDirection: "row",
-            height: isLandscape ? height * 0.48 : height * 0.22,
+            height: isLandscape ? isIpad ? height * 0.26 : height * 0.48 : isIpad ? height * 0.18 : height * 0.22,
           }}
         >
           {/* Pie Chart */}

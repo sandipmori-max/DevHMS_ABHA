@@ -9,8 +9,10 @@ import {
   Dimensions,
   Easing,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import { useAppSelector } from "../../../../store/hooks";
+import DeviceInfo from "react-native-device-info";
 
  
 export default function DashboardListSheet({
@@ -24,7 +26,8 @@ export default function DashboardListSheet({
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const contentOpacity = useRef(new Animated.Value(0)).current;
   const theme = useAppSelector((state) => state.theme.mode);
-
+  const isIpad =
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   useEffect(() => {
     if (visible) {
       Animated.sequence([
@@ -108,6 +111,7 @@ export default function DashboardListSheet({
           backgroundColor: "rgba(0,0,0,0.6)",
           justifyContent: "flex-end",
           opacity: backdropOpacity,
+          alignItems: "center", 
         }}
       >
         <Animated.View
@@ -118,9 +122,10 @@ export default function DashboardListSheet({
             borderTopRightRadius: 20,
             padding: 16,
             transform: [{ translateY: sheetTranslateY }],
-            marginHorizontal: isLandscape ?  48 : 0,
+            marginHorizontal: isLandscape || isIpad ?  48 : 0,
             borderWidth: 0.5,
-            borderColor: 'white'
+            borderColor: 'white',
+            width:  isLandscape || isIpad ? width * 0.7 : width,
           }}
         >
           {/* Header */}

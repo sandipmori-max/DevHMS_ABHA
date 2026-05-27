@@ -1,10 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { Dimensions, View, useWindowDimensions } from 'react-native';
+import { Dimensions, Platform, View, useWindowDimensions } from 'react-native';
 import WebView from 'react-native-webview';
 import RenderHTML from 'react-native-render-html';
 import { useAppSelector } from '../../../../store/hooks';
 import FontAwesome from '@react-native-vector-icons/fontawesome';
 import DashboardChart from './DashboardChart';
+import DeviceInfo from 'react-native-device-info';
 
 const AutoHeightWebView = ({
   html,
@@ -34,6 +35,8 @@ const AutoHeightWebView = ({
   const theme = useAppSelector(state => state?.theme.mode);
   const isLandscape = width > height;
   const isDark = theme === "dark";
+   const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
 
   const BG = isDark ? "#000000" : "#FFFFFF";
   const TEXT = isDark ? "#FFFFFF" : "#222222";
@@ -61,7 +64,7 @@ const AutoHeightWebView = ({
       body > *:last-child { margin-bottom: 0 !important; }
       table {
         height: 100% !important;
-        width: ${isFromListPage ? isLandscape ? '40%' : '89.8%' : isFromPage ? '92%' : isLandscape ? '82%' : '88%'} !important;
+        width: ${isIpad ? '44%' :  isFromListPage ? isLandscape ? '40%' : '89.8%' : isFromPage ? '92%' : isLandscape ? '82%' : '88%'} !important;
         border-collapse: collapse !important;
         table-layout: fixed !important;
         word-break: break-word !important;
@@ -200,7 +203,7 @@ const cleanedHtml1 = html
           source={{ html }}
           baseStyle={{
             borderRadius: 6,
-            width: isLandscape ? width / 5.5 : isFromMenu ? '80%' : isHorizontal ? '100%' : width / 2.5,
+            width:  isLandscape ? width / 5.5 : isFromMenu ? '80%' : isHorizontal ? '100%' : width / 2.5,
           }}
           tagsStyles={{
             p: {

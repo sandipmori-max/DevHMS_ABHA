@@ -71,8 +71,8 @@ const ListScreen = () => {
     error: actionError,
     response: actionResponse,
   } = useAppSelector((state) => state.page);
- const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
+  const isIpad =
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   const { t } = useTranslations();
   const [loadingListId, setLoadingListId] = useState<string | null>(null);
   const [listData, setListData] = useState<any[]>([]);
@@ -113,7 +113,7 @@ const ListScreen = () => {
   const [sortingKey, setSortingKey] =
     useState("");
 
- 
+
 
   const availableKeys = Object.keys(
     filteredData?.[0] || {},
@@ -230,7 +230,7 @@ const ListScreen = () => {
       // dispatch(updateSelectedToDateState(""));
       // dispatch(updateSelectedBranchesState([]));
       setTapLoader(false);
-      
+
       return () => { };
     }, [navigation]),
   );
@@ -251,7 +251,7 @@ const ListScreen = () => {
       headerTitle: () => (
         <TranslatedText
           numberOfLines={1}
-          style={[{ 
+          style={[{
             fontSize: 18,
             fontWeight: "700",
             color: theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_WHITE,
@@ -768,7 +768,7 @@ const ListScreen = () => {
     onRefresh();
   };
 
-   
+
 
   if (parsedError) {
     return (
@@ -837,10 +837,10 @@ const ListScreen = () => {
             borderBottomStartRadius: 12,
           }}
         >
-          {isLandscape ? (
+          {isLandscape || isIpad ? (
             <>
               <View style={{ flexDirection: "row" }}>
-                <View style={{ width: "50%" }}>
+                <View style={{ width: "40%", overflow: 'hidden' }}>
                   <View style={styles.searchContainer}>
                     <View
                       style={[
@@ -848,8 +848,8 @@ const ListScreen = () => {
                         theme === "dark" && {
                           backgroundColor: "black",
                         },
-                        filteredData.length > 0 &&{
-                          width: '89%'
+                        {
+                          width: isIpad ? isLandscape ? '89%' : '86%' : '86%'
                         }
                       ]}
                     >
@@ -859,13 +859,12 @@ const ListScreen = () => {
                         color={theme === "dark" ? "white" : "black"}
                       />
                       <View style={{
-                        flex: 1,
+                        width: isIpad ? isLandscape ? '89%' : '86%' : '86%',
                         justifyContent: 'space-between', flexDirection: 'row'
                       }}>
                         <TextInput
                           style={{
-                            flex: 1,
-                            backgroundColor: "#f0f0f0",
+                            backgroundColor: "#fff",
                             borderRadius: 8,
                             paddingHorizontal: 12,
                             height: 36,
@@ -885,149 +884,164 @@ const ListScreen = () => {
                         )}
                       </View>
                     </View>
-                    {
-                      filteredData.length > 0 && <View style={{
-                      borderRadius: 2,
-                      justifyContent: 'center',
-                      alignContent: 'center',
-                      alignItems: 'center',
-                      height: 38, 
-                      width: 34,
-                      backgroundColor: theme === 'dark' ? 'black' : 'white'
-                    }}>
-                      <ERPIcon
-                        name={
-                          sortingKey
-                            ? sortConfig?.order === "asc"
-                              ? "keyboard-double-arrow-down"
-                              : "keyboard-double-arrow-up"
-                            : "sort-by-alpha"
-                        }
-                        onPress={() => {
-                          setSortingVisible(true)
-                        }}
+                    { 
+                      <View style={{
+                        borderRadius: 2,
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        height: 38,
+                        width: 34,
+                        marginLeft: 8,
+                        backgroundColor: theme === 'dark' ? 'black' : 'white'
+                      }}>
+                        <ERPIcon
+                          name={
+                            sortingKey
+                              ? sortConfig?.order === "asc"
+                                ? "keyboard-double-arrow-down"
+                                : "keyboard-double-arrow-up"
+                              : "sort-by-alpha"
+                          }
+                          onPress={() => {
+                            setSortingVisible(true)
+                          }}
 
-                        color={theme === 'dark'  ? 'white' : "black"}
-                        isMenu={ theme === 'dark'  ? false : true}
-                      />
-                    </View>
+                          color={theme === 'dark' ? 'white' : "black"}
+                          isMenu={theme === 'dark' ? false : true}
+                        />
+                      </View>
                     }
-                    
+
                   </View>
                 </View>
 
-                <View style={{ width: "50%", marginTop: 4, marginLeft: 4 }}>
-                  {parsedConfig?.period === 1 || parsedConfig?.period === "1" && (
-                    <View style={styles.dateContainer}>
-                      {/* Start Date */}
-                      <View style={styles.dateRow}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            setSearchQuery("");
-                            setShowDatePicker({ type: "from", show: true });
-                          }}
-                          style={styles.dateButton}
-                        >
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
+                <View style={{ flexDirection: "row", width: "70%", marginLeft: 8 }}>
+                  <View style={{
+                    width: '54%', 
+                  }}>
+                    {(parsedConfig?.period === 1 || parsedConfig?.period === "1") && (
+                      <View style={[styles.dateContainer,{
+                        marginVertical: 0
+                      }]}>
+                        {/* Start Date */}
+                        <View style={styles.dateRow}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              setSearchQuery("");
+                              setShowDatePicker({ type: "from", show: true });
                             }}
+                            style={[styles.dateButton, {
+                              paddingVertical: 10
+                            }]}
                           >
-                            <MaterialIcons
-                              name="calendar-today"
-                              size={18}
-                              color={theme === 'dark'  ? 'white' : "black"}
-                              style={{ marginRight: 8 }}
-                            />
-                            <TranslatedText
-                              numberOfLines={1}
-                              text={fromDate || t("msg.msg9")}
-                              style={styles.dateButtonText}
-                            ></TranslatedText>
-                          </View>
-                        </TouchableOpacity>
-                      </View>
-                      <View style={{ height: 1, width: 8 }}> </View>
+                            <View
+                              style={{ flexDirection: "row", alignItems: "center" }}
+                            >
+                              <MaterialIcons
+                                name="calendar-today"
+                                size={18}
+                                color={theme === 'dark' ? 'white' : "black"}
+                                style={{ marginRight: 8 }}
+                              />
+                              <TranslatedText
+                                numberOfLines={1}
+                                text={fromDate || t("msg.msg9")}
+                                style={[styles.dateButtonText,
 
-                      {/* End Date */}
-                      <View style={styles.dateRow}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            setSearchQuery("");
-                            setShowDatePicker({ type: "to", show: true });
-                          }}
-                          style={styles.dateButton}
-                        >
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
+                                ]}
+                              ></TranslatedText>
+                            </View>
+                          </TouchableOpacity>
+                        </View>
+                        <View style={{ height: 1, width: 8 }}> </View>
+
+                        {/* End Date */}
+                        <View style={styles.dateRow}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              setSearchQuery("");
+                              setShowDatePicker({ type: "to", show: true });
                             }}
+                            style={[styles.dateButton, {
+                              paddingVertical: 10
+                            }]}
                           >
-                            <MaterialIcons
-                              name="calendar-today"
-                              size={18}
-                              color={theme === 'dark'  ? 'white' : "black"}
-                              style={{ marginRight: 8 }}
-                            />
-                            <Text style={styles.dateButtonText}>
-                              {toDate || t("msg.msg11")}
-                            </Text>
-                          </View>
-                        </TouchableOpacity>
+                            <View
+                              style={{ flexDirection: "row", alignItems: "center" }}
+                            >
+                              <MaterialIcons
+                                name="calendar-today"
+                                size={18}
+                                color={theme === 'dark' ? 'white' : "black"}
+                                style={{ marginRight: 8 }}
+                              />
+                              <Text style={styles.dateButtonText}>
+                                {toDate || t("msg.msg11")}
+                              </Text>
+                            </View>
+                          </TouchableOpacity>
+                        </View>
                       </View>
-                    </View>
-                  )}
+                    )}
+
+                  </View>
+
+                  <View style={{
+                    marginLeft: 8,
+                    width: '28%', 
+                  }}>
+                    {(parsedConfig?.branchwise === 1 ||
+                      parsedConfig?.branchwise === "1") &&
+                      controls
+                        .filter((x) => x.ctltype !== "DATE" && x.field !== "userid")
+                        .map((item, index) => (
+                          <>
+                            {item?.title === "Branch" && (
+                              <View style={{ width: "100%" }}>
+                                <CustomMultiplePicker
+                                  isForMultipleSelection={true}
+                                  isForceOpen={false}
+                                  isValidate={false}
+                                  label={item.title}
+                                  selectedValue={() => { }}
+                                  dtext={"Branch"}
+                                  onValueChange={(i) => {
+                                    console.log("i-------++++++++++++++++++++++++++++++----------", i);
+                                    i.map((item) => item.value).join(",");
+                                    dispatch(updateSelectedBranchesState(i));
+                                    dispatch(
+                                      updateSelectedBranchIdsState(
+                                        i.map((item) => item.value).join(","),
+                                      ),
+                                    );
+                                    // if (item?.title === "Branch") {
+                                    //   dispatch(
+                                    //     setActiveDashboardBranchId(
+                                    //       i?.value?.toString(),
+                                    //     ),
+                                    //   );
+                                    //   dispatch(setActiveDashboardBranch(i?.name));
+                                    // } else {
+                                    //   dispatch(setActiveDashboardType(i?.name));
+                                    //   dispatch(
+                                    //     setActiveDashboardTypeId(i?.value?.toString()),
+                                    //   );
+                                    // }
+                                  }}
+                                  options={[]}
+                                  item={item}
+                                  errors={null}
+                                  formValues={null}
+                                />
+                              </View>
+                            )}
+                          </>
+                        ))}
+                  </View>
                 </View>
               </View>
-              {(parsedConfig?.branchwise === 1 ||
-                parsedConfig?.branchwise === "1") &&
-                controls
-                  .filter((x) => x.ctltype !== "DATE" && x.field !== "userid")
-                  .map((item, index) => (
-                    <>
-                      {item?.title === "Branch" && (
-                        <View style={{ width: "100%" }}>
-                          <CustomMultiplePicker
-                            isForMultipleSelection={true}
-                            isForceOpen={false}
-                            isValidate={false}
-                            label={item.title}
-                            selectedValue={() => { }}
-                            dtext={"Branch"}
-                            onValueChange={(i) => {
-                              console.log("i-------++++++++++++++++++++++++++++++----------", i);
-                              i.map((item) => item.value).join(",");
-                              dispatch(updateSelectedBranchesState(i));
-                              dispatch(
-                                updateSelectedBranchIdsState(
-                                  i.map((item) => item.value).join(","),
-                                ),
-                              );
-                              // if (item?.title === "Branch") {
-                              //   dispatch(
-                              //     setActiveDashboardBranchId(
-                              //       i?.value?.toString(),
-                              //     ),
-                              //   );
-                              //   dispatch(setActiveDashboardBranch(i?.name));
-                              // } else {
-                              //   dispatch(setActiveDashboardType(i?.name));
-                              //   dispatch(
-                              //     setActiveDashboardTypeId(i?.value?.toString()),
-                              //   );
-                              // }
-                            }}
-                            options={[]}
-                            item={item}
-                            errors={null}
-                            formValues={null}
-                          />
-                        </View>
-                      )}
-                    </>
-                  ))}
+
             </>
           ) : (
             <>
@@ -1056,12 +1070,12 @@ const ListScreen = () => {
                     paddingBottom: 8,
                     paddingRight: 10,
                     fontSize: 16,
-                    
+
                     alignSelf: 'flex-end',
                   }}>Rows - {filteredData.length}</Text>
                 </View>
               }
-              <View style={[styles.searchContainer, 
+              <View style={[styles.searchContainer,
               ]}>
                 <View
                   style={[
@@ -1069,8 +1083,9 @@ const ListScreen = () => {
                     theme === "dark" && {
                       backgroundColor: "black",
                     },
-                    filteredData.length > 0 &&{
-                      width: '89%'
+
+                    {
+                      width: isIpad ? '94%' : '89%'
                     }
                   ]}
                 >
@@ -1079,7 +1094,7 @@ const ListScreen = () => {
                     name="search"
                     color={theme === "dark" ? "white" : "black"}
                   />
-                  <View style={{ flex: 1, justifyContent: 'space-between', flexDirection: 'row' }}>
+                  <View style={{ width: isIpad ? '94%' : '89%', justifyContent: 'space-between', flexDirection: 'row' }}>
                     <TextInput
                       style={{
                         borderRadius: 8,
@@ -1103,32 +1118,32 @@ const ListScreen = () => {
 
                 </View>
                 {
-                  filteredData.length > 0 &&   <View style={{
-                  borderRadius: 2,
-                  justifyContent: 'center',
-                  alignContent: 'center',
-                  alignItems: 'center',
-                  height: 38, width: 34,
-                  backgroundColor: theme === 'dark' ? 'black' : 'white'
-                }}>
-                  <ERPIcon
-                    name={
-                      sortingKey
-                        ? sortConfig?.order === "asc"
-                          ? "keyboard-double-arrow-down"
-                          : "keyboard-double-arrow-up"
-                        : "sort-by-alpha"
-                    } onPress={() => {
-                      setSortingVisible(true)
-                    }}
-                    color={theme === 'dark'  ? 'white' : "black"}
-                    isMenu={ theme === 'dark'  ? false : true}
-                  />
-                </View>
+                    <View style={{
+                    borderRadius: 2,
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    alignItems: 'center',
+                    height: 38, width: 34,
+                    backgroundColor: theme === 'dark' ? 'black' : 'white'
+                  }}>
+                    <ERPIcon
+                      name={
+                        sortingKey
+                          ? sortConfig?.order === "asc"
+                            ? "keyboard-double-arrow-down"
+                            : "keyboard-double-arrow-up"
+                          : "sort-by-alpha"
+                      } onPress={() => {
+                        setSortingVisible(true)
+                      }}
+                      color={theme === 'dark' ? 'white' : "black"}
+                      isMenu={theme === 'dark' ? false : true}
+                    />
+                  </View>
                 }
-              
-              </View>
 
+              </View>
+              <View style={{ marginVertical: 1}} />
               {(parsedConfig?.period === 1 || parsedConfig?.period === "1") && (
                 <View style={[styles.dateContainer,]}>
                   {/* Start Date */}
@@ -1146,14 +1161,14 @@ const ListScreen = () => {
                         <MaterialIcons
                           name="calendar-today"
                           size={18}
-                          color={theme === 'dark'  ? 'white' : "black"}
+                          color={theme === 'dark' ? 'white' : "black"}
                           style={{ marginRight: 8 }}
                         />
                         <TranslatedText
                           numberOfLines={1}
                           text={fromDate || t("msg.msg9")}
-                          style={[styles.dateButtonText, 
-                            
+                          style={[styles.dateButtonText,
+
                           ]}
                         ></TranslatedText>
                       </View>
@@ -1176,7 +1191,7 @@ const ListScreen = () => {
                         <MaterialIcons
                           name="calendar-today"
                           size={18}
-                         color={theme === 'dark'  ? 'white' : "black"}
+                          color={theme === 'dark' ? 'white' : "black"}
                           style={{ marginRight: 8 }}
                         />
                         <Text style={styles.dateButtonText}>
@@ -1250,7 +1265,7 @@ const ListScreen = () => {
               <View
                 style={[
                   styles.overlay,
-                  isLandscape && {
+                  (isLandscape || isIpad) && {
                     alignContent: "center",
                     alignItems: "center",
                     // justifyContent:'center'
@@ -1265,7 +1280,7 @@ const ListScreen = () => {
                       borderColor: "white",
                     },
                     {
-                      width: isLandscape ? "40%" : "100%",
+                      width: isIpad ? isLandscape  ? "40%" : "48%" : "100%",
                     },
                   ]}
                 >
