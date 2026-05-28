@@ -78,6 +78,8 @@ const AppContent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [accepted, setAccepted] = useState(false);
 
+  const isTv =  Platform.isTV;
+
   // 🔥 Splash Animation
   const splashOpacity = useRef(new Animated.Value(1)).current;
 
@@ -165,7 +167,7 @@ const AppContent = () => {
   }
 
   // 🔥 Terms
-  if (!accepted) {
+  if (!accepted && !isTv) {
     return <TermsAndConsent onAccept={handleAccept} />;
   }
 

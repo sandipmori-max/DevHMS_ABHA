@@ -5,10 +5,12 @@ import { AuthStackParamList } from './types';
 import LoginScreen from '../screens/auth/login/LoginScreen';
 import { ERP_COLOR_CODE } from '../utils/constants';
 import Onboarding from '../screens/Onboarding/Onboarding';
+import { Platform } from 'react-native';
 
 const Stack = createStackNavigator<AuthStackParamList>();
 
 const AuthNavigator = () => {
+  const isTv =  Platform.isTV;
   return (
     <Stack.Navigator
       screenOptions={{
@@ -22,11 +24,14 @@ const AuthNavigator = () => {
         headerShown: false,
       }}
     >
-      <Stack.Screen
+      {
+        !isTv &&  <Stack.Screen
         screenOptions={{
           headerShown: false,
         }}
         name="Onboarding" component={Onboarding} />
+      }
+     
 
       <Stack.Screen name="Login" component={LoginScreen} />
     </Stack.Navigator>

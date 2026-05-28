@@ -1046,7 +1046,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
           </Text>
           <View style={{ flexDirection: "row" }}>
             <Image
-              source={ERP_ICON.APP_LOGO}
+              source={ERP_ICON.DEV_APP_LOGO}
               style={{
                 height: 20,
                 width: 20,

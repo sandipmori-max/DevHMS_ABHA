@@ -431,6 +431,26 @@
 		},
 		{
 			"backtrace" : 4,
+			"id" : "react_codegen_RNCGeolocationSpec::@1b959fcb56e23f7716ba"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNCNetInfoSpec::@c36c96bfd5b5770618a5"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rndocumentpickerCGen::@aac1846a245ca418eb66"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_VectorIconsFontAwesome::@f56ae3024d8db5b6b904"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_VectorIconsMaterialIcons::@31616434fa1e3b43792c"
+		},
+		{
+			"backtrace" : 4,
 			"id" : "react_codegen_RNCConfigSpec::@89f1b79ed4954e2f2cff"
 		},
 		{
@@ -452,26 +472,6 @@
 		{
 			"backtrace" : 4,
 			"id" : "react_codegen_RNPermissionsSpec::@7ad697819b753921c957"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_RNCGeolocationSpec::@1b959fcb56e23f7716ba"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_RNCNetInfoSpec::@c36c96bfd5b5770618a5"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_rndocumentpickerCGen::@aac1846a245ca418eb66"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_VectorIconsFontAwesome::@f56ae3024d8db5b6b904"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_VectorIconsMaterialIcons::@31616434fa1e3b43792c"
 		},
 		{
 			"backtrace" : 4,

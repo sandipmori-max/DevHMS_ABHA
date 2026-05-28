@@ -56,7 +56,8 @@ const TabNavigator = () => {
           theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR,
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: Platform.isTV ? {
-          backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+         backgroundColor:
+            theme === "dark" ? 'black' : ERP_COLOR_CODE.ERP_WHITE,
           borderTopWidth: 1,
           borderTopColor: '#E5E5EA',
           height: 46,

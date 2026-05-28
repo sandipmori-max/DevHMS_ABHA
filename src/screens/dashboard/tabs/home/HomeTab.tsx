@@ -61,6 +61,7 @@ import {
   useWindowDimensions,
   ScrollView,
   TouchableWithoutFeedback,
+  Image,
 } from "react-native";
 import TranslatedText from "./TranslatedText";
 import GreetingBottomSheet from "./GreetingBottomSheet";
@@ -70,6 +71,7 @@ import FontAwesome from "@react-native-vector-icons/fontawesome";
 import { getLastPunchInThunk } from "../../../../store/slices/attendance/thunk";
 import { batch } from "react-redux";
 import DeviceInfo from "react-native-device-info";
+import { ERP_ICON } from "../../../../assets";
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;
   return /<([a-z]+)([^>]*?)>/i.test(str);
@@ -262,63 +264,63 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       headerTitle: () => {
         return (<>
           {
-              Platform.isTV ? <>
-                <Text style={{ color: ERP_COLOR_CODE.ERP_WHITE, fontSize: 16, fontWeight: '600' }}>
-                  {user?.companyName || ''}
-                </Text>
-              </> : <>
-                {
-                  showSearch ? (
-                    <View
+            Platform.isTV ? <>
+              <Text style={{ color: ERP_COLOR_CODE.ERP_WHITE, fontSize: 16, fontWeight: '600' }}>
+                {user?.companyName || ''}
+              </Text>
+            </> : <>
+              {
+                showSearch ? (
+                  <View
+                    style={{
+                      width: isLandscape ? width - 170 : width - 70,
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <TextInput
+                      value={searchText}
+                      onChangeText={setSearchText}
+                      autoFocus={true}
+                      placeholder={t("text83")}
                       style={{
-                        width: isLandscape ? width - 170 : width - 70,
-                        flexDirection: "row",
-                        alignItems: "center",
+                        flex: 1,
+                        backgroundColor: "#f0f0f0",
+                        borderRadius: 8,
+                        paddingHorizontal: 12,
+                        height: 36,
+                      }}
+                    />
+                    <TouchableOpacity
+                      onPress={() => {
+                        setShowSearch(false);
+                        setSearchText("");
                       }}
                     >
-                      <TextInput
-                        value={searchText}
-                        onChangeText={setSearchText}
-                        autoFocus={true}
-                        placeholder={t("text83")}
-                        style={{
-                          flex: 1,
-                          backgroundColor: "#f0f0f0",
-                          borderRadius: 8,
-                          paddingHorizontal: 12,
-                          height: 36,
-                        }}
+                      <MaterialIcons
+                        name="clear"
+                        size={24}
+                        color={ERP_COLOR_CODE.ERP_WHITE}
+                        style={{ marginLeft: 8 }}
                       />
-                      <TouchableOpacity
-                        onPress={() => {
-                          setShowSearch(false);
-                          setSearchText("");
-                        }}
-                      >
-                        <MaterialIcons
-                          name="clear"
-                          size={24}
-                          color={ERP_COLOR_CODE.ERP_WHITE}
-                          style={{ marginLeft: 8 }}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  ) : (
-                    <>
-                      <Text
-                        numberOfLines={1}
-                        style={{
-                          color: "#fff",
-                          fontSize: 18,
-                          fontWeight: "600",
-                        }}
-                      >
-                        {t("text84")}
-                      </Text>
-                    </>
-                  )
-                }
-              </>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <>
+                    <Text
+                      numberOfLines={1}
+                      style={{
+                        color: "#fff",
+                        fontSize: 18,
+                        fontWeight: "600",
+                      }}
+                    >
+                      {t("text84")}
+                    </Text>
+                  </>
+                )
+              }
+            </>
           }
         </>)
       }
@@ -335,9 +337,18 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
                   <ERPIcon
                     name="refresh"
-                    onPress={async () => {
-                      refreshData();
-                      setChartType("")
+                    onPress={() => {
+                      setControlsLoader(true);
+                      setActionLoader(true);
+                      setIsRefresh(!isRefresh);
+                      dispatch(getERPDashboardThunk({ branch: auth.dashboardBranch.trim(), type: auth.dashboardType.trim(), fd: auth.dashboardFromDate.trim(), td: auth.dashboardToDate.trim() }));
+                      const timer = setTimeout(() => {
+                        setActionLoader(false);
+                        setControlsLoader(false);
+                        dispatch(setDashboardLoading(false));
+                      }, 3000);
+                      return () => clearTimeout(timer);
+
                     }}
                     isLoading={actionLoader}
                   />
@@ -409,7 +420,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                         <ERPIcon name="search" onPress={() => setShowSearch(true)} />
                       )}
 
-                      {attendanceDone && user?.id == "113" && (
+                      {attendanceDone && user?.id == (user?.company_code?.toLowerCase()?.includes("oeuvre01") ? "16" : "113") && (
                         <ERPIcon
                           color={"green"}
                           name={"location-on"}
@@ -436,7 +447,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       },
 
       headerLeft: () => (
-        !Platform.isTV && (
           <TouchableOpacity
             onPress={() => navigation?.openDrawer()}
             style={{
@@ -454,7 +464,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
               onPress={() => navigation?.openDrawer()}
             />
           </TouchableOpacity>
-        )
       ),
     });
   }, [
@@ -475,6 +484,36 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     isDashboardLoading,
     remainingTime
   ]);
+
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const fetchDashboard = async () => {
+      dispatch(setDashboardLoading(true));
+      await dispatch(getERPDashboardThunk({ branch: auth?.dashboardBranch.trim() || "", type: auth?.dashboardType.trim() || "", fd: auth?.dashboardFromDate.trim() || "", td: auth?.dashboardToDate.trim() || "" }));
+      setRemainingTime(TOTAL_TIME); // reset timer on fetch
+      setTimeout(() => {
+        dispatch(setDashboardLoading(false));
+      }, 1000)
+    };
+
+    // initial call
+    fetchDashboard();
+
+    // API call every 3 min
+    const apiInterval = setInterval(fetchDashboard, 3 * 60 * 1000);
+
+    // countdown every second
+    const countdownInterval = setInterval(() => {
+      setRemainingTime(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => {
+      clearInterval(apiInterval);
+      clearInterval(countdownInterval);
+    };
+  }, [isAuthenticated, dispatch]);
 
   const accentColors = [
     ERP_COLOR_CODE.ERP_APP_COLOR,
@@ -1505,7 +1544,37 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
           </View>
 
           {
-            dashboard.length === 0 && <NoData isShowTop={false} text={"iam"} />
+            dashboard.length === 0 && <>
+              {
+                user?.company_code?.toLowerCase()?.includes("oeuvre01") ? <View
+                  style={{
+                    height: Dimensions.get('screen').height * 0.75,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: theme === 'dark' ? 'black' : 'white',
+                  }}
+                >
+                  <View style={{
+                    height: 140, width: '100%',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                    <Image source={ERP_ICON.APP_LOGO} style={[styles.logo,
+                    {
+                      height: 140,
+                      width: 140, marginBottom: 12
+                    }
+                    ]} resizeMode="contain" />
+                    <Text style={{
+                      fontSize: 30,
+                      fontFamily: "Handlee-Regular",
+                      color: theme === 'dark' ? 'white' : 'black'
+                    }}>Welcome</Text>
+                  </View>
+                </View> : <NoData isShowTop={false} />
+              }
+
+            </>
           }
         </View>
       </View>
@@ -1963,16 +2032,82 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                   <ErrorMessage message={error} isShowTop={false} />{" "}
                 </View>
               ) : dashboard?.length === 0 && !isDashboardLoading ? (
-                <View
-                  style={{
-                    height: Dimensions.get("screen").height,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: theme === "dark" ? "black" : "white",
-                  }}
-                >
-                  <NoData isShowTop={false} text={"I_AM_"} />
-                </View>
+                <>
+                  {
+                    user?.company_code?.toLowerCase()?.includes("oeuvre01") ? <View
+                      style={{
+                        height: Dimensions.get('screen').height * 0.75,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: theme === 'dark' ? 'black' : 'white',
+                      }}
+                    >
+                      <View style={{
+                        height: 140, width: '100%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
+                        <Image source={ERP_ICON.APP_LOGO} style={[styles.logo,
+                        {
+                          height: 140,
+                          width: 140, marginBottom: 12
+                        }
+                        ]} resizeMode="contain" />
+                        <Text style={{
+                          fontSize: 30,
+                          fontFamily: "Handlee-Regular",
+                          color: theme === 'dark' ? 'white' : 'black'
+                        }}>Welcome</Text>
+                      </View>
+                    </View>
+                      :
+                      <>
+                        {
+                          user?.company_code?.toLowerCase()?.includes("oeuvre01") ?
+
+                            <View
+                              style={{
+                                height: Dimensions.get('screen').height * 0.75,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                backgroundColor: theme === 'dark' ? 'black' : 'white',
+                              }}
+                            >
+                              <View style={{
+                                height: 140, width: '100%',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                              }}>
+                                <Image source={ERP_ICON.APP_LOGO} style={[styles.logo,
+                                {
+                                  height: 140,
+                                  width: 140, marginBottom: 12
+                                }
+                                ]} resizeMode="contain" />
+                                <Text style={{
+                                  fontSize: 30,
+                                  fontFamily: "Handlee-Regular",
+                                  color: theme === 'dark' ? 'white' : 'black'
+                                }}>Welcome</Text>
+                              </View>
+                            </View>
+                            : <View
+                              style={{
+                                height: Dimensions.get("screen").height,
+                                justifyContent: "center",
+                                alignItems: "center",
+                                backgroundColor: theme === "dark" ? "black" : "white",
+                              }}
+                            >
+                              <NoData isShowTop={false} />
+                            </View>
+                        }
+                      </>
+
+
+                  }
+                </>
+
               ) : (
                 <View
                   style={{
@@ -2718,6 +2853,29 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                         </View>
                       )}
                     />
+
+                    {
+                      user?.company_code?.toLowerCase()?.includes("oeuvre01") && <View style={{
+                        height: 350, width: '100%',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+                        justifyContent: "center"
+                      }}>
+                        <Image source={ERP_ICON.APP_LOGO} style={[styles.logo,
+                        {
+                          height: 140,
+                          width: 140, marginBottom: 12
+                        }
+                        ]} resizeMode="contain" />
+                        <Text style={{
+                          fontSize: 30,
+                          fontFamily: "Handlee-Regular",
+                          color: theme === 'dark' ? 'white' : 'black'
+                        }}>Welcome</Text>
+                      </View>
+                    }
+
                   </>
                 </View>
               )}
@@ -2740,12 +2898,14 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
           closeHide={false}
         />
       )}
+      {
+        !user?.company_code?.toLowerCase()?.includes("oeuvre01") && <GreetingBottomSheet
+          visible={visibleAI}
+          message={aiMessage}
+          onClose={() => setVisibleAI(false)}
+        />
+      }
 
-      <GreetingBottomSheet
-        visible={visibleAI}
-        message={aiMessage}
-        onClose={() => setVisibleAI(false)}
-      />
       <Modal
         visible={openSheet}
         transparent

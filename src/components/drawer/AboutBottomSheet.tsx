@@ -71,7 +71,7 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                     <View style={styles.header}>
                       <View style={styles.logoCircle}>
                         <Image
-                          source={ERP_ICON.APP_LOGO}
+                          source={ERP_ICON.DEV_APP_LOGO}
                           style={styles.logo}
                           resizeMode="contain"
                         />
@@ -281,7 +281,7 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                 <View style={styles.header}>
                   <View style={styles.logoCircle}>
                     <Image
-                      source={ERP_ICON.APP_LOGO}
+                      source={ERP_ICON.DEV_APP_LOGO}
                       style={styles.logo}
                       resizeMode="contain"
                     />

@@ -19,14 +19,17 @@ const TermsAndConsent = ({ onAccept }: any) => {
   const [locationAccepted, setLocationAccepted] = useState(false);
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
+  
   const handleTermsContinue = () => {
     if (!termsAccepted) {
       return;
     }
     setShowLocationModal(true);
   };
- const isIpad =
+  
+  const isIpad =
    ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
+
   const handleLocationAgree = async () => {
     setLocationAccepted(true);
     setShowLocationModal(false);

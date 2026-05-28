@@ -34,9 +34,10 @@ const Dashboards = require(`${ERP_BASE_URL_GIF}/Dashboards.gif`);
 const DataManagement = require(`${ERP_BASE_URL_GIF}/DataManagement.gif`);
 const money = require(`${ERP_BASE_URL_GIF}/money.gif`);
 const RemoteMonitoring = require(`${ERP_BASE_URL_GIF}/RemoteMonitoring.gif`);
-
+const DEV_APP_LOGO = require(`${ERP_BASE_URL_ICONS}/dev_logo.png`);
 export const ERP_ICON = {
   APP_LOGO,
+  DEV_APP_LOGO,
   HOME,
   ACTIVE_HOME,
   ENTRY,
