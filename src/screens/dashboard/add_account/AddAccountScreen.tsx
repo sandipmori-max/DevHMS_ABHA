@@ -40,6 +40,7 @@ import { useTranslation } from "react-i18next";
 import { ERP_COLOR_CODE } from "../../../utils/constants";
 import {
   clearAuthState,
+  setBirthdayUsers,
   setDashboard,
   setEmptyMenu,
   updateAppMenuList,
@@ -304,7 +305,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
         });
         return;
       }
-
+      dispatch(setBirthdayUsers([]));
       dispatch(setDashboard([]));
       dispatch(setEmptyMenu([]));
       dispatch(resetAjaxState());

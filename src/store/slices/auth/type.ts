@@ -64,4 +64,5 @@ export interface AuthState {
   toDate: string;
   selectedBranchIds: "",
   attendanceSecurityLevel: string;
+  birthdayUsers: []
 }

@@ -25,7 +25,8 @@ const authPersistConfig = {
     "accounts",
     "locationLogs",
     "dashboardBranchId",
-    "dashboardTypeId"
+    "dashboardTypeId",
+    "birthdayUsers"
   ],
 };
 

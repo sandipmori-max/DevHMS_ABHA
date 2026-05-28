@@ -42,6 +42,7 @@ const initialState: AuthState = {
   fromDate: '',
   toDate: '',
   attendanceSecurityLevel: '',
+  birthdayUsers: []
 };
 
 const authSlice = createSlice({
@@ -60,6 +61,9 @@ const authSlice = createSlice({
     updateSelectedBranchesState: (state, action) => {
       state.selectedBranches = action.payload;
     },
+    setBirthdayUsers: (state, action) => {
+  state.birthdayUsers = action.payload;
+},
      updateSelectedBranchIdsState: (state, action) => {
       state.selectedBranchIds = action.payload;
     },
@@ -470,6 +474,7 @@ export const {
   updateSelectedToDateState,
   updateSelectedBranchIdsState,
   updateAppMenuList,
-  clearDashboardFilters
+  clearDashboardFilters,
+  setBirthdayUsers,
 } = authSlice.actions;
 export default authSlice.reducer;

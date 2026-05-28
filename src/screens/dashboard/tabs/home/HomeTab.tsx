@@ -487,9 +487,13 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
 
   useEffect(() => {
+     if(!Platform.isTV){
+        return;
+      }
     if (!isAuthenticated) return;
 
     const fetchDashboard = async () => {
+     
       dispatch(setDashboardLoading(true));
       await dispatch(getERPDashboardThunk({ branch: auth?.dashboardBranch.trim() || "", type: auth?.dashboardType.trim() || "", fd: auth?.dashboardFromDate.trim() || "", td: auth?.dashboardToDate.trim() || "" }));
       setRemainingTime(TOTAL_TIME); // reset timer on fetch

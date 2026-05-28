@@ -3,8 +3,8 @@ import { Animated, Text, View, Dimensions, StyleSheet, Modal, Pressable, Touchab
 import AutoHeightWebView from "../../page/components/AutoHeightWebView";
 import TranslatedText from "./TranslatedText";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
-import { useAppSelector } from "../../../../store/hooks";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { setBirthdayUsers } from "../../../../store/slices/auth/authSlice";
 
 const { width } = Dimensions.get("screen");
 
@@ -40,18 +40,29 @@ const MarqueeFooterV2 = ({ html }: any) => {
   );
 };
 
-
-
 const MarqueeFooter = ({ html }: any) => {
-  const STORAGE_KEY = "BIRTHDAY_MODAL_DATA";
-  const { user, attendanceDone: isAttendanceDone, attendanceSecurityLevel } = useAppSelector(
-    (state) => state?.auth,
+  const dispatch = useAppDispatch();
+
+  const {
+    user, birthdayUsers
+  } = useAppSelector((state) => state?.auth);
+
+  const theme = useAppSelector(
+    (state) => state?.theme.mode
   );
-  const theme = useAppSelector((state) => state?.theme.mode);
+
   const [visible, setVisible] = useState(false);
 
-  const scaleAnim = useRef(new Animated.Value(0.7)).current;
-  const opacityAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(
+    new Animated.Value(0.7)
+  ).current;
+
+  const opacityAnim = useRef(
+    new Animated.Value(0)
+  ).current;
+
+  // ✅ prevent duplicate modal
+  const previousModalKeyRef = useRef("");
 
   // ✅ Extract Users
   const extractUsers = (html: string) => {
@@ -64,84 +75,99 @@ const MarqueeFooter = ({ html }: any) => {
     return cleanText
       .split("•")
       .map((item) =>
-        item.replace(/\./g, "").replace(/\s+/g, " ").trim()
+        item
+          .replace(/\./g, "")
+          .replace(/\s+/g, " ")
+          .trim()
       )
       .filter((item) => item.length > 0);
   };
 
   const users = extractUsers(html);
 
-  // ✅ Show Modal Logic (Fixed)
+  // ✅ Store users in redux only when changed
   useEffect(() => {
-    const checkModal = async () => {
-      try {
-        const now = new Date();
+    const currentUsersKey = [...users]
+      .sort()
+      .join(",");
 
-        const today = `${now.getFullYear()}-${String(
-          now.getMonth() + 1
-        ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    const reduxUsersKey = [...birthdayUsers]
+      .sort()
+      .join(",");
 
-        const usersKey = [...users].sort().join(",");
+    if (currentUsersKey !== reduxUsersKey) {
+      dispatch(setBirthdayUsers(users));
+    }
+  }, [users]);
 
-        const stored = await AsyncStorage.getItem(STORAGE_KEY);
+  // ✅ Show Modal Logic
+  const checkModal = () => {
+    try {
 
-        if (stored) {
-          let parsed = null;
+      const isSame =
+      users.length === birthdayUsers.length &&
+      users.every((value, index) => value === birthdayUsers[index]);
 
-          try {
-            parsed = JSON.parse(stored);
-          } catch (e) {
-            parsed = null;
-          }
-
-          if (parsed) {
-            const isSameDate = parsed?.date === today;
-            const isSameUsers = parsed?.usersKey === usersKey;
-            const isSameLoggedInUser =
-              parsed?.user?.id === user?.id;
-
-            if (
-              isSameDate &&
-              isSameUsers &&
-              isSameLoggedInUser
-            ) {
-              return;
-            }
-          }
-        }
-
-        setVisible(true);
-
-        Animated.parallel([
-          Animated.timing(opacityAnim, {
-            toValue: 1,
-            duration: 300,
-            useNativeDriver: Platform.OS === "ios",
-          }),
-          Animated.spring(scaleAnim, {
-            toValue: 1,
-            friction: 6,
-            useNativeDriver: Platform.OS === "ios",
-          }),
-        ]).start();
-
-        await AsyncStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify({
-            date: today,
-            usersKey,
-            user,
-          }),
-        );
-      } catch (e) {
-        console.log("Storage error", e);
+      if(isSame){
+        return;
       }
-    };
+      const usersKey = [...birthdayUsers]
+        .sort()
+        .join(",");
 
+      const currentUserId = user?.id || "";
+
+      // unique modal key
+      const modalKey = `${currentUserId}_${usersKey}`;
+
+      console.log(
+        "Current Modal Key:",
+        modalKey
+      );
+
+      console.log(
+        "Previous Modal Key:",
+        previousModalKeyRef.current
+      );
+
+      // already shown
+      if (
+        previousModalKeyRef.current === modalKey
+      ) {
+        return;
+      }
+
+      // save current modal key
+      previousModalKeyRef.current = modalKey;
+
+      setVisible(true);
+
+      Animated.parallel([
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver:
+            Platform.OS === "ios",
+        }),
+
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          friction: 6,
+          useNativeDriver:
+            Platform.OS === "ios",
+        }),
+      ]).start();
+    } catch (e) {
+      console.log("Modal error", e);
+    }
+  };
+
+  // ✅ Trigger modal
+  useEffect(() => {
     if (users.length > 0) {
       checkModal();
     }
-  }, [users]);
+  }, [user]);
 
   // ✅ Close Modal
   const closeModal = () => {
@@ -151,6 +177,7 @@ const MarqueeFooter = ({ html }: any) => {
         duration: 200,
         useNativeDriver: true,
       }),
+
       Animated.timing(scaleAnim, {
         toValue: 0.8,
         duration: 200,
@@ -162,53 +189,94 @@ const MarqueeFooter = ({ html }: any) => {
   return (
     <>
       {/* Modal */}
-      <Modal transparent visible={visible} animationType="none">
+      <Modal
+        transparent
+        visible={visible}
+        animationType="none"
+      >
         <View style={styles.overlay}>
-          <Pressable style={StyleSheet.absoluteFill} onPress={() => {
-
-          }} />
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={() => {}}
+          />
 
           <Animated.View
             style={[
               styles.modalContainer,
               {
                 backgroundColor:
-                  theme === "dark" ? "#1c1c1e" : "#ffffff",
+                  theme === "dark"
+                    ? "#1c1c1e"
+                    : "#ffffff",
+
                 opacity: opacityAnim,
-                transform: [{ scale: scaleAnim }],
+
+                transform: [
+                  {
+                    scale: scaleAnim,
+                  },
+                ],
               },
             ]}
           >
             {/* ICON */}
             <View style={styles.iconWrapper}>
-              <MaterialIcons name="cake" size={28} color="#fff" />
+              <MaterialIcons
+                name="cake"
+                size={28}
+                color="#fff"
+              />
             </View>
 
             {/* HEADER */}
             <View style={styles.header}>
-              <Text style={styles.title}>Today's Birthdays</Text>
-              <TouchableOpacity onPress={closeModal}>
-                <MaterialIcons name="close" size={22} color="#999" />
+              <Text style={styles.title}>
+                Today's Birthdays
+              </Text>
+
+              <TouchableOpacity
+                onPress={closeModal}
+              >
+                <MaterialIcons
+                  name="close"
+                  size={22}
+                  color="#999"
+                />
               </TouchableOpacity>
             </View>
 
+            {/* SUBTITLE */}
             <Text style={styles.subtitle}>
               Celebrate your teammates 🎉
             </Text>
 
             <View style={styles.divider} />
 
-            {/* LIST */}
+            {/* USERS LIST */}
             <View style={{ maxHeight: 250 }}>
               {users.map((name, index) => (
-                <View key={index} style={[styles.row, {
-                  gap: 8,
-                }]}>
-                  <MaterialIcons name="cake" size={18} color="#ff9800" />
+                <View
+                  key={index}
+                  style={[
+                    styles.row,
+                    {
+                      gap: 8,
+                    },
+                  ]}
+                >
+                  <MaterialIcons
+                    name="cake"
+                    size={18}
+                    color="#ff9800"
+                  />
+
                   <Text
                     style={{
                       fontSize: 14,
-                      color: theme === "dark" ? "#fff" : "#000",
+                      color:
+                        theme === "dark"
+                          ? "#fff"
+                          : "#000",
                     }}
                   >
                     {name}
@@ -221,14 +289,30 @@ const MarqueeFooter = ({ html }: any) => {
       </Modal>
 
       {/* Footer List */}
-      <View style={{ paddingHorizontal: 12, paddingBottom: 10 }}>
+      <View
+        style={{
+          paddingHorizontal: 12,
+          paddingBottom: 10,
+        }}
+      >
         {users.map((name, index) => (
-          <View key={index} style={styles.row}>
-            <MaterialIcons name="cake" size={18} color="green" />
+          <View
+            key={index}
+            style={styles.row}
+          >
+            <MaterialIcons
+              name="cake"
+              size={18}
+              color="green"
+            />
+
             <Text
               style={{
                 fontSize: 14,
-                color: theme === "dark" ? "white" : "black",
+                color:
+                  theme === "dark"
+                    ? "white"
+                    : "black",
               }}
             >
               - {name}

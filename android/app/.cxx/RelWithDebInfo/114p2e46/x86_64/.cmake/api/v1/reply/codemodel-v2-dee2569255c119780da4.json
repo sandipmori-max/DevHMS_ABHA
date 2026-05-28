@@ -420,7 +420,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "appmodules::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-appmodules-RelWithDebInfo-931e80948e9a1569f16f.json",
+					"jsonFile" : "target-appmodules-RelWithDebInfo-f0c97bcd6169d7307e1a.json",
 					"name" : "appmodules",
 					"projectIndex" : 0
 				},
@@ -553,21 +553,21 @@
 				{
 					"directoryIndex" : 17,
 					"id" : "react_codegen_rnscreens::@25bcbd507e98d3a854ad",
-					"jsonFile" : "target-react_codegen_rnscreens-RelWithDebInfo-9372c3d31930d301e0a6.json",
+					"jsonFile" : "target-react_codegen_rnscreens-RelWithDebInfo-c1dbb0ee0eab43742c82.json",
 					"name" : "react_codegen_rnscreens",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 18,
 					"id" : "react_codegen_rnsvg::@4f40eb209d0c0b4a3b65",
-					"jsonFile" : "target-react_codegen_rnsvg-RelWithDebInfo-5740f2592dba9d48036f.json",
+					"jsonFile" : "target-react_codegen_rnsvg-RelWithDebInfo-f5c1c88975ac38672021.json",
 					"name" : "react_codegen_rnsvg",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 16,
 					"id" : "react_codegen_safeareacontext::@7984cd80db47aa7b952a",
-					"jsonFile" : "target-react_codegen_safeareacontext-RelWithDebInfo-c3bc235d4bcd00ad7cf8.json",
+					"jsonFile" : "target-react_codegen_safeareacontext-RelWithDebInfo-2d0365d64a5b37edcd53.json",
 					"name" : "react_codegen_safeareacontext",
 					"projectIndex" : 0
 				}
@@ -577,7 +577,7 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/android/app/.cxx/RelWithDebInfo/114p2e46/arm64-v8a",
+		"build" : "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/android/app/.cxx/RelWithDebInfo/114p2e46/x86_64",
 		"source" : "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup"
 	},
 	"version" : 

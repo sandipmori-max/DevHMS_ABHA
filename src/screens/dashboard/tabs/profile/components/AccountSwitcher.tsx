@@ -40,6 +40,7 @@ import {
   setActiveDashboardBranchId,
   setActiveDashboardType,
   setActiveDashboardTypeId,
+  setBirthdayUsers,
   setDashboard,
   setEmptyMenu,
   setLoading,
@@ -166,6 +167,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
   const handleSwitchAccount = async (accountId: string) => {
     if (accountId !== activeAccountId) {
      await dispatch(switchAccountThunk(accountId));
+     dispatch(setBirthdayUsers([]));
     //  await dispatch(getLastPunchInThunk());
     //   try {
     //    await dispatch(getERPAppConfigMenuThunk());
