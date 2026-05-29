@@ -12,22 +12,6 @@ import RNFS from "react-native-fs";
 import FastImage from "react-native-fast-image";
 import { ERP_COLOR_CODE } from "../constants";
 
-export const getBottomTabIcon = (iconName: string, focused: boolean) => {
-  switch (iconName) {
-    case "home":
-      return focused ? ERP_ICON.ACTIVE_HOME : ERP_ICON.HOME;
-    case "profile":
-      return focused ? ERP_ICON.ACTIVE_PROFILE : ERP_ICON.PROFILE;
-    case "report":
-      return focused ? ERP_ICON.ACTIVE_REPORT : ERP_ICON.REPORT;
-    case "entry":
-      return focused ? ERP_ICON.ACTIVE_ENTRY : ERP_ICON.ENTRY;
-    case "auth":
-      return focused ? ERP_ICON.ACTIVE_AUTH : ERP_ICON.AUTH;
-    default:
-      return ERP_ICON.HOME;
-  }
-};
 
 export const formatDateMonthDateYear = (dateString: string) => {
   return new Date(dateString).toLocaleDateString("en-US", {
