@@ -159,8 +159,8 @@ const NoData = ({ isShowTop = true, text }: any) => {
                 style={[
                   styles.image,
                   {
-                    width: isIpad ? 150 : width * 0.6,
-                    height: isIpad ? 150 : width * 0.6,
+                    width: isIpad ? 150 : width * 0.4,
+                    height: isIpad ? 150 : width * 0.4,
                   },
                 ]}
                 resizeMode="contain"

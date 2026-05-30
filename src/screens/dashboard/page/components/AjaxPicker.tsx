@@ -47,8 +47,8 @@ const AjaxPicker = ({
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
   const { user } = useAppSelector((state) => state?.auth);
-    const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
+  const isIpad =
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   useEffect(() => {
     const timer = setTimeout(() => {
       if (open) {
@@ -313,7 +313,7 @@ const AjaxPicker = ({
                       console.log("opt-=-=-=-=-=------------", opt)
                       const entries = Object.entries(opt).filter(
                         ([key, value]) =>
-                          value !== null && 
+                          value !== null &&
                           value !== undefined &&
                           String(value).trim() !== "" &&
                           !key.startsWith("[") &&
@@ -327,7 +327,19 @@ const AjaxPicker = ({
                           key={i}
                           style={[
                             styles.option,
-                            { paddingVertical: 12 },
+                            {
+                              paddingVertical: 12,
+
+
+                              backgroundColor:
+                                i % 2 === 0
+                                  ? theme === "dark"
+                                    ? "#1E1E1E"
+                                    : "#FFFFFF"
+                                  : theme === "dark"
+                                    ? "#2A2A2A"
+                                    : "#F5F5F5",
+                            },
                             theme === "dark" && {
                               borderBottomColor: ERP_COLOR_CODE.ERP_F8F9FA,
                             },
@@ -405,3 +417,6 @@ const AjaxPicker = ({
 };
 
 export default React.memo(AjaxPicker);
+
+// getmobileapp
+// mobileappmenu

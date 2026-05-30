@@ -447,23 +447,23 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       },
 
       headerLeft: () => (
-          <TouchableOpacity
+        <TouchableOpacity
+          onPress={() => navigation?.openDrawer()}
+          style={{
+            height: 46,
+            width: 46,
+            justifyContent: "center",
+            alignContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <ERPIcon
+            extSize={24}
+            isMenu={true}
+            name="menu"
             onPress={() => navigation?.openDrawer()}
-            style={{
-              height: 46,
-              width: 46,
-              justifyContent: "center",
-              alignContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <ERPIcon
-              extSize={24}
-              isMenu={true}
-              name="menu"
-              onPress={() => navigation?.openDrawer()}
-            />
-          </TouchableOpacity>
+          />
+        </TouchableOpacity>
       ),
     });
   }, [
@@ -487,13 +487,13 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
 
   useEffect(() => {
-     if(!Platform.isTV){
-        return;
-      }
+    if (!Platform.isTV) {
+      return;
+    }
     if (!isAuthenticated) return;
 
     const fetchDashboard = async () => {
-     
+
       dispatch(setDashboardLoading(true));
       await dispatch(getERPDashboardThunk({ branch: auth?.dashboardBranch.trim() || "", type: auth?.dashboardType.trim() || "", fd: auth?.dashboardFromDate.trim() || "", td: auth?.dashboardToDate.trim() || "" }));
       setRemainingTime(TOTAL_TIME); // reset timer on fetch
@@ -2002,534 +2002,548 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         )}
       </View>
 
-      <FlatList
-        data={[""]}
-        key={
-          isLandscape
-            ? `${isHorizontal}-landscape1`
-            : `${isHorizontal}-portrait1`
-        }
-        showsVerticalScrollIndicator={false}
-        renderItem={() => {
-          return (
-            <>
-              {isDashboardLoading ? (
-                <View
-                  style={{
-                    height: Dimensions.get("screen").height * 0.75,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: theme === "dark" ? "black" : "white",
-                  }}
-                >
-                  <FullViewLoader isShowTop={false} />
-                </View>
-              ) : error ? (
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: theme === "dark" ? "black" : "white",
-                  }}
-                >
-                  <ErrorMessage message={error} isShowTop={false} />{" "}
-                </View>
-              ) : dashboard?.length === 0 && !isDashboardLoading ? (
-                <>
-                  {
-                    user?.company_code?.toLowerCase()?.includes("oeuvre01") ? <View
-                      style={{
-                        height: Dimensions.get('screen').height * 0.75,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        backgroundColor: theme === 'dark' ? 'black' : 'white',
-                      }}
-                    >
-                      <View style={{
-                        height: 140, width: '100%',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}>
-                        <Image source={ERP_ICON.APP_LOGO} style={[styles.logo,
-                        {
-                          height: 140,
-                          width: 140, marginBottom: 12
-                        }
-                        ]} resizeMode="contain" />
-                        <Text style={{
-                          fontSize: 30,
-                          fontFamily: "Handlee-Regular",
-                          color: theme === 'dark' ? 'white' : 'black'
-                        }}>Welcome</Text>
-                      </View>
-                    </View>
-                      :
-                      <>
-                        {
-                          user?.company_code?.toLowerCase()?.includes("oeuvre01") ?
+      {
+        searchText.length > 0 && filteredDashboard?.length === 0 ? <>
 
-                            <View
-                              style={{
-                                height: Dimensions.get('screen').height * 0.75,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                backgroundColor: theme === 'dark' ? 'black' : 'white',
-                              }}
-                            >
-                              <View style={{
-                                height: 140, width: '100%',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                              }}>
-                                <Image source={ERP_ICON.APP_LOGO} style={[styles.logo,
-                                {
-                                  height: 140,
-                                  width: 140, marginBottom: 12
-                                }
-                                ]} resizeMode="contain" />
-                                <Text style={{
-                                  fontSize: 30,
-                                  fontFamily: "Handlee-Regular",
-                                  color: theme === 'dark' ? 'white' : 'black'
-                                }}>Welcome</Text>
-                              </View>
-                            </View>
-                            : <View
-                              style={{
-                                height: Dimensions.get("screen").height,
-                                justifyContent: "center",
-                                alignItems: "center",
-                                backgroundColor: theme === "dark" ? "black" : "white",
-                              }}
-                            >
-                              <NoData isShowTop={false} />
-                            </View>
-                        }
-                      </>
+          <View
+            style={{
+              height: Dimensions.get("screen").height - 350,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: theme === "dark" ? "black" : "white",
+            }}
+          >
+            <NoData isShowTop={false} />
+          </View>
 
-
-                  }
-                </>
-
-              ) : (
-                <View
-                  style={{
-                    backgroundColor: theme === "dark" ? "black" : "white",
-                    flex: 1,
-                  }}
-                >
+        </> : <FlatList
+          data={[""]}
+          key={
+            isLandscape
+              ? `${isHorizontal}-landscape1`
+              : `${isHorizontal}-portrait1`
+          }
+          showsVerticalScrollIndicator={false}
+          renderItem={() => {
+            return (
+              <>
+                {isDashboardLoading ? (
+                  <View
+                    style={{
+                      height: Dimensions.get("screen").height * 0.75,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: theme === "dark" ? "black" : "white",
+                    }}
+                  >
+                    <FullViewLoader isShowTop={false} />
+                  </View>
+                ) : error ? (
+                  <View
+                    style={{
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: theme === "dark" ? "black" : "white",
+                    }}
+                  >
+                    <ErrorMessage message={error} isShowTop={false} />{" "}
+                  </View>
+                ) : dashboard?.length === 0 && !isDashboardLoading ? (
                   <>
-                    <Animated.FlatList
-                      showsVerticalScrollIndicator={false}
-                      data={[""]}
-                      keyExtractor={(_, i) => i.toString()}
-                      onScroll={Animated.event(
-                        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                        {
-                          useNativeDriver: true,
-                        },
-                      )}
-                      scrollEventThrottle={16}
-                      renderItem={() => (
-                        <View
-                          style={{
-                            backgroundColor:
-                              theme === "dark" ? "black" : "white",
-                            flex: 1,
-                          }}
-                        >
-                          <View>
-                            {pieChartData.length > 0 && (
-                              <>
-                                <View
-                                  style={{
-                                    marginTop: theme === "light" ? 12 : 2,
-                                    marginBottom: 2,
-                                    backgroundColor:
-                                      theme === "dark" ? "gray" : "#f5f5f5",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    padding: 8,
-                                    borderRadius: 4,
-                                    alignItems: "center",
-                                    marginHorizontal: 8,
-                                  }}
-                                >
+                    {
+                      user?.company_code?.toLowerCase()?.includes("oeuvre01") ? <View
+                        style={{
+                          height: Dimensions.get('screen').height * 0.75,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          backgroundColor: theme === 'dark' ? 'black' : 'white',
+                        }}
+                      >
+                        <View style={{
+                          height: 140, width: '100%',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}>
+                          <Image source={ERP_ICON.APP_LOGO} style={[styles.logo,
+                          {
+                            height: 140,
+                            width: 140, marginBottom: 12
+                          }
+                          ]} resizeMode="contain" />
+                          <Text style={{
+                            fontSize: 30,
+                            fontFamily: "Handlee-Regular",
+                            color: theme === 'dark' ? 'white' : 'black'
+                          }}>Welcome</Text>
+                        </View>
+                      </View>
+                        :
+                        <>
+                          {
+                            user?.company_code?.toLowerCase()?.includes("oeuvre01") ?
+
+                              <View
+                                style={{
+                                  height: Dimensions.get('screen').height * 0.75,
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  backgroundColor: theme === 'dark' ? 'black' : 'white',
+                                }}
+                              >
+                                <View style={{
+                                  height: 140, width: '100%',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                }}>
+                                  <Image source={ERP_ICON.APP_LOGO} style={[styles.logo,
+                                  {
+                                    height: 140,
+                                    width: 140, marginBottom: 12
+                                  }
+                                  ]} resizeMode="contain" />
+                                  <Text style={{
+                                    fontSize: 30,
+                                    fontFamily: "Handlee-Regular",
+                                    color: theme === 'dark' ? 'white' : 'black'
+                                  }}>Welcome</Text>
+                                </View>
+                              </View>
+                              : <View
+                                style={{
+                                  height: Dimensions.get("screen").height,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  backgroundColor: theme === "dark" ? "black" : "white",
+                                }}
+                              >
+                                <NoData isShowTop={false} />
+                              </View>
+                          }
+                        </>
+
+
+                    }
+                  </>
+
+                ) : (
+                  <View
+                    style={{
+                      backgroundColor: theme === "dark" ? "black" : "white",
+                      flex: 1,
+                    }}
+                  >
+                    <>
+                      <Animated.FlatList
+                        showsVerticalScrollIndicator={false}
+                        data={[""]}
+                        keyExtractor={(_, i) => i.toString()}
+                        onScroll={Animated.event(
+                          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                          {
+                            useNativeDriver: true,
+                          },
+                        )}
+                        scrollEventThrottle={16}
+                        renderItem={() => (
+                          <View
+                            style={{
+                              backgroundColor:
+                                theme === "dark" ? "black" : "white",
+                              flex: 1,
+                            }}
+                          >
+                            <View>
+                              {pieChartData.length > 0 && (
+                                <>
                                   <View
                                     style={{
-                                      justifyContent: "center",
-                                      alignContent: "center",
-                                      alignItems: "center",
+                                      marginTop: theme === "light" ? 12 : 2,
+                                      marginBottom: 2,
+                                      backgroundColor:
+                                        theme === "dark" ? "gray" : "#f5f5f5",
                                       flexDirection: "row",
-                                      gap: 4,
+                                      justifyContent: "space-between",
+                                      padding: 8,
+                                      borderRadius: 4,
+                                      alignItems: "center",
+                                      marginHorizontal: 8,
                                     }}
                                   >
-                                    <MaterialIcons
-                                      size={14}
-                                      color={
-                                        theme === "dark" ? "white" : "gray"
-                                      }
-                                      name="donut-large"
-                                    />
-                                    <Text
+                                    <View
                                       style={{
-                                        color:
-                                          theme === "dark" ? "white" : "black",
-                                        fontWeight: "600",
+                                        justifyContent: "center",
+                                        alignContent: "center",
+                                        alignItems: "center",
+                                        flexDirection: "row",
+                                        gap: 4,
                                       }}
                                     >
-                                      Chart Data
-                                    </Text>
+                                      <MaterialIcons
+                                        size={14}
+                                        color={
+                                          theme === "dark" ? "white" : "gray"
+                                        }
+                                        name="donut-large"
+                                      />
+                                      <Text
+                                        style={{
+                                          color:
+                                            theme === "dark" ? "white" : "black",
+                                          fontWeight: "600",
+                                        }}
+                                      >
+                                        Chart Data
+                                      </Text>
+                                    </View>
                                   </View>
-                                </View>
-                                <PieChartSection
-                                  pieChartData={pieChartData}
-                                  navigation={navigation}
-                                  t={t}
-                                />
-                              </>
-                            )}
-                            {pieChartData.length === 0 && (
-                              <View style={{ marginTop: 12 }} />
-                            )}
-                          </View>
-                          <View
-                            style={[
-                              styles.dashboardSection,
-                              {
-                                marginLeft: 2,
-                                marginRight: 8,
-                              },
-                            ]}
-                          >
+                                  <PieChartSection
+                                    pieChartData={pieChartData}
+                                    navigation={navigation}
+                                    t={t}
+                                  />
+                                </>
+                              )}
+                              {pieChartData.length === 0 && (
+                                <View style={{ marginTop: 12 }} />
+                              )}
+                            </View>
                             <View
-                              style={{
-                                marginBottom: 8,
-                                backgroundColor:
-                                  theme === "dark" ? "gray" : "#f5f5f5",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                padding: 8,
-                                borderRadius: 4,
-                                alignItems: "center",
-                              }}
+                              style={[
+                                styles.dashboardSection,
+                                {
+                                  marginLeft: 2,
+                                  marginRight: 8,
+                                },
+                              ]}
                             >
                               <View
                                 style={{
-                                  justifyContent: "center",
-                                  alignContent: "center",
-                                  alignItems: "center",
+                                  marginBottom: 8,
+                                  backgroundColor:
+                                    theme === "dark" ? "gray" : "#f5f5f5",
                                   flexDirection: "row",
-                                  gap: 4,
+                                  justifyContent: "space-between",
+                                  padding: 8,
+                                  borderRadius: 4,
+                                  alignItems: "center",
                                 }}
                               >
-                                <MaterialIcons
-                                  size={14}
-                                  color={theme === "dark" ? "white" : "gray"}
-                                  name="dashboard"
-                                />
-                                <Text
+                                <View
                                   style={{
-                                    color: theme === "dark" ? "white" : "black",
-                                    fontWeight: "600",
+                                    justifyContent: "center",
+                                    alignContent: "center",
+                                    alignItems: "center",
+                                    flexDirection: "row",
+                                    gap: 4,
                                   }}
                                 >
-                                  Dashboard
-                                </Text>
+                                  <MaterialIcons
+                                    size={14}
+                                    color={theme === "dark" ? "white" : "gray"}
+                                    name="dashboard"
+                                  />
+                                  <Text
+                                    style={{
+                                      color: theme === "dark" ? "white" : "black",
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                    Dashboard
+                                  </Text>
+                                </View>
+
+
                               </View>
-
-
+                              <View
+                                style={{
+                                  marginRight: 8,
+                                }}
+                              >
+                                <FlatList
+                                  key={
+                                    isLandscape
+                                      ? `${isHorizontal}-landscape3`
+                                      : `${isHorizontal}-portrait3`
+                                  }
+                                  keyboardShouldPersistTaps="handled"
+                                  data={htmlItems}
+                                  keyExtractor={(item, index) => index.toString()}
+                                  renderItem={({ item, index }) =>
+                                    renderDashboardItem({
+                                      item,
+                                      index,
+                                      isFromHtml: true,
+                                      isFromMenu: true,
+                                    })
+                                  }
+                                  numColumns={isIpad ? 2 : 1}
+                                  showsVerticalScrollIndicator={false}
+                                />
+                              </View>
                             </View>
+
                             <View
-                              style={{
-                                marginRight: 8,
-                              }}
+                              style={[
+                                styles.dashboardSection,
+                                {
+                                  marginLeft: 2,
+                                  marginRight: 4,
+                                },
+                              ]}
                             >
                               <FlatList
                                 key={
                                   isLandscape
-                                    ? `${isHorizontal}-landscape3`
-                                    : `${isHorizontal}-portrait3`
+                                    ? `${isHorizontal}-landscape2`
+                                    : `${isHorizontal}-portrait2`
                                 }
                                 keyboardShouldPersistTaps="handled"
-                                data={htmlItems}
+                                data={[...textItems, ...emptyItems]}
                                 keyExtractor={(item, index) => index.toString()}
+                                numColumns={
+                                  isLandscape
+                                    ? isHorizontal
+                                      ? 2
+                                      : 4
+                                    : isHorizontal
+                                      ? 1
+                                      : 2
+                                }
+                                columnWrapperStyle={
+                                  !isHorizontal ? styles.columnWrapper : undefined
+                                }
                                 renderItem={({ item, index }) =>
                                   renderDashboardItem({
                                     item,
                                     index,
-                                    isFromHtml: true,
-                                    isFromMenu: true,
+                                    isFromHtml: false,
+                                    isFromMenu: false,
                                   })
                                 }
-                                numColumns={isIpad ? 2 : 1}
                                 showsVerticalScrollIndicator={false}
                               />
                             </View>
-                          </View>
 
-                          <View
-                            style={[
-                              styles.dashboardSection,
-                              {
-                                marginLeft: 2,
-                                marginRight: 4,
-                              },
-                            ]}
-                          >
-                            <FlatList
-                              key={
-                                isLandscape
-                                  ? `${isHorizontal}-landscape2`
-                                  : `${isHorizontal}-portrait2`
-                              }
-                              keyboardShouldPersistTaps="handled"
-                              data={[...textItems, ...emptyItems]}
-                              keyExtractor={(item, index) => index.toString()}
-                              numColumns={
-                                isLandscape
-                                  ? isHorizontal
-                                    ? 2
-                                    : 4
-                                  : isHorizontal
-                                    ? 1
-                                    : 2
-                              }
-                              columnWrapperStyle={
-                                !isHorizontal ? styles.columnWrapper : undefined
-                              }
-                              renderItem={({ item, index }) =>
-                                renderDashboardItem({
-                                  item,
-                                  index,
-                                  isFromHtml: false,
-                                  isFromMenu: false,
-                                })
-                              }
-                              showsVerticalScrollIndicator={false}
-                            />
-                          </View>
-
-                          {user?.company_code
-                            ?.toLowerCase()
-                            ?.includes("deverp") &&
-                            attendance?.intime && (
-                              <>
-                                <View
-                                  style={{
-                                    marginTop: 2,
-                                    marginBottom: 2,
-                                    backgroundColor:
-                                      theme === "dark" ? "gray" : "#f5f5f5",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    padding: 8,
-                                    borderRadius: 4,
-                                    alignItems: "center",
-                                    marginHorizontal: 8,
-                                  }}
-                                >
+                            {user?.company_code
+                              ?.toLowerCase()
+                              ?.includes("deverp") &&
+                              attendance?.intime && (
+                                <>
                                   <View
                                     style={{
-                                      justifyContent: "center",
-                                      alignContent: "center",
-                                      alignItems: "center",
+                                      marginTop: 2,
+                                      marginBottom: 2,
+                                      backgroundColor:
+                                        theme === "dark" ? "gray" : "#f5f5f5",
                                       flexDirection: "row",
-                                      gap: 4,
-                                    }}
-                                  >
-                                    <MaterialIcons
-                                      size={14}
-                                      color={
-                                        theme === "dark" ? "white" : "gray"
-                                      }
-                                      name="dashboard"
-                                    />
-                                    <Text
-                                      style={{
-                                        color:
-                                          theme === "dark" ? "white" : "black",
-                                        fontWeight: "600",
-                                      }}
-                                    >
-                                      Today Attendance
-                                    </Text>
-                                  </View>
-
-                                  <View
-                                    style={{
-                                      opacity: 0.6,
-                                      justifyContent: "center",
-                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                      padding: 8,
                                       borderRadius: 4,
+                                      alignItems: "center",
+                                      marginHorizontal: 8,
                                     }}
                                   >
-                                    <Text
+                                    <View
                                       style={{
-                                        color:
-                                          theme === "dark" ? "white" : "gray",
-                                        fontWeight: "600",
+                                        justifyContent: "center",
+                                        alignContent: "center",
+                                        alignItems: "center",
+                                        flexDirection: "row",
+                                        gap: 4,
                                       }}
                                     >
-                                      {new Date().toLocaleDateString()}
-                                    </Text>
-                                  </View>
-                                </View>
-                              </>
-                            )}
-
-                          {user?.company_code
-                            ?.toLowerCase()
-                            ?.includes("deverp") &&
-                            attendance?.intime && (
-                              <>
-                                <View style={styles.timeContainer}>
-                                  <View style={styles.timeItem}>
-                                    <View
-                                      style={[
-                                        styles.iconTimeContainer,
-                                        {
-                                          backgroundColor:
-                                            theme === "dark"
-                                              ? "gray"
-                                              : "#f5f5f5",
-                                        },
-                                      ]}
-                                    >
                                       <MaterialIcons
-                                        name="login"
-                                        size={22}
+                                        size={14}
                                         color={
-                                          theme === "dark"
-                                            ? "white"
-                                            : ERP_COLOR_CODE.ERP_APP_COLOR
+                                          theme === "dark" ? "white" : "gray"
                                         }
+                                        name="dashboard"
                                       />
-                                    </View>
-                                    <Text
-                                      style={[
-                                        styles.timeText,
-                                        {
-                                          color: ERP_COLOR_CODE.ERP_APP_COLOR,
-                                        },
-                                      ]}
-                                    >
-                                      {attendance.intime || "-"}
-                                    </Text>
-                                    <Text
-                                      style={[
-                                        styles.labelText,
-                                        {
-                                          color: ERP_COLOR_CODE.ERP_APP_COLOR,
-                                        },
-                                      ]}
-                                    >
-                                      Check In
-                                    </Text>
-                                  </View>
-                                  <View style={styles.timeItem}>
-                                    <View
-                                      style={[
-                                        styles.iconTimeContainer,
-                                        {
-                                          backgroundColor:
-                                            theme === "dark"
-                                              ? "gray"
-                                              : "#f5f5f5",
-                                        },
-                                      ]}
-                                    >
-                                      <MaterialIcons
-                                        name="access-time"
-                                        size={22}
-                                        color={
-                                          theme === "dark"
-                                            ? "white"
-                                            : ERP_COLOR_CODE.ERP_green
-                                        }
-                                      />
-                                    </View>
-                                    <Text
-                                      style={[
-                                        styles.timeText,
-                                        {
+                                      <Text
+                                        style={{
                                           color:
+                                            theme === "dark" ? "white" : "black",
+                                          fontWeight: "600",
+                                        }}
+                                      >
+                                        Today Attendance
+                                      </Text>
+                                    </View>
+
+                                    <View
+                                      style={{
+                                        opacity: 0.6,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        borderRadius: 4,
+                                      }}
+                                    >
+                                      <Text
+                                        style={{
+                                          color:
+                                            theme === "dark" ? "white" : "gray",
+                                          fontWeight: "600",
+                                        }}
+                                      >
+                                        {new Date().toLocaleDateString()}
+                                      </Text>
+                                    </View>
+                                  </View>
+                                </>
+                              )}
+
+                            {user?.company_code
+                              ?.toLowerCase()
+                              ?.includes("deverp") &&
+                              attendance?.intime && (
+                                <>
+                                  <View style={styles.timeContainer}>
+                                    <View style={styles.timeItem}>
+                                      <View
+                                        style={[
+                                          styles.iconTimeContainer,
+                                          {
+                                            backgroundColor:
+                                              theme === "dark"
+                                                ? "gray"
+                                                : "#f5f5f5",
+                                          },
+                                        ]}
+                                      >
+                                        <MaterialIcons
+                                          name="login"
+                                          size={22}
+                                          color={
                                             theme === "dark"
                                               ? "white"
-                                              : ERP_COLOR_CODE.ERP_green,
-                                        },
-                                      ]}
-                                    >
-                                      {workingTime}
-                                    </Text>
-                                    <Text
-                                      style={[
-                                        styles.labelText,
-                                        {
-                                          color: ERP_COLOR_CODE.ERP_green,
-                                        },
-                                      ]}
-                                    >
-                                      Working Hrs
-                                    </Text>
-                                  </View>
-                                  {/* Clock Out */}
-                                  <TouchableOpacity
-                                    onPress={() => {
-                                      navigation.navigate("Attendance", {
-                                        isFor: "Attendance",
-                                        isFromDashboard: true,
-                                      });
-                                    }}
-                                    style={styles.timeItem}
-                                  >
-                                    <View
-                                      style={[
-                                        styles.iconTimeContainer,
-                                        {
-                                          backgroundColor:
-                                            theme === "dark"
-                                              ? "gray"
-                                              : "#f5f5f5",
-                                        },
-                                      ]}
-                                    >
-                                      <MaterialIcons
-                                        name="logout"
-                                        size={22}
-                                        color={
-                                          theme === "dark"
-                                            ? "white"
-                                            : ERP_COLOR_CODE.ERP_ERROR
-                                        }
-                                      />
+                                              : ERP_COLOR_CODE.ERP_APP_COLOR
+                                          }
+                                        />
+                                      </View>
+                                      <Text
+                                        style={[
+                                          styles.timeText,
+                                          {
+                                            color: ERP_COLOR_CODE.ERP_APP_COLOR,
+                                          },
+                                        ]}
+                                      >
+                                        {attendance.intime || "-"}
+                                      </Text>
+                                      <Text
+                                        style={[
+                                          styles.labelText,
+                                          {
+                                            color: ERP_COLOR_CODE.ERP_APP_COLOR,
+                                          },
+                                        ]}
+                                      >
+                                        Check In
+                                      </Text>
                                     </View>
-                                    <Text
-                                      style={[
-                                        styles.timeText,
-                                        {
-                                          color: ERP_COLOR_CODE.ERP_ERROR,
-                                        },
-                                      ]}
+                                    <View style={styles.timeItem}>
+                                      <View
+                                        style={[
+                                          styles.iconTimeContainer,
+                                          {
+                                            backgroundColor:
+                                              theme === "dark"
+                                                ? "gray"
+                                                : "#f5f5f5",
+                                          },
+                                        ]}
+                                      >
+                                        <MaterialIcons
+                                          name="access-time"
+                                          size={22}
+                                          color={
+                                            theme === "dark"
+                                              ? "white"
+                                              : ERP_COLOR_CODE.ERP_green
+                                          }
+                                        />
+                                      </View>
+                                      <Text
+                                        style={[
+                                          styles.timeText,
+                                          {
+                                            color:
+                                              theme === "dark"
+                                                ? "white"
+                                                : ERP_COLOR_CODE.ERP_green,
+                                          },
+                                        ]}
+                                      >
+                                        {workingTime}
+                                      </Text>
+                                      <Text
+                                        style={[
+                                          styles.labelText,
+                                          {
+                                            color: ERP_COLOR_CODE.ERP_green,
+                                          },
+                                        ]}
+                                      >
+                                        Working Hrs
+                                      </Text>
+                                    </View>
+                                    {/* Clock Out */}
+                                    <TouchableOpacity
+                                      onPress={() => {
+                                        navigation.navigate("Attendance", {
+                                          isFor: "Attendance",
+                                          isFromDashboard: true,
+                                        });
+                                      }}
+                                      style={styles.timeItem}
                                     >
-                                      -
-                                    </Text>
-                                    <Text
-                                      style={[
-                                        styles.labelText,
-                                        {
-                                          color: ERP_COLOR_CODE.ERP_ERROR,
-                                        },
-                                      ]}
-                                    >
-                                      Check Out
-                                    </Text>
-                                  </TouchableOpacity>
-                                </View>
-                              </>
-                            )}
-                          {/* {attendance?.intime && (
+                                      <View
+                                        style={[
+                                          styles.iconTimeContainer,
+                                          {
+                                            backgroundColor:
+                                              theme === "dark"
+                                                ? "gray"
+                                                : "#f5f5f5",
+                                          },
+                                        ]}
+                                      >
+                                        <MaterialIcons
+                                          name="logout"
+                                          size={22}
+                                          color={
+                                            theme === "dark"
+                                              ? "white"
+                                              : ERP_COLOR_CODE.ERP_ERROR
+                                          }
+                                        />
+                                      </View>
+                                      <Text
+                                        style={[
+                                          styles.timeText,
+                                          {
+                                            color: ERP_COLOR_CODE.ERP_ERROR,
+                                          },
+                                        ]}
+                                      >
+                                        -
+                                      </Text>
+                                      <Text
+                                        style={[
+                                          styles.labelText,
+                                          {
+                                            color: ERP_COLOR_CODE.ERP_ERROR,
+                                          },
+                                        ]}
+                                      >
+                                        Check Out
+                                      </Text>
+                                    </TouchableOpacity>
+                                  </View>
+                                </>
+                              )}
+                            {/* {attendance?.intime && (
                             <View
                               style={{
                                 // backgroundColor: "#f5f5f5",
@@ -2573,320 +2587,322 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                               </View>
                             </View>
                           )} */}
-                          {user?.company_code
-                            ?.toLowerCase()
-                            ?.includes("deverp") &&
-                            attendance?.intime && (
-                              <>
-                                <View
-                                  style={{
-                                    marginTop: 4,
-                                    marginBottom: 4,
-                                    backgroundColor:
-                                      theme === "dark" ? "gray" : "#f5f5f5",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    padding: 8,
-                                    borderRadius: 4,
-                                    alignItems: "center",
-                                    marginHorizontal: 8,
-                                  }}
-                                >
+                            {user?.company_code
+                              ?.toLowerCase()
+                              ?.includes("deverp") &&
+                              attendance?.intime && (
+                                <>
                                   <View
                                     style={{
-                                      justifyContent: "center",
-                                      alignContent: "center",
-                                      alignItems: "center",
+                                      marginTop: 4,
+                                      marginBottom: 4,
+                                      backgroundColor:
+                                        theme === "dark" ? "gray" : "#f5f5f5",
                                       flexDirection: "row",
-                                      gap: 4,
-                                    }}
-                                  >
-                                    <MaterialIcons
-                                      size={14}
-                                      color={
-                                        theme === "dark" ? "white" : "gray"
-                                      }
-                                      name="dashboard"
-                                    />
-                                    <Text
-                                      style={{
-                                        color:
-                                          theme === "dark" ? "white" : "black",
-                                        fontWeight: "600",
-                                      }}
-                                    >
-                                      Summary
-                                    </Text>
-                                  </View>
-
-                                  <TouchableOpacity
-                                    onPress={() => {
-                                      navigation.navigate("MyAttendance", {
-                                        isFor: "MyAttendance",
-                                      });
-                                    }}
-                                    style={{
-                                      opacity: 0.6,
-                                      justifyContent: "center",
-                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                      padding: 8,
                                       borderRadius: 4,
+                                      alignItems: "center",
+                                      marginHorizontal: 8,
                                     }}
                                   >
-                                    <Text
+                                    <View
                                       style={{
-                                        color:
-                                          theme === "dark" ? "white" : "gray",
-                                        fontWeight: "600",
+                                        justifyContent: "center",
+                                        alignContent: "center",
+                                        alignItems: "center",
+                                        flexDirection: "row",
+                                        gap: 4,
                                       }}
                                     >
-                                      View all
-                                    </Text>
-                                  </TouchableOpacity>
-                                </View>
-                              </>
-                            )}
-
-                          {user?.company_code
-                            ?.toLowerCase()
-                            ?.includes("deverp") &&
-                            attendance?.intime && (
-                              <>
-                                <View style={styles.timeContainer}>
-                                  {/* Clock In */}
-                                  <View
-                                    style={[styles.timeItem, { width: "23%" }]}
-                                  >
-                                    <View
-                                      style={[
-                                        styles.iconTimeContainer,
-                                        {
-                                          backgroundColor:
-                                            theme === "dark"
-                                              ? "gray"
-                                              : "#f5f5f5",
-                                        },
-                                      ]}
-                                    >
                                       <MaterialIcons
-                                        name="co-present"
-                                        size={22}
+                                        size={14}
                                         color={
-                                          theme === "dark"
-                                            ? "white"
-                                            : ERP_COLOR_CODE.ERP_APP_COLOR
+                                          theme === "dark" ? "white" : "gray"
                                         }
+                                        name="dashboard"
                                       />
-                                    </View>
-                                    <Text
-                                      style={[
-                                        styles.timeText,
-                                        {
-                                          color: ERP_COLOR_CODE.ERP_APP_COLOR,
-                                        },
-                                      ]}
-                                    >
-                                      {present}
-                                    </Text>
-                                    <Text
-                                      style={[
-                                        styles.labelText,
-                                        {
-                                          color: ERP_COLOR_CODE.ERP_APP_COLOR,
-                                        },
-                                      ]}
-                                    >
-                                      Present
-                                    </Text>
-                                  </View>
-                                  <View
-                                    style={[
-                                      styles.timeItem,
-                                      {
-                                        width: "23%",
-                                      },
-                                    ]}
-                                  >
-                                    <View
-                                      style={[
-                                        styles.iconTimeContainer,
-                                        {
-                                          backgroundColor:
-                                            theme === "dark"
-                                              ? "gray"
-                                              : "#f5f5f5",
-                                        },
-                                      ]}
-                                    >
-                                      <MaterialIcons
-                                        name="access-time"
-                                        size={22}
-                                        color={
-                                          theme === "dark"
-                                            ? "white"
-                                            : ERP_COLOR_CODE.ERP_ERROR
-                                        }
-                                      />
-                                    </View>
-                                    <Text
-                                      style={[
-                                        styles.timeText,
-                                        {
+                                      <Text
+                                        style={{
                                           color:
+                                            theme === "dark" ? "white" : "black",
+                                          fontWeight: "600",
+                                        }}
+                                      >
+                                        Summary
+                                      </Text>
+                                    </View>
+
+                                    <TouchableOpacity
+                                      onPress={() => {
+                                        navigation.navigate("MyAttendance", {
+                                          isFor: "MyAttendance",
+                                        });
+                                      }}
+                                      style={{
+                                        opacity: 0.6,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        borderRadius: 4,
+                                      }}
+                                    >
+                                      <Text
+                                        style={{
+                                          color:
+                                            theme === "dark" ? "white" : "gray",
+                                          fontWeight: "600",
+                                        }}
+                                      >
+                                        View all
+                                      </Text>
+                                    </TouchableOpacity>
+                                  </View>
+                                </>
+                              )}
+
+                            {user?.company_code
+                              ?.toLowerCase()
+                              ?.includes("deverp") &&
+                              attendance?.intime && (
+                                <>
+                                  <View style={styles.timeContainer}>
+                                    {/* Clock In */}
+                                    <View
+                                      style={[styles.timeItem, { width: "23%" }]}
+                                    >
+                                      <View
+                                        style={[
+                                          styles.iconTimeContainer,
+                                          {
+                                            backgroundColor:
+                                              theme === "dark"
+                                                ? "gray"
+                                                : "#f5f5f5",
+                                          },
+                                        ]}
+                                      >
+                                        <MaterialIcons
+                                          name="co-present"
+                                          size={22}
+                                          color={
                                             theme === "dark"
                                               ? "white"
-                                              : ERP_COLOR_CODE.ERP_ERROR,
-                                        },
-                                      ]}
-                                    >
-                                      {leave}
-                                    </Text>
-                                    <Text
-                                      style={[
-                                        styles.labelText,
-                                        {
-                                          color: ERP_COLOR_CODE.ERP_ERROR,
-                                        },
-                                      ]}
-                                    >
-                                      Absents
-                                    </Text>
-                                  </View>
-                                  {/* Clock Out */}
-                                  <TouchableOpacity
-                                    style={[
-                                      styles.timeItem,
-                                      {
-                                        width: "23%",
-                                      },
-                                    ]}
-                                  >
+                                              : ERP_COLOR_CODE.ERP_APP_COLOR
+                                          }
+                                        />
+                                      </View>
+                                      <Text
+                                        style={[
+                                          styles.timeText,
+                                          {
+                                            color: ERP_COLOR_CODE.ERP_APP_COLOR,
+                                          },
+                                        ]}
+                                      >
+                                        {present}
+                                      </Text>
+                                      <Text
+                                        style={[
+                                          styles.labelText,
+                                          {
+                                            color: ERP_COLOR_CODE.ERP_APP_COLOR,
+                                          },
+                                        ]}
+                                      >
+                                        Present
+                                      </Text>
+                                    </View>
                                     <View
                                       style={[
-                                        styles.iconTimeContainer,
+                                        styles.timeItem,
                                         {
-                                          backgroundColor:
+                                          width: "23%",
+                                        },
+                                      ]}
+                                    >
+                                      <View
+                                        style={[
+                                          styles.iconTimeContainer,
+                                          {
+                                            backgroundColor:
+                                              theme === "dark"
+                                                ? "gray"
+                                                : "#f5f5f5",
+                                          },
+                                        ]}
+                                      >
+                                        <MaterialIcons
+                                          name="access-time"
+                                          size={22}
+                                          color={
                                             theme === "dark"
-                                              ? "gray"
-                                              : "#f5f5f5",
-                                        },
-                                      ]}
-                                    >
-                                      <MaterialIcons
-                                        name="access-alarm"
-                                        size={22}
-                                        color={
-                                          theme === "dark"
-                                            ? "white"
-                                            : ERP_COLOR_CODE.ERP_ERROR
-                                        }
-                                      />
+                                              ? "white"
+                                              : ERP_COLOR_CODE.ERP_ERROR
+                                          }
+                                        />
+                                      </View>
+                                      <Text
+                                        style={[
+                                          styles.timeText,
+                                          {
+                                            color:
+                                              theme === "dark"
+                                                ? "white"
+                                                : ERP_COLOR_CODE.ERP_ERROR,
+                                          },
+                                        ]}
+                                      >
+                                        {leave}
+                                      </Text>
+                                      <Text
+                                        style={[
+                                          styles.labelText,
+                                          {
+                                            color: ERP_COLOR_CODE.ERP_ERROR,
+                                          },
+                                        ]}
+                                      >
+                                        Absents
+                                      </Text>
                                     </View>
-                                    <Text
+                                    {/* Clock Out */}
+                                    <TouchableOpacity
                                       style={[
-                                        styles.timeText,
+                                        styles.timeItem,
                                         {
-                                          color: ERP_COLOR_CODE.ERP_ERROR,
+                                          width: "23%",
                                         },
                                       ]}
                                     >
-                                      {late}
-                                    </Text>
-                                    <Text
-                                      style={[
-                                        styles.labelText,
-                                        {
-                                          color: ERP_COLOR_CODE.ERP_ERROR,
-                                        },
-                                      ]}
-                                    >
-                                      Late
-                                    </Text>
-                                  </TouchableOpacity>
+                                      <View
+                                        style={[
+                                          styles.iconTimeContainer,
+                                          {
+                                            backgroundColor:
+                                              theme === "dark"
+                                                ? "gray"
+                                                : "#f5f5f5",
+                                          },
+                                        ]}
+                                      >
+                                        <MaterialIcons
+                                          name="access-alarm"
+                                          size={22}
+                                          color={
+                                            theme === "dark"
+                                              ? "white"
+                                              : ERP_COLOR_CODE.ERP_ERROR
+                                          }
+                                        />
+                                      </View>
+                                      <Text
+                                        style={[
+                                          styles.timeText,
+                                          {
+                                            color: ERP_COLOR_CODE.ERP_ERROR,
+                                          },
+                                        ]}
+                                      >
+                                        {late}
+                                      </Text>
+                                      <Text
+                                        style={[
+                                          styles.labelText,
+                                          {
+                                            color: ERP_COLOR_CODE.ERP_ERROR,
+                                          },
+                                        ]}
+                                      >
+                                        Late
+                                      </Text>
+                                    </TouchableOpacity>
 
-                                  <View
-                                    style={[
-                                      styles.timeItem,
-                                      {
-                                        width: "23%",
-                                      },
-                                    ]}
-                                  >
                                     <View
                                       style={[
-                                        styles.iconTimeContainer,
+                                        styles.timeItem,
                                         {
-                                          backgroundColor:
-                                            theme === "dark"
-                                              ? "gray"
-                                              : "#f5f5f5",
+                                          width: "23%",
                                         },
                                       ]}
                                     >
-                                      <MaterialIcons
-                                        name="access-time"
-                                        size={22}
-                                        color={
-                                          theme === "dark" ? "white" : "#ff9800"
-                                        }
-                                      />
+                                      <View
+                                        style={[
+                                          styles.iconTimeContainer,
+                                          {
+                                            backgroundColor:
+                                              theme === "dark"
+                                                ? "gray"
+                                                : "#f5f5f5",
+                                          },
+                                        ]}
+                                      >
+                                        <MaterialIcons
+                                          name="access-time"
+                                          size={22}
+                                          color={
+                                            theme === "dark" ? "white" : "#ff9800"
+                                          }
+                                        />
+                                      </View>
+                                      <Text
+                                        style={[
+                                          styles.timeText,
+                                          {
+                                            color: "#ff9800",
+                                          },
+                                        ]}
+                                      >
+                                        {lessHours}
+                                      </Text>
+                                      <Text
+                                        style={[
+                                          styles.labelText,
+                                          {
+                                            color: "#ff9800",
+                                          },
+                                        ]}
+                                      >
+                                        Less-Hr
+                                      </Text>
                                     </View>
-                                    <Text
-                                      style={[
-                                        styles.timeText,
-                                        {
-                                          color: "#ff9800",
-                                        },
-                                      ]}
-                                    >
-                                      {lessHours}
-                                    </Text>
-                                    <Text
-                                      style={[
-                                        styles.labelText,
-                                        {
-                                          color: "#ff9800",
-                                        },
-                                      ]}
-                                    >
-                                      Less-Hr
-                                    </Text>
                                   </View>
-                                </View>
-                              </>
-                            )}
+                                </>
+                              )}
+                          </View>
+                        )}
+                      />
+
+                      {
+                        user?.company_code?.toLowerCase()?.includes("oeuvre01") && <View style={{
+                          height: 350, width: '100%',
+                          alignContent: 'center',
+                          alignItems: 'center',
+                          alignSelf: 'center',
+                          justifyContent: "center"
+                        }}>
+                          <Image source={ERP_ICON.APP_LOGO} style={[styles.logo,
+                          {
+                            height: 140,
+                            width: 140, marginBottom: 12
+                          }
+                          ]} resizeMode="contain" />
+                          <Text style={{
+                            fontSize: 30,
+                            fontFamily: "Handlee-Regular",
+                            color: theme === 'dark' ? 'white' : 'black'
+                          }}>Welcome</Text>
                         </View>
-                      )}
-                    />
+                      }
 
-                    {
-                      user?.company_code?.toLowerCase()?.includes("oeuvre01") && <View style={{
-                        height: 350, width: '100%',
-                        alignContent: 'center',
-                        alignItems: 'center',
-                        alignSelf: 'center',
-                        justifyContent: "center"
-                      }}>
-                        <Image source={ERP_ICON.APP_LOGO} style={[styles.logo,
-                        {
-                          height: 140,
-                          width: 140, marginBottom: 12
-                        }
-                        ]} resizeMode="contain" />
-                        <Text style={{
-                          fontSize: 30,
-                          fontFamily: "Handlee-Regular",
-                          color: theme === 'dark' ? 'white' : 'black'
-                        }}>Welcome</Text>
-                      </View>
-                    }
+                    </>
+                  </View>
+                )}
+              </>
+            );
+          }}
+        />
 
-                  </>
-                </View>
-              )}
-            </>
-          );
-        }}
-      />
+      }
 
       {appBottomMenuList.length === 0 && alertVisible && (
         <CustomAlert

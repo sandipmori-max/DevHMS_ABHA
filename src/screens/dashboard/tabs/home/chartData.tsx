@@ -40,7 +40,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
           borderWidth: 0.5,
           borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
           marginBottom: 8,
-          marginRight: 12,
+          marginRight: 12, 
         }}
       >
         <View
@@ -125,7 +125,58 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                     showsVerticalScrollIndicator={false}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item }) => (
-                      <View
+                      <>
+                      {
+                        firstList.length <= 3 ? 
+                        
+                        <>
+ <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          marginBottom: 8,
+                          backgroundColor: item.color + '20',
+                          padding: 6,
+                          borderRadius: 4,
+                          width: isLandscape ? "90%" : "80%",
+                        }}
+                      >
+
+                          <View
+                          style={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: 4,
+                            backgroundColor: item.color,
+                            marginRight: 6,
+                            flexDirection: "row",
+                            gap: 4,
+                          }}
+                        />
+                         
+                        <TranslatedText
+                          numberOfLines={1}
+                          style={{  
+                            maxWidth: 110, 
+                          }}
+                          text={item.text}
+                        ></TranslatedText>
+                         <TranslatedText
+                          style={{
+                            marginLeft: 8,
+                            right: 0,
+                            fontSize: 14,
+                            color: item.color,
+                            fontWeight: "800",
+                            alignSelf: "flex-end",
+                          }}
+                          numberOfLines={1}
+                          text={` ${item.value}`}
+                        ></TranslatedText>
+                      </View> 
+                       
+                        </>
+                       : <View
                         style={{
                           flexDirection: "row",
                           alignItems: "center",
@@ -165,9 +216,11 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                           text={`:- ${item.value}`}
                         ></TranslatedText>
                       </View>
+                      }
+                      </>
                     )}
                   />
-                  {
+                  { firstList.length > 3 &&
                     <TouchableOpacity
                       onPress={() => {
                         setIsVisibleFullMode(true);
