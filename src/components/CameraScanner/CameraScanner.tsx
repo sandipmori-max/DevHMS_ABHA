@@ -6,7 +6,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
 } from "react-native";
 
 import { styles } from "./CameraScanner.styles";
@@ -29,14 +28,16 @@ export const CameraScanner = ({
   setIsCameraShown,
   onReadCode,
 }: ICameraScannerProps) => {
+
   const { t } = useTranslation();
   const device = useCameraDevice("back");
   const camera = useRef<Camera>(null);
   const isFocused = useIsFocused();
+  const { appState } = useAppStateListener();
+
   const [isCameraInitialized, setIsCameraInitialized] = useState(isIos);
   const [isActive, setIsActive] = useState(isIos);
   const [flash, setFlash] = useState<"on" | "off">(isIos ? "off" : "on");
-  const { appState } = useAppStateListener();
   const [codeScanned, setCodeScanned] = useState("");
 
   useEffect(() => {
@@ -46,7 +47,7 @@ export const CameraScanner = ({
   }, [codeScanned, onReadCode]);
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
+    let timeout: any;
 
     if (isCameraInitialized) {
       timeout = setTimeout(() => {

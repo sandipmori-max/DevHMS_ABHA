@@ -7,8 +7,6 @@ import {
   Text,
   TouchableOpacity,
   BackHandler,
-  StyleSheet,
-  useWindowDimensions,
 } from "react-native";
 
 import { styles } from "./CameraScanner.styles";
@@ -34,13 +32,14 @@ export const BarCodeCameraScanner = ({
   setIsCameraShown,
   onReadCode,
 }: ICameraScannerProps) => {
+
   const { t } = useTranslation();
   const device = useCameraDevice("back");
   const camera = useRef<Camera>(null);
+
   const isFocused = useIsFocused();
   const { appState } = useAppStateListener();
-  const { height, width } = useWindowDimensions();
-  const isLandscape = width > height;
+
   const [isCameraInitialized, setIsCameraInitialized] = useState(isIos);
   const [isActive, setIsActive] = useState(isIos);
   const [flash, setFlash] = useState<"on" | "off">(isIos ? "off" : "on");
@@ -55,7 +54,7 @@ export const BarCodeCameraScanner = ({
 
   // CAMERA INIT HANDLER
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
+    let timeout: any;
 
     if (isCameraInitialized) {
       timeout = setTimeout(() => {

@@ -130,7 +130,11 @@ const LoginForm: React.FC<LoginFormProps> = ({
         });
       }
     } catch(e) {
-
+      showAlert({
+          title: t('test4'),
+          message: e?.toString() || t('auth.loginFailed'),
+          type: 'error',
+        });
       console.log("error --------------------- ", e)
     }
   };

@@ -20,11 +20,13 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
   visible = true,
   isShowTop = true,
 }) => {
+
   const theme = useAppSelector((state) => state?.theme.mode);
 
   const opacity = useRef(new Animated.Value(0)).current;
   const imageTranslateX = useRef(new Animated.Value(-15)).current;
   const textTranslateX = useRef(new Animated.Value(15)).current;
+  
   const [shouldRender, setShouldRender] = useState(false);
 
   useFocusEffect(

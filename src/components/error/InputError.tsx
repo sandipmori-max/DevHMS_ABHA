@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from "react";
 import { ERP_COLOR_CODE } from "../../utils/constants";
 
 const InputError = ({ error }: any) => {
+
   const errorAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -16,6 +17,7 @@ const InputError = ({ error }: any) => {
       }).start();
     }
   }, [error]);
+  
   return (
     <View>
       {!!error && (

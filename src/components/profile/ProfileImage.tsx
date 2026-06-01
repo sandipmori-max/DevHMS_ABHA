@@ -5,26 +5,34 @@ import { ERP_COLOR_CODE } from '../../utils/constants';
 import TranslatedText from '../../screens/dashboard/tabs/home/TranslatedText';
 
 const ProfileImage = memo(({ userId, baseLink, userName }: any) => {
+
   const [loading, setLoading] = useState(true);
 
   if (!userId) return null;
-  let initials
+
+  let initials;
+
   const parts = userName.trim().split(" ");
+
   initials = parts[0][0];
+
   if (parts.length > 1) {
     initials += parts[1][0];
   }
+
   return (
-    <View style={{ width: 130, height: 120,
-    backgroundColor: 'lightgray',
-    alignContent:'center',
-    alignItems:'center',
-    alignSelf:'center',
-    marginBottom: 18, borderWidth: 1, borderColor: 'black', borderRadius: 12 }}>
-      <TranslatedText 
-      numberOfLines={1}
-      text={initials.toUpperCase()}
-      style={styles.smLabel}></TranslatedText>
+    <View style={{
+      width: 130, height: 120,
+      backgroundColor: 'lightgray',
+      alignContent: 'center',
+      alignItems: 'center',
+      alignSelf: 'center',
+      marginBottom: 18, borderWidth: 1, borderColor: 'black', borderRadius: 12
+    }}>
+      <TranslatedText
+        numberOfLines={1}
+        text={initials.toUpperCase()}
+        style={styles.smLabel}></TranslatedText>
 
       <FastImage
         source={{

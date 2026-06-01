@@ -14,6 +14,7 @@ const ERPIcon: React.FC<ERPIconProps> = ({
   color = ERP_COLOR_CODE.ERP_ICON,
   isLoading = false,
 }) => {
+  
   return (
     <TouchableOpacity
       onPress={onPress}

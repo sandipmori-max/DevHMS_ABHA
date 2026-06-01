@@ -18,7 +18,9 @@ const BottomSheet = ({
   children,
   heightRatio = 0.6,
 }: BottomSheetProps) => {
+
   const translateY = useRef(new Animated.Value(screenHeight)).current;
+  
   const [contentHeight, setContentHeight] = useState(
     screenHeight * heightRatio,
   );

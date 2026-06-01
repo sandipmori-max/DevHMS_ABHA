@@ -10,14 +10,18 @@ import { useBaseLink } from "../../hooks/useBaseLink";
 import TypingDots from "../../screens/dashboard/tabs/home/TypingDots";
 
 const FullViewLoader = ({ isShowTop = true }) => {
+
   const { t } = useTranslation();
+
   const theme = useAppSelector((state) => state?.theme.mode);
+
   const baseLink = useBaseLink();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const translateAnim = useRef(new Animated.Value(20)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const translateY = useRef(new Animated.Value(0)).current;
+  const textFade = useRef(new Animated.Value(1)).current;
 
   const messages = [
     t("test7"),
@@ -29,7 +33,6 @@ const FullViewLoader = ({ isShowTop = true }) => {
   ];
 
   const [currentIndex, setCurrentIndex] = React.useState(0);
-  const textFade = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     const interval = setInterval(() => {

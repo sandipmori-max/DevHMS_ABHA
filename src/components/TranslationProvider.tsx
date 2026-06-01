@@ -5,6 +5,7 @@ import i18n from 'i18next';
 import '../i18n';
 
 const withTranslation = (WrappedComponent: React.ComponentType<any>) => {
+  
   const WithTranslation = (props: any) => {
     return (
       <I18nextProvider i18n={i18n}>

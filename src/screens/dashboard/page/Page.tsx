@@ -123,7 +123,8 @@ export async function requestLocationPermissions(): Promise<
   return "granted";
 }
 
-const PageScreen = ({isFromForceLeave}) => {
+const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
+  console.log("isFromForceLeave, pageUrl", isFromForceLeave, pageUrl)
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const isIpad =
@@ -499,7 +500,7 @@ const PageScreen = ({isFromForceLeave}) => {
           setLoader(true);
           await dispatch(
             savePageThunk({
-              page: isFromForceLeave ? "LeaveApp" :  url,
+              page: isFromForceLeave ? pageUrl :  url,
               id,
               data: { ...submitValues },
             }),
@@ -581,7 +582,7 @@ const PageScreen = ({isFromForceLeave}) => {
               fontWeight: "700",
               color: theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_WHITE,
             }}
-            text={isFromForceLeave ? 'Attendance' : title || pageTitle || "Details"}
+            text={isFromForceLeave ? "Attendance" : title || pageTitle || "Details"}
           ></TranslatedText>
 
           <TranslatedText
@@ -651,7 +652,7 @@ const PageScreen = ({isFromForceLeave}) => {
       setError(null);
       setLoadingPageId(isFromNew ? "0" : id);
       const parsed = await dispatch(
-        getERPPageThunk({ page: isFromForceLeave ? "LeaveApp" : url, id:  isFromNew || isFromForceLeave ? 0 : id }),
+        getERPPageThunk({ page: isFromForceLeave ? pageUrl : url, id:  isFromNew || isFromForceLeave ? 0 : id }),
       ).unwrap();
       console.log("script---++++++------------------++++++++++---", parsed);
       if (parsed?.script) {
@@ -696,7 +697,7 @@ const PageScreen = ({isFromForceLeave}) => {
         setActionLoader(false);
       }, 10);
     }
-  }, [dispatch, id, url]);
+  }, [dispatch, id, url, pageUrl]);
 
   useEffect(() => {
     fetchPageData();
@@ -2139,7 +2140,7 @@ const PageScreen = ({isFromForceLeave}) => {
               )} 
 
               {
-                user?.company_code?.toLowerCase()?.includes("oeuvre01") && <TouchableOpacity
+                (user?.company_code?.toLowerCase()?.includes("oeuvre01") || isFromForceLeave) && <TouchableOpacity
                   style={{
                     height: 46,
                     width: '100%',

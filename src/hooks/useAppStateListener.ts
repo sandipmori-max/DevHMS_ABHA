@@ -5,9 +5,11 @@ export const useAppStateListener = (
   onForeground?: () => void,
   onBackground?: () => void,
 ) => {
+  
   const appStateRef = useRef(AppState.currentState);
   const onForegroundRef = useRef(onForeground);
   const onBackgroundRef = useRef(onBackground);
+
   onForegroundRef.current = onForeground;
   onBackgroundRef.current = onBackground;
 

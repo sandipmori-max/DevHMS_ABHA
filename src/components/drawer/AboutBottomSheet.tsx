@@ -17,9 +17,12 @@ import { ERP_ICON } from "../../assets";
 import { useAppSelector } from "../../store/hooks";
 
 const AboutBottomSheet = ({ visible, onClose }: any) => {
+
   const translateY = useRef(new Animated.Value(400)).current;
+
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
+  
   const theme = useAppSelector((state) => state?.theme.mode);
 
   useEffect(() => {

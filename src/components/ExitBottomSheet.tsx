@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 
 const ExitBottomSheet = () => {
+  
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {

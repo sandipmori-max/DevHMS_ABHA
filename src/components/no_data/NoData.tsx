@@ -11,19 +11,25 @@ import { ERP_COLOR_CODE } from "../../utils/constants";
 import DeviceInfo from "react-native-device-info";
 
 const NoData = ({ isShowTop = true, text }: any) => {
-  const { t } = useTranslation();
-  const theme = useAppSelector((state) => state?.theme.mode);
-  const { height, width } = useWindowDimensions();
-  const isLandscape = width > height;
-  const opacity = useRef(new Animated.Value(0)).current;
 
+  const { t } = useTranslation();
+
+  const theme = useAppSelector((state) => state?.theme.mode);
+
+  const { height, width } = useWindowDimensions();
+
+  const isLandscape = width > height;
+
+  const opacity = useRef(new Animated.Value(0)).current;
   const imageTranslateY = useRef(new Animated.Value(20)).current;
   const titleTranslateX = useRef(new Animated.Value(-20)).current;
   const subtitleTranslateX = useRef(new Animated.Value(20)).current;
 
   const [shouldRender, setShouldRender] = useState(false);
+
   const isIpad =
     (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
+    
   useFocusEffect(
     useCallback(() => {
       opacity.setValue(0);

@@ -16,12 +16,18 @@ const { height } = Dimensions.get("window");
 const MODAL_HEIGHT = height * 0.8;
 
 const ImageBottomSheetModal = ({ visible, onClose, imageUrl }: any) => {
+
   const translateY = useRef(new Animated.Value(MODAL_HEIGHT)).current;
+
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
+
   const theme = useAppSelector((state) => state?.theme.mode);
+  
   const { height, width } = useWindowDimensions();
+
   const isLandscape = width > height;
+
   useEffect(() => {
     if (visible) {
       setShowModal(true);

@@ -988,6 +988,22 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                         text={item.name}
                       ></TranslatedText>
                     </View>
+
+                    {/* <View style={{ 
+                      marginRight: 12,
+                      height: 26, width: 26,
+                      borderRadius: 12,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: theme === "dark" ? "gray" : "#f5f5f5" }} >
+                          <Text style={{
+                            color: theme === "dark" ? "white" : "black",
+                             fontSize: 12,
+                             fontWeight: "600"
+                          }}>
+                            9
+                          </Text>
+                    </View> */}
                   </TouchableOpacity>
                 </Animated.View>
               );

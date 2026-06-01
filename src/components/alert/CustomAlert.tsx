@@ -46,8 +46,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   const alertStyles = getAlertStyles(type);
   const gifSource = getGifSource(type);
   const theme = useAppSelector((state) => state?.theme.mode);
-  const { height, width } = useWindowDimensions();  
-  const isLandscape = width > height;
+  const { height, width } = useWindowDimensions();
+
   const [remarks, setRemarks] = useState("");
   const [error, setError] = useState("");
 
@@ -55,6 +55,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   const headerAnim = useRef(new Animated.Value(0)).current;
   const contentAnim = useRef(new Animated.Value(0)).current;
   const buttonAnim = useRef(new Animated.Value(0)).current;
+
+  const isLandscape = width > height;
 
   useEffect(() => {
     if (visible) {
@@ -134,16 +136,16 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
       }}
       supportedOrientations={["portrait", "landscape"]}
     >
-      <View style={[styles.overlay,isLandscape && {
-        alignContent:'center',
-        alignItems:'center'
+      <View style={[styles.overlay, isLandscape && {
+        alignContent: 'center',
+        alignItems: 'center'
       }]}>
         <Animated.View
           style={[
             styles.bottomSheet,
             {
-          width: isLandscape ? '50%' : '100%'
-        },
+              width: isLandscape ? '50%' : '100%'
+            },
             alertStyles.container,
             theme === "dark" && {
               backgroundColor: "black",
@@ -161,7 +163,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
                 },
               ],
             },
-             
+
           ]}
         >
           {/* Header */}
@@ -199,11 +201,11 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
             </View>
           </Animated.View>
 
-              {
-                isForLoading && <View style={{marginVertical: 22}}>
-                <ActivityIndicator size={'large'} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
-                </View>
-              }
+          {
+            isForLoading && <View style={{ marginVertical: 22 }}>
+              <ActivityIndicator size={'large'} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
+            </View>
+          }
           {/* GIF */}
           {!isForLoading && !isFromButtonList && (
             <Animated.View
@@ -222,51 +224,51 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
 
           {/* Message / Input */}
           {
-            !isForLoading &&  <Animated.View style={{ opacity: contentAnim }}>
-            {isFromButtonList ? (
-              <View style={{ width: "100%" }}>
+            !isForLoading && <Animated.View style={{ opacity: contentAnim }}>
+              {isFromButtonList ? (
+                <View style={{ width: "100%" }}>
+                  <TranslatedText
+                    style={[
+                      alertStyles.message,
+                      { textAlign: "left", fontSize: 14, fontWeight: "800" },
+                    ]}
+                    numberOfLines={3}
+                    text={message || ""}
+                  ></TranslatedText>
+
+                  <ERPTextInput
+                    label={t("test11")}
+                    placeholder={t("test12")}
+                    placeholderTextColor={ERP_COLOR_CODE.ERP_999}
+                    autoCapitalize="none"
+                    onChangeText={handleChangedRemarks}
+                    value={remarks}
+                    labelStyle={[
+                      styles.inputLabel,
+                      { fontWeight: "400", fontSize: 12 },
+                    ]}
+                    inputStyle={[styles.input]}
+                  />
+
+                  {error ? (
+                    <TranslatedText
+                      numberOfLines={3}
+                      text={error}
+                      style={{ color: ERP_COLOR_CODE.ERP_ERROR }}
+                    ></TranslatedText>
+                  ) : null}
+                </View>
+              ) : (
                 <TranslatedText
-                  style={[
-                    alertStyles.message,
-                    { textAlign: "left", fontSize: 14, fontWeight: "800" },
-                  ]}
                   numberOfLines={3}
                   text={message || ""}
+                  style={alertStyles.message}
                 ></TranslatedText>
-
-                <ERPTextInput
-                  label={t("test11")}
-                  placeholder={t("test12")}
-                  placeholderTextColor={ERP_COLOR_CODE.ERP_999}
-                  autoCapitalize="none"
-                  onChangeText={handleChangedRemarks}
-                  value={remarks}
-                  labelStyle={[
-                    styles.inputLabel,
-                    { fontWeight: "400", fontSize: 12 },
-                  ]}
-                  inputStyle={[styles.input]}
-                />
-
-                {error ? (
-                  <TranslatedText
-                    numberOfLines={3}
-                    text={error}
-                    style={{ color: ERP_COLOR_CODE.ERP_ERROR }}
-                  ></TranslatedText>
-                ) : null}
-              </View>
-            ) : (
-              <TranslatedText
-                numberOfLines={3}
-                text={message || ""}
-                style={alertStyles.message}
-              ></TranslatedText>
-            )}
-          </Animated.View>
+              )}
+            </Animated.View>
 
           }
-         
+
           {/* Buttons */}
           {!isForLoading && isBottomButtonVisible && (
             <Animated.View

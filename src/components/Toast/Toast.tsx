@@ -11,6 +11,7 @@ const Toast = ({
   tbackgroundColor,
   textColor,
 }: any) => {
+  
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(-80)).current;
   const scale = useRef(new Animated.Value(0.9)).current;

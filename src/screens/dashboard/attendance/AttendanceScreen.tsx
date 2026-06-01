@@ -42,7 +42,7 @@ import PageScreen from "../page/Page";
 
 const AttendanceScreen = () => {
   const route = useRoute();
-  const { isFor, isFromDashboard } = route?.params || "";
+  const { isFor, isFromDashboard, isFromBreak } = route?.params || "";
   const navigation = useNavigation<any>();
   const [isListVisible, setIsListVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -63,7 +63,7 @@ const AttendanceScreen = () => {
   const [refresh, setRefresh] = useState(false);
   const [actionLoader, setActionLoader] = useState(false);
   const [error, setError] = useState<any>("");
-  const [value, setValue] = useState('attendance');
+  const [value, setValue] = useState(isFromBreak ? 'break' : 'attendance');
 
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
@@ -228,6 +228,42 @@ const AttendanceScreen = () => {
       </View>
     );
   }
+
+  const renderContent = () => {
+    switch (value) {
+      case "attendance":
+        return (
+          <AttendanceForm
+            setBlockAction={setBlockAction}
+            resData={resData}
+            isFromDashboard={isFromDashboard || false}
+          />
+        );
+
+      case "leave":
+        return (
+          <PageScreen
+            isFromForceLeave={true}
+            pageUrl="LeaveApp"
+          />
+        );
+
+      case "break":
+        return (
+          <PageScreen
+            isFromForceLeave={true}
+            pageUrl="BreakApp"
+          />
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  // useEffect(() => {
+  //   renderContent();
+  // }, [value]);
 
   return (
     <TouchableWithoutFeedback
@@ -504,24 +540,20 @@ const AttendanceScreen = () => {
             >
                <>
                {
-                !user?.company_code?.toLowerCase()?.includes("oeuvre01") ? <>
-                <AttendanceForm
+                (user?.company_code?.toLowerCase()?.includes("oeuvre01") || user?.company_code?.toLowerCase()?.includes("deverp")) ? <>
+                
+                 <SquareSwitch value={value} onChange={setValue} />
+                  {
+                    renderContent()
+                  }
+                
+                 </> : <>
+                
+               <AttendanceForm
                       setBlockAction={setBlockAction}
                       resData={resData}
                       isFromDashboard={isFromDashboard || false}
                     /> 
-                 </> : <>
-                
-                <SquareSwitch value={value} onChange={setValue} />
-                  {
-                    value === 'attendance' ? <AttendanceForm
-                      setBlockAction={setBlockAction}
-                      resData={resData}
-                      isFromDashboard={isFromDashboard || false}
-                    /> : <PageScreen
-                          isFromForceLeave={true}
-                    />
-                  }
                 </>
                }   
                 </>

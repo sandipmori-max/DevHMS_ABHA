@@ -13,6 +13,7 @@ const AnimatedLoader = ({
   text = "Loading...",
   imageUrl = "https://kcsanand.deverp.net/fileupload/1/InvoiceByConfig/1/logo.jpg",
 }) => {
+
   const [shouldRender, setShouldRender] = useState(isVisible);
 
   // 🔥 Animations
@@ -80,11 +81,6 @@ const AnimatedLoader = ({
 
   if (!shouldRender) return null;
 
-  const rotateInterpolate = rotate.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
-  });
-
   return (
     <Animated.View style={[styles.overlay, { opacity }]}>
       <Animated.View
@@ -99,7 +95,6 @@ const AnimatedLoader = ({
             height:100,
             width:100,
             backgroundColor:'gray',
-            // transform: [{ rotate: rotateInterpolate }] 
         }}
             
             >

@@ -59,6 +59,9 @@ export const styles = StyleSheet.create({
      fontSize: 16,
   },
   drawerItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     borderRadius: 8,
     marginHorizontal: 8,
     marginVertical: 2,

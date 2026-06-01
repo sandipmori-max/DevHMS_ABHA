@@ -3,6 +3,7 @@ import { getErrorMessage, retryApiCall } from '../services/api/utils';
 import { UseApiOptions, UseApiState } from './type';
 
 export const useApi = <T = any>(options: UseApiOptions = {}) => {
+  
   const { retryCount = 3, retryDelay = 1000, onSuccess, onError, initialData = null } = options;
 
   const [state, setState] = useState<UseApiState<T>>({

@@ -19,6 +19,7 @@ const ERPButton: React.FC<ERPButtonProps> = ({
   
    
   const pressAnim = useRef(new Animated.Value(1)).current;
+  
   const onPressIn = () => {
     Animated.spring(pressAnim, {
       toValue: 0.86,

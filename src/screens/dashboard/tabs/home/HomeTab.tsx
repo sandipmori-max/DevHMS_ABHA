@@ -2560,7 +2560,15 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                         Check In
                                       </Text>
                                     </View>
-                                    <View style={styles.timeItem}>
+                                    <TouchableOpacity 
+                                    disabled={workingTime !== "00:00:00"}
+                                    onPress={() => {
+                                        navigation.navigate("Attendance", {
+                                          isFor: "Attendance",
+                                          isFromBreak: true,
+                                        });
+                                      }}
+                                    style={styles.timeItem}>
                                       <View
                                         style={[
                                           styles.iconTimeContainer,
@@ -2605,7 +2613,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                       >
                                         Working Hrs
                                       </Text>
-                                    </View>
+                                    </TouchableOpacity>
                                     {/* Clock Out */}
                                     <TouchableOpacity
                                       onPress={() => {
