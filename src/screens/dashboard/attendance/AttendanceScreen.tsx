@@ -12,7 +12,6 @@ import {
   Alert,
   TouchableWithoutFeedback,
   Keyboard,
-  ScrollView,
   Dimensions,
   Modal,
   ImageBackground,
@@ -20,8 +19,6 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import {
-  RouteProp,
-  useFocusEffect,
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
@@ -40,6 +37,8 @@ import useTranslations from "../../../hooks/useTranslations";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ERP_GIF } from "../../../assets";
 import TranslatedText from "../tabs/home/TranslatedText";
+import SquareSwitch from "./components/SquareSwitch";
+import PageScreen from "../page/Page";
 
 const AttendanceScreen = () => {
   const route = useRoute();
@@ -48,6 +47,9 @@ const AttendanceScreen = () => {
   const [isListVisible, setIsListVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useAppDispatch();
+    const { user, } = useAppSelector(
+      (state) => state.auth,
+    );
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
   const { height, width } = useWindowDimensions();
@@ -57,11 +59,11 @@ const AttendanceScreen = () => {
   const [showPicker, setShowPicker] = useState(false);
   const [showDateFilter, setShowDateFilter] = useState(false);
 
-  const [showFilter, setShowFilter] = useState(false);
   const [blockAction, setBlockAction] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [actionLoader, setActionLoader] = useState(false);
   const [error, setError] = useState<any>("");
+  const [value, setValue] = useState('attendance');
 
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
@@ -105,29 +107,20 @@ const AttendanceScreen = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: isFor === "MyAttendance" ? t("test25") : t("test26"),
+      title:  isFor === "MyAttendance" ? t("test25") : t("test26"),
       headerTitleAlign: "left",
       headerTitleStyle: {
         color: "#FFFFFF",
       },
       headerBackTitle: "",
-       headerStyle: {
+      headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-       },
+      },
       headerTintColor: "#fff",
       headerRight: () => (
         <>
-          {/* {isListVisible && (
-            <ERPIcon
-              name="filter-alt"
-              onPress={() => {
-                if (!blockAction) {
-                  setShowFilter(!showFilter);
-                }
-              }}
-            />
-          )} */}
+         
           {isListVisible && (
             <ERPIcon
               name="date-range"
@@ -151,20 +144,13 @@ const AttendanceScreen = () => {
     navigation,
     isListVisible,
     showPicker,
-    showFilter,
     blockAction,
     refresh,
     actionLoader,
     showDateFilter,
     theme,
+    value
   ]);
-
-  useFocusEffect(
-    useCallback(() => {
-      // NativeModules.OrientationModule.disableLandscape();
-      return () => {};
-    }, [navigation]),
-  );
 
   const checkAttendance = () => {
     setIsLoading(true);
@@ -242,6 +228,7 @@ const AttendanceScreen = () => {
       </View>
     );
   }
+
   return (
     <TouchableWithoutFeedback
       onPress={() => {
@@ -256,18 +243,19 @@ const AttendanceScreen = () => {
             backgroundColor: "white",
           },
           isListVisible &&
-            showDateFilter && {
-              backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-            },
+          showDateFilter && {
+            backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+          },
           theme === "dark" && { backgroundColor: "black" },
         ]}
       >
+
         {isListVisible && showDateFilter && (
           <View
             style={[
               styles.dateContainer,
               {
-                 backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
               },
               theme === "dark" && {
                 backgroundColor: "black",
@@ -351,123 +339,123 @@ const AttendanceScreen = () => {
           </View>
         )}
 
-
         {showDatePicker?.show && Platform.OS === "ios" && (
-              <Modal
-                transparent
-                animationType="slide"
-                supportedOrientations={["portrait", "landscape"]}
-                statusBarTranslucent
+          <Modal
+            transparent
+            animationType="slide"
+            supportedOrientations={["portrait", "landscape"]}
+            statusBarTranslucent
+          >
+            <View
+              style={[
+                styles.overlay,
+                isLandscape && {
+                  alignContent: "center",
+                  alignItems: "center",
+                  // justifyContent:'center'
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.sheet,
+                  theme === "dark" && {
+                    borderWidth: 1,
+                    borderColor: "white",
+                  },
+                  {
+                    width: isLandscape ? "40%" : "100%",
+                  },
+                ]}
               >
+                {/* Divider */}
+
                 <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    paddingHorizontal: 16,
+                    paddingVertical: 14,
+                  }}
+                >
+                  {/* Cancel */}
+                  <TouchableOpacity
+                    onPress={() => {
+                      setShowDatePicker(null);
+                    }}
+                  >
+                    <MaterialIcons name='close' size={24} color={ERP_COLOR_CODE.ERP_ERROR} />
+                  </TouchableOpacity>
+
+                  {/* Title */}
+                  <Text
+                    style={{
+                      color: theme === "dark" ? "white" : "black",
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                  >
+                    {t("text89")}
+                  </Text>
+
+                  {/* Done */}
+                  <TouchableOpacity
+                    onPress={() => {
+                      const formatted = formatDateForAPI(tempDate);
+
+                      if (showDatePicker.type === "from") {
+                        setFromDate(formatted);
+
+                      } else {
+                        setToDate(formatted);
+                      }
+                      setShowDatePicker(null);
+                    }}
+                  >
+                    <MaterialIcons name='done' size={24} color={ERP_COLOR_CODE.ERP_green} />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.divider} />
+
+                {/* Date Picker */}
+                <DateTimePicker
+                  value={
+                    showDatePicker.type === "from" && fromDate
+                      ? parseCustomDate(fromDate)
+                      : showDatePicker.type === "to" && toDate
+                        ? parseCustomDate(toDate)
+                        : new Date()
+                  }
+                  mode="date"
+                  display="spinner"
+                  is24Hour={false}
+                  onChange={(event, selectedDate) => {
+                    if (selectedDate) {
+                      setTempDate(selectedDate);
+                    }
+                  }}
                   style={[
-                    styles.overlay,
-                    isLandscape && {
-                      alignContent: "center",
-                      alignItems: "center",
-                      // justifyContent:'center'
+                    styles.picker,
+                    {
+                      backgroundColor: "white",
                     },
                   ]}
-                >
-                  <View
-                    style={[
-                      styles.sheet,
-                      theme === "dark" && {
-                        borderWidth: 1,
-                        borderColor: "white",
-                      },
-                      {
-                        width: isLandscape ? "40%" : "100%",
-                      },
-                    ]}
-                  >
-                    {/* Divider */}
-
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        paddingHorizontal: 16,
-                        paddingVertical: 14,
-                      }}
-                    >
-                      {/* Cancel */}
-                      <TouchableOpacity
-                        onPress={() => {
-                          setShowDatePicker(null);
-                        }}
-                      >
-                        <MaterialIcons  name='close' size={24} color={ERP_COLOR_CODE.ERP_ERROR} />
-                      </TouchableOpacity>
-
-                      {/* Title */}
-                      <Text
-                        style={{
-                          color: theme === "dark" ? "white" : "black",
-                          fontSize: 16,
-                          fontWeight: "600",
-                        }}
-                      >
-                        {t("text89")}
-                      </Text>
-
-                      {/* Done */}
-                      <TouchableOpacity
-                        onPress={() => {
-                          const formatted = formatDateForAPI(tempDate);
-
-                          if (showDatePicker.type === "from") {
-                            setFromDate(formatted);
-                            
-                          } else {
-                            setToDate(formatted); 
-                          }
-                          setShowDatePicker(null);
-                        }}
-                      >
-                         <MaterialIcons  name='done' size={24} color={ERP_COLOR_CODE.ERP_green} />
-                      </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.divider} />
-
-                    {/* Date Picker */}
-                    <DateTimePicker
-                      value={
-                        showDatePicker.type === "from" && fromDate
-                          ? parseCustomDate(fromDate)
-                          : showDatePicker.type === "to" && toDate
-                          ? parseCustomDate(toDate)
-                          : new Date()
-                      }
-                      mode="date"
-                      display="spinner"
-                      is24Hour={false}
-                      onChange={(event, selectedDate) => {
-                        if (selectedDate) {
-                          setTempDate(selectedDate);
-                        }
-                      }}
-                      style={[
-                        styles.picker,
-                        {
-                          backgroundColor: "white",
-                        },
-                      ]}
-                    />
-                  </View>
-                </View>
-              </Modal>
-            )}
+                />
+              </View>
+            </View>
+          </Modal>
+        )}
+        
         {Platform.OS !== "ios" && showDatePicker?.show && (
           <DateTimePicker
             value={
               showDatePicker?.type === "from" && fromDate
                 ? parseCustomDate(fromDate)
                 : showDatePicker?.type === "to" && toDate
-                ? parseCustomDate(toDate)
-                : new Date()
+                  ? parseCustomDate(toDate)
+                  : new Date()
             }
             mode="date"
             display="spinner"
@@ -475,6 +463,7 @@ const AttendanceScreen = () => {
             onChange={handleDateChange}
           />
         )}
+
         {isListVisible ? (
           <>
             <View
@@ -485,10 +474,10 @@ const AttendanceScreen = () => {
                 height: "100%",
               }}
             >
-              
+
               <List
                 selectedMonth={formattedMonth}
-                showFilter={showFilter}
+                showFilter={false}
                 fromDate={fromDate}
                 toDate={toDate}
               />
@@ -513,22 +502,29 @@ const AttendanceScreen = () => {
                 flex: 1,
               }}
             >
-              <ScrollView
-                showsVerticalScrollIndicator={false}
-                style={[
-                  styles.container,
-                  theme === "dark" && { backgroundColor: "black" },
-                ]}
-              >
-                <>
-                  
-                  <AttendanceForm
-                    setBlockAction={setBlockAction}
-                    resData={resData}
-                    isFromDashboard={isFromDashboard || false}
-                  />
+               <>
+               {
+                !user?.company_code?.toLowerCase()?.includes("oeuvre01") ? <>
+                <AttendanceForm
+                      setBlockAction={setBlockAction}
+                      resData={resData}
+                      isFromDashboard={isFromDashboard || false}
+                    /> 
+                 </> : <>
+                
+                <SquareSwitch value={value} onChange={setValue} />
+                  {
+                    value === 'attendance' ? <AttendanceForm
+                      setBlockAction={setBlockAction}
+                      resData={resData}
+                      isFromDashboard={isFromDashboard || false}
+                    /> : <PageScreen
+                          isFromForceLeave={true}
+                    />
+                  }
                 </>
-              </ScrollView>
+               }   
+                </>
             </ImageBackground>
           </>
         )}

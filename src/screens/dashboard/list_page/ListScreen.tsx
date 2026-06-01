@@ -271,7 +271,7 @@ const ListScreen = () => {
               isLoading={actionLoaders}
             />
           )}
-          {/* {
+          {
              <ERPIcon
               name={isTableView ? 'list' : 'apps'}
               onPress={() => {
@@ -279,7 +279,7 @@ const ListScreen = () => {
                 setIsTableView(!isTableView);
               }}
             />
-          }  */}
+          } 
 
           {
             isTableView && <ERPIcon

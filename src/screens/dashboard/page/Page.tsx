@@ -18,6 +18,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Text,
+  ScrollView,
 } from "react-native";
 import {
   RouteProp,
@@ -122,7 +123,7 @@ export async function requestLocationPermissions(): Promise<
   return "granted";
 }
 
-const PageScreen = () => {
+const PageScreen = ({isFromForceLeave}) => {
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const isIpad =
@@ -498,7 +499,7 @@ const PageScreen = () => {
           setLoader(true);
           await dispatch(
             savePageThunk({
-              page: url,
+              page: isFromForceLeave ? "LeaveApp" :  url,
               id,
               data: { ...submitValues },
             }),
@@ -580,18 +581,18 @@ const PageScreen = () => {
               fontWeight: "700",
               color: theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_WHITE,
             }}
-            text={title || pageTitle || "Details"}
+            text={isFromForceLeave ? 'Attendance' : title || pageTitle || "Details"}
           ></TranslatedText>
 
           <TranslatedText
             numberOfLines={1}
             style={{
-              fontSize: 18,
-              fontWeight: "700",
+              fontSize: isFromForceLeave ? 16 :18,
+              fontWeight: !isFromForceLeave ? "700" : undefined,
               color: ERP_COLOR_CODE.ERP_WHITE,
               marginLeft: 4,
             }}
-            text={
+            text={ isFromForceLeave ? '' :
               isFromNew
                 ? `- ( ${t("text.text44")} )`
                 : `- ( ${t("text.text45")} )`
@@ -616,7 +617,7 @@ const PageScreen = () => {
               }}
             />
           )}
-          {!user?.company_code?.toLowerCase()?.includes("oeuvre01") && controls.length > 0 && (
+          {!isFromForceLeave && !user?.company_code?.toLowerCase()?.includes("oeuvre01") && controls.length > 0 && (
             <ERPIcon
               name="save-as"
               isLoading={actionSaveLoader || tapLoader}
@@ -650,7 +651,7 @@ const PageScreen = () => {
       setError(null);
       setLoadingPageId(isFromNew ? "0" : id);
       const parsed = await dispatch(
-        getERPPageThunk({ page: url, id: isFromNew ? 0 : id }),
+        getERPPageThunk({ page: isFromForceLeave ? "LeaveApp" : url, id:  isFromNew || isFromForceLeave ? 0 : id }),
       ).unwrap();
       console.log("script---++++++------------------++++++++++---", parsed);
       if (parsed?.script) {
@@ -1997,7 +1998,7 @@ const PageScreen = () => {
           </View>
         </View>
       )}
-      {theme !== "dark" && (
+      {!isFromForceLeave && theme !== "dark" && (
         <View
           style={{
             height: 6,
@@ -2014,7 +2015,7 @@ const PageScreen = () => {
           flex: 1,
           padding: 10,
           backgroundColor:
-            theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE,
+          isFromForceLeave ? 'transparent' :  theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE,
         }}
       >
         {loadingPageId ? (
@@ -2036,9 +2037,9 @@ const PageScreen = () => {
             <View
               style={{
                 flex: 1,
-                height: Dimensions.get("screen").height,
+                height: isFromForceLeave ?  Dimensions.get("screen").height - 240 : Dimensions.get("screen").height,
                 backgroundColor:
-                  theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE,
+                  isFromForceLeave ? 'transparent' : theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE,
               }}
             >
               {isLandscape ? (
@@ -2073,7 +2074,6 @@ const PageScreen = () => {
                   //         />
                   //       ))}
                   //     </ScrollView>
-
                   //   );
                   // }}
                   />{" "}
@@ -2131,14 +2131,12 @@ const PageScreen = () => {
                 //           setAllData={setAllData}
                 //           renderItem={renderItem}
                 //         />
-                //       ))}
+                //       ))} 
                 //     </ScrollView>
                 //   );
                 // }}
                 />
-
-
-              )}
+              )} 
 
               {
                 user?.company_code?.toLowerCase()?.includes("oeuvre01") && <TouchableOpacity
@@ -2152,7 +2150,6 @@ const PageScreen = () => {
                     borderRadius: 6,
                   }}
                   onPress={async () => {
-
                     handleSave()
                   }}
                 >
@@ -2163,7 +2160,7 @@ const PageScreen = () => {
                       fontWeight: '800',
                     }}
                   >
-                    {actionSaveLoader ? 'Loading' : 'Save'}
+                    {isFromForceLeave ? actionSaveLoader ? 'Loading' : 'Apply Leave' : actionSaveLoader ? 'Loading' : 'Save'}
                   </Text>
                 </TouchableOpacity>
               }

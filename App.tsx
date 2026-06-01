@@ -37,12 +37,8 @@ import TermsAndConsent from "./src/screens/TermsConditions/TermsCondition";
 import { useAppSelector } from "./src/store/hooks";
 import ExitBottomSheet from "./src/components/ExitBottomSheet";
 import RootNavigatorTvOS from "./src/navigation/RootNavigatorTvOs";
-// import { useAppUpdate } from "./src/hooks/useAppUpdate";
-// import UpdateModal from "./src/components/appUpdate/UpdateModal";
 
 const App = () => {
-  // const update = useAppUpdate();
-
   return (
     <Provider store={store}>
       <TranslationProvider>
@@ -50,48 +46,41 @@ const App = () => {
         {
           Platform.OS === 'android' &&  <ExitBottomSheet />
         }
-       
-        {/* <UpdateModal
-          visible={update.visible}
-          storeUrl={update.storeUrl}
-          forceUpdate={update.forceUpdate}
-          onSkip={update.onSkip}
-        /> */}
       </TranslationProvider>
     </Provider>
   );
 };
 
 const AppContent = () => {
-  const { width, height } = useWindowDimensions();
+  const splashOpacity = useRef(new Animated.Value(1)).current;
+  const appOpacity = useRef(new Animated.Value(0)).current;
+  const appTranslateY = useRef(new Animated.Value(120)).current;
+
+  const { width } = useWindowDimensions();
 
   const isConnected = useNetworkStatus();
+
   const theme = useAppSelector((state) => state?.theme?.mode);
   const user = useAppSelector((state) => state?.auth);
 
-
   const [statusBarColor, setStatusBarColor]= useState(theme === "dark" ? "#000000" : ERP_COLOR_CODE.ERP_APP_COLOR)
-
-  const barStyle = "light-content";
 
   const [isSplashVisible, setSplashVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [accepted, setAccepted] = useState(false);
 
+  const barStyle = "light-content";
+
   const isTv =  Platform.isTV;
-
-  // 🔥 Splash Animation
-  const splashOpacity = useRef(new Animated.Value(1)).current;
-
-  // 🔥 App Animation (BOTTOM → TOP)
-  const appOpacity = useRef(new Animated.Value(0)).current;
-  const appTranslateY = useRef(new Animated.Value(120)).current;
-
+  // 🔹 Clear temp files
+  useEffect(() => {
+    clearAllTempFiles();
+  }, []);
 
   useEffect(() => {
     setStatusBarColor(theme === "dark" ? "#000000" : ERP_COLOR_CODE.ERP_APP_COLOR)
   }, [user])
-  // 🔹 Check Terms
+
   useEffect(() => {
     const checkAcceptance = async () => {
       const value = await AsyncStorage.getItem("TERMS_ACCEPTED");
@@ -99,16 +88,6 @@ const AppContent = () => {
       setIsLoading(false);
     };
     checkAcceptance();
-  }, []);
-
-  const handleAccept = async () => {
-    await AsyncStorage.setItem("TERMS_ACCEPTED", "true");
-    setAccepted(true);
-  };
-
-  // 🔹 Clear temp files
-  useEffect(() => {
-    clearAllTempFiles();
   }, []);
 
   // 🔹 AppState
@@ -156,6 +135,11 @@ const AppContent = () => {
       unsubscribeBackground();
     };
   }, []);
+
+  const handleAccept = async () => {
+    await AsyncStorage.setItem("TERMS_ACCEPTED", "true");
+    setAccepted(true);
+  };
 
   // 🔥 Loader
   if (isLoading) {

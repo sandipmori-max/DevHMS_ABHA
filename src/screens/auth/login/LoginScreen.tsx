@@ -202,7 +202,14 @@ const LoginScreen = ({ navigation, route }: any) => {
                       </View>
                     </>
                   ) : (
-                    <View>
+                    <View style={{
+                      backgroundColor: theme === "dark" ? "#00000080" : "#FFFFFF80",
+                      borderRadius: 12,
+                      padding: 20, 
+                      elevation: 5,
+                      borderWidth: 0.5,
+                      borderColor: theme === "dark" ? "#FFFFFF40" : ERP_COLOR_CODE.ERP_BORDER_LINE,
+                    }}>
                       <LoginHeader isAddingAccount={isAddingAccount} t={t} />
                       <LoginForm
                         deviceId={deviceId}

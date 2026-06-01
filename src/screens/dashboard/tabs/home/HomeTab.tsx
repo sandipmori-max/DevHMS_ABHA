@@ -72,9 +72,20 @@ import { getLastPunchInThunk } from "../../../../store/slices/attendance/thunk";
 import { batch } from "react-redux";
 import DeviceInfo from "react-native-device-info";
 import { ERP_ICON } from "../../../../assets";
+import BirthdayList from "./BirthdayList";
 const hasHtmlContent = (str: string) => {
   if (!str || typeof str !== "string") return false;
   return /<([a-z]+)([^>]*?)>/i.test(str);
+};
+
+const hasMarqueeContent = (str: string) => {
+  if (!str || typeof str !== "string") return false;
+
+  return (
+    /<marquee\b[^>]*>[\s\S]*?<\/marquee>/i.test(str) ||
+    /happy\s*birthday/i.test(str) ||
+    /work\s*anniversary/i.test(str)
+  );
 };
 
 const HomeScreen = ({ setHideTab, hideTab }: any) => {
@@ -192,14 +203,34 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
   }, [searchText, dashboard]);
   const isIpad =
     (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
-  const htmlItems = filteredDashboard.filter((item) =>
-    hasHtmlContent(item.data),
-  );
+
+    const marqueeItems = filteredDashboard.filter((item) =>
+      hasMarqueeContent(item.data),
+    );
+
+    console.log("marqueeItems==================", marqueeItems);
+    const htmlItems = filteredDashboard.filter(
+      (item) =>
+        hasHtmlContent(item.data) &&
+        !hasMarqueeContent(item.data),
+    );
+
+    const textItems = filteredDashboard.filter(
+      (item) =>
+        item.data &&
+        !hasHtmlContent(item.data),
+    );
+
+  // const htmlItems = filteredDashboard.filter((item) =>
+  //   hasHtmlContent(item.data),
+  // );
+
+
   const emptyItems = filteredDashboard.filter((item) => item?.data === "");
 
-  const textItems = filteredDashboard.filter(
-    (item) => item.data && !hasHtmlContent(item.data),
-  );
+  // const textItems = filteredDashboard.filter(
+  //   (item) => item.data && !hasHtmlContent(item.data),
+  // );
 
   const formatTime = time => {
     const minutes = Math.floor(time / 60);
@@ -836,6 +867,16 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     );
   };
 
+    const renderMoreItem = ({
+    item,
+    index,
+    isFromHtml,
+    isFromMenu,
+  }: any) => {
+    return (
+      <BirthdayList html={item?.footer}  item={item}/>
+    )
+  }
   const getCurrentMonthRange = useCallback(() => {
     const now = new Date();
 
@@ -2282,6 +2323,83 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                 />
                               </View>
                             </View>
+
+{
+  marqueeItems.length > 0 &&   <View
+                              style={[
+                                styles.dashboardSection,
+                                {
+                                  marginLeft: 2,
+                                  marginRight: 8,
+                                },
+                              ]}
+                            >
+                              <View
+                                style={{ 
+                                  backgroundColor:
+                                    theme === "dark" ? "gray" : "#f5f5f5",
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
+                                  padding: 8,
+                                  borderRadius: 4,
+                                  alignItems: "center",
+                                }}
+                              >
+                                <View
+                                  style={{
+                                    justifyContent: "center",
+                                    alignContent: "center",
+                                    alignItems: "center",
+                                    flexDirection: "row",
+                                    gap: 4,
+                                  }}
+                                >
+                                  <MaterialIcons
+                                    size={14}
+                                    color={theme === "dark" ? "white" : "gray"}
+                                    name="dashboard"
+                                  />
+                                  <Text
+                                    style={{
+                                      color: theme === "dark" ? "white" : "black",
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                    Today update
+                                  </Text>
+                                </View>
+
+
+                              </View>
+                              <View
+                                style={{
+                                  marginRight: 8,
+                                }}
+                              >
+                                <FlatList
+                                  key={
+                                    isLandscape
+                                      ? `${isHorizontal}-landscape3`
+                                      : `${isHorizontal}-portrait3`
+                                  }
+                                  keyboardShouldPersistTaps="handled"
+                                  data={marqueeItems}
+                                  keyExtractor={(item, index) => index.toString()}
+                                  renderItem={({ item, index }) =>
+                                    renderMoreItem({
+                                      item,
+                                      index,
+                                      isFromHtml: true,
+                                      isFromMenu: true,
+                                    })
+                                  }
+                                  numColumns={isIpad ? 2 : 1}
+                                  showsVerticalScrollIndicator={false}
+                                />
+                              </View>
+                            </View>
+
+}
 
                             <View
                               style={[

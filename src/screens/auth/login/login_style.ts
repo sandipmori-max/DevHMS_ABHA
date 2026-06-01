@@ -28,11 +28,11 @@ export const styles = StyleSheet.create({
     borderRadius: 20,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 28, 
     textAlign: 'center',
     marginBottom: 6,
     color: ERP_COLOR_CODE.ERP_333,
+    fontFamily: "Handlee-Regular",
   },
   subtitle: {
     fontSize: 16,
