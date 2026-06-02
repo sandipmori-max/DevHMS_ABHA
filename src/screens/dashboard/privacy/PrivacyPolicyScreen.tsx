@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
@@ -21,6 +22,7 @@ import { useAppSelector } from "../../../store/hooks";
 import useTranslations from "../../../hooks/useTranslations";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useBaseLink } from "../../../hooks/useBaseLink";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
 
 const PrivacyPolicyScreen = () => {
   const navigation = useNavigation<any>();
@@ -155,7 +157,28 @@ const PrivacyPolicyScreen = () => {
       ),
     });
   }, [navigation, theme, isHidden, item, isFromChart]);
-
+const [canGoBack, setCanGoBack] = useState(false);
+useLayoutEffect(() => {
+  navigation.setOptions({
+    headerLeft: () => (
+      <TouchableOpacity
+        onPress={() => {
+          if (canGoBack) {
+            webviewRef.current?.goBack();
+          } else {
+            navigation.goBack();
+          }
+        }}
+      >
+        <MaterialIcons
+          name="arrow-back"
+          size={24}
+          color="#fff"
+        />
+      </TouchableOpacity>
+    ),
+  });
+}, [canGoBack]);
   return (
     <SafeAreaView style={styles.container}>
       {!finalUrl || (isFromChart && !token) ? (
@@ -198,6 +221,11 @@ const PrivacyPolicyScreen = () => {
                 </View>
               </View>
             )}
+             onNavigationStateChange={(navState) => {
+                  setCanGoBack(navState.canGoBack);
+
+              console.log("Current URL:", navState.url);
+            }}
             allowsBackForwardNavigationGestures={true}
             textZoom={100}
             allowsLinkPreview={false}
