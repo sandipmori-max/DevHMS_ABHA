@@ -53,6 +53,7 @@ import { resetSyncLocationState } from "../../../store/slices/location/syncLocat
 import { Easing } from "react-native";
 import { ERP_APP_VERSION } from "../../../constants";
 import { setReloadApp } from "../../../store/slices/reloadApp/reloadAppSlice";
+import DeviceInfo from "react-native-device-info";
 
 interface SettingItem {
   id: string;
@@ -495,7 +496,9 @@ const SettingsScreen = () => {
 
   const { height, width } = useWindowDimensions();  
   const isLandscape = width > height;
-
+  const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
+ 
   return (
     <View
       style={[
@@ -520,7 +523,7 @@ const SettingsScreen = () => {
         }}
       ></View>
 
-      {isLandscape ? (
+      {(isLandscape || isIpad) ? (
         <>
           <View style={{ flexDirection: "row" }}>
             <View style={{ width: "50%" }}>
@@ -809,7 +812,7 @@ const SettingsScreen = () => {
         onRequestClose={closeWithAnimation}
       >
         <Animated.View
-          style={[languageStyles.modalOverlay,isLandscape && {
+          style={[languageStyles.modalOverlay,(isLandscape || isIpad )&& {
                           alignContent:'center',
                           alignItems:'center'
                         }]}
@@ -824,7 +827,7 @@ const SettingsScreen = () => {
               },
               { transform: [{ translateY }] }
               , {
-          width: isLandscape ? '50%' : '100%'
+          width: isLandscape || isIpad ? '50%' : '100%'
         }
             ]}
           >

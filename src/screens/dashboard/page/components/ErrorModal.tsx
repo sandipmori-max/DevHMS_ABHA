@@ -9,6 +9,7 @@ import {
   Easing,
   PanResponder,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import { styles } from "../page_style";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
@@ -16,6 +17,7 @@ import { useAppSelector } from "../../../../store/hooks";
 import useTranslations from "../../../../hooks/useTranslations";
 import FastImage from "react-native-fast-image";
 import { ERP_ICON } from "../../../../assets";
+import DeviceInfo from "react-native-device-info";
 
 const CLOSE_THRESHOLD = 120;
 const HIDDEN_POSITION = 300;
@@ -27,6 +29,8 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
   const isLandscape = width > height;
   const translateY = useRef(new Animated.Value(HIDDEN_POSITION)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
+  const isIpad =
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
 
   const panResponder = useRef(
     PanResponder.create({
@@ -96,7 +100,7 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
       <Animated.View
         style={[
           styles.overlay,
-          isLandscape && {
+          (isLandscape || isIpad) && {
             alignContent: "center",
             alignItems: "center",
           },
@@ -112,7 +116,7 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
               borderColor: "white",
             },
             {
-              width: isLandscape ? "80%" : "100%",
+              width: isLandscape || isIpad ? "80%" : "100%",
             },
           ]}
         >
@@ -174,7 +178,7 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
             </View>
           </View>
 
-          {isLandscape ? (
+          {isLandscape || isIpad ? (
             <>
               <View style={{ flexDirection: "row" }}>
                 <View
@@ -234,7 +238,7 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
                   />
                 </View>
               </View>
-                    <View style={{height: 20}}/>
+              <View style={{ height: 20 }} />
               <FlatList
                 data={errors}
                 keyExtractor={(_, i) => i.toString()}
@@ -242,7 +246,7 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
                   <Text style={styles.errorText}>• {item}</Text>
                 )}
               />
-                    <View style={{height: 20}}/>
+              <View style={{ height: 20 }} />
 
             </>
           )}

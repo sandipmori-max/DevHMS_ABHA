@@ -280,7 +280,6 @@ const ListScreen = () => {
               }}
             />
           } 
-
           {
             isTableView && <ERPIcon
               name={'G1'}
@@ -297,7 +296,6 @@ const ListScreen = () => {
               }}
             />
           }
-
           {
             isTableView && <ERPIcon
               name={'add'}
@@ -315,7 +313,6 @@ const ListScreen = () => {
               }}
             />
           )}
-
         </>
       ),
     });
@@ -1491,8 +1488,8 @@ const ListScreen = () => {
             </TouchableOpacity>
           </Animated.View>
         )}
-
-      <CustomAlert
+      {
+        alertVisible &&    <CustomAlert
         visible={alertVisible}
         title={alertConfig.title}
         message={alertConfig.message}
@@ -1533,8 +1530,10 @@ const ListScreen = () => {
         isFromButtonList={true}
         closeHide={undefined}
       />
-
-      <CustomAlert
+      }
+   
+      {
+        apiError &&  <CustomAlert
         visible={apiError}
         title={alertConfig.title}
         message={alertConfig.message}
@@ -1544,7 +1543,10 @@ const ListScreen = () => {
         actionLoader={actionLoader}
         closeHide={undefined}
       />
-      <GroupFilterModal
+      }
+     
+      {
+        groupModalVisible1 && <GroupFilterModal
         visible={groupModalVisible1}
         onClose={() =>
           setGroupModalVisible1(false)
@@ -1555,7 +1557,10 @@ const ListScreen = () => {
           setPrimaryGroupKey(key);
         }}
       />
-      <GroupFilterModal
+      }
+      
+      {
+        groupModalVisible2 &&  <GroupFilterModal
         visible={groupModalVisible2}
         onClose={() =>
           setGroupModalVisible2(false)
@@ -1566,7 +1571,10 @@ const ListScreen = () => {
           setSecondaryGroupKey(key);
         }}
       />
-      <SortingFilterModal
+      }
+     
+      {
+        sortingVisible &&  <SortingFilterModal
         visible={sortingVisible}
         onClose={() =>
           setSortingVisible(false)
@@ -1607,6 +1615,8 @@ const ListScreen = () => {
           );
         }}
       />
+      }
+     
     </View>
   );
 };

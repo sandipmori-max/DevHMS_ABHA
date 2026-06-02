@@ -10,6 +10,7 @@ import {
   Animated,
   Easing,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import FastImage from "react-native-fast-image";
 
@@ -23,6 +24,7 @@ import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { useAppSelector } from "../../store/hooks";
 import { useTranslation } from "react-i18next";
 import TranslatedText from "../../screens/dashboard/tabs/home/TranslatedText";
+import DeviceInfo from "react-native-device-info";
 
 const CustomAlert: React.FC<CustomAlertProps> = ({
   visible,
@@ -57,7 +59,9 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   const buttonAnim = useRef(new Animated.Value(0)).current;
 
   const isLandscape = width > height;
-
+const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
+ 
   useEffect(() => {
     if (visible) {
       Animated.stagger(120, [
@@ -136,7 +140,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
       }}
       supportedOrientations={["portrait", "landscape"]}
     >
-      <View style={[styles.overlay, isLandscape && {
+      <View style={[styles.overlay, (isLandscape || isIpad) && {
         alignContent: 'center',
         alignItems: 'center'
       }]}>
@@ -144,7 +148,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
           style={[
             styles.bottomSheet,
             {
-              width: isLandscape ? '50%' : '100%'
+              width: isLandscape || isIpad ? '50%' : '100%'
             },
             alertStyles.container,
             theme === "dark" && {

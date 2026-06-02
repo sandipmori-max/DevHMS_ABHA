@@ -443,7 +443,13 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
         <View style={{ height: 34 }}></View>
         {isLandscape ? (
           <>
-            <View style={[{ flexDirection: "row" }, isIpad && { padding: 40 ,  }]}>
+            <View style={[
+              { flexDirection: "row" }, isIpad && {
+              justifyContent: "center",
+              alignContent: "center",
+              alignItems: "center",
+              padding: 40 ,
+              }]}>
               <View
                 style={{
                   width: "46%",

@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   Platform,
+  useWindowDimensions,
 } from "react-native";
 import { pick, types } from "@react-native-documents/picker";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
@@ -17,6 +18,7 @@ import useTranslations from "../../../../hooks/useTranslations";
 import { useAppSelector } from "../../../../store/hooks";
 import InputError from "../../../../components/error/InputError";
 import LableInfo from "./LableInfo";
+import DeviceInfo, { isLandscape } from "react-native-device-info";
 
 interface FileType {
   name: string;
@@ -49,7 +51,10 @@ const FilePickerRow = ({
     "xlsx",
   ];
   const theme = useAppSelector((state) => state?.theme.mode);
-
+const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
+   const { height, width } = useWindowDimensions();
+     const isLandscape = width > height;
   const base = `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${item?.text}`;
   const [selectedFiles, setSelectedFiles] = useState<FileType[]>([]);
 
@@ -167,7 +172,10 @@ const openFilePicker = async () => {
     },
     selectedFiles.length === 0 && errors[item?.field] && {
       borderColor: ERP_COLOR_CODE.ERP_ERROR
-    }
+    },
+    !isLandscape && isIpad && {
+      width: "50%",
+    } 
     
     ]} onPress={openFilePicker}>
       <MaterialIcons name="cloud-upload" size={36} color={theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR} />

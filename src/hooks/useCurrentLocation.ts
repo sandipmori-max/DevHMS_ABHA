@@ -85,7 +85,7 @@ import DeviceInfo from "react-native-device-info";
         if (androidVersion <= 9 && Platform.OS === "android") {
           Geolocation.getCurrentPosition(
             position => {
-              const { latitude, longitude } = position.coords;
+              const { latitude, longitude , accuracy} = position.coords;
               setCoords({ latitude, longitude, accuracy });
               setAddress(`${latitude},${longitude}`);
             },
@@ -115,16 +115,13 @@ import DeviceInfo from "react-native-device-info";
               maximumAge: 10000,
             },
           );
-          return;
-        }
           
-      const res = await NativeModules.LocationModule.getCurrentLocation();
-
-      const { latitude, longitude, accuracy } = res;
-
-      setCoords({ latitude, longitude, accuracy });
-      setAddress(`${latitude},${longitude}`);
-
+        }else {
+          const res = await NativeModules.LocationModule.getCurrentLocation();
+          const { latitude, longitude, accuracy } = res;
+          setCoords({ latitude, longitude, accuracy });
+          setAddress(`${latitude},${longitude}`);
+        }
     } catch (e: any) {
       setError(e?.message || "Failed to fetch location");
 

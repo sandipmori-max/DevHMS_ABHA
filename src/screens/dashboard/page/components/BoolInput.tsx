@@ -26,7 +26,7 @@ const BoolInput = ({ value, onChange, label, isFromChild = false }: BoolInputPro
       
       ></TranslatedText>}
       <View style={{ 
-        padding: Platform.OS ==='android' ? 8 : 10,
+        padding: 8,
         marginVertical: 6,
         borderWidth: 0.4,
         borderRadius: 6,

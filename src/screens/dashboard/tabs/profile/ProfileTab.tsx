@@ -23,13 +23,16 @@ import { useTranslation } from "react-i18next";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import ProfileSection from "./ProfileSection";
 import TranslatedText from "../home/TranslatedText";
+import DeviceInfo from "react-native-device-info";
 
 const ProfileTab = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
     const { reLoading } = useAppSelector((state) => state.reloadApp);
     const dispatch = useAppDispatch();
-  
+   const isIpad =
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
+ 
   const { user, accounts, menu } = useAppSelector((state) => state?.auth);
   const [showAccountSwitcher, setShowAccountSwitcher] = useState(false);
   const [showAddAccount, setShowAddAccount] = useState(false);
@@ -149,7 +152,7 @@ const ProfileTab = () => {
         }}
       ></View>
 
-      {isLandscape ? (
+      {isLandscape || isIpad ? (
         <>
           <ScrollView
             style={[

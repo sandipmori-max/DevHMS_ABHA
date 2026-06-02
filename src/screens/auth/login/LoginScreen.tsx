@@ -46,8 +46,8 @@ const LoginScreen = ({ navigation, route }: any) => {
     type: "info" as "error" | "success" | "info",
   });
   const [keyboardHeight, setKeyboardHeight] = useState(0);
- const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
+  const isIpad =
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   useEffect(() => {
     const fetchDeviceName = async () => {
       const name = Platform.OS === 'ios' ? DeviceInfo.getModel() + " " + await DeviceInfo.getUniqueId() : await DeviceInfo.getDeviceName();
@@ -87,11 +87,11 @@ const LoginScreen = ({ navigation, route }: any) => {
       }),
     );
     try {
-          await dispatch(getERPAppConfigMenuThunk());
-         } catch (error) {
-          dispatch(updateAppMenuList([])); // Clear menu on error
-            console.log("Error fetching app config menu:", error);
-         }
+      await dispatch(getERPAppConfigMenuThunk());
+    } catch (error) {
+      dispatch(updateAppMenuList([])); // Clear menu on error
+      console.log("Error fetching app config menu:", error);
+    }
     setTimeout(() => {
       dispatch(setReloadApp());
     }, 1000);
@@ -150,14 +150,9 @@ const LoginScreen = ({ navigation, route }: any) => {
                 <View
                   style={[
                     styles.formContainer,
-                    isLandscape && {
-                      marginTop: 0,
-                      paddingHorizontal: 0,
-                      padding: 0,
-                    },
+
                     isIpad && {
                       padding: 80,
-                      marginTop: 100
                     }
                   ]}
                 >
@@ -169,6 +164,13 @@ const LoginScreen = ({ navigation, route }: any) => {
                           alignContent: "center",
                           alignItems: "center",
                           justifyContent: "center",
+                          backgroundColor: theme === "dark" ? "#00000080" : "#FFFFFF80",
+                          borderRadius: 12,
+                          padding: 38,
+                          elevation: 5,
+                          borderWidth: 0.5,
+                          borderColor: theme === "dark" ? "#FFFFFF40" : ERP_COLOR_CODE.ERP_BORDER_LINE,
+
                         }}
                       >
                         <View
@@ -186,7 +188,6 @@ const LoginScreen = ({ navigation, route }: any) => {
                         <View
                           style={{
                             width: "35%",
-                            top: 24,
                             left: -20,
                             right: 10,
                           }}
@@ -205,7 +206,7 @@ const LoginScreen = ({ navigation, route }: any) => {
                     <View style={{
                       backgroundColor: theme === "dark" ? "#00000080" : "#FFFFFF80",
                       borderRadius: 12,
-                      padding: 20, 
+                      padding: 20,
                       elevation: 5,
                       borderWidth: 0.5,
                       borderColor: theme === "dark" ? "#FFFFFF40" : ERP_COLOR_CODE.ERP_BORDER_LINE,

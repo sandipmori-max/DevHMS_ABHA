@@ -58,6 +58,7 @@ import ImageBottomSheetModal from "../../../../../components/bottomsheet/ImageBo
 import { useTranslation } from "react-i18next";
 import TranslatedText from "../../home/TranslatedText";
 import { batch } from "react-redux";
+import DeviceInfo from "react-native-device-info";
 
 
 interface AccountSwitcherProps {
@@ -90,7 +91,9 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
     message: "",
     type: "info" as "error" | "success" | "info" | "confirmation",
   });
-
+const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
+ 
   // Animated values
   const slideAnim = useRef(new Animated.Value(0)).current; // modal
   const buttonAnim = useRef(new Animated.Value(0)).current; // add account button
@@ -240,8 +243,8 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
             },
             //  { scale: pressItemAnim },
           ],
-          width: isLandscape ? "50%" : "100%",
-          marginLeft: isLandscape ? 4 : 0,
+          width:  isLandscape || isIpad ? "50%" : "100%",
+          marginLeft: isLandscape || isIpad ? 4 : 0,
         }}
       >
         <TouchableOpacity
@@ -518,7 +521,7 @@ const AccountSwitcher: React.FC<AccountSwitcherProps> = ({
             keyExtractor={(item, index) => index.toString()}
             style={styles.accountsList}
             showsVerticalScrollIndicator={false}
-            numColumns={isLandscape ? 2 : 1}
+            numColumns={isLandscape || isIpad ? 2 : 1}
           />
         </View>
 

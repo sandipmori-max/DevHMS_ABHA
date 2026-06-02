@@ -30,7 +30,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const isIpad =
-    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet();
   return (
     pieChartData?.length > 0 && (
       <View
@@ -40,7 +40,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
           borderWidth: 0.5,
           borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
           marginBottom: 8,
-          marginRight: 12, 
+          marginRight: 12,
         }}
       >
         <View
@@ -125,58 +125,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                     showsVerticalScrollIndicator={false}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item }) => (
-                      <>
-                      {
-                        firstList.length <= 3 ? 
-                        
-                        <>
- <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          marginBottom: 8,
-                          backgroundColor: item.color + '20',
-                          padding: 6,
-                          borderRadius: 4,
-                          width: isLandscape ? "90%" : "80%",
-                        }}
-                      >
-
-                          <View
-                          style={{
-                            width: 12,
-                            height: 12,
-                            borderRadius: 4,
-                            backgroundColor: item.color,
-                            marginRight: 6,
-                            flexDirection: "row",
-                            gap: 4,
-                          }}
-                        />
-                         
-                        <TranslatedText
-                          numberOfLines={1}
-                          style={{  
-                            maxWidth: 110, 
-                          }}
-                          text={item.text}
-                        ></TranslatedText>
-                         <TranslatedText
-                          style={{
-                            marginLeft: 8,
-                            right: 0,
-                            fontSize: 14,
-                            color: item.color,
-                            fontWeight: "800",
-                            alignSelf: "flex-end",
-                          }}
-                          numberOfLines={1}
-                          text={` ${item.value}`}
-                        ></TranslatedText>
-                      </View> 
-                       
-                        </>
-                       : <View
+                      <View
                         style={{
                           flexDirection: "row",
                           alignItems: "center",
@@ -216,11 +165,9 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                           text={`:- ${item.value}`}
                         ></TranslatedText>
                       </View>
-                      }
-                      </>
                     )}
                   />
-                  { firstList.length > 3 &&
+                  {
                     <TouchableOpacity
                       onPress={() => {
                         setIsVisibleFullMode(true);
@@ -284,7 +231,7 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                               { maxWidth: 90 },
                               {
                                 width: isLandscape ? "48%" : "26%",
-                              color : theme === 'dark' ? 'white' : 'black'
+                                color: theme === 'dark' ? 'white' : 'black'
                               },
                             ]}
                           ></TranslatedText>
@@ -345,7 +292,8 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                     <TranslatedText
                       text={item.text}
                       numberOfLines={1}
-                      style={{ maxWidth: 80 ,
+                      style={{
+                        maxWidth: 80,
                         color: theme === 'dark' ? 'white' : 'black'
                       }}
                     ></TranslatedText>

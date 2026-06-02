@@ -648,11 +648,11 @@ const Media = ({
         style={[
           styles.imageWrapper,
           !imageExists && {
-            width: "100%",
+            width:   !isLandscape &&isIpad ? "50%" : "100%",
             borderWidth: 1.5,
             borderRadius: 10,
             borderColor:
-              theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR,
+              theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR ,
             marginBottom: 8,
             borderStyle: "dashed",
             backgroundColor: theme === "dark" ? "#000" : "#f8f9ff",

@@ -11,8 +11,8 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
     height: Dimensions.get('screen').height,
     padding: 16,
-    flex: 1,
-    marginTop: 90,
+    flex: 1, 
+    justifyContent: 'center',
   },
   helperText: {
     fontSize: 12,
@@ -21,6 +21,7 @@ export const styles = StyleSheet.create({
     marginLeft: 2,
   },
   logo: {
+    marginTop: 40,
     width: 100,
     height: 100,
     alignSelf: 'center',
