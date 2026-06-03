@@ -7,6 +7,7 @@ import {
   BackHandler,
   StyleSheet,
   Platform,
+  useWindowDimensions,
 } from "react-native";
 
 import { RESULTS } from "react-native-permissions";
@@ -19,13 +20,17 @@ import { useAppSelector } from "../../../../store/hooks";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import InputError from "../../../../components/error/InputError";
 import LableInfo from "./LableInfo";
+import DeviceInfo from "react-native-device-info";
 
-const ScanScreen = ({ item , errors}: any) => {
+const ScanScreen = ({ item, errors }: any) => {
   const { askPermissions } = usePermissions(EPermissionTypes.CAMERA);
   const [cameraShown, setCameraShown] = useState(false);
   const [qrText, setQrText] = useState("");
+  const { height, width } = useWindowDimensions();
+  const isLandscape = width > height;
   const theme = useAppSelector((state) => state?.theme.mode);
-
+  const isIpad =
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   // Handle back button press
   function handleBackButtonClick() {
     if (cameraShown) {
@@ -58,7 +63,7 @@ const ScanScreen = ({ item , errors}: any) => {
         if ("isError" in error && error.isError) {
           Alert.alert(
             error.errorMessage ||
-              "Something went wrong while taking camera permission",
+            "Something went wrong while taking camera permission",
           );
         }
 
@@ -89,10 +94,10 @@ const ScanScreen = ({ item , errors}: any) => {
   };
 
   return (
-    <View style={{ paddingVertical: Platform.OS === 'android' ? 6 : 8 }}>
-      <LableInfo  
+    <View >
+      <LableInfo
         item={item}
-        theme={theme}  />
+        theme={theme} />
 
       {/* Scan Button or Camera */}
       <View style={[cameraShown && styles.container]}>
@@ -100,14 +105,25 @@ const ScanScreen = ({ item , errors}: any) => {
           <TouchableOpacity
             onPress={takePermissions}
             activeOpacity={0.8}
-            style={styles.squareScanCard}
+            style={[styles.squareScanCard,
+            {
+              width: !isLandscape && isIpad ? "50%" : "100%",
+              borderWidth: 1.5,
+              borderRadius: 10,
+              borderColor:
+                theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR,
+              marginBottom: 8,
+              borderStyle: "dashed",
+              backgroundColor: theme === "dark" ? "#000" : "#f8f9ff",
+            }
+            ]}
           >
             <MaterialIcons
               name="qr-code-scanner"
               size={42}
               color={ERP_COLOR_CODE.ERP_APP_COLOR}
             />
-            <Text style={styles.squareScanText}>Scan Barcode</Text>
+            <Text style={styles.squareScanText}>Tap to  {item?.title}</Text>
           </TouchableOpacity>
         )}
 
@@ -127,7 +143,7 @@ const ScanScreen = ({ item , errors}: any) => {
           />
         )}
       </View>
-       {errors[item.field] && <InputError error={errors[item?.field]} />}
+      {errors[item.field] && <InputError error={errors[item?.field]} />}
     </View>
   );
 };
@@ -196,12 +212,12 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderStyle: "dashed",
     borderColor: "#4c6ef5",
-    borderRadius: 6, 
+    borderRadius: 6,
     justifyContent: "center",
-    alignItems: "center", 
+    alignItems: "center",
   },
   squareScanText: {
     marginTop: 10,
-    fontSize: 14, 
+    fontSize: 14,
   },
 });

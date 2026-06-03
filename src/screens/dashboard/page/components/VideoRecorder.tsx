@@ -10,6 +10,7 @@ import {
   BackHandler,
   Modal,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import { Camera, useCameraDevice } from "react-native-vision-camera";
 import RNFS from "react-native-fs";
@@ -17,6 +18,7 @@ import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import { useAppSelector } from "../../../../store/hooks";
 import LableInfo from "./LableInfo";
+import DeviceInfo from "react-native-device-info";
 
 const MAX_DURATION_MS = 20000;
 const MAX_SIZE_MB = 25;
@@ -28,7 +30,8 @@ export default function VideoRecorder({ item }: any) {
   const isLandscape = width > height;
   const [showCamera, setShowCamera] = useState(false);
   const [permissionsGranted, setPermissionsGranted] = useState(false);
-
+  const isIpad =
+   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   const [isRecording, setIsRecording] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -144,7 +147,16 @@ export default function VideoRecorder({ item }: any) {
         theme={theme} />
 
         <TouchableOpacity
-          style={styles.squareCard}
+          style={[styles.squareCard, {
+             width:   !isLandscape &&isIpad ? "50%" : "100%",
+                        borderWidth: 1.5,
+                        borderRadius: 10,
+                        borderColor:
+                          theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR ,
+                        marginBottom: 8,
+                        borderStyle: "dashed",
+                        backgroundColor: theme === "dark" ? "#000" : "#f8f9ff",
+          }]}
           onPress={requestPermissions}
         >
           <MaterialIcons
@@ -152,7 +164,7 @@ export default function VideoRecorder({ item }: any) {
             size={40}
             color={ERP_COLOR_CODE.ERP_APP_COLOR}
           />
-          <Text style={styles.squareCardText}>Record Video</Text>
+          <Text style={styles.squareCardText}>Tap to record {item?.title}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -190,7 +202,7 @@ export default function VideoRecorder({ item }: any) {
               </View>
             )}
             <View style={styles.header}>
-              <Text style={styles.headerTitle}>Record Video</Text>
+              <Text style={styles.headerTitle}>Record video</Text>
 
               <TouchableOpacity
                 style={styles.closeBtn}
@@ -241,14 +253,10 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: ERP_COLOR_CODE.ERP_999,
     justifyContent: "center",
-    alignItems: "center",
-    marginTop: 12,
+    alignItems: "center", 
   },
   squareCardText: {
-    marginTop: 10,
-    fontSize: 16,
-    fontWeight: "600",
-    color: ERP_COLOR_CODE.ERP_APP_COLOR,
+    marginTop: 10, 
   },
   startBtn: {
     width: "100%",

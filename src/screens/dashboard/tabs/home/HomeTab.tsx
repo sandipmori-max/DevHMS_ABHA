@@ -874,7 +874,22 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     isFromMenu,
   }: any) => {
     return (
+      <TouchableOpacity
+      onPress={async () => {
+          if (
+            item?.url.includes(".") ||
+            item?.url.includes("?") ||
+            item?.url.includes("/")
+          ) {
+            navigation.navigate("Privacy Policy", { item });
+          } else {
+            navigation.navigate("List", { item });
+          }
+        }}
+      >
       <BirthdayList html={item?.footer}  item={item}/>
+
+      </TouchableOpacity>
     )
   }
   const getCurrentMonthRange = useCallback(() => {
@@ -2194,6 +2209,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                               flex: 1,
                             }}
                           >
+                            
                             <View>
                               {pieChartData.length > 0 && (
                                 <>
@@ -2249,82 +2265,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                 <View style={{ marginTop: 12 }} />
                               )}
                             </View>
-                            <View
-                              style={[
-                                styles.dashboardSection,
-                                {
-                                  marginLeft: 2,
-                                  marginRight: 8,
-                                },
-                              ]}
-                            >
-                              <View
-                                style={{
-                                  marginBottom: 8,
-                                  backgroundColor:
-                                    theme === "dark" ? "gray" : "#f5f5f5",
-                                  flexDirection: "row",
-                                  justifyContent: "space-between",
-                                  padding: 8,
-                                  borderRadius: 4,
-                                  alignItems: "center",
-                                }}
-                              >
-                                <View
-                                  style={{
-                                    justifyContent: "center",
-                                    alignContent: "center",
-                                    alignItems: "center",
-                                    flexDirection: "row",
-                                    gap: 4,
-                                  }}
-                                >
-                                  <MaterialIcons
-                                    size={14}
-                                    color={theme === "dark" ? "white" : "gray"}
-                                    name="dashboard"
-                                  />
-                                  <Text
-                                    style={{
-                                      color: theme === "dark" ? "white" : "black",
-                                      fontWeight: "600",
-                                    }}
-                                  >
-                                    Dashboard
-                                  </Text>
-                                </View>
-
-
-                              </View>
-                              <View
-                                style={{
-                                  marginRight: 8,
-                                }}
-                              >
-                                <FlatList
-                                  key={
-                                    isLandscape
-                                      ? `${isHorizontal}-landscape3`
-                                      : `${isHorizontal}-portrait3`
-                                  }
-                                  keyboardShouldPersistTaps="handled"
-                                  data={htmlItems}
-                                  keyExtractor={(item, index) => index.toString()}
-                                  renderItem={({ item, index }) =>
-                                    renderDashboardItem({
-                                      item,
-                                      index,
-                                      isFromHtml: true,
-                                      isFromMenu: true,
-                                    })
-                                  }
-                                  numColumns={isIpad ? 2 : 1}
-                                  showsVerticalScrollIndicator={false}
-                                />
-                              </View>
-                            </View>
-
-{
+                          
+                          {
   marqueeItems.length > 0 &&   <View
                               style={[
                                 styles.dashboardSection,
@@ -2400,6 +2342,82 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                             </View>
 
 }
+                            <View
+                              style={[
+                                styles.dashboardSection,
+                                {
+                                  marginLeft: 2,
+                                  marginRight: 8,
+                                },
+                              ]}
+                            >
+                              <View
+                                style={{
+                                  marginBottom: 8,
+                                  backgroundColor:
+                                    theme === "dark" ? "gray" : "#f5f5f5",
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
+                                  padding: 8,
+                                  borderRadius: 4,
+                                  alignItems: "center",
+                                }}
+                              >
+                                <View
+                                  style={{
+                                    justifyContent: "center",
+                                    alignContent: "center",
+                                    alignItems: "center",
+                                    flexDirection: "row",
+                                    gap: 4,
+                                  }}
+                                >
+                                  <MaterialIcons
+                                    size={14}
+                                    color={theme === "dark" ? "white" : "gray"}
+                                    name="dashboard"
+                                  />
+                                  <Text
+                                    style={{
+                                      color: theme === "dark" ? "white" : "black",
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                    Dashboard
+                                  </Text>
+                                </View>
+
+
+                              </View>
+                              <View
+                                style={{
+                                  marginRight: 8,
+                                }}
+                              >
+                                <FlatList
+                                  key={
+                                    isLandscape
+                                      ? `${isHorizontal}-landscape3`
+                                      : `${isHorizontal}-portrait3`
+                                  }
+                                  keyboardShouldPersistTaps="handled"
+                                  data={htmlItems}
+                                  keyExtractor={(item, index) => index.toString()}
+                                  renderItem={({ item, index }) =>
+                                    renderDashboardItem({
+                                      item,
+                                      index,
+                                      isFromHtml: true,
+                                      isFromMenu: true,
+                                    })
+                                  }
+                                  numColumns={isIpad ? 2 : 1}
+                                  showsVerticalScrollIndicator={false}
+                                />
+                              </View>
+                            </View>
+
+
 
                             <View
                               style={[

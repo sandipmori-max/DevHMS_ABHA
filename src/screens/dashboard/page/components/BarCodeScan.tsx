@@ -7,6 +7,7 @@ import {
   BackHandler,
   StyleSheet,
   Platform,
+  useWindowDimensions,
 } from 'react-native';
 
 import { RESULTS } from 'react-native-permissions';
@@ -19,13 +20,17 @@ import { BarCodeCameraScanner } from '../../../../components/CameraScanner/BarCo
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import InputError from '../../../../components/error/InputError';
 import LableInfo from './LableInfo';
+import DeviceInfo from 'react-native-device-info';
 
 const BarCodeScan = ({ item, isFromChild = false, errors }: any) => {
   const { askPermissions } = usePermissions(EPermissionTypes.CAMERA);
   const [cameraShown, setCameraShown] = useState(false);
   const [scannedValue, setScannedValue] = useState('');
   const theme = useAppSelector(state => state?.theme.mode);
-
+  const { height, width } = useWindowDimensions();
+  const isLandscape = width > height;
+    const isIpad =
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   const handleBackButtonClick = () => {
     if (cameraShown) {
       setCameraShown(false);
@@ -82,7 +87,7 @@ const BarCodeScan = ({ item, isFromChild = false, errors }: any) => {
   };
 
   return (
-    <View style={{ paddingVertical: Platform.OS === 'android' ? 6 : 8 }}>
+    <View>
 
       {/* Title */}
       <LableInfo isFromChild={isFromChild}
@@ -97,10 +102,19 @@ const BarCodeScan = ({ item, isFromChild = false, errors }: any) => {
           <TouchableOpacity
             onPress={takePermissions}
             activeOpacity={0.8}
-            style={styles.squareScanCard}
+            style={[styles.squareScanCard,  {
+                          width: !isLandscape && isIpad ? "50%" : "100%",
+                          borderWidth: 1.5,
+                          borderRadius: 10,
+                          borderColor:
+                            theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR,
+                          marginBottom: 8,
+                          borderStyle: "dashed",
+                          backgroundColor: theme === "dark" ? "#000" : "#f8f9ff",
+                        }]}
           >
             <MaterialIcons name="barcode-reader" size={42} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
-            <Text style={styles.squareScanText}>Scan Barcode</Text>
+            <Text style={styles.squareScanText}>Tap to {item?.title}</Text>
           </TouchableOpacity>
 
         )}

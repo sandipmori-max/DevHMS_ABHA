@@ -391,7 +391,7 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
           </View>
         </TouchableOpacity>
         {
-          isBackActive ? <TouchableOpacity
+          (isBackActive ||  ATTENDANCE_LEVEL === 0) ? <TouchableOpacity
             onPress={toggleCamera}
             style={[styles.captureOuter, { opacity: isFromAttendance && ATTENDANCE_LEVEL === 1 ? faceDetected ? 1 : 0.4 : 1 }]}
           >

@@ -570,7 +570,7 @@ const MenuTab = ({
           {item.icon.includes("fa fa-") ? (
             <FontAwesome
               name={item.icon.replace("fa fa-", "")}
-              color={theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_APP_COLOR}
+              color={theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR}
               size={18}
             />
           ) : (
@@ -580,13 +580,13 @@ const MenuTab = ({
                   {item?.materialIcon?.includes("fa fa-") ? (
                     <FontAwesome
                       name={item?.materialIcon.replace("fa fa-", "")}
-                      color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                      color={theme === "dark" ? "black" :ERP_COLOR_CODE.ERP_APP_COLOR}
                       size={18}
                     />
                   ) : (
                     <MaterialIcons
                       name={item?.materialIcon || "widgets"}
-                      color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                      color={ theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR}
                       size={18}
                     />
                   )}

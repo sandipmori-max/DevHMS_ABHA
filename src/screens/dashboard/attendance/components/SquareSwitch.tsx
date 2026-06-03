@@ -44,61 +44,6 @@ const AttendanceLeaveToggle = ({
             Attendance
           </Text>
         </Pressable>
-
-        {/* Leave */}
-        {
-           user?.company_code?.toLowerCase()?.includes("oeuvre01") &&     <Pressable
-          style={[
-            styles.tab,
-            selected === "leave" && styles.activeTab,
-          ]}
-          onPress={() => handleSelect("leave")}
-        >
-          <MaterialIcons
-            name="punch-clock"
-            size={16}
-            color={selected === "leave" ? "#FFF" : "#667085"}
-            style={styles.icon}
-          />
-          <Text
-            style={[
-              styles.tabText,
-              selected === "leave" && styles.activeText,
-            ]}
-          >
-            Leave
-          </Text>
-        </Pressable>
-        }
-    
-
-        {/* Break */}
-        {
-            !user?.company_code?.toLowerCase()?.includes("oeuvre01") && 
-             <Pressable
-          style={[
-            styles.tab,
-            selected === "break" && styles.activeTab,
-          ]}
-          onPress={() => handleSelect("break")}
-        >
-          <MaterialIcons
-            name="free-breakfast"
-            size={16}
-            color={selected === "break" ? "#FFF" : "#667085"}
-            style={styles.icon}
-          />
-          <Text
-            style={[
-              styles.tabText,
-              selected === "break" && styles.activeText,
-            ]}
-          >
-            Break
-          </Text>
-        </Pressable>
-        }
-       
       </View>
     </View>
   );

@@ -51,73 +51,65 @@ const FilePickerRow = ({
     "xlsx",
   ];
   const theme = useAppSelector((state) => state?.theme.mode);
-const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
-   const { height, width } = useWindowDimensions();
-     const isLandscape = width > height;
+  const isIpad =
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
+  const { height, width } = useWindowDimensions();
+  const isLandscape = width > height;
   const base = `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${item?.text}`;
   const [selectedFiles, setSelectedFiles] = useState<FileType[]>([]);
 
-const openFilePicker = async () => {
-  try {
-    const files = await pick({
-      type: [types.allFiles],
-      allowMultiSelection: false, 
-    });
+  const openFilePicker = async () => {
+    try {
+      const files = await pick({
+        type: [types.allFiles],
+        allowMultiSelection: false,
+      });
 
-    const file = files[0];
-    if (!file) return;
+      const file = files[0];
+      if (!file) return;
 
-    const extension = file.name?.split(".").pop()?.toLowerCase();
+      const extension = file.name?.split(".").pop()?.toLowerCase();
 
-    if (!extension || !ALLOWED_EXTENSIONS.includes(extension)) {
-      Alert.alert(
-        t("title.title1"),
-        `${file.name} - ${t("Selected file type is not supported")}`,
-      );
-      return;
+      if (!extension || !ALLOWED_EXTENSIONS.includes(extension)) {
+        Alert.alert(
+          t("title.title1"),
+          `${file.name} - ${t("Selected file type is not supported")}`,
+        );
+        return;
+      }
+
+      if (file.size && file.size > MAX_FILE_SIZE) {
+        Alert.alert(
+          t("title.title1"),
+          `${file.name} - ${t("File size must be less than or equal to 25MB")}`,
+        );
+        return;
+      }
+
+      let filePath = file.uri;
+
+      if (Platform.OS === "android" && file.uri.startsWith("content://")) {
+        const destPath = `${RNFS.TemporaryDirectoryPath}/${file.name}`;
+        await RNFS.copyFile(file.uri, destPath);
+        filePath = destPath;
+      }
+
+      if (isFromFileManager && onFilePicked) {
+        onFilePicked(file);
+        return;
+      }
+
+      const fileBase64 = await RNFS.readFile(filePath, "base64");
+      const attachment = `${item.field}; data:${file.type};base64,${fileBase64}`;
+      handleAttachment(attachment, item.field);
+      setSelectedFiles((prev) => [...prev, file]);
+
+    } catch (err: any) {
+      if (err.code === "USER_CANCELED") return;
+
+      Alert.alert(t("title.title1"), t("msg.msg12"));
     }
-
-    if (file.size && file.size > MAX_FILE_SIZE) {
-      Alert.alert(
-        t("title.title1"),
-        `${file.name} - ${t("File size must be less than or equal to 25MB")}`,
-      );
-      return;
-    }
-
-    let filePath = file.uri;
-
-    // ✅ Fix for Android content:// URI
-    if (Platform.OS === "android" && file.uri.startsWith("content://")) {
-      const destPath = `${RNFS.TemporaryDirectoryPath}/${file.name}`;
-      await RNFS.copyFile(file.uri, destPath);
-      filePath = destPath;
-    }
-
-    // ✅ If coming from file manager callback
-    if (isFromFileManager && onFilePicked) {
-      onFilePicked(file);
-      return;
-    }
-
-    // ✅ Convert to base64
-    const fileBase64 = await RNFS.readFile(filePath, "base64");
-
-    const attachment = `${file.name}; data:${file.type};base64,${fileBase64}`;
-
-    // ✅ Pass as array if your API expects array
-    handleAttachment(attachment, item.field);
-
-    // ✅ Store selected file
-    setSelectedFiles((prev) => [...prev, file]);
-
-  } catch (err: any) {
-    if (err.code === "USER_CANCELED") return;
-
-    Alert.alert(t("title.title1"), t("msg.msg12"));
-  }
-};
+  };
   const removeFile = (index: number) => {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
@@ -159,70 +151,70 @@ const openFilePicker = async () => {
   };
 
   return (
- <View style={[styles.container, theme === "dark" && { backgroundColor: "#000" }]}>
- <LableInfo  
+    <View style={[styles.container, theme === "dark" && { backgroundColor: "#000" }]}>
+      <LableInfo
         item={item}
         theme={theme} />
 
-  {/* Upload Area */}
-  {selectedFiles.length === 0 && (
-    <TouchableOpacity style={[styles.uploadBox, {
-       borderColor:  theme === "dark" ? '#fff' : ERP_COLOR_CODE.ERP_APP_COLOR,
-       backgroundColor: theme === "dark" ? "#000" : "#f8f9ff",
-    },
-    selectedFiles.length === 0 && errors[item?.field] && {
-      borderColor: ERP_COLOR_CODE.ERP_ERROR
-    },
-    !isLandscape && isIpad && {
-      width: "50%",
-    } 
-    
-    ]} onPress={openFilePicker}>
-      <MaterialIcons name="cloud-upload" size={36} color={theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR} />
-      <Text style={styles.uploadSub}>Tap to browse files</Text>
-    </TouchableOpacity>
-  )}
+      {/* Upload Area */}
+      {selectedFiles.length === 0 && (
+        <TouchableOpacity style={[styles.uploadBox, {
+          borderColor: theme === "dark" ? '#fff' : ERP_COLOR_CODE.ERP_APP_COLOR,
+          backgroundColor: theme === "dark" ? "#000" : "#f8f9ff",
+        },
+        selectedFiles.length === 0 && errors[item?.field] && {
+          borderColor: ERP_COLOR_CODE.ERP_ERROR
+        },
+        !isLandscape && isIpad && {
+          width: "50%",
+        }
 
-  {/* File List */}
-  {selectedFiles.map((file, index) => (
-    <View key={index} style={styles.fileItem}>
-      <View style={styles.fileLeft}>
-        <View style={styles.iconBox}>
-          <MaterialIcons
-            name={getFileIcon(file.name)}
-            size={22}
-            color="#4c6ef5"
-          />
+        ]} onPress={openFilePicker}>
+          <MaterialIcons name="cloud-upload" size={36} color={theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR} />
+          <Text style={styles.uploadSub}>Tap to browse files</Text>
+        </TouchableOpacity>
+      )}
+
+      {/* File List */}
+      {selectedFiles.map((file, index) => (
+        <View key={index} style={styles.fileItem}>
+          <View style={styles.fileLeft}>
+            <View style={styles.iconBox}>
+              <MaterialIcons
+                name={getFileIcon(file.name)}
+                size={22}
+                color="#4c6ef5"
+              />
+            </View>
+
+            <View style={{ flex: 1 }}>
+              <Text numberOfLines={1} style={styles.fileName}>
+                {file.name}
+              </Text>
+              <Text style={styles.fileMeta}>
+                {(file.size / 1024).toFixed(1)} KB
+              </Text>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={styles.deleteBtn}
+            onPress={() => removeFile(index)}
+          >
+            <MaterialIcons name="close" size={18} color="#fff" />
+          </TouchableOpacity>
         </View>
+      ))}
 
-        <View style={{ flex: 1 }}>
-          <Text numberOfLines={1} style={styles.fileName}>
-            {file.name}
-          </Text>
-          <Text style={styles.fileMeta}>
-            {(file.size / 1024).toFixed(1)} KB
-          </Text>
-        </View>
-      </View>
-
-      <TouchableOpacity
-        style={styles.deleteBtn}
-        onPress={() => removeFile(index)}
-      >
-        <MaterialIcons name="close" size={18} color="#fff" />
-      </TouchableOpacity>
-    </View>
-  ))}
-
- { selectedFiles.length === 0 && errors[item?.field] && (
+      {selectedFiles.length === 0 && errors[item?.field] && (
         <>
           <InputError error={errors[item?.field]} />
           <View style={{ height: 8 }} />
         </>
       )}
-  {/* Add More */}
+      {/* Add More */}
 
-</View>
+    </View>
   );
 };
 
@@ -232,7 +224,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 14,
     marginBottom: 4
-   },
+  },
 
   label: {
     fontSize: 16,

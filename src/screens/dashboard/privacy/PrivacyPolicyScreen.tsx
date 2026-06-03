@@ -157,58 +157,52 @@ const PrivacyPolicyScreen = () => {
       ),
     });
   }, [navigation, theme, isHidden, item, isFromChart]);
-const [canGoBack, setCanGoBack] = useState(false);
-useLayoutEffect(() => {
-  navigation.setOptions({
-    headerLeft: () => (
-      <TouchableOpacity
-        onPress={() => {
-          if (canGoBack) {
-            webviewRef.current?.goBack();
-          } else {
-            navigation.goBack();
-          }
-        }}
-      >
-        <MaterialIcons
-          name="arrow-back"
-          size={24}
-          color="#fff"
-        />
-      </TouchableOpacity>
-    ),
-  });
-}, [canGoBack]);
-  return (
-    <SafeAreaView style={styles.container}>
-      {!finalUrl || (isFromChart && !token) ? (
-        <FullViewLoader />
-      ) : (
-        <>
-          <WebView
-            ref={webviewRef}
-            source={{ uri: finalUrl }}
-            startInLoadingState={true}
-            javaScriptEnabled={true}
-            domStorageEnabled={false}
-            style={styles.webview}
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-            bounces={false}
-            scrollEnabled={true}
-            decelerationRate={0.998}
-            cacheEnabled={true}
-            incognito={true}
-            cacheMode="LOAD_DEFAULT"
-            renderLoading={() => (
-              <View
-                style={[
-                  styles.loaderContainer,
-                  theme === "dark" && {
-                    backgroundColor: "black",
-                  },
-                ]}
-              >
+
+  const [canGoBack, setCanGoBack] = useState(false);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            if (canGoBack) {
+              webviewRef.current?.goBack();
+            } else {
+              navigation.goBack();
+            }
+          }}
+        >
+          <MaterialIcons
+            name="arrow-back"
+            size={24}
+            color="#fff"
+          />
+        </TouchableOpacity>
+      ),
+    });
+  }, [canGoBack]);
+    return (
+      <SafeAreaView style={styles.container}>
+        {!finalUrl || (isFromChart && !token) ? (
+          <FullViewLoader />
+        ) : (
+          <>
+            <WebView
+              ref={webviewRef}
+              source={{ uri: finalUrl }}
+              startInLoadingState={true}
+              javaScriptEnabled={true}
+              domStorageEnabled={false}
+              style={styles.webview}
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
+              bounces={false}
+              scrollEnabled={true}
+              decelerationRate={0.998}
+              cacheEnabled={true}
+              incognito={true}
+              cacheMode="LOAD_DEFAULT"
+              renderLoading={() => (
                 <View
                   style={[
                     styles.loaderContainer,
@@ -217,80 +211,88 @@ useLayoutEffect(() => {
                     },
                   ]}
                 >
-                  <FullViewLoader isShowTop={false} />
+                  <View
+                    style={[
+                      styles.loaderContainer,
+                      theme === "dark" && {
+                        backgroundColor: "black",
+                      },
+                    ]}
+                  >
+                    <FullViewLoader isShowTop={false} />
+                  </View>
                 </View>
+              )}
+              onNavigationStateChange={(navState) => {
+                    setCanGoBack(navState.canGoBack);
+
+                console.log("Current URL:", navState.url);
+              }}
+              allowsBackForwardNavigationGestures={true}
+              textZoom={100}
+              allowsLinkPreview={false}
+              onError={(syntheticEvent) => {
+                const { nativeEvent } = syntheticEvent;
+                setIsReloading(false);
+              }}
+              onLoadStart={() => {
+                webviewRef.current?.clearCache(true);
+                // webviewRef.current?.clearHistory();
+                setIsReloading(true);
+              }}
+              onLoadEnd={() => {
+                setIsReloading(false);
+                // const jsCode = `
+                //   (function() {
+                //     const div = document.getElementById('divPage');
+                //     if (div) {
+                //       div.style.display = 'none';
+                //     }
+                //   })();
+                //   true;
+                // `;
+                // webviewRef.current?.injectJavaScript(jsCode);
+                // setIsHidden(true)
+              }}
+              injectedJavaScript={`
+                (function() {
+                  const allIds = Array.from(document.querySelectorAll('[id]')).map(el => el.id);
+                  const allClasses = Array.from(document.querySelectorAll('[class]')).map(el => el.className);
+                  window.ReactNativeWebView.postMessage(JSON.stringify({ ids: allIds, classes: allClasses }));
+                })();
+                true;
+              `}
+              onMessage={(event) => {
+                const data = JSON.parse(event.nativeEvent.data);
+              }}
+
+            />
+
+            {isReloading && (
+              <View style={styles.loaderContainer}>
+                <FullViewLoader isShowTop={false} />
               </View>
             )}
-             onNavigationStateChange={(navState) => {
-                  setCanGoBack(navState.canGoBack);
-
-              console.log("Current URL:", navState.url);
-            }}
-            allowsBackForwardNavigationGestures={true}
-            textZoom={100}
-            allowsLinkPreview={false}
-            onError={(syntheticEvent) => {
-              const { nativeEvent } = syntheticEvent;
-              setIsReloading(false);
-            }}
-            onLoadStart={() => {
-              webviewRef.current?.clearCache(true);
-              // webviewRef.current?.clearHistory();
-              setIsReloading(true);
-            }}
-            onLoadEnd={() => {
-              setIsReloading(false);
-              // const jsCode = `
-              //   (function() {
-              //     const div = document.getElementById('divPage');
-              //     if (div) {
-              //       div.style.display = 'none';
-              //     }
-              //   })();
-              //   true;
-              // `;
-              // webviewRef.current?.injectJavaScript(jsCode);
-              // setIsHidden(true)
-            }}
-            injectedJavaScript={`
-              (function() {
-                const allIds = Array.from(document.querySelectorAll('[id]')).map(el => el.id);
-                const allClasses = Array.from(document.querySelectorAll('[class]')).map(el => el.className);
-                window.ReactNativeWebView.postMessage(JSON.stringify({ ids: allIds, classes: allClasses }));
-              })();
-              true;
-            `}
-            onMessage={(event) => {
-              const data = JSON.parse(event.nativeEvent.data);
-            }}
-
-           />
-
-          {isReloading && (
-            <View style={styles.loaderContainer}>
-              <FullViewLoader isShowTop={false} />
-            </View>
-          )}
-        </>
-      )}
-    </SafeAreaView>
-  );
-};
+          </>
+        )}
+      </SafeAreaView>
+    );
+  };
 
 export default PrivacyPolicyScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1, backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
-  },
-  webview: {
-    flex: 1,
-     backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
-  },
-  loaderContainer: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
-  },
+    container: {
+      flex: 1, backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+    },
+    webview: {
+      flex: 1,
+      backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+    },
+    loaderContainer: {
+      ...StyleSheet.absoluteFillObject,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+    },
 });

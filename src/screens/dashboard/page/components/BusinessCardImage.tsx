@@ -65,13 +65,12 @@ const BusinessCardView = ({
   const [cacheBuster, setCacheBuster] = useState(Date.now());
   const [showPicker, setShowPicker] = useState(false);
   const { t } = useTranslations();
-  const { height, width } = useWindowDimensions();  
+  const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
   const getImageUri = (type: "small" | "large") => {
     const base =
       imageUri ||
-      `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${
-        type === "small" ? `${item?.text}` : item?.text
+      `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${type === "small" ? `${item?.text}` : item?.text
       }`;
     return `${base}?cb=${cacheBuster}`;
   };
@@ -112,8 +111,7 @@ const BusinessCardView = ({
 
         Alert.alert(
           `${type === "camera" ? "Camera" : "Gallery"} Permission Required`,
-          `Please allow ${
-            type === "camera" ? "camera" : "gallery"
+          `Please allow ${type === "camera" ? "camera" : "gallery"
           } access to continue.`,
           [
             { text: "Cancel", style: "cancel" },
@@ -126,8 +124,7 @@ const BusinessCardView = ({
       case RESULTS.BLOCKED:
         Alert.alert(
           `${type === "camera" ? "Camera" : "Gallery"} Permission Blocked`,
-          `Please enable ${
-            type === "camera" ? "Camera" : "Gallery"
+          `Please enable ${type === "camera" ? "Camera" : "Gallery"
           } access from Settings.`,
           [
             { text: "Cancel", style: "cancel" },
@@ -139,8 +136,7 @@ const BusinessCardView = ({
       case RESULTS.UNAVAILABLE:
         Alert.alert(
           "Feature Unavailable",
-          `${
-            type === "camera" ? "Camera" : "Gallery"
+          `${type === "camera" ? "Camera" : "Gallery"
           } permission is not available on this device.`,
         );
         return false;
@@ -158,108 +154,108 @@ const BusinessCardView = ({
 
     setTimeout(async () => {
       navigation.navigate("FaceCameraScreen", {
-                onCapture: async (photoPath) => {
-                  setTimeout(async () => {
-                    try {
-                      console.log("========== CAMERA START ==========");
+        onCapture: async (photoPath) => {
+          setTimeout(async () => {
+            try {
+              console.log("========== CAMERA START ==========");
 
 
-                      if (!photoPath) {
-                        console.log("Photo Path Missing");
-                        return;
-                      }
+              if (!photoPath) {
+                console.log("Photo Path Missing");
+                return;
+              }
 
-                      // ✅ SAFE URI
-                      const originalUri = photoPath.startsWith("file://")
-                        ? photoPath
-                        : `file://${photoPath}`;
+              // ✅ SAFE URI
+              const originalUri = photoPath.startsWith("file://")
+                ? photoPath
+                : `file://${photoPath}`;
 
-                      console.log("Original Photo:", originalUri);
+              console.log("Original Photo:", originalUri);
 
-                      let finalUri = originalUri;
-                      let finalBase64 = "";
+              let finalUri = originalUri;
+              let finalBase64 = "";
 
-                      // ⚡ STEP 1: COMPRESS IMAGE
-                      console.log("Compressing Image...");
+              // ⚡ STEP 1: COMPRESS IMAGE
+              console.log("Compressing Image...");
 
-                      let resizedImage;
+              let resizedImage;
 
-                      try {
-                        resizedImage = await ImageResizer.createResizedImage(
-                          originalUri,
-                          800,
-                          800,
-                          "JPEG",
-                          70,
-                          0,
-                        );
-                      } catch (err) {
-                        console.log("⚠️ Primary compression failed, fallback...");
+              try {
+                resizedImage = await ImageResizer.createResizedImage(
+                  originalUri,
+                  800,
+                  800,
+                  "JPEG",
+                  70,
+                  0,
+                );
+              } catch (err) {
+                console.log("⚠️ Primary compression failed, fallback...");
 
-                        resizedImage = await ImageResizer.createResizedImage(
-                          originalUri,
-                          600,
-                          600,
-                          "JPEG",
-                          50,
-                          0,
-                        );
-                      }
+                resizedImage = await ImageResizer.createResizedImage(
+                  originalUri,
+                  600,
+                  600,
+                  "JPEG",
+                  50,
+                  0,
+                );
+              }
 
-                      console.log("Compressed Image:", resizedImage.uri);
+              console.log("Compressed Image:", resizedImage.uri);
 
-                      // ⚡ STEP 2: BASE64 AFTER COMPRESSION
-                      finalBase64 = await RNFS.readFile(
-                        resizedImage.uri.replace("file://", ""),
-                        "base64",
-                      );
+              // ⚡ STEP 2: BASE64 AFTER COMPRESSION
+              finalBase64 = await RNFS.readFile(
+                resizedImage.uri.replace("file://", ""),
+                "base64",
+              );
 
-                      const compressedSizeMB =
-                        (finalBase64.length * 3) / 4 / 1024 / 1024;
+              const compressedSizeMB =
+                (finalBase64.length * 3) / 4 / 1024 / 1024;
 
-                      console.log(
-                        "Final Base64 Size:",
-                        compressedSizeMB.toFixed(2),
-                        "MB",
-                      );
+              console.log(
+                "Final Base64 Size:",
+                compressedSizeMB.toFixed(2),
+                "MB",
+              );
 
-                      finalUri = resizedImage.uri;
+              finalUri = resizedImage.uri;
 
-                       setCacheBuster(Date.now());
-        setBase64(
-          `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`
-        );
-        setImageUri(finalUri);
-                      // setImageExists(true);
-                      // setImageUri(finalUri);
-                      // setCacheBuster(Date.now());
+              setCacheBuster(Date.now());
+              setBase64(
+                `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`
+              );
+              setImageUri(finalUri);
+              // setImageExists(true);
+              // setImageUri(finalUri);
+              // setCacheBuster(Date.now());
 
-                      // console.log("Image State Updated");
+              // console.log("Image State Updated");
 
-                      // // 🚀 SEND TO BACKEND
-                      // handleAttachment(
-                      //   `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
-                      //   item?.field,
-                      // );
+              // // 🚀 SEND TO BACKEND
+              // handleAttachment(
+              //   `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`,
+              //   item?.field,
+              // );
 
 
-                      console.log("========== CAMERA SUCCESS ==========");
-                    } catch (error) {
-                      console.log(
-                        "Image Process Error:",
-                        JSON.stringify(error, null, 2),
-                      );
-                      setImageUri('');
-                      // setImageExists(false);
+              console.log("========== CAMERA SUCCESS ==========");
+            } catch (error) {
+              console.log(
+                "Image Process Error:",
+                JSON.stringify(error, null, 2),
+              );
+              setImageUri('');
+              // setImageExists(false);
 
-                    }
-                  }, 300);
-                },
+            }
+          }, 300);
+        },
 
-                isFromDashboard: false,
-                isBackActive: true,
-                isFromAttendance: false,
-              });
+        isFromDashboard: false,
+        isBackActive: true,
+        isFromAttendance: false,
+      });
 
     }, 400);
   };
@@ -516,105 +512,105 @@ const BusinessCardView = ({
     return result;
   };
 
-   const handleScan = async () => {
-      try { 
-        const result = await launchScannerAsync({
-          quality: 0.8,
-          includeExif: true,
-          includeBase64: true,
-          includeLocationExif: false,
-        });
-  
-        if (result?.didCancel) {
-          return;
-        }
-  
-        if (result?.error) {
-          Alert.alert("Error", result?.errorMessage || "Scan failed");
-          return;
-        }
-  
-        if (result?.images?.length > 0) {
-          const processed = result.images.map((img: any) => ({
-            ...img,
-            base64: img.base64 || null,
-          }));
-   
+  const handleScan = async () => {
+    try {
+      const result = await launchScannerAsync({
+        quality: 0.8,
+        includeExif: true,
+        includeBase64: true,
+        includeLocationExif: false,
+      });
 
-          setCacheBuster(Date.now());
-          if(Platform.OS === 'android'){
-                 const   base64Data = await RNFS.readFile(
-                                          processed[0].uri,
-                                          "base64",
-                                        );
-                                         setBase64(
-          `${item?.field}.jpeg; data:${processed[0]?.type};base64,${base64Data}}`,
-        );
-                  }else{
-                  
-                    setBase64(
-          `${item?.field}.jpeg; data:${processed[0]?.type};base64,${processed[0]?.base64}`,
-        );
-                  }
-      
-        setImageUri(processed[0]?.uri);
-        } else {
-        }
-      } catch (error: any) {
-        Alert.alert("Error", error.message || "Something went wrong");
-      } finally {
-        setShowPicker(false);
+      if (result?.didCancel) {
+        return;
       }
-    };
+
+      if (result?.error) {
+        Alert.alert("Error", result?.errorMessage || "Scan failed");
+        return;
+      }
+
+      if (result?.images?.length > 0) {
+        const processed = result.images.map((img: any) => ({
+          ...img,
+          base64: img.base64 || null,
+        }));
+
+
+        setCacheBuster(Date.now());
+        if (Platform.OS === 'android') {
+          const base64Data = await RNFS.readFile(
+            processed[0].uri,
+            "base64",
+          );
+          setBase64(
+            `${item?.field}.jpeg; data:${processed[0]?.type};base64,${base64Data}}`,
+          );
+        } else {
+
+          setBase64(
+            `${item?.field}.jpeg; data:${processed[0]?.type};base64,${processed[0]?.base64}`,
+          );
+        }
+
+        setImageUri(processed[0]?.uri);
+      } else {
+      }
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "Something went wrong");
+    } finally {
+      setShowPicker(false);
+    }
+  };
 
   return (
     <ScrollView>
       <Text style={styles.title}>{item?.fieldtitle}</Text>
 
-      <View style={[styles.cardContainer,  ]}>
-  <TouchableOpacity
-    activeOpacity={0.85}
-    onPress={() => setShowPicker(true)}
-    style={[styles.card, {
-      borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-    }]}
-  >
-    {loading ? (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#007bff" />
+      <View style={[styles.cardContainer,]}>
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={() => setShowPicker(true)}
+          style={[styles.card, {
+            borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+          }]}
+        >
+          {loading ? (
+            <View style={styles.loaderContainer}>
+              <ActivityIndicator size="large" color="#007bff" />
+            </View>
+          ) : (
+            <>
+              <Image
+                source={{ uri: imageUri ? imageUri : getImageUri("small") }}
+                style={styles.image}
+                resizeMode='contain'
+              />
+
+              {/* Overlay */}
+              {
+                !imageUri && <View style={styles.overlay}>
+                  <MaterialIcons name="cloud-upload" size={28} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
+                  <Text style={styles.overlayText}>
+                    {imageUri ? "Change Image" : "Upload Image"}
+                  </Text>
+                </View>
+              }
+
+            </>
+          )}
+
+          {/* Edit Icon */}
+          <View style={[styles.editIcon, {
+            backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+          }]}>
+            <MaterialIcons name="edit" size={16} color="#fff" />
+          </View>
+        </TouchableOpacity>
       </View>
-    ) : (
-      <>
-        <Image
-          source={{ uri: imageUri ? imageUri : getImageUri("small") }}
-          style={styles.image}
-          resizeMode='contain'
-        />
-
-        {/* Overlay */}
-        {
-          !imageUri &&  <View style={styles.overlay}>
-          <MaterialIcons name="cloud-upload" size={28} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
-          <Text style={styles.overlayText}>
-            {imageUri ? "Change Image" : "Upload Image"}
-          </Text>
-        </View>
-        }
-       
-      </>
-    )}
-
-    {/* Edit Icon */}
-    <View style={[styles.editIcon, {
-      backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
-    }]}>
-      <MaterialIcons name="edit" size={16} color="#fff" />
-    </View>
-  </TouchableOpacity>
-</View>
 
       <Modal
-      supportedOrientations={["portrait", "landscape"]}
+        supportedOrientations={["portrait", "landscape"]}
         visible={showPicker}
         transparent
         animationType="fade"
@@ -636,11 +632,11 @@ const BusinessCardView = ({
           </View>
 
           <View style={styles.optionRow}>
-             <TouchableOpacity
+            <TouchableOpacity
               style={styles.optionCard}
               onPress={handleScan}
             >
-              <MaterialIcons name="document-scanner" size={40} color={ERP_COLOR_CODE.ERP_APP_COLOR} />
+              <MaterialIcons name="document-scanner" size={40} color={ERP_COLOR_CODE.ERP_APP_COLOR + '90'} />
               <Text style={styles.optionText}>Doc scan</Text>
             </TouchableOpacity>
 
@@ -649,7 +645,7 @@ const BusinessCardView = ({
               style={styles.optionCard}
               onPress={pickFromCamera}
             >
-              <MaterialIcons name="photo-camera" size={40} color={ERP_COLOR_CODE.ERP_APP_COLOR}/>
+              <MaterialIcons name="photo-camera" size={40} color={ERP_COLOR_CODE.ERP_APP_COLOR + '90'} />
               <Text style={styles.optionText}>{t("title.title11")}</Text>
             </TouchableOpacity>
 
@@ -657,7 +653,7 @@ const BusinessCardView = ({
               style={styles.optionCard}
               onPress={pickFromGallery}
             >
-              <MaterialIcons name="photo-library" size={40} color={ERP_COLOR_CODE.ERP_APP_COLOR}/>
+              <MaterialIcons name="photo-library" size={40} color={ERP_COLOR_CODE.ERP_APP_COLOR + '90'} />
               <Text style={styles.optionText}>{t("title.title12")}</Text>
             </TouchableOpacity>
           </View>
@@ -669,54 +665,54 @@ const BusinessCardView = ({
 
 const styles = StyleSheet.create({
   cardContainer: {
-  marginVertical: 10,
-},
+    marginVertical: 10,
+  },
 
-card: {
-  width: "100%",
-  height: 180,
-  borderRadius: 8,
-  overflow: "hidden",
-  backgroundColor: "#f8f9ff",
-  borderWidth: 2,
-  borderStyle: "dashed",
-},
+  card: {
+    width: "100%",
+    height: 180,
+    borderRadius: 8,
+    overflow: "hidden",
+    backgroundColor: "#f8f9ff",
+    borderWidth: 2,
+    borderStyle: "dashed",
+  },
 
-image: {
-  width: "100%",
-  height: "100%",
-},
+  image: {
+    width: "100%",
+    height: "100%",
+  },
 
-overlay: {
-  position: "absolute",
-  bottom: 0,
-  width: "100%",
-  paddingVertical: 10,
-  backgroundColor: "rgba(212, 199, 199, 0.4)",
-  alignItems: "center",
-},
+  overlay: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    paddingVertical: 10,
+    backgroundColor: "rgba(212, 199, 199, 0.4)",
+    alignItems: "center",
+  },
 
-overlayText: {
-  color: "#000",
-  fontSize: 13,
-  marginTop: 4,
-},
+  overlayText: {
+    color: "#000",
+    fontSize: 13,
+    marginTop: 4,
+  },
 
-editIcon: {
-  position: "absolute",
-  top: 8,
-  right: 8,
-  backgroundColor: "#fff",
-  borderRadius: 8,
-  padding: 6,
-  elevation: 3,
-},
+  editIcon: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 6,
+    elevation: 3,
+  },
 
-loaderContainer: {
-  flex: 1,
-  justifyContent: "center",
-  alignItems: "center",
-},
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   title: { fontSize: 16, fontWeight: "bold", marginTop: 2 },
   imageThumb: {
     borderWidth: 1,
@@ -777,7 +773,7 @@ loaderContainer: {
     alignItems: "center",
     justifyContent: "center",
   },
-  optionText: { marginTop: 10, fontSize: 16, fontWeight: "600", color: "#333" },
+  optionText: { marginTop: 10, color: "#333" },
 });
 
 export default BusinessCardView;

@@ -92,6 +92,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
   const backdropAnim = useRef(new Animated.Value(0)).current;
   const isIpad =
     (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
+
   useEffect(() => {
     setLoader(false);
   }, [visible]);
@@ -283,7 +284,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
             ? ""
             : fcmToken || (await getMessaging().getToken());
         const loginResult = await loginWithERP(() =>
-          DevERPService.loginToERP({
+        DevERPService.loginToERP({
             user: user?.username,
             pass: user?.password,
             firebaseid: currentFcmToken,
@@ -382,11 +383,13 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
       useNativeDriver: true,
     }).start();
   };
+
   useEffect(() => {
     Image.prefetch(`${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`)
       .then(() => setImageExists(true))
       .catch(() => setImageExists(false));
   }, [baseLink]);
+  
   return (
     <Modal
       visible={visible}

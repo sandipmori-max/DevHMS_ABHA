@@ -47,9 +47,9 @@ const AttendanceScreen = () => {
   const [isListVisible, setIsListVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useAppDispatch();
-    const { user, } = useAppSelector(
-      (state) => state.auth,
-    );
+  const { user, } = useAppSelector(
+    (state) => state.auth,
+  );
   const theme = useAppSelector((state) => state?.theme.mode);
   const { t } = useTranslations();
   const { height, width } = useWindowDimensions();
@@ -107,7 +107,7 @@ const AttendanceScreen = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title:  isFor === "MyAttendance" ? t("test25") : t("test26"),
+      title: isFor === "MyAttendance" ? t("test25") : t("test26"),
       headerTitleAlign: "left",
       headerTitleStyle: {
         color: "#FFFFFF",
@@ -120,7 +120,7 @@ const AttendanceScreen = () => {
       headerTintColor: "#fff",
       headerRight: () => (
         <>
-         
+
           {isListVisible && (
             <ERPIcon
               name="date-range"
@@ -483,7 +483,7 @@ const AttendanceScreen = () => {
             </View>
           </Modal>
         )}
-        
+
         {Platform.OS !== "ios" && showDatePicker?.show && (
           <DateTimePicker
             value={
@@ -538,25 +538,13 @@ const AttendanceScreen = () => {
                 flex: 1,
               }}
             >
-               <>
-               {
-                (user?.company_code?.toLowerCase()?.includes("oeuvre01") || user?.company_code?.toLowerCase()?.includes("deverp")) ? <>
-                
-                 <SquareSwitch value={value} onChange={setValue} />
-                  {
-                    renderContent()
-                  }
-                
-                 </> : <>
-                
+              <>
                <AttendanceForm
-                      setBlockAction={setBlockAction}
-                      resData={resData}
-                      isFromDashboard={isFromDashboard || false}
-                    /> 
-                </>
-               }   
-                </>
+                  setBlockAction={setBlockAction}
+                  resData={resData}
+                  isFromDashboard={isFromDashboard || false}
+                />
+              </>
             </ImageBackground>
           </>
         )}
