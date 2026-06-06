@@ -7091,3 +7091,4 @@ date picker - ios side - update
 Android 8 below
 error ---------------------  NativeFirebaseError: [messaging/unknown] java.io.IOException: java.util.concurrent.ExecutionException: java.io.IOException: MISSING_INSTANCEID_SERVICE
 
+// ask notification permission - on login

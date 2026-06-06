@@ -126,11 +126,11 @@ const StackNavigator = () => {
           options={smoothTransition}
         />
       )}
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Drawer"
         component={DrawerNavigator}
         options={smoothTransition}
-      />
+      /> */}
       <Stack.Screen
         options={screenOptions}
         name="Settings"

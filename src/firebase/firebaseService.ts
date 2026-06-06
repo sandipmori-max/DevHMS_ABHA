@@ -2,6 +2,7 @@ import messaging, {
   FirebaseMessagingTypes,
 } from '@react-native-firebase/messaging';
 import { Alert } from 'react-native';
+import notifee, { EventType } from '@notifee/react-native';
 
 export async function requestUserPermission(): Promise<void> {
   try {
@@ -61,10 +62,27 @@ export function onMessageListener(
 }
 
 export function setBackgroundMessageHandler() {
-  messaging().setBackgroundMessageHandler(
-    async (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
-    }
-  );
+  messaging().setBackgroundMessageHandler(async remoteMessage => {
+  await notifee.displayNotification({
+    title: remoteMessage.data.title,
+    body: remoteMessage.data.body,
+    data: remoteMessage.data,
+    android: {
+      channelId: 'default',
+      pressAction: {
+        id: 'default',
+      },
+      actions: [
+        {
+          title: 'Open',
+          pressAction: {
+            id: 'open',
+          },
+        },
+      ],
+    },
+  });
+});
 }
 
 /**

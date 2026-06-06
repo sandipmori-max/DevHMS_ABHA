@@ -21,6 +21,7 @@ import CustomSplashScreen from "./src/screens/splash/SplashScreen";
 import { TranslationProvider } from "./src/components/TranslationProvider";
 import { ERP_COLOR_CODE } from "./src/utils/constants";
 import useNetworkStatus from "./src/hooks/useNetworkStatus";
+import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
 
 import {
   requestUserPermission,
@@ -37,6 +38,7 @@ import TermsAndConsent from "./src/screens/TermsConditions/TermsCondition";
 import { useAppSelector } from "./src/store/hooks";
 import ExitBottomSheet from "./src/components/ExitBottomSheet";
 import RootNavigatorTvOS from "./src/navigation/RootNavigatorTvOs";
+import { navigate, navigationRef } from "./src/navigation/navigationService";
 
 const App = () => {
   return (
@@ -101,40 +103,112 @@ const AppContent = () => {
     return () => subscription.remove();
   }, []);
 
-  // 🔹 Notifications
   useEffect(() => {
+  async function createChannel() {
+    await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+      importance: AndroidImportance.HIGH,
+    });
+  }
+
+  createChannel();
+}, []);
+  // 🔹 Notifications
+useEffect(() => {
+  const initNotifications = async () => {
     requestUserPermission();
     setBackgroundMessageHandler();
 
-    const unsubscribeForeground = onMessageListener((remoteMessage) => {
-      Alert.alert(
-        remoteMessage?.notification?.title ?? "New Message",
-        remoteMessage?.notification?.body ??
-          JSON.stringify(remoteMessage?.data),
+    // Killed State
+    const initialNotification = await notifee.getInitialNotification();
+
+    if (initialNotification) {
+      const screen =
+        initialNotification.notification?.data?.screen;
+
+      navigate(
+        screen,
+        initialNotification.notification?.data,
       );
+    }
+  };
+
+  initNotifications();
+
+  // Foreground FCM
+  const unsubscribeForeground = onMessageListener(
+    async remoteMessage => {
+      console.log(
+        'FCM Foreground',
+        JSON.stringify(remoteMessage, null, 2),
+      );
+
+      await notifee.displayNotification({
+        title: remoteMessage.notification?.title,
+        body: remoteMessage.notification?.body,
+
+        // IMPORTANT
+        data: remoteMessage.data,
+
+        android: {
+          channelId: 'default',
+
+          pressAction: {
+            id: 'default',
+          },
+
+          actions: [
+            {
+              title: 'Open',
+              pressAction: {
+                id: 'open',
+              },
+            },
+            {
+              title: 'Dismiss',
+              pressAction: {
+                id: 'dismiss',
+              },
+            },
+          ],
+        },
+      });
+    },
+  );
+
+  // Foreground Notification Click
+  const unsubscribeNotifee =
+    notifee.onForegroundEvent(({ type, detail }) => {
+      const data = detail.notification?.data;
+
+      switch (type) {
+        case EventType.PRESS:
+          navigate(data?.screen, data);
+          break;
+
+        case EventType.ACTION_PRESS:
+          if (detail.pressAction.id === 'open') {
+            navigate(data?.screen, data);
+          }
+          break;
+      }
     });
 
-    const unsubscribeBackground = onNotificationOpenedAppListener(
-      (remoteMessage) => {
-        Alert.alert(
-          "App opened from background",
-          JSON.stringify(remoteMessage?.data),
-        );
-      },
-    );
+  // Background Notification Click
+  const unsubscribeBackground =
+    onNotificationOpenedAppListener(remoteMessage => {
+      const screen = remoteMessage?.data?.screen;
 
-    checkInitialNotification((remoteMessage) => {
-      Alert.alert(
-        "App opened from quit state",
-        JSON.stringify(remoteMessage?.data),
-      );
+      navigate(screen, remoteMessage?.data);
     });
 
-    return () => {
-      unsubscribeForeground();
-      unsubscribeBackground();
-    };
-  }, []);
+  return () => {
+    unsubscribeForeground?.();
+    unsubscribeBackground?.();
+    unsubscribeNotifee?.();
+  };
+}, []);
 
   const handleAccept = async () => {
     await AsyncStorage.setItem("TERMS_ACCEPTED", "true");
@@ -179,7 +253,7 @@ const AppContent = () => {
             backgroundColor : theme === 'dark' ? 'black' : 'white'
           }]}
         >
-          <NavigationContainer>
+          <NavigationContainer ref={navigationRef}>
             {
               Platform.isTV ? <RootNavigatorTvOS /> : <RootNavigator />
             } 

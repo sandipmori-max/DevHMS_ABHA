@@ -11,6 +11,7 @@ import {
 import RNFS from "react-native-fs";
 import FastImage from "react-native-fast-image";
 import { ERP_COLOR_CODE } from "../constants";
+import messaging from "@react-native-firebase/messaging";
 
 
 export const formatDateMonthDateYear = (dateString: string) => {
@@ -1391,3 +1392,39 @@ export const getDashboardIcon = (type) => {
 
     return ERP_COLOR_CODE.ERP_APP_COLOR;
   };
+
+
+  export const requestNotificationPermission = async () => {
+  try {
+    const authStatus = await messaging().requestPermission();
+
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      console.log("Notification Permission Granted");
+      return true;
+    }
+
+    console.log("Notification Permission Denied");
+    return false;
+  } catch (error) {
+    console.log("Permission Error", error);
+    return false;
+  }
+};
+
+export const requestAndroidPermission = async () => {
+  if (Platform.OS !== "android") return true;
+
+  if (Platform.Version < 33) {
+    return true;
+  }
+
+  const granted = await PermissionsAndroid.request(
+    PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+  );
+
+  return granted === PermissionsAndroid.RESULTS.GRANTED;
+};

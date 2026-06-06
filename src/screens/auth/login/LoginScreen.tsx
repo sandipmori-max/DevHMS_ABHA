@@ -27,6 +27,8 @@ import { ERP_COLOR_CODE } from "../../../utils/constants";
 import { setReloadApp } from "../../../store/slices/reloadApp/reloadAppSlice";
 import { ERP_GIF } from "../../../assets";
 import { updateAppMenuList } from "../../../store/slices/auth/authSlice";
+import { requestAndroidPermission, requestNotificationPermission } from "../../../utils/helpers";
+import messaging from "@react-native-firebase/messaging";
 
 const LoginScreen = ({ navigation, route }: any) => {
   const { t } = useTranslations();
@@ -69,6 +71,27 @@ const LoginScreen = ({ navigation, route }: any) => {
     };
   }, []);
 
+
+const setupNotification = async () => {
+  try {
+    let granted = false;
+
+    if (Platform.OS === "android") {
+      granted = await requestAndroidPermission();
+    } else {
+      granted = await requestNotificationPermission();
+    }
+
+    // if (!granted) {
+    //   console.log("Permission not granted");
+    //   return;
+    // }
+
+  } catch (error) {
+    console.log(error);
+  }
+};
+
   const handlePersistAfterLogin = async (
     company_code: string,
     password: string,
@@ -76,6 +99,7 @@ const LoginScreen = ({ navigation, route }: any) => {
     response: any,
     companyData: any,
   ) => {
+    await setupNotification();
     dispatch(
       loginUserThunk({
         company_code,

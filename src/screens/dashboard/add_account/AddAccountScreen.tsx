@@ -216,6 +216,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
       onClose();
     });
   };
+  
   const handleAddAccount = async (values: {
     company_code: string;
     user: string;
