@@ -63,26 +63,8 @@ export function onMessageListener(
 
 export function setBackgroundMessageHandler() {
   messaging().setBackgroundMessageHandler(async remoteMessage => {
-  await notifee.displayNotification({
-    title: remoteMessage.data.title,
-    body: remoteMessage.data.body,
-    data: remoteMessage.data,
-    android: {
-      channelId: 'default',
-      pressAction: {
-        id: 'default',
-      },
-      actions: [
-        {
-          title: 'Open',
-          pressAction: {
-            id: 'open',
-          },
-        },
-      ],
-    },
+    console.log('Background Message', remoteMessage);
   });
-});
 }
 
 /**
