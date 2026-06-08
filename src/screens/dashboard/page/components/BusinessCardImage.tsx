@@ -71,7 +71,7 @@ const BusinessCardView = ({
     const base =
       imageUri ||
       `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${type === "small" ? `${item?.text}` : item?.text
-      }`;
+      }`; 
     return `${base}?cb=${cacheBuster}`;
   };
 
@@ -543,13 +543,14 @@ const BusinessCardView = ({
             processed[0].uri,
             "base64",
           );
-          setBase64(
-            `${item?.field}.jpeg; data:${processed[0]?.type};base64,${base64Data}}`,
-          );
+          setCacheBuster(Date.now());
+           setBase64(
+                `${item?.field}.jpeg; data:image/jpeg;base64,${base64Data}`
+              ); 
         } else {
-
+setCacheBuster(Date.now());
           setBase64(
-            `${item?.field}.jpeg; data:${processed[0]?.type};base64,${processed[0]?.base64}`,
+            `${item?.field}.jpeg; data:image/jpeg;base64,${processed[0]?.base64}`,
           );
         }
 

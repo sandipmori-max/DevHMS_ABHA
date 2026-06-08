@@ -116,21 +116,30 @@ const AppContent = () => {
 }, []);
   // 🔹 Notifications
 useEffect(() => {
-  const initNotifications = async () => {
-    requestUserPermission();
-    setBackgroundMessageHandler();
+   const initNotifications = async () => {
+    await requestUserPermission();
 
-    // Killed State
-    const initialNotification = await notifee.getInitialNotification();
+    // KILLED STATE
+    const initialNotification =
+      await notifee?.getInitialNotification();
 
     if (initialNotification) {
-      const screen =
-        initialNotification.notification?.data?.screen;
-
-      navigate(
-        screen,
-        initialNotification.notification?.data,
+      console.log(
+        'APP OPENED FROM KILLED NOTIFICATION',
+        initialNotification?.notification?.data,
       );
+
+      const screen =
+        initialNotification?.notification?.data?.screen;
+
+      if (screen) {
+        navigate(
+          screen,
+          initialNotification?.notification?.data,
+        );
+      }
+    } else {
+      console.log('NORMAL APP LAUNCH');
     }
   };
 

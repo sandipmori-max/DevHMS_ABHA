@@ -253,8 +253,12 @@ const SettingsScreen = () => {
         if (item?.title === t("settings.aboutApp")) {
           return;
         }
+
         if (item?.action === "Language") {
           setLanguageModalVisible(true);
+        }
+        else if(item?.title === t("settings.pushNotifications")){
+            
         } else if (item?.title === t("settings.biometricAuth")) {
           navigation.navigate("PinSet");
         } else if (item?.title === t("settings.privacySettings")) {
