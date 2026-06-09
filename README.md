@@ -7092,3 +7092,13 @@ Android 8 below
 error ---------------------  NativeFirebaseError: [messaging/unknown] java.io.IOException: java.util.concurrent.ExecutionException: java.io.IOException: MISSING_INSTANCEID_SERVICE
 
 // ask notification permission - on login
+
+
+//data
+: 
+"{\"appid\":\"f602cdd2-d9f7-4515-b56b-e2da5980e554\",\"device\":\"iPhone 17 Pro 86A733F0-9B07-4E7E-AF0A-22779A2C3D93\"}"
+
+
+data
+: 
+"{\"appid\":\"f602cdd2-d9f7-4515-b56b-e2da5980e554\",\"device\":\"iPhone 17 Pro 86A733F0-9B07-4E7E-AF0A-22779A2C3D93\"}"

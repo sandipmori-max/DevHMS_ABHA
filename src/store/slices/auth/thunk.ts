@@ -21,20 +21,24 @@ export const checkAuthStateThunk = createAsyncThunk(
       const accounts = await getAccounts(db);
       const activeAccount = await getActiveAccount(db);
 
-      // if (activeAccount?.user?.token && activeAccount?.user?.tokenValidTill) {
-      //   const validTill =
-      //     typeof activeAccount.user.tokenValidTill === "number"
-      //       ? new Date(activeAccount.user.tokenValidTill * 1000)
-      //       : new Date(activeAccount.user.tokenValidTill);
+      if (activeAccount?.user?.token && activeAccount?.user?.tokenValidTill) {
+        const validTill =
+          typeof activeAccount.user.tokenValidTill === "number"
+            ? new Date(activeAccount.user.tokenValidTill * 1000)
+            : new Date(activeAccount.user.tokenValidTill);
 
-      //   if (validTill.getTime() > Date.now()) {
-      //     return {
-      //       accounts,
-      //       activeAccountId: activeAccount.id,
-      //       user: activeAccount.user,
-      //     };
-      //   }
-      // }
+        if (validTill.getTime() > Date.now()) {
+        console.error(" 👈 👈 👈 validTill validTill validTill: 👈👈👈👈 ---- -- - -- - - - - -", validTill); // 👈 added log
+
+          return {
+            accounts,
+            activeAccountId: activeAccount.id,
+            user: activeAccount.user,
+          };
+        }
+      }
+      console.error(" 👈 👈 👈 getAuth getAuth getAuth: 👈👈👈👈 ---- -- - -- - - - - -"); // 👈 added log
+
 
       // 🔄 Token expired → try refresh
       try {

@@ -127,7 +127,7 @@ let parsedData = safeParse(safeParse(raw));
     console.log("Parsed API Response: + + + + + + +", response.config.url, parsedData);
     if(parsedData.success === "0" || parsedData.success === 0){
        return Promise.reject({
-            message: parsedData.message + " - " + `${response.config.url.split("/").filter(Boolean).pop()}` || "API request failed",
+            message: parsedData.message + " ---+++--- " + `${response.config.url.split("/").filter(Boolean).pop()}` || "API request failed",
             statusCode: response.status,
             data: {},
           });
@@ -191,18 +191,18 @@ let parsedData = safeParse(safeParse(raw));
 
       console.error("API Error Response: + + + + + + +", `${error.response.config.url}`);
       return Promise.reject({
-        message: error.response.data.message + "  " + `${error.response.config.url.split("/").filter(Boolean).pop()}` || "API error occurred -----  " +  `${error.response.config.url.split("/").filter(Boolean).pop()}`,
+        message: error.response.data.message + " +++++  " + `${error.response.config.url.split("/").filter(Boolean).pop()}` || "API error occurred -----  " +  `${error.response.config.url.split("/").filter(Boolean).pop()}`,
         statusCode: error.response.status,
         data: error.response.data,
       });
     } else if (error.request) {
       return Promise.reject({
-        message: "No response from server" + "  " + `${error.response.config.url.split("/").filter(Boolean).pop()}`,
+        message: "No response from server" + " ////  " + `${error.response.config.url.split("/").filter(Boolean).pop()}`,
         statusCode: 0,
       });
     } else {
       return Promise.reject({
-        message: error.message + "  " + `${error.response.config.url.split("/").filter(Boolean).pop()}` || "Unknown error occurred" + "  " + `${error.response.config.url.split("/").filter(Boolean).pop()}`,
+        message: error.message + " +*+**+*+* " + `${error.response.config.url.split("/").filter(Boolean).pop()}` || "Unknown error occurred" + "  " + `${error.response.config.url.split("/").filter(Boolean).pop()}`,
         statusCode: 0,
       });
     }

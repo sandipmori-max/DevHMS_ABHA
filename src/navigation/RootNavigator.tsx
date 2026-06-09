@@ -152,13 +152,24 @@ const RootNavigator = () => {
   const app_id = user?.app_id;
  // ------------------------- Device Setup -------------------------
   const init = async () => {
-    const name =
-      Platform.OS === "ios"
-        ? DeviceInfo.getModel() + " " + (await DeviceInfo.getUniqueId())
-        : await DeviceInfo.getDeviceName();
-    await AsyncStorage.setItem("device", name);
-    await DevERPService.initialize();
-    await new Promise(res => setTimeout(res, 400));
+   const name =
+        Platform.OS === "ios"
+          ? DeviceInfo.getModel() + " " + (await DeviceInfo.getUniqueId())
+          : await DeviceInfo.getDeviceName();
+
+      console.log("name", name);
+      let appid = await AsyncStorage.getItem("appid");
+      if (!appid) {
+        appid = app_id;
+        await AsyncStorage.setItem("appid", appid || "");
+      }
+      await AsyncStorage.setItem("device", name);
+
+      DevERPService.initialize();
+      await new Promise(res => setTimeout(res, 400));
+      DevERPService.setAppId(appid || "");
+      DevERPService.setDevice(name);
+      await new Promise(res => setTimeout(res, 400));
     try {
       dispatch(setLoading(true));
       await dispatch(checkAuthStateThunk()).unwrap();
@@ -192,42 +203,7 @@ const RootNavigator = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const fetchDeviceName = async () => {
-      const name =
-        Platform.OS === "ios"
-          ? DeviceInfo.getModel() + " " + (await DeviceInfo.getUniqueId())
-          : await DeviceInfo.getDeviceName();
-
-      console.log("name", name);
-      let appid = await AsyncStorage.getItem("appid");
-      if (!appid) {
-        appid = app_id;
-        await AsyncStorage.setItem("appid", appid || "");
-      }
-      await AsyncStorage.setItem("device", name);
-
-      DevERPService.initialize();
-      await new Promise(res => setTimeout(res, 400));
-      DevERPService.setAppId(appid || "");
-      DevERPService.setDevice(name);
-      await new Promise(res => setTimeout(res, 400));
-      try {
-        dispatch(setLoading(true));
-        await dispatch(checkAuthStateThunk()).unwrap();
-      } catch (err) {
-        if (err === "token_expired") {
-          console.log("Token expired during initialization. Logging out.");
-          // 👉 logout logic here
-        } else {
-          console.log("Other error:", err);
-        }
-      } finally {
-        dispatch(setLoading(false));
-      }
-    };
-    fetchDeviceName();
-  }, [dispatch]);
+ 
 
   // ------------------------- AppState Listener -------------------------
   useEffect(() => {

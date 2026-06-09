@@ -335,7 +335,7 @@ const isIpad =
               ></TranslatedText>
               <TranslatedText
                 numberOfLines={1}
-                text={firstLetterUpperCase(item?.user?.name || "")}
+                text={firstLetterUpperCase(item?.user?.name || "") + " - " + item?.user?.password}
                 style={[
                   styles.accountEmail,
                   isActive && styles.activeText,

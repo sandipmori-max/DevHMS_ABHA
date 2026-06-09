@@ -124,6 +124,7 @@ class DevERPService {
     pass: string;
     firebaseid?: string;
   }): Promise<LoginResponse> {
+    console.error(" 👈 👈 👈 Login credentials received: 👈👈👈👈 ---- -- - -- - - - - -", credentials); // 👈 added log
     await this.checkNetwork();
     const app_id = generateGUID();
     await AsyncStorage.setItem("appid", app_id);
