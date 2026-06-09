@@ -1546,6 +1546,9 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
             item={item}
             label={item?.fieldtitle}
             onScanResult={(files, val) => {
+              if(!files && !val){
+                return ;
+              }
               setFormValues((prev) => {
                 return { ...prev, [val]: files };
               });

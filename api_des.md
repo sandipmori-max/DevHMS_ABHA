@@ -15,13 +15,11 @@ Headers:
 
 Content-Type: application/json
 
-
 Request Body:
 
 {
   "code": "payroll"
 }
-
 
 Response Example:
 

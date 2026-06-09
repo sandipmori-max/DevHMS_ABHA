@@ -17,6 +17,7 @@ import { useAppSelector } from "../../../../store/hooks";
 import InputError from "../../../../components/error/InputError";
 import RNFS from "react-native-fs";
 import LableInfo from "./LableInfo";
+import ImageResizer from "@bam.tech/react-native-image-resizer";
 
 const { DocumentScanner } = NativeModules;
 
@@ -69,13 +70,12 @@ const DocScan: React.FC<DocScanProps> = ({
       setStatus("Opening scanner...");
 
       const result = await launchScannerAsync({
-        quality: 0.8,
+        quality: 0.5,
         includeExif: true,
-        includeBase64: true,
+        includeBase64:  Platform.OS === 'android' ? false : true,
         includeLocationExif: false,
       });
-
-      console.log("result", result)
+ 
       if (result?.didCancel) {
         setStatus("Scan cancelled");
         return;
@@ -95,23 +95,28 @@ const DocScan: React.FC<DocScanProps> = ({
 
         const updated = [...images, ...processed];
 
-        setImages(updated);
-         console.log("updated ------ - -- - - -- -  -", updated)
+        setImages(updated); 
         setStatus("Scan successful ✅");
 
 
         let base64Data = '';
-        if(Platform.OS === 'android'){
+        if (Platform.OS === 'android') {
+          const compressedImage = await ImageResizer.createResizedImage(
+              updated[0].uri,
+              800,     // width
+              800,     // height
+              'JPEG',
+              60        // quality (0-100)
+            );
           const base644 = await RNFS.readFile(
-                                updated[0].uri,
-                                "base64",
-                              );
-                              base64Data = `${item?.field}.jpeg; data:${updated[0]?.type};base64,${base644}`
-        }else{
-         base64Data = `${item?.field}.jpeg; data:${updated[0]?.type};base64,${updated[0]?.base64}`
+            compressedImage.uri,
+            "base64",
+          );
+          base64Data = `${item?.field}.jpeg;data:image/jpeg;base64,${base644}`
+        } else {
+          base64Data = `${item?.field}.jpeg;data:image/jpeg;base64,${updated[0]?.base64}`
         }
-        
-        console.log("base64Data ------ - -- -base64Data----- - -- -  -", base64Data)
+
         onScanResult?.(base64Data, item?.field);
       } else {
         setStatus("No image found");
@@ -144,19 +149,18 @@ const DocScan: React.FC<DocScanProps> = ({
         updated[index] = newImage;
 
         setImages(updated);
-       let base64Data = '';
-        if(Platform.OS === 'android'){
+        let base64Data = '';
+        if (Platform.OS === 'android') {
           const base644 = await RNFS.readFile(
-                                updated[0].uri,
-                                "base64",
-                              );
-                              base64Data = `${item?.field}.jpeg; data:${updated[0]?.type};base64,${base644}`
-        }else{
-         base64Data = `${item?.field}.jpeg; data:${updated[0]?.type};base64,${updated[0]?.base64}`
+            updated[0].uri,
+            "base64",
+          );
+          base64Data = `${item?.field}.jpeg;data:image/jpeg;base64,${base644}`
+        } else {
+          base64Data = `${item?.field}.jpeg;data:image/jpeg;base64,${updated[0]?.base64}`
         }
-        
-        console.log("base64Data ------ - -- -base64Data----- - -- -  -", base64Data)
-        onScanResult?.(base64Data, item?.field); 
+
+        onScanResult?.(base64Data, item?.field);
       }
     } catch (e) {
       Alert.alert("Error", "Failed to replace image");
@@ -165,7 +169,7 @@ const DocScan: React.FC<DocScanProps> = ({
 
   return (
     <>
-      <LableInfo 
+      <LableInfo
         item={item}
         theme={theme} />
       <TouchableOpacity
@@ -222,16 +226,12 @@ const DocScan: React.FC<DocScanProps> = ({
               <Text style={styles.fileName} numberOfLines={1}>
                 {images[images.length - 1].fileName || "Document"}
               </Text>
-
-              <Text style={styles.fileSize}>
-                {(images[images.length - 1].fileSize / 1024).toFixed(1)} KB
-              </Text>
             </View>
           </View>
         )}
       </TouchableOpacity>
 
-      {  errors[item?.field] && (
+      {errors[item?.field] && (
         <>
           <InputError error={errors[item?.field]} />
           <View style={{ height: 8 }} />

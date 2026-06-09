@@ -109,9 +109,30 @@ apiClient.interceptors.request.use(
   },
   (error) => Promise.reject(error),
 );
+const safeParse = (data: any) => {
+  try {
+    return typeof data === "string" ? JSON.parse(data) : data;
+  } catch {
+    return data;
+  }
+};
+
 apiClient.interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => {
-    try {
+    console.log("API Response: + + + + + + +", response.config.url, response);
+
+    let raw = response.data.d;
+
+let parsedData = safeParse(safeParse(raw));
+    console.log("Parsed API Response: + + + + + + +", response.config.url, parsedData);
+    if(parsedData.success === "0" || parsedData.success === 0){
+       return Promise.reject({
+            message: parsedData.message + " - " + `${response.config.url.split("/").filter(Boolean).pop()}` || "API request failed",
+            statusCode: response.status,
+            data: {},
+          });
+    }
+     try {
       if (response.data && response.data.d) {
         let raw = response?.data?.d;
         let parsedData: any;
@@ -129,6 +150,7 @@ apiClient.interceptors.response.use(
             throw new Error("Unsupported response format");
           }
         } catch (error) {
+          console.error("Error parsing API response:", error, "Raw response:", raw);
           if (typeof raw === "string" && raw.includes(",")) {
             const [successPart, ...msgParts] = raw.split(",");
             parsedData = {
@@ -158,7 +180,7 @@ apiClient.interceptors.response.use(
       return response;
     } catch (err) {
       return Promise.reject({
-        message: "Invalid response format",
+        message: "Invalid response format" ,
         statusCode: response.status,
         data: response.data,
       });
@@ -166,19 +188,21 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     if (error.response) {
+
+      console.error("API Error Response: + + + + + + +", `${error.response.config.url}`);
       return Promise.reject({
-        message: error.response.data?.message || "API error occurred",
+        message: error.response.data.message + "  " + `${error.response.config.url.split("/").filter(Boolean).pop()}` || "API error occurred -----  " +  `${error.response.config.url.split("/").filter(Boolean).pop()}`,
         statusCode: error.response.status,
         data: error.response.data,
       });
     } else if (error.request) {
       return Promise.reject({
-        message: "No response from server",
+        message: "No response from server" + "  " + `${error.response.config.url.split("/").filter(Boolean).pop()}`,
         statusCode: 0,
       });
     } else {
       return Promise.reject({
-        message: error.message || "Unknown error occurred",
+        message: error.message + "  " + `${error.response.config.url.split("/").filter(Boolean).pop()}` || "Unknown error occurred" + "  " + `${error.response.config.url.split("/").filter(Boolean).pop()}`,
         statusCode: 0,
       });
     }

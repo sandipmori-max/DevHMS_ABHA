@@ -86,6 +86,7 @@ export async function requestLocationPermissions(): Promise<
 
   return "denied";
 }
+
 // ------------------------- RootNavigator -------------------------
 const RootNavigator = () => {
   const { t } = useTranslation();
@@ -157,9 +158,11 @@ const RootNavigator = () => {
         : await DeviceInfo.getDeviceName();
     await AsyncStorage.setItem("device", name);
     await DevERPService.initialize();
+    await new Promise(res => setTimeout(res, 400));
     try {
       dispatch(setLoading(true));
       await dispatch(checkAuthStateThunk()).unwrap();
+      await new Promise(res => setTimeout(res, 400));
       if (isAuthenticated) {
       try {
        await dispatch(getERPAppConfigMenuThunk());
@@ -205,9 +208,10 @@ const RootNavigator = () => {
       await AsyncStorage.setItem("device", name);
 
       DevERPService.initialize();
+      await new Promise(res => setTimeout(res, 400));
       DevERPService.setAppId(appid || "");
       DevERPService.setDevice(name);
-
+      await new Promise(res => setTimeout(res, 400));
       try {
         dispatch(setLoading(true));
         await dispatch(checkAuthStateThunk()).unwrap();

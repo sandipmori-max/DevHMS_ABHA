@@ -209,7 +209,7 @@ class DevERPService {
 
   getAppMenu() {
     return this.apiCall<MenuResponse>("msp_api.aspx/getAppConfig", {
-      token: this.token,
+      token: this.token ,
     }).then((res) => JSON.stringify(res));
   }
 
@@ -231,7 +231,7 @@ class DevERPService {
 
   getPage(page: string, id: string) {
     return this.apiCall<any>("msp_api.aspx/getPage", {
-      token: this.token,
+      token: this.token ,
       page,
       id,
     });

@@ -1173,6 +1173,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     [uniqueByDate, leave],
   );
   const [tempDate, setTempDate] = useState(new Date());
+  
   useEffect(() => {
     getCurrentMonthRange();
   }, [user, reLoading]);

@@ -76,10 +76,7 @@ const Media = ({
 
   const getImageUri = (type: "small" | "large") => {
     const base =
-      imageUri ||
-      `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${type === "small" ? `${item?.text}` : `${item?.text}`
-      }`;
-    console.log("Generated image URI:", base);
+      imageUri || `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${type === "small" ? `${item?.text}` : `${item?.text}`}`;
     return `${base}?cb=${cacheBuster}`;
   };
 
@@ -158,31 +155,20 @@ const Media = ({
             nextAppState === "active" &&
             pendingCameraAction.current
           ) {
-
-
             const granted = await requestPermission("camera");
-
-
-
             if (granted) {
               setIsSettingVisible(false);
-
               setAlertVisible(false);
-
               pendingCameraAction.current = false;
-
               navigation.navigate("FaceCameraScreen", {
                 onCapture: async (photoPath) => {
                   setTimeout(async () => {
                     try {
                       console.log("========== CAMERA START ==========");
-
-
                       if (!photoPath) {
                         console.log("Photo Path Missing");
                         return;
                       }
-
                       // ✅ SAFE URI
                       const originalUri = photoPath.startsWith("file://")
                         ? photoPath
