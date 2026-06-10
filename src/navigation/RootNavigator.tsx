@@ -97,7 +97,7 @@ const RootNavigator = () => {
   };
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
-  const { isLoading, isAuthenticated, accounts, user, appColorCode } =
+  const { isLoading, isAuthenticated, accounts, user, attendanceDone } =
     useAppSelector((state) => state.auth);
   const { reLoading } = useAppSelector((state) => state.reloadApp);
 
@@ -124,6 +124,7 @@ const RootNavigator = () => {
 
     const enabled = await DeviceInfo.isLocationEnabled();
 
+    console.log("Location Service Enabled:", enabled);
     // GPS OFF → show modal once & stop features
     if (!enabled && !gpsModalShownRef.current) {
       setAlertConfig({
@@ -150,40 +151,57 @@ const RootNavigator = () => {
   };
 
   const app_id = user?.app_id;
- // ------------------------- Device Setup -------------------------
+  // ------------------------- Device Setup -------------------------
   const init = async () => {
-   const name =
-        Platform.OS === "ios"
-          ? DeviceInfo.getModel() + " " + (await DeviceInfo.getUniqueId())
-          : await DeviceInfo.getDeviceName();
+    const name =
+      Platform.OS === "ios"
+        ? DeviceInfo.getModel() + " " + (await DeviceInfo.getUniqueId())
+        : await DeviceInfo.getDeviceName();
 
-      console.log("name", name);
-      let appid = await AsyncStorage.getItem("appid");
-      await new Promise(res => setTimeout(res, 400));
+    console.log("name", name);
+    let appid = await AsyncStorage.getItem("appid");
+    await new Promise(res => setTimeout(res, 400));
 
-      if (!appid) {
-        appid = app_id;
-        await AsyncStorage.setItem("appid", appid || "");
-      }
-      await AsyncStorage.setItem("device", name);
+    if (!appid) {
+      appid = app_id;
+      await AsyncStorage.setItem("appid", appid || "");
+    }
+    await AsyncStorage.setItem("device", name);
 
-      DevERPService.initialize();
-      await new Promise(res => setTimeout(res, 400));
-      DevERPService.setAppId(appid || "");
-      DevERPService.setDevice(name);
-      await new Promise(res => setTimeout(res, 400));
+    DevERPService.initialize();
+    await new Promise(res => setTimeout(res, 400));
+    DevERPService.setAppId(appid || "");
+    DevERPService.setDevice(name);
+    await new Promise(res => setTimeout(res, 400));
     try {
       dispatch(setLoading(true));
       await dispatch(checkAuthStateThunk()).unwrap();
       await new Promise(res => setTimeout(res, 400));
       if (isAuthenticated) {
-      try {
-       await dispatch(getERPAppConfigMenuThunk());
-      } catch (error) {
-        dispatch(updateAppMenuList([]));
-        console.log("Error fetching app config menu:", error);
+        try {
+          dispatch(getLastPunchInThunk())
+            .unwrap()
+            .then((res) => {
+              if (res?.success === 1 || res?.success === "1") {
+                dispatch(updateAttendanceState(true));
+              } else {
+                dispatch(updateAttendanceState(false));
+              }
+            })
+            .catch((err) => {
+              dispatch(updateAttendanceState(false));
+            });
+        } catch (error) {
+          dispatch(updateAttendanceState(false));
+          console.log("error*******", error);
+        }
+        try { 
+          await dispatch(getERPAppConfigMenuThunk());
+        } catch (error) {
+          dispatch(updateAppMenuList([]));
+          console.log("Error fetching app config menu:", error);
+        }
       }
-    }
     } catch (err) {
       if (err === "token_expired") {
         console.log("Token expired during initialization. Logging out.");
@@ -194,7 +212,7 @@ const RootNavigator = () => {
     } finally {
       dispatch(setLoading(false));
     }
-    
+
   };
 
   useEffect(() => {
@@ -205,7 +223,7 @@ const RootNavigator = () => {
     };
   }, []);
 
- 
+
 
   // ------------------------- AppState Listener -------------------------
   useEffect(() => {
@@ -214,25 +232,11 @@ const RootNavigator = () => {
         appState.current.match(/inactive|background/) &&
         nextAppState === "active"
       ) {
-        try {
-          dispatch(getLastPunchInThunk())
-            .unwrap()
-            .then((res) => {
-              if (res?.success === 1 || res?.success === "1") {
-                dispatch(updateAttendanceState(true));
-
-                checkLocation();
-              } else {
-                dispatch(updateAttendanceState(false));
-              }
-            })
-            .catch((err) => {
-              dispatch(updateAttendanceState(false));
-            });
-        } catch (error) {
+        if (attendanceDone) {
+          dispatch(updateAttendanceState(true));
+          checkLocation();
+        } else {
           dispatch(updateAttendanceState(false));
-
-          console.log("error*******", error);
         }
       }
       appState.current = nextAppState;
@@ -240,32 +244,17 @@ const RootNavigator = () => {
 
     const sub = AppState.addEventListener("change", handleAppStateChange);
     return () => sub.remove();
-  }, [isAuthenticated, reLoading]);
+  }, [isAuthenticated, reLoading, attendanceDone]);
 
 
-    useEffect(() => {
+  useEffect(() => {
     if (!isAuthenticated) return;
-
-    // Start checking every 1 second
     locationServiceIntervalRef.current = setInterval(() => {
-      try {
-        dispatch(getLastPunchInThunk())
-          .unwrap()
-          .then((res) => {
-            if (res?.success === 1 || res?.success === "1") {
-              dispatch(updateAttendanceState(true));
-              checkLocationServiceOnly();
-            } else {
-              dispatch(updateAttendanceState(false));
-            }
-          })
-          .catch((err) => {
-            dispatch(updateAttendanceState(false));
-          });
-      } catch (error) {
+      if (attendanceDone) {
+        dispatch(updateAttendanceState(true));
+        checkLocationServiceOnly();
+      } else {
         dispatch(updateAttendanceState(false));
-
-        console.log("error ", error);
       }
     }, 1000);
 
@@ -276,7 +265,7 @@ const RootNavigator = () => {
         locationServiceIntervalRef.current = null;
       }
     };
-  }, [isAuthenticated, reLoading]);
+  }, [isAuthenticated, reLoading, attendanceDone]);
 
   // ------------------------- Language -------------------------
   useEffect(() => {
@@ -290,7 +279,7 @@ const RootNavigator = () => {
     const enabled = await DeviceInfo.isLocationEnabled();
 
     const permission = await requestLocationPermissions();
-    console.log("permission", permission);
+    console.log("permission+++++++++++++++++++++++++++++++++++++++++++++++++++++++", permission);
     await new Promise(res => setTimeout(res, 400));
     if (enabled && permission === "granted") {
       locationModalShownRef.current = false;
@@ -316,7 +305,7 @@ const RootNavigator = () => {
       return;
     }
 
-   if (
+    if (
       permission === "foreground-only" &&
       Platform.OS === "android" &&
       Platform.Version >= 29
@@ -365,49 +354,29 @@ const RootNavigator = () => {
     if (isAuthenticated) {
       // Optional: cancel timeout if component unmounts
       const timer = setTimeout(() => {
-        try {
-          dispatch(getLastPunchInThunk())
-            .unwrap()
-            .then((res) => {
-              if (res?.success === 1 || res?.success === "1") {
-                dispatch(updateAttendanceState(true));
-
-                checkLocation();
-              } else {
-                dispatch(updateAttendanceState(false));
-
-                setAlertVisible(false);
-                setOpenSettings(false);
-                setBackgroundDeniedModal(false);
-                NativeModules.LocationModule.setUserTokens([]);
-                NativeModules.LocationModule.stopService();
-              }
-            })
-            .catch((err) => {
-              dispatch(updateAttendanceState(false));
-
-              setAlertVisible(false);
-              setOpenSettings(false);
-              setBackgroundDeniedModal(false);
-              NativeModules.LocationModule.setUserTokens([]);
-              NativeModules.LocationModule.stopService();
-            });
-        } catch (error) {
+        if (attendanceDone) {
+          dispatch(updateAttendanceState(true));
+          checkLocation();
+        } else {
           dispatch(updateAttendanceState(false));
-
-          console.log("error//////", error);
+          setAlertVisible(false);
+          setOpenSettings(false);
+          setBackgroundDeniedModal(false);
+          NativeModules.LocationModule.setUserTokens([]);
+          NativeModules.LocationModule.stopService();
         }
+
       }, 2500);
       // Cleanup to avoid memory leaks
       return () => clearTimeout(timer);
     }
-  }, [isAuthenticated, reLoading]);
-  
+  }, [isAuthenticated, reLoading, attendanceDone]);
+
   // ------------------------- Render -------------------------
   if (isLoading) return <FullViewLoader />;
 
   return (
-    <> 
+    <>
       {isAuthenticated ? <StackNavigator /> : <AuthNavigator />}
       {isAuthenticated && (
         <CustomAlert

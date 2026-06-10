@@ -263,8 +263,10 @@ const isIpad =
           onPressIn={onPressItemIn}
           onPressOut={onPressItemOut}
           onPress={async () => {
+            if(user?.id.toString() === item?.user?.id.toString()){
+              return;
+            }
             dispatch(setLoading(true));
-            // setTimeout(async ()=>{
             dispatch(clearDashboardFilters());
             dispatch(setDashboard([]));
             dispatch(setEmptyMenu([]));
@@ -297,7 +299,6 @@ const isIpad =
               handleSwitchAccount(item?.id);
 
             }
-            // },600)
           }}
         >
           <View style={styles.accountContent}>

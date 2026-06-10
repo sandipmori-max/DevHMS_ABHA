@@ -204,22 +204,21 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
   const isIpad =
     (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
 
-    const marqueeItems = filteredDashboard.filter((item) =>
-      hasMarqueeContent(item.data),
-    );
+  const marqueeItems = filteredDashboard.filter((item) =>
+    hasMarqueeContent(item.data),
+  );
 
-    console.log("marqueeItems==================", marqueeItems);
-    const htmlItems = filteredDashboard.filter(
-      (item) =>
-        hasHtmlContent(item.data) &&
-        !hasMarqueeContent(item.data),
-    );
+  const htmlItems = filteredDashboard.filter(
+    (item) =>
+      hasHtmlContent(item.data) &&
+      !hasMarqueeContent(item.data),
+  );
 
-    const textItems = filteredDashboard.filter(
-      (item) =>
-        item.data &&
-        !hasHtmlContent(item.data),
-    );
+  const textItems = filteredDashboard.filter(
+    (item) =>
+      item.data &&
+      !hasHtmlContent(item.data),
+  );
 
   // const htmlItems = filteredDashboard.filter((item) =>
   //   hasHtmlContent(item.data),
@@ -867,7 +866,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     );
   };
 
-    const renderMoreItem = ({
+  const renderMoreItem = ({
     item,
     index,
     isFromHtml,
@@ -875,7 +874,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
   }: any) => {
     return (
       <TouchableOpacity
-      onPress={async () => {
+        onPress={async () => {
           if (
             item?.url.includes(".") ||
             item?.url.includes("?") ||
@@ -887,7 +886,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
           }
         }}
       >
-      <BirthdayList html={item?.footer}  item={item}/>
+        <BirthdayList html={item?.footer} item={item} />
 
       </TouchableOpacity>
     )
@@ -1174,7 +1173,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     [uniqueByDate, leave],
   );
   const [tempDate, setTempDate] = useState(new Date());
-  
+
   useEffect(() => {
     getCurrentMonthRange();
   }, [user, reLoading]);
@@ -2211,7 +2210,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                               flex: 1,
                             }}
                           >
-                            
+
                             <View>
                               {pieChartData.length > 0 && (
                                 <>
@@ -2267,83 +2266,83 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                 <View style={{ marginTop: 12 }} />
                               )}
                             </View>
-                          
-                          {
-  marqueeItems.length > 0 &&   <View
-                              style={[
-                                styles.dashboardSection,
-                                {
-                                  marginLeft: 2,
-                                  marginRight: 8,
-                                },
-                              ]}
-                            >
-                              <View
-                                style={{ 
-                                  backgroundColor:
-                                    theme === "dark" ? "gray" : "#f5f5f5",
-                                  flexDirection: "row",
-                                  justifyContent: "space-between",
-                                  padding: 8,
-                                  borderRadius: 4,
-                                  alignItems: "center",
-                                }}
+
+                            {
+                              marqueeItems.length > 0 && <View
+                                style={[
+                                  styles.dashboardSection,
+                                  {
+                                    marginLeft: 2,
+                                    marginRight: 8,
+                                  },
+                                ]}
                               >
                                 <View
                                   style={{
-                                    justifyContent: "center",
-                                    alignContent: "center",
-                                    alignItems: "center",
+                                    backgroundColor:
+                                      theme === "dark" ? "gray" : "#f5f5f5",
                                     flexDirection: "row",
-                                    gap: 4,
+                                    justifyContent: "space-between",
+                                    padding: 8,
+                                    borderRadius: 4,
+                                    alignItems: "center",
                                   }}
                                 >
-                                  <MaterialIcons
-                                    size={14}
-                                    color={theme === "dark" ? "white" : "gray"}
-                                    name="dashboard"
-                                  />
-                                  <Text
+                                  <View
                                     style={{
-                                      color: theme === "dark" ? "white" : "black",
-                                      fontWeight: "600",
+                                      justifyContent: "center",
+                                      alignContent: "center",
+                                      alignItems: "center",
+                                      flexDirection: "row",
+                                      gap: 4,
                                     }}
                                   >
-                                    Today update
-                                  </Text>
+                                    <MaterialIcons
+                                      size={14}
+                                      color={theme === "dark" ? "white" : "gray"}
+                                      name="dashboard"
+                                    />
+                                    <Text
+                                      style={{
+                                        color: theme === "dark" ? "white" : "black",
+                                        fontWeight: "600",
+                                      }}
+                                    >
+                                      Today update
+                                    </Text>
+                                  </View>
+
+
                                 </View>
-
-
+                                <View
+                                  style={{
+                                    marginRight: 8,
+                                  }}
+                                >
+                                  <FlatList
+                                    key={
+                                      isLandscape
+                                        ? `${isHorizontal}-landscape3`
+                                        : `${isHorizontal}-portrait3`
+                                    }
+                                    keyboardShouldPersistTaps="handled"
+                                    data={marqueeItems}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    renderItem={({ item, index }) =>
+                                      renderMoreItem({
+                                        item,
+                                        index,
+                                        isFromHtml: true,
+                                        isFromMenu: true,
+                                      })
+                                    }
+                                    numColumns={isIpad ? 2 : 1}
+                                    showsVerticalScrollIndicator={false}
+                                  />
+                                </View>
                               </View>
-                              <View
-                                style={{
-                                  marginRight: 8,
-                                }}
-                              >
-                                <FlatList
-                                  key={
-                                    isLandscape
-                                      ? `${isHorizontal}-landscape3`
-                                      : `${isHorizontal}-portrait3`
-                                  }
-                                  keyboardShouldPersistTaps="handled"
-                                  data={marqueeItems}
-                                  keyExtractor={(item, index) => index.toString()}
-                                  renderItem={({ item, index }) =>
-                                    renderMoreItem({
-                                      item,
-                                      index,
-                                      isFromHtml: true,
-                                      isFromMenu: true,
-                                    })
-                                  }
-                                  numColumns={isIpad ? 2 : 1}
-                                  showsVerticalScrollIndicator={false}
-                                />
-                              </View>
-                            </View>
 
-}
+                            }
                             <View
                               style={[
                                 styles.dashboardSection,
@@ -2580,15 +2579,15 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                         Check In
                                       </Text>
                                     </View>
-                                    <TouchableOpacity 
-                                    disabled={workingTime !== "00:00:00"}
-                                    onPress={() => {
+                                    <TouchableOpacity
+                                      disabled={workingTime !== "00:00:00"}
+                                      onPress={() => {
                                         navigation.navigate("Attendance", {
                                           isFor: "Attendance",
                                           isFromBreak: true,
                                         });
                                       }}
-                                    style={styles.timeItem}>
+                                      style={styles.timeItem}>
                                       <View
                                         style={[
                                           styles.iconTimeContainer,
