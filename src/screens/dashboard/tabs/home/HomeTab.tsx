@@ -987,6 +987,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
       const loadData = async () => {
         try {
           dispatch(setDashboardLoading(true));
+          await new Promise(res => setTimeout(res, 400));
           await dispatch(
             getERPDashboardThunk({
               branch: auth?.dashboardBranchId,
@@ -998,9 +999,9 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
               fd: auth?.dashboardFromDate || fromDate,
               td: auth?.dashboardToDate || toDate,
             }),
-          );
-
-          await dispatch(getERPAppConfigMenuThunk());
+          ).unwrap();
+          await new Promise(res => setTimeout(res, 800));
+          await dispatch(getERPAppConfigMenuThunk()).unwrap();
         } catch (error) {
           dispatch(updateAppMenuList([]));
           console.log("Error fetching app config menu:", error);

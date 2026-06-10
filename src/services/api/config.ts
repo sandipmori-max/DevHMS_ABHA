@@ -2,7 +2,15 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import { Platform } from "react-native";
-
+import { store } from "../../store/store";
+import { logoutUserThunk } from "../../store/slices/auth/thunk";
+import { clearAuthState, setDashboard, setEmptyMenu } from "../../store/slices/auth/authSlice";
+import { resetAjaxState } from "../../store/slices/ajax/ajaxSlice";
+import { resetAttendanceState } from "../../store/slices/attendance/attendanceSlice";
+import { resetDropdownState } from "../../store/slices/dropdown/dropdownSlice";
+import { resetSyncLocationState } from "../../store/slices/location/syncLocationSlice";
+import { setERPAppColor } from "../../utils/constants";
+import { createAccountsTable, getActiveAccount, getDBConnection, logoutUser } from "../../utils/sqlite";
 const ENV = {
   development: {
     BASE_URL:
@@ -118,21 +126,34 @@ const safeParse = (data: any) => {
 };
 
 apiClient.interceptors.response.use(
-  (response: AxiosResponse<ApiResponse>) => {
-    console.log("API Response: + + + + + + +", response.config.url, response);
+  async (response: AxiosResponse<ApiResponse>) => {
+    console.log("API Response: + + + + -------------------------- + + +", response.config.url, response);
 
     let raw = response.data.d;
 
-let parsedData = safeParse(safeParse(raw));
-    console.log("Parsed API Response: + + + + + + +", response.config.url, parsedData);
-    if(parsedData.success === "0" || parsedData.success === 0){
-       return Promise.reject({
-            message: parsedData.message + " ---+++--- " + `${response.config.url.split("/").filter(Boolean).pop()}` || "API request failed",
-            statusCode: response.status,
-            data: {},
-          });
-    }
-     try {
+    let parsedData = safeParse(safeParse(raw)); 
+    // if ((parsedData.success === "0" || parsedData.success === 0) && parsedData.message === "Invalid Token") {
+    //   const db = await getDBConnection();
+    //   await createAccountsTable(db);
+    //   const activeUser = await getActiveAccount(db);
+    //   await logoutUser(db, activeUser?.id);
+    //   store.dispatch(setDashboard([]));
+    //   store.dispatch(setEmptyMenu([]));
+    //   store.dispatch(resetAjaxState());
+    //   store.dispatch(resetAttendanceState());
+    //   store.dispatch(clearAuthState());
+    //   store.dispatch(resetDropdownState());
+    //   store.dispatch(resetSyncLocationState());
+    //   store.dispatch(resetAttendanceState());
+    //   setERPAppColor('#251d50');
+    //   store.dispatch(logoutUserThunk());
+    //   return Promise.reject({
+    //     message: parsedData.message + " ---+++--- " + `${response.config.url.split("/").filter(Boolean).pop()}` || "API request failed",
+    //     statusCode: response.status,
+    //     data: {},
+    //   });
+    // }
+    try {
       if (response.data && response.data.d) {
         let raw = response?.data?.d;
         let parsedData: any;
@@ -180,7 +201,7 @@ let parsedData = safeParse(safeParse(raw));
       return response;
     } catch (err) {
       return Promise.reject({
-        message: "Invalid response format" ,
+        message: "Invalid response format",
         statusCode: response.status,
         data: response.data,
       });
@@ -189,9 +210,9 @@ let parsedData = safeParse(safeParse(raw));
   (error) => {
     if (error.response) {
 
-      console.error("API Error Response: + + + + + + +", `${error.response.config.url}`);
+      console.error("API Error Response: + + + + + + +", `${error}`);
       return Promise.reject({
-        message: error.response.data.message + " +++++  " + `${error.response.config.url.split("/").filter(Boolean).pop()}` || "API error occurred -----  " +  `${error.response.config.url.split("/").filter(Boolean).pop()}`,
+        message: error.response.data.message + " +++++  " + `${error.response.config.url.split("/").filter(Boolean).pop()}` || "API error occurred -----  " + `${error.response.config.url.split("/").filter(Boolean).pop()}`,
         statusCode: error.response.status,
         data: error.response.data,
       });

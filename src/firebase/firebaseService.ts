@@ -2,7 +2,6 @@ import messaging, {
   FirebaseMessagingTypes,
 } from '@react-native-firebase/messaging';
 import { Alert } from 'react-native';
-import notifee, { EventType } from '@notifee/react-native';
 
 export async function requestUserPermission(): Promise<void> {
   try {

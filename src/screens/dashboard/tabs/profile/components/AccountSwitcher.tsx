@@ -169,7 +169,7 @@ const isIpad =
 
   const handleSwitchAccount = async (accountId: string) => {
     if (accountId !== activeAccountId) {
-     await dispatch(switchAccountThunk(accountId));
+     await dispatch(switchAccountThunk(accountId)).unwrap();
      dispatch(setBirthdayUsers([]));
     //  await dispatch(getLastPunchInThunk());
     //   try {
@@ -335,7 +335,7 @@ const isIpad =
               ></TranslatedText>
               <TranslatedText
                 numberOfLines={1}
-                text={firstLetterUpperCase(item?.user?.name || "") + " - " + item?.user?.password}
+                text={firstLetterUpperCase(item?.user?.name || "")}
                 style={[
                   styles.accountEmail,
                   isActive && styles.activeText,

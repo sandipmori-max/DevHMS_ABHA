@@ -159,6 +159,8 @@ const RootNavigator = () => {
 
       console.log("name", name);
       let appid = await AsyncStorage.getItem("appid");
+      await new Promise(res => setTimeout(res, 400));
+
       if (!appid) {
         appid = app_id;
         await AsyncStorage.setItem("appid", appid || "");
