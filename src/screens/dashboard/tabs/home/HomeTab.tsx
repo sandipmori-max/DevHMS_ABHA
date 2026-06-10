@@ -94,7 +94,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
-  const TOTAL_TIME = 3 * 60; // 3 min in seconds
+  const TOTAL_TIME = 3 * 60;
 
   const [remainingTime, setRemainingTime] = useState(TOTAL_TIME);
   const [controls, setControls] = useState<any[]>([]);
@@ -594,9 +594,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         "filtered refresh============= ++++++ +++ ++ + + ++ + + + + + + ",
         filtered,
       );
-
-
-
       const res1 = await dispatch(
         getDDLThunk({
           dtlid: typeObj?.dtlid,
@@ -616,8 +613,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         dispatch(setActiveDashboardTypeId(data1[0]?.value?.toString() || ""));
         dispatch(setActiveDashboardType(data1[0]?.name || ""));
       })
-
-
       const params = {
         branch: filtered[0]?.value?.toString() || "",
         type: data1[0]?.value?.toString() || "",
@@ -625,7 +620,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         td: toDateStr,
       };
       await dispatch(getERPDashboardThunk(params));
-
 
       dispatch(getLastPunchInThunk())
         .unwrap()
@@ -1181,13 +1175,6 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await dispatch(getLastPunchInThunk()).unwrap();
-        if (res?.id !== "0" && res?.id !== 0) {
-          setAttendance(res);
-        } else {
-          setAttendance(null);
-        }
-
         const raw = await dispatch(
           getERPListDataThunk({
             page: "PunchIn",
@@ -1197,16 +1184,15 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
             branch: "",
           }),
         ).unwrap();
-
         const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
         const final = parsed?.d ? JSON.parse(parsed?.d) : parsed;
-
-        console.log(
-          "--------------------------------------------List Data:",
-          final,
-        );
-
         setListData(final?.data || final || []);
+        const res = await dispatch(getLastPunchInThunk()).unwrap();
+        if (res?.id !== "0" && res?.id !== 0) {
+          setAttendance(res);
+        } else {
+          setAttendance(null);
+        }
       } catch (err) {
         console.log("Error:", err);
         setAttendance(null);

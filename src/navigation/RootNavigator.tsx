@@ -160,7 +160,7 @@ const RootNavigator = () => {
 
     console.log("name", name);
     let appid = await AsyncStorage.getItem("appid");
-    await new Promise(res => setTimeout(res, 400));
+    await new Promise(res => setTimeout(res, 600));
 
     if (!appid) {
       appid = app_id;
@@ -168,50 +168,56 @@ const RootNavigator = () => {
     }
     await AsyncStorage.setItem("device", name);
 
-    DevERPService.initialize();
-    await new Promise(res => setTimeout(res, 400));
-    DevERPService.setAppId(appid || "");
-    DevERPService.setDevice(name);
-    await new Promise(res => setTimeout(res, 400));
-    try {
-      dispatch(setLoading(true));
-      await dispatch(checkAuthStateThunk()).unwrap();
-      await new Promise(res => setTimeout(res, 400));
-      if (isAuthenticated) {
-        try {
-          dispatch(getLastPunchInThunk())
-            .unwrap()
-            .then((res) => {
-              if (res?.success === 1 || res?.success === "1") {
-                dispatch(updateAttendanceState(true));
-              } else {
+    await DevERPService.initialize().then(async () => {
+      DevERPService.setAppId(appid || "");
+      DevERPService.setDevice(name);
+      try {
+        dispatch(setLoading(true));
+        console.log("Checking auth state...");
+        await dispatch(checkAuthStateThunk()).unwrap();
+        await new Promise(res => setTimeout(res, 900));
+        console.log("Auth state checked successfully.");
+
+        if (isAuthenticated) {
+          try {
+            dispatch(getLastPunchInThunk())
+              .unwrap()
+              .then((res) => {
+                if (res?.success === 1 || res?.success === "1") {
+                  dispatch(updateAttendanceState(true));
+                } else {
+                  dispatch(updateAttendanceState(false));
+                }
+              })
+              .catch((err) => {
                 dispatch(updateAttendanceState(false));
-              }
-            })
-            .catch((err) => {
-              dispatch(updateAttendanceState(false));
-            });
-        } catch (error) {
-          dispatch(updateAttendanceState(false));
-          console.log("error*******", error);
+              });
+          } catch (error) {
+            dispatch(updateAttendanceState(false));
+            console.log("error*******", error);
+          }
+          try {
+            await dispatch(getERPAppConfigMenuThunk());
+          } catch (error) {
+            dispatch(updateAppMenuList([]));
+            console.log("Error fetching app config menu:", error);
+          }
         }
-        try { 
-          await dispatch(getERPAppConfigMenuThunk());
-        } catch (error) {
-          dispatch(updateAppMenuList([]));
-          console.log("Error fetching app config menu:", error);
+      } catch (err) {
+        if (err === "token_expired") {
+          console.log("Token expired during initialization. Logging out.");
+          // 👉 logout logic here
+        } else {
+          console.log("Other error:", err);
         }
+      } finally {
+        dispatch(setLoading(false));
       }
-    } catch (err) {
-      if (err === "token_expired") {
-        console.log("Token expired during initialization. Logging out.");
-        // 👉 logout logic here
-      } else {
-        console.log("Other error:", err);
-      }
-    } finally {
-      dispatch(setLoading(false));
-    }
+    })
+      .catch((err) => {
+        console.log("Initialization failed", err);
+      });;
+
 
   };
 
@@ -222,8 +228,6 @@ const RootNavigator = () => {
       dispatch(updatePinVerifyLoadedState(false));
     };
   }, []);
-
-
 
   // ------------------------- AppState Listener -------------------------
   useEffect(() => {

@@ -594,7 +594,7 @@ const MenuTab = ({
               ) : (
                 <TranslatedText
                   numberOfLines={1}
-                  text={item.icon || getInitials(item?.name)}
+                  text={getInitials(item?.name)}
                   style={[
                     styles.iconTextV2,
                     theme === "dark" && { color: "black" },

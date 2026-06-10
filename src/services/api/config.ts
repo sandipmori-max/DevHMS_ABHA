@@ -128,6 +128,7 @@ const safeParse = (data: any) => {
 
 apiClient.interceptors.response.use(
   async (response: AxiosResponse<ApiResponse>) => {
+    console.log("API Response:", response);
     let raw = response.data.d;
     let parsedData = safeParse(safeParse(raw));
     if ((parsedData.success === "0" || parsedData.success === 0) && parsedData.message === "Invalid Token") {

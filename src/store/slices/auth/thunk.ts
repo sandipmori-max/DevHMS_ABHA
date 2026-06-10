@@ -29,7 +29,7 @@ export const checkAuthStateThunk = createAsyncThunk(
 
         if (validTill.getTime() > Date.now()) {
         console.error(" 👈 👈 👈 validTill validTill validTill: 👈👈👈👈 ---- -- - -- - - - - -", validTill); // 👈 added log
-
+          DevERPService.setToken(activeAccount.user.token);
           return {
             accounts,
             activeAccountId: activeAccount.id,
@@ -38,8 +38,6 @@ export const checkAuthStateThunk = createAsyncThunk(
         }
       }
       console.error(" 👈 👈 👈 getAuth getAuth getAuth: 👈👈👈👈 ---- -- - -- - - - - -"); // 👈 added log
-
-
       // 🔄 Token expired → try refresh
       try {
         await DevERPService.getAuth();
@@ -50,7 +48,7 @@ export const checkAuthStateThunk = createAsyncThunk(
 
       const updatedAccounts = await getAccounts(db);
       const updatedActiveAccount = await getActiveAccount(db);
-
+      DevERPService.setToken(updatedActiveAccount?.user?.token || "");
       return {
         accounts: updatedAccounts,
         activeAccountId: updatedActiveAccount?.id || null,

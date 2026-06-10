@@ -27,7 +27,7 @@ const translateSingle = async (text, langCode) => {
 };
 
 
-const TranslatedText = ({ text, style, numberOfLines }) => {
+const TranslatedText = ({ text, style, numberOfLines }: any) => {
   // const [translated, setTranslated] = useState(text);
   //   const langCode = useAppSelector(state => state.theme.langcode);
   

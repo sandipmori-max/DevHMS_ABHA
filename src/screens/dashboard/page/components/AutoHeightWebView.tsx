@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Dimensions, Platform, View, useWindowDimensions } from 'react-native';
+import { Platform, View, useWindowDimensions } from 'react-native';
 import WebView from 'react-native-webview';
 import RenderHTML from 'react-native-render-html';
 import { useAppSelector } from '../../../../store/hooks';
@@ -43,8 +43,7 @@ const AutoHeightWebView = ({
   const BORDER = isDark ? "#444" : "#ccc";
   const TH_BG = isDark ? "#1A1A1A" : "#f1f1f1";
   const EVEN_ROW = isDark ? "#111" : "#fafafa";
-
-
+  
   const defaultCSS = `
     <style>
       html, body {
@@ -89,8 +88,7 @@ const AutoHeightWebView = ({
     .replace(/<h[1-6]>\s*<table/gi, "<table")
     .replace(/<\/table>\s*<\/h[1-6]>/gi, "</table>");
 
-  console.log("Cleaned HTML:", cleanedHTML);
-  const formattedHTML = `
+   const formattedHTML = `
     <!DOCTYPE html>
     <html>
       <head>

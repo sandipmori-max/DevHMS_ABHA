@@ -97,8 +97,6 @@ const DocScan: React.FC<DocScanProps> = ({
 
         setImages(updated); 
         setStatus("Scan successful ✅");
-
-
         let base64Data = '';
         if (Platform.OS === 'android') {
           const compressedImage = await ImageResizer.createResizedImage(

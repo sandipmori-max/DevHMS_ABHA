@@ -68,9 +68,7 @@ export const styles = StyleSheet.create({
     fontWeight: "700",
   },
   iconTextV2: {
-    opacity: 0.5,
-    fontSize: 16,
-    fontWeight: "400",
+    opacity: 0.5,  
   },
   title: {
     fontSize: 16,

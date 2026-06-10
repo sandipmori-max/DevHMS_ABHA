@@ -384,6 +384,7 @@ getConfigData(page: string) {
   }
 
   setToken(token: string) {
+    console.log("Setting new token:  👈 added log ------------------- ", token);
     this.token = token;
     AsyncStorage.setItem("erp_token", token);
   }
