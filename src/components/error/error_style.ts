@@ -18,5 +18,6 @@ export const styles = StyleSheet.create({
     color: ERP_COLOR_CODE.ERP_ERROR,
     fontSize: 14,
     fontWeight: '500',
+    textAlign:'center'
   },
 });

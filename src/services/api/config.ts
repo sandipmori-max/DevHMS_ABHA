@@ -117,7 +117,7 @@ apiClient.interceptors.request.use(
 
     const token = await AsyncStorage.getItem("erp_token");
     if (token) {
-      config?.headers = {
+      config.headers = {
         ...config?.headers,
         Authorization: `Bearer ${token}`,
       };
@@ -126,9 +126,9 @@ apiClient.interceptors.request.use(
     return config;
   },
   (error) => {
-    if (error.code === "ERR_CANCELED") {
+    if (error.code === "ERR_CANCELED" || error === 'canceled' || error.code === 'canceled') {
       return Promise.reject({
-        message: "Request cancelled due to network change",
+        message: "Request cancelled due to network change, You can tap Refresh or close and reopen the app",
         statusCode: 0,
       });
     }
@@ -245,18 +245,18 @@ apiClient.interceptors.response.use(
 
       console.error("API Error Response: + + + + + + +", `${error}`);
       return Promise.reject({
-        message: error?.response?.data?.message + " +++++  " + `${error?.response?.config?.url?.split("/").filter(Boolean).pop()}` || "API error occurred -----  " + `${error?.response?.config?.url?.split("/").filter(Boolean).pop()}`,
+        message: error?.response?.data?.message  || "API error occurred -----  " + `${error?.response?.config?.url?.split("/").filter(Boolean).pop()}`,
         statusCode: error?.response?.status,
         data: error?.response?.data,
       });
     } else if (error?.request) {
       return Promise.reject({
-        message: "No response from server" + " ////  " + `${error?.response?.config?.url?.split("/").filter(Boolean).pop()}`,
+        message: "No response from server, Check your network, then tap Refresh or reopen the app.",
         statusCode: 0,
       });
     } else {
       return Promise.reject({
-        message: error?.message + " +*+**+*+* " + `${error?.response?.config?.url?.split("/").filter(Boolean).pop()}` || "Unknown error occurred" + "  " + `${error?.response?.config?.url?.split("/").filter(Boolean).pop()}`,
+        message: error?.message  || "Unknown error occurred" + "  " + `${error?.response?.config?.url?.split("/").filter(Boolean).pop()}`,
         statusCode: 0,
       });
     }
