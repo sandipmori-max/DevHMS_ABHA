@@ -39,6 +39,7 @@ import { useAppSelector } from "./src/store/hooks";
 import ExitBottomSheet from "./src/components/ExitBottomSheet";
 import RootNavigatorTvOS from "./src/navigation/RootNavigatorTvOs";
 import { navigate, navigationRef } from "./src/navigation/navigationService";
+import { activeControllers } from "./networkManager";
 
 const App = () => {
   return (

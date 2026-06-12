@@ -183,7 +183,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
     (item) => item.type === chartType
   );
 
-  const { appBottomMenuList } = useAppSelector((state) => state?.auth);
+  const { appBottomMenuList, appDrawerMenuList } = useAppSelector((state) => state?.auth);
   const theme = useAppSelector((state) => state?.theme.mode);
   const [actionLoader, setActionLoader] = useState(false);
   const [isHorizontal, setIsHorizontal] = useState(false);
@@ -993,8 +993,11 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
               td: auth?.dashboardToDate || toDate,
             }),
           ).unwrap();
-          await new Promise(res => setTimeout(res, 800));
-          await dispatch(getERPAppConfigMenuThunk()).unwrap();
+          if (appDrawerMenuList.length === 0 || appBottomMenuList.length === 0) {
+            await new Promise(res => setTimeout(res, 800));
+            await dispatch(getERPAppConfigMenuThunk()).unwrap();
+          }
+
         } catch (error) {
           dispatch(updateAppMenuList([]));
           console.log("Error fetching app config menu:", error);

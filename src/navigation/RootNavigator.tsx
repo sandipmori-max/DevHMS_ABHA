@@ -36,6 +36,8 @@ import {
   updatePinVerifyLoadedState,
 } from "../store/slices/auth/authSlice";
 import { useTranslation } from "react-i18next";
+import NetInfo from "@react-native-community/netinfo";
+import NoInternetScreen from "../screens/noInternet/NoInternet";
 
 // ------------------------- Location Permission Helper -------------------------
 export async function requestLocationPermissions(): Promise<
@@ -116,9 +118,9 @@ const RootNavigator = () => {
   const locationModalShownRef = useRef(false);
   const appState = useRef(AppState.currentState);
 
-  const locationServiceIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const locationServiceIntervalRef = useRef(null);
   const gpsModalShownRef = useRef(false);
-
+ const { appBottomMenuList, appDrawerMenuList } = useAppSelector((state) => state?.auth);
   const checkLocationServiceOnly = async () => {
     if (!isAuthenticated) return;
 
@@ -151,8 +153,19 @@ const RootNavigator = () => {
   };
 
   const app_id = user?.app_id;
+  const [noInterNet, setNoInterNet] = useState(false)
   // ------------------------- Device Setup -------------------------
   const init = async () => {
+    const state = await NetInfo.fetch();
+    if (!state.isConnected) {
+      setNoInterNet(true)
+      return Promise.reject({
+        message: "Please check your network and try again. You can tap Refresh or close and reopen the app",
+        statusCode: 0,
+      });
+    }
+    setNoInterNet(false)
+
     const name =
       Platform.OS === "ios"
         ? DeviceInfo.getModel() + " " + (await DeviceInfo.getUniqueId())
@@ -180,7 +193,7 @@ const RootNavigator = () => {
 
         if (isAuthenticated) {
           try {
-            dispatch(getLastPunchInThunk())
+           await dispatch(getLastPunchInThunk())
               .unwrap()
               .then((res) => {
                 if (res?.success === 1 || res?.success === "1") {
@@ -196,12 +209,15 @@ const RootNavigator = () => {
             dispatch(updateAttendanceState(false));
             console.log("error*******", error);
           }
+          if(appDrawerMenuList.length === 0 || appBottomMenuList.length === 0){
           try {
-            await dispatch(getERPAppConfigMenuThunk());
-          } catch (error) {
-            dispatch(updateAppMenuList([]));
-            console.log("Error fetching app config menu:", error);
+                      await dispatch(getERPAppConfigMenuThunk());
+                    } catch (error) {
+                      dispatch(updateAppMenuList([]));
+                      console.log("Error fetching app config menu:", error);
+                    }
           }
+          
         }
       } catch (err) {
         if (err === "token_expired") {
@@ -222,6 +238,7 @@ const RootNavigator = () => {
   };
 
   useEffect(() => {
+    
     init();
     return () => {
       dispatch(setReloadApp());
@@ -381,6 +398,11 @@ const RootNavigator = () => {
 
   return (
     <>
+      {
+       noInterNet &&  <View style={[StyleSheet.absoluteFillObject, { zIndex: 1000 }]}>
+          <NoInternetScreen onRetry={() => {}} />
+        </View>
+      }
       {isAuthenticated ? <StackNavigator /> : <AuthNavigator />}
       {isAuthenticated && (
         <CustomAlert
@@ -424,6 +446,7 @@ const RootNavigator = () => {
           </View>
         </Modal>
       )}
+     
     </>
   );
 };

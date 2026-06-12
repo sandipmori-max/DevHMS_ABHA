@@ -536,41 +536,6 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                         errors,
                         touched,
                       }) => {
-                        useEffect(() => {
-                          if (touched?.company_code && errors?.company_code) {
-                            ccErrorAnim.setValue(0);
-                            Animated.timing(ccErrorAnim, {
-                              toValue: 1,
-                              duration: 280,
-                              easing: Easing.out(Easing.ease),
-                              useNativeDriver: true,
-                            }).start();
-                          }
-                        }, [touched?.company_code, errors?.company_code]);
-
-                        useEffect(() => {
-                          if (touched?.user && errors?.user) {
-                            userErrorAnim.setValue(0);
-                            Animated.timing(userErrorAnim, {
-                              toValue: 1,
-                              duration: 280,
-                              easing: Easing.out(Easing.ease),
-                              useNativeDriver: true,
-                            }).start();
-                          }
-                        }, [touched?.user, errors?.user]);
-
-                        useEffect(() => {
-                          if (touched?.password && errors?.password) {
-                            passErrorAnim.setValue(0);
-                            Animated.timing(passErrorAnim, {
-                              toValue: 1,
-                              duration: 280,
-                              easing: Easing.out(Easing.ease),
-                              useNativeDriver: true,
-                            }).start();
-                          }
-                        }, [touched?.password, errors?.password]);
 
                         return (
                           <>
@@ -1022,47 +987,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                               errors,
                               touched,
                             }) => {
-                              useEffect(() => {
-                                if (
-                                  touched?.company_code &&
-                                  errors?.company_code
-                                ) {
-                                  ccErrorAnim.setValue(0);
-                                  Animated.timing(ccErrorAnim, {
-                                    toValue: 1,
-                                    duration: 280,
-                                    easing: Easing.out(Easing.ease),
-                                    useNativeDriver: true,
-                                  }).start();
-                                }
-                              }, [
-                                touched?.company_code,
-                                errors?.company_code,
-                              ]);
-
-                              useEffect(() => {
-                                if (touched?.user && errors?.user) {
-                                  userErrorAnim.setValue(0);
-                                  Animated.timing(userErrorAnim, {
-                                    toValue: 1,
-                                    duration: 280,
-                                    easing: Easing.out(Easing.ease),
-                                    useNativeDriver: true,
-                                  }).start();
-                                }
-                              }, [touched?.user, errors?.user]);
-
-                              useEffect(() => {
-                                if (touched?.password && errors?.password) {
-                                  passErrorAnim.setValue(0);
-                                  Animated.timing(passErrorAnim, {
-                                    toValue: 1,
-                                    duration: 280,
-                                    easing: Easing.out(Easing.ease),
-                                    useNativeDriver: true,
-                                  }).start();
-                                }
-                              }, [touched?.password, errors?.password]);
+                              
 
                               return (
                                 <>

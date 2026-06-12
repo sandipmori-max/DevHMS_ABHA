@@ -26,7 +26,7 @@ class DevERPService {
 
   private async checkNetwork() {
     const netInfo = await NetInfo.fetch();
-    if (!netInfo.isConnected) throw new Error("No internet connection");
+    if (!netInfo.isConnected) throw new Error("Please check your network and try again. You can tap Refresh or close and reopen the app");
   }
 
   private async ensureAuthToken(forceRefresh = false) {
@@ -63,7 +63,7 @@ class DevERPService {
       );
       if (
         (response as any).data?.success === 0 &&
-        (response as any).data?.message?.includes("Token Expire")
+        (response as any).data?.message?.includes("Token invalid")
       ) {
         await this.ensureAuthToken(true);
         const retryResponse = await apiClient.post<T>(

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import NetInfo from '@react-native-community/netinfo';
+import { activeControllers } from '../../networkManager';
 
 const useNetworkStatus = (): boolean => {
   const [isConnected, setIsConnected] = useState<boolean>(true);
@@ -12,6 +13,11 @@ const useNetworkStatus = (): boolean => {
   useEffect(() => {
     checkConnection();
     const unsubscribe = NetInfo.addEventListener(state => {
+       activeControllers.forEach((controller) => {
+      controller.abort();
+    });
+
+    activeControllers.clear();
       setIsConnected(state.isConnected ?? false);
     });
     return () => unsubscribe();

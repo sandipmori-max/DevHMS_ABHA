@@ -12,6 +12,7 @@ import { resetSyncLocationState } from "../../store/slices/location/syncLocation
 import { setERPAppColor } from "../../utils/constants";
 import { createAccountsTable, getActiveAccount, getDBConnection, logoutUser } from "../../utils/sqlite";
 import { batch } from "react-redux";
+import { activeControllers } from "../../../networkManager";
 const ENV = {
   development: {
     BASE_URL:
@@ -38,6 +39,7 @@ const ENV = {
 
 const getEnvVars = () => ENV.development;
 const { BASE_URL, TIMEOUT } = getEnvVars();
+ 
 
 export interface ApiResponse<T = any> {
   d?: string;
@@ -58,7 +60,10 @@ const apiClient: AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  
 });
+
+ 
 
 function unwrapString(value: any): any {
   if (typeof value !== "string") return value;
@@ -98,25 +103,36 @@ function deepClean(obj: any): any {
 
 apiClient.interceptors.request.use(
   async (config: AxiosRequestConfig) => {
+  const controller = new AbortController();
+  config.signal = controller.signal;
+  activeControllers.add(controller);
+
     const state = await NetInfo.fetch();
     if (!state.isConnected) {
       return Promise.reject({
-        message: "No internet connection",
+        message: "Please check your network and try again. You can tap Refresh or close and reopen the app",
         statusCode: 0,
       });
     }
 
     const token = await AsyncStorage.getItem("erp_token");
     if (token) {
-      config.headers = {
-        ...config.headers,
+      config?.headers = {
+        ...config?.headers,
         Authorization: `Bearer ${token}`,
       };
     }
 
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => {
+    if (error.code === "ERR_CANCELED") {
+      return Promise.reject({
+        message: "Request cancelled due to network change",
+        statusCode: 0,
+      });
+    }
+   return Promise.reject(error)},
 );
 const safeParse = (data: any) => {
   try {
@@ -128,10 +144,10 @@ const safeParse = (data: any) => {
 
 apiClient.interceptors.response.use(
   async (response: AxiosResponse<ApiResponse>) => {
-    console.log("API Response:", response);
-    let raw = response.data.d;
+     
+    let raw = response?.data?.d;
     let parsedData = safeParse(safeParse(raw));
-    if ((parsedData.success === "0" || parsedData.success === 0) && parsedData.message === "Invalid Token") {
+    if ((parsedData?.success === "0" || parsedData?.success === 0) && parsedData?.message === "Invalid Token") {
       const db = await getDBConnection();
       await createAccountsTable(db);
       const activeUser = await getActiveAccount(db);
@@ -165,8 +181,8 @@ apiClient.interceptors.response.use(
       });
 
       return Promise.reject({
-        message: parsedData.message + " ---+++--- " + `${response.config.url.split("/").filter(Boolean).pop()}` || "API request failed",
-        statusCode: response.status,
+        message: parsedData?.message + " ---+++--- " + `${response?.config?.url?.split("/").filter(Boolean).pop()}` || "API request failed",
+        statusCode: response?.status,
         data: {},
       });
     }
@@ -219,28 +235,28 @@ apiClient.interceptors.response.use(
     } catch (err) {
       return Promise.reject({
         message: "Invalid response format",
-        statusCode: response.status,
-        data: response.data,
+        statusCode: response?.status,
+        data: response?.data,
       });
     }
   },
   (error) => {
-    if (error.response) {
+    if (error?.response) {
 
       console.error("API Error Response: + + + + + + +", `${error}`);
       return Promise.reject({
-        message: error.response.data.message + " +++++  " + `${error.response.config.url.split("/").filter(Boolean).pop()}` || "API error occurred -----  " + `${error.response.config.url.split("/").filter(Boolean).pop()}`,
-        statusCode: error.response.status,
-        data: error.response.data,
+        message: error?.response?.data?.message + " +++++  " + `${error?.response?.config?.url?.split("/").filter(Boolean).pop()}` || "API error occurred -----  " + `${error?.response?.config?.url?.split("/").filter(Boolean).pop()}`,
+        statusCode: error?.response?.status,
+        data: error?.response?.data,
       });
-    } else if (error.request) {
+    } else if (error?.request) {
       return Promise.reject({
-        message: "No response from server" + " ////  " + `${error.response.config.url.split("/").filter(Boolean).pop()}`,
+        message: "No response from server" + " ////  " + `${error?.response?.config?.url?.split("/").filter(Boolean).pop()}`,
         statusCode: 0,
       });
     } else {
       return Promise.reject({
-        message: error.message + " +*+**+*+* " + `${error.response.config.url.split("/").filter(Boolean).pop()}` || "Unknown error occurred" + "  " + `${error.response.config.url.split("/").filter(Boolean).pop()}`,
+        message: error?.message + " +*+**+*+* " + `${error?.response?.config?.url?.split("/").filter(Boolean).pop()}` || "Unknown error occurred" + "  " + `${error?.response?.config?.url?.split("/").filter(Boolean).pop()}`,
         statusCode: 0,
       });
     }

@@ -612,13 +612,12 @@ export const goToSettings = () => {
 };
 
 export const handlePhonePress = async (phoneNumber: string) => { 
- 
   const url = `tel:${phoneNumber}`;
   console.log("Constructed phone URL:", url);
-  
   console.log("Opening dialer with URL:", url);
   Linking.openURL(url);
 };
+
 
 export const handleEmailPress = async (emailAddress: string) => {
   const url = `mailto:${emailAddress}`;
