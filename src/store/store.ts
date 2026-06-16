@@ -26,7 +26,9 @@ const authPersistConfig = {
     "locationLogs",
     "dashboardBranchId",
     "dashboardTypeId",
-    "birthdayUsers"
+    "birthdayUsers",
+    "attendanceSecurityLevel",
+    "appColorCode"
   ],
 };
 

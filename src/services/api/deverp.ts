@@ -99,6 +99,7 @@ class DevERPService {
       }
       await AsyncStorage.setItem("erp_link", this.link);
     }
+    console.log("this.link",this.link)
     return response.data;
   }
 

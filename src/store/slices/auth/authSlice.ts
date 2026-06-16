@@ -33,7 +33,7 @@ const initialState: AuthState = {
   dashboardTypeId: '',
   appDrawerMenuList: [],
   appBottomMenuList: [],
-  appColorCode: '',
+  appColorCode: '#251d50',
   isPinVerifyLoaded: false,
   attendanceDone: false,
   locationLogs: [],

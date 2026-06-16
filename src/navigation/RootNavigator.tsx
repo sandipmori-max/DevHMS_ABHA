@@ -24,7 +24,7 @@ import FullViewLoader from "../components/loader/FullViewLoader";
 import DeviceInfo from "react-native-device-info";
 import CustomAlert from "../components/alert/CustomAlert";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ERP_COLOR_CODE } from "../utils/constants";
+import { ERP_COLOR_CODE, setERPAppColor } from "../utils/constants";
 import { changeLanguage } from "../i18n";
 import { request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import { getLastPunchInThunk } from "../store/slices/attendance/thunk";
@@ -99,8 +99,9 @@ const RootNavigator = () => {
   };
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
-  const { isLoading, isAuthenticated, accounts, user, attendanceDone } =
+  const { isLoading, isAuthenticated, accounts, user, attendanceDone, appColorCode, attendanceSecurityLevel } =
     useAppSelector((state) => state.auth);
+  console.log("appColorCode", appColorCode, attendanceSecurityLevel)
   const { reLoading } = useAppSelector((state) => state.reloadApp);
 
   const langCode = useAppSelector((state) => state.theme.langcode);
@@ -120,7 +121,7 @@ const RootNavigator = () => {
 
   const locationServiceIntervalRef = useRef(null);
   const gpsModalShownRef = useRef(false);
- const { appBottomMenuList, appDrawerMenuList } = useAppSelector((state) => state?.auth);
+  const { appBottomMenuList, appDrawerMenuList } = useAppSelector((state) => state?.auth);
   const checkLocationServiceOnly = async () => {
     if (!isAuthenticated) return;
 
@@ -192,8 +193,9 @@ const RootNavigator = () => {
         console.log("Auth state checked successfully.");
 
         if (isAuthenticated) {
+          setERPAppColor(appColorCode)
           try {
-           await dispatch(getLastPunchInThunk())
+            await dispatch(getLastPunchInThunk())
               .unwrap()
               .then((res) => {
                 if (res?.success === 1 || res?.success === "1") {
@@ -209,15 +211,15 @@ const RootNavigator = () => {
             dispatch(updateAttendanceState(false));
             console.log("error*******", error);
           }
-          if(appDrawerMenuList.length === 0 || appBottomMenuList.length === 0){
-          try {
-                      await dispatch(getERPAppConfigMenuThunk());
-                    } catch (error) {
-                      dispatch(updateAppMenuList([]));
-                      console.log("Error fetching app config menu:", error);
-                    }
+          if (appDrawerMenuList.length === 0 || appBottomMenuList.length === 0) {
+            try {
+              await dispatch(getERPAppConfigMenuThunk());
+            } catch (error) {
+              dispatch(updateAppMenuList([]));
+              console.log("Error fetching app config menu:", error);
+            }
           }
-          
+
         }
       } catch (err) {
         if (err === "token_expired") {
@@ -238,7 +240,7 @@ const RootNavigator = () => {
   };
 
   useEffect(() => {
-    
+
     init();
     return () => {
       dispatch(setReloadApp());
@@ -373,6 +375,7 @@ const RootNavigator = () => {
   // ------------------------- Focus -------------------------
   useEffect(() => {
     if (isAuthenticated) {
+      setERPAppColor(appColorCode)
       // Optional: cancel timeout if component unmounts
       const timer = setTimeout(() => {
         if (attendanceDone) {
@@ -399,8 +402,8 @@ const RootNavigator = () => {
   return (
     <>
       {
-       noInterNet &&  <View style={[StyleSheet.absoluteFillObject, { zIndex: 1000 }]}>
-          <NoInternetScreen onRetry={() => {}} />
+        noInterNet && <View style={[StyleSheet.absoluteFillObject, { zIndex: 1000 }]}>
+          <NoInternetScreen onRetry={() => { }} />
         </View>
       }
       {isAuthenticated ? <StackNavigator /> : <AuthNavigator />}
@@ -446,7 +449,7 @@ const RootNavigator = () => {
           </View>
         </Modal>
       )}
-     
+
     </>
   );
 };

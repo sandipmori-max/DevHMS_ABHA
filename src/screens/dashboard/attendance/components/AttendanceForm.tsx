@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   Platform,
   useWindowDimensions,
-  NativeModules
+  NativeModules,
+  ScrollView
 } from "react-native";
 import React, { useState, useRef, useEffect } from "react";
 import { Formik } from "formik";
@@ -677,139 +678,141 @@ const AttendanceForm = ({ setBlockAction, resData, isFromDashboard }: any) => {
                       </View>
                     </View>
                   </View>
-
-                  <View style={{ width: "50%" }}>
-                    <View style={{}}>
-                      <Animated.View
-                        style={{
-                          opacity: fadeRemark,
-                          transform: [{ translateY: animRemark }],
-                        }}
-                      >
-                        <View style={styles.formGroup}>
-                          <Text
-                            style={[
-                              styles.label,
-                              theme === "dark" && {
-                                color: "white",
-                              },
-                            ]}
-                          >
-                            {t("attendance.employeeName")}
-                          </Text>
-                          <TextInput
-                            style={[
-                              styles.input,
-                              styles.inputReadonly,
-                              theme === "dark" && {
-                                borderWidth: 1,
-                                borderColor: "white",
-                                color: "black",
-                                backgroundColor: "black",
-                              },
-                              {
-                                backgroundColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-                              },
-                            ]}
-                            value={formatName(values?.name)}
-                            editable={false}
-                          />
-                          {touched?.name && errors?.name ? (
-                            <TranslatedText
-                              numberOfLines={1}
-                              text={errors?.name}
-                              style={styles.errorText}
-                            ></TranslatedText>
-                          ) : null}
-                        </View>
-                        <View style={styles.formGroup}>
-                          <Text
-                            style={[
-                              styles.label,
-                              theme === "dark" && {
-                                color: "white",
-                              },
-                            ]}
-                          >
-                            {resData?.success === 1 || resData?.success === "1"
-                              ? t("attendance.outremark")
-                              : t("attendance.remark")}
-                          </Text>
-
-                          <TextInput
-                            style={[
-                              styles.input,
-                              { minHeight: 100, textAlignVertical: "top" },
-                              theme === "dark" && {
-                                borderWidth: 0.4,
-                                borderColor: "white",
-                                color: "white",
-                                backgroundColor: "black",
-                              },
-                            ]}
-                            placeholderTextColor={
-                              theme === "dark" ? "white" : "black"
-                            }
-                            value={values?.remark}
-                            onChangeText={(text) =>
-                              setFieldValue("remark", text)
-                            }
-                            placeholder={t("attendance.enterRemark")}
-                            multiline
-                            numberOfLines={3}
-                          />
-                        </View>
-                      </Animated.View>
-                      {statusImage && (
-                        <View>
-                          <Image
-                            source={{ uri: statusImage }}
-                            style={styles.selfyAvatar}
-                          />
-                          <Text style={styles.imageLabel}>
-                            {t("attendance.capturedPhoto")}
-                          </Text>
-                        </View>
-                      )}
-                      <View>
+                  <ScrollView style={{ width: "50%" }} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
+                    <View >
+                      <View style={{}}>
                         <Animated.View
                           style={{
-                            opacity: fadeButton,
-                            transform: [{ translateY: animButton }],
+                            opacity: fadeRemark,
+                            transform: [{ translateY: animRemark }],
                           }}
                         >
-                          <View>
-                            <SlideButtonIOS
-                              label={
-                                resData?.success === 1 ||
-                                  resData?.success === "1"
-                                  ? `${t("text.texti3")} ${t(
-                                    "attendance.checkOut",
-                                  )}`
-                                  : `${t("text.texti3")} ${t(
-                                    "attendance.checkIn",
-                                  )}`
+                          <View style={styles.formGroup}>
+                            <Text
+                              style={[
+                                styles.label,
+                                theme === "dark" && {
+                                  color: "white",
+                                },
+                              ]}
+                            >
+                              {t("attendance.employeeName")}
+                            </Text>
+                            <TextInput
+                              style={[
+                                styles.input,
+                                styles.inputReadonly,
+                                theme === "dark" && {
+                                  borderWidth: 1,
+                                  borderColor: "white",
+                                  color: "black",
+                                  backgroundColor: "black",
+                                },
+                                {
+                                  backgroundColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+                                },
+                              ]}
+                              value={formatName(values?.name)}
+                              editable={false}
+                            />
+                            {touched?.name && errors?.name ? (
+                              <TranslatedText
+                                numberOfLines={1}
+                                text={errors?.name}
+                                style={styles.errorText}
+                              ></TranslatedText>
+                            ) : null}
+                          </View>
+                          <View style={styles.formGroup}>
+                            <Text
+                              style={[
+                                styles.label,
+                                theme === "dark" && {
+                                  color: "white",
+                                },
+                              ]}
+                            >
+                              {resData?.success === 1 || resData?.success === "1"
+                                ? t("attendance.outremark")
+                                : t("attendance.remark")}
+                            </Text>
+
+                            <TextInput
+                              style={[
+                                styles.input,
+                                { minHeight: 100, textAlignVertical: "top" },
+                                theme === "dark" && {
+                                  borderWidth: 0.4,
+                                  borderColor: "white",
+                                  color: "white",
+                                  backgroundColor: "black",
+                                },
+                              ]}
+                              placeholderTextColor={
+                                theme === "dark" ? "white" : "black"
                               }
-                              successColor={
-                                resData?.success === 1 ||
-                                  resData?.success === "1"
-                                  ? ERP_COLOR_CODE.ERP_ERROR
-                                  : ERP_COLOR_CODE.ERP_APP_COLOR
+                              value={values?.remark}
+                              onChangeText={(text) =>
+                                setFieldValue("remark", text)
                               }
-                              loading={locationLoading}
-                              completed={attendanceDone}
-                              onSlideSuccess={() => {
-                                handleStatusToggle(
-                                  setFieldValue,
-                                  handleSubmit,
-                                );
-                              }}
+                              placeholder={t("attendance.enterRemark")}
+                              multiline
+                              numberOfLines={3}
                             />
                           </View>
                         </Animated.View>
+                        {statusImage && (
+                          <View>
+                            <Image
+                              source={{ uri: statusImage }}
+                              style={styles.selfyAvatar}
+                            />
+                            <Text style={styles.imageLabel}>
+                              {t("attendance.capturedPhoto")}
+                            </Text>
+                          </View>
+                        )}
+                        <View>
+                          <Animated.View
+                            style={{
+                              opacity: fadeButton,
+                              transform: [{ translateY: animButton }],
+                            }}
+                          >
+                            <View>
+                              <SlideButtonIOS
+                                label={
+                                  resData?.success === 1 ||
+                                    resData?.success === "1"
+                                    ? `${t("text.texti3")} ${t(
+                                      "attendance.checkOut",
+                                    )}`
+                                    : `${t("text.texti3")} ${t(
+                                      "attendance.checkIn",
+                                    )}`
+                                }
+                                successColor={
+                                  resData?.success === 1 ||
+                                    resData?.success === "1"
+                                    ? ERP_COLOR_CODE.ERP_ERROR
+                                    : ERP_COLOR_CODE.ERP_APP_COLOR
+                                }
+                                loading={locationLoading}
+                                completed={attendanceDone}
+                                onSlideSuccess={() => {
+                                  handleStatusToggle(
+                                    setFieldValue,
+                                    handleSubmit,
+                                  );
+                                }}
+                              />
+                            </View>
+                          </Animated.View>
+                        </View>
                       </View>
                     </View>
-                  </View>
+                  </ScrollView>
+
                 </View>
               </>
             ) : (
