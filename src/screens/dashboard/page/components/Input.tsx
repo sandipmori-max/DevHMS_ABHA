@@ -48,14 +48,12 @@ const Input = ({
             borderColor: ERP_COLOR_CODE.ERP_ERROR,
           },
 
-          value && {
-            borderColor: "green",
-          },
-
           isInputEdit && {
             borderColor: "#81b5e4",
           },
-
+          value && {
+            borderColor: "green",
+          },
           item?.borderColor && {
             borderColor: item?.borderColor,
           },
