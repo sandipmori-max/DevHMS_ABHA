@@ -788,7 +788,26 @@ const operators = {
     const [lat1, lon1] = a.split(",").map(Number);
     const [lat2, lon2] = b.split(",").map(Number);
 
-    return getDistanceInMeters(lat1, lon1, lat2, lon2) <= radius;
+    // return getDistanceInMeters(lat1, lon1, lat2, lon2) <= radius;
+     const distance = getDistanceInMeters(
+    lat1,
+    lon1,
+    lat2,
+    lon2
+  );
+
+  return {
+    isValid: distance <= radius,
+    distance: Math.round(distance),
+    source: {
+      lat: lat1,
+      lon: lon1,
+    },
+    target: {
+      lat: lat2,
+      lon: lon2,
+    },
+  };
   },
   between: (a, min, max) => {
     const num = Number(a);
@@ -842,7 +861,8 @@ const getDistanceInMeters = (lat1, lon1, lat2, lon2) => {
       Math.cos((lat2 * Math.PI) / 180) *
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2);
-
+  const aaaa = R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)))
+  console.log("R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)))", aaaa  )
   return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 };
 
@@ -864,7 +884,21 @@ const evaluateCondition = (rule, values) => {
     return false;
   }
 
-  return operatorFn(leftValue, rightValue, rule.meters);
+  // return operatorFn(leftValue, rightValue, rule.meters);
+  const result = operatorFn(
+  leftValue,
+  rightValue,
+  rule.meters
+);
+
+if (
+  rule.operator === "locationWithin" &&
+  typeof result === "object"
+) {
+  return result;
+}
+
+return result;
 };
 
 export const evaluateRules = (condition, values) => {
@@ -909,7 +943,21 @@ const evaluateCondition2 = (rule, values) => {
     return false;
   }
 
-  return operatorFn(leftValue, rightValue, rule.meters);
+  // return operatorFn(leftValue, rightValue, rule.meters);
+  const result = operatorFn(
+  leftValue,
+  rightValue,
+  rule.meters
+);
+
+if (
+  rule.operator === "locationWithin" &&
+  typeof result === "object"
+) {
+  return result;
+}
+
+return result;
 };
 
 export const evaluateRules2 = (condition, values) => {
@@ -966,6 +1014,7 @@ export const evaluateRulesWithActionsv1 = (
 
   return { isValid: finalResult, actions };
 };
+
 export const applyActionsToControls = (controls, actions) => {
   if (!actions || actions.length === 0) return controls;
 
@@ -1018,17 +1067,27 @@ const collectFailedMessages = (
   }
 
   // leaf rule
-  const isValid = evaluateCondition(
-    condition,
-    values
-  );
+  const result = evaluateCondition(
+  condition,
+  values
+);
 
-  if (!isValid && condition.message) {
-    messages.push({
-      field: condition.left,
-      message: condition.message,
-    });
-  }
+console.log("condition", condition)
+
+const isValid =
+  typeof result === "object"
+    ? result.isValid
+    : result;
+
+if (!isValid && condition.message) {
+  messages.push({
+    field: condition.left,
+    message:
+      condition?.operator === 'locationWithin'
+  ? `${condition.message}${result?.distance ? `\n\t You are not within range [ Distance ${result.distance} meter ]` : ''}`.trim()
+  : condition.message,
+  });
+}
 
   return messages;
 };

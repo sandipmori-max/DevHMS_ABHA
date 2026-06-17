@@ -653,7 +653,7 @@ const ReadableView = ({
               </View>
             )}
 
-              <TouchableOpacity
+              {/* <TouchableOpacity
                       key={`whatsapp`}
                       style={{
                         backgroundColor: '#4e0404',
@@ -676,7 +676,7 @@ const ReadableView = ({
                       >
                         Share with
                       </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
         </View>
       </>
     );

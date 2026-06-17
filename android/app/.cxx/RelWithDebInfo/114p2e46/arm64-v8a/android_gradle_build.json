@@ -17,6 +17,7 @@
     "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt",
+    "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-share/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-vector-icons/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-webview/android/build/generated/source/codegen/jni/CMakeLists.txt",
@@ -101,6 +102,11 @@
       "toolchain": "toolchain",
       "abi": "arm64-v8a",
       "artifactName": "react_codegen_RNPermissionsSpec"
+    },
+    "react_codegen_RNShareSpec::@e6c4c2b5aedb2ea213b7": {
+      "toolchain": "toolchain",
+      "abi": "arm64-v8a",
+      "artifactName": "react_codegen_RNShareSpec"
     },
     "react_codegen_RNVectorIconsSpec::@479809fae146501fd34d": {
       "toolchain": "toolchain",

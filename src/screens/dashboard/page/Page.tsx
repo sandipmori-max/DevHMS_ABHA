@@ -374,7 +374,7 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
   const handleSave = async () => {
     try {
       setTapLoader(true);
-      console.log("myScript", myScript)
+      console.log("myScript-------------------", myScript)
       if (myScript && Array.isArray(myScript)) {
         let rules;
 

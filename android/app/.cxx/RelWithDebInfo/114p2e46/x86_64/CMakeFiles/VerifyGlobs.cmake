@@ -490,6 +490,31 @@ if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   file(TOUCH_NOCREATE "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/android/app/.cxx/RelWithDebInfo/114p2e46/x86_64/CMakeFiles/cmake.verify_globs")
 endif()
 
+# react_codegen_SRCS at /Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-share/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-share/android/build/generated/source/codegen/jni/*.cpp")
+set(OLD_GLOB
+  "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-share/android/build/generated/source/codegen/jni/RNShareSpec-generated.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/android/app/.cxx/RelWithDebInfo/114p2e46/x86_64/CMakeFiles/cmake.verify_globs")
+endif()
+
+# react_codegen_SRCS at /Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-share/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-share/android/build/generated/source/codegen/jni/react/renderer/components/RNShareSpec/*.cpp")
+set(OLD_GLOB
+  "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-share/android/build/generated/source/codegen/jni/react/renderer/components/RNShareSpec/ComponentDescriptors.cpp"
+  "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-share/android/build/generated/source/codegen/jni/react/renderer/components/RNShareSpec/EventEmitters.cpp"
+  "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-share/android/build/generated/source/codegen/jni/react/renderer/components/RNShareSpec/Props.cpp"
+  "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-share/android/build/generated/source/codegen/jni/react/renderer/components/RNShareSpec/RNShareSpecJSI-generated.cpp"
+  "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-share/android/build/generated/source/codegen/jni/react/renderer/components/RNShareSpec/ShadowNodes.cpp"
+  "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-share/android/build/generated/source/codegen/jni/react/renderer/components/RNShareSpec/States.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/android/app/.cxx/RelWithDebInfo/114p2e46/x86_64/CMakeFiles/cmake.verify_globs")
+endif()
+
 # rnsvg_SRCS at /Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt:10 (file)
 file(GLOB NEW_GLOB LIST_DIRECTORIES true "/Users/deverp/Desktop/Sandip_Mori/DevERP_Mobile_app_01/node_modules/react-native-svg/android/src/main/jni/*.cpp")
 set(OLD_GLOB
