@@ -14,7 +14,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
+import { Linking, Alert } from 'react-native';
 import { formatDateList } from "../../../../utils/helpers";
 import { styles } from "../list_page_style";
 import NoData from "../../../../components/no_data/NoData";
@@ -26,6 +26,8 @@ import ImageBottomSheetModal from "../../../../components/bottomsheet/ImageBotto
 import RemarksView from "./RemarksView";
 import MemoizedFooterView from "./MemoizedFooterView";
 import DeviceInfo from "react-native-device-info";
+import Share from 'react-native-share';
+import RNFS from "react-native-fs";
 
 if (
   Platform.OS === "android" &&
@@ -190,6 +192,42 @@ const ReadableView = ({
       item?.image && item?.image?.replace(/^https:\/\\/, "http://");
     const authUser = item?.authuser;
     const qty = item?.qty;
+
+ const sharePdf = async () => {
+  try {
+    const url = 'https://pdfobject.com/pdf/sample.pdf';
+
+    const localFile =
+      `${RNFS.DocumentDirectoryPath}/sample.pdf`;
+
+    const downloadResult = await RNFS.downloadFile({
+      fromUrl: url,
+      toFile: localFile,
+    }).promise;
+
+    console.log('Download Result:', downloadResult);
+
+    const exists = await RNFS.exists(localFile);
+
+    console.log('File Exists:', exists);
+    console.log('File Path:', localFile);
+
+    await Share.open({
+      url: `file://${localFile}`,
+      type: 'application/pdf',
+      failOnCancel: false,
+    });
+// await Share.shareSingle({
+//   social: Share.Social.WHATSAPP as any,
+//   url: `file://${localFile}`,
+//   type: 'application/pdf',
+// });
+    console.log('Share Opened');
+  } catch (error) {
+    console.log('SHARE ERROR =>', error);
+  }
+};
+
     const { user } = useAppSelector((state) => state.auth);
     const avatarLetter =
       typeof name === "string" && name.trim() !== ""
@@ -614,9 +652,36 @@ const ReadableView = ({
                 })}
               </View>
             )}
+
+              <TouchableOpacity
+                      key={`whatsapp`}
+                      style={{
+                        backgroundColor: '#4e0404',
+                        paddingHorizontal: 6,
+                        paddingVertical: 4,
+                        borderRadius: 4,
+                        flexGrow: 1,
+                        maxWidth: screenWidth / 4,
+                        alignItems: "center",
+                        alignSelf:'flex-end'
+                      }}
+                       onPress={sharePdf}
+                    >
+                      <Text
+                        style={{
+                          color: ERP_COLOR_CODE.ERP_WHITE,
+                          fontWeight: "600",
+                          fontSize: 12,
+                        }}
+                      >
+                        Share with
+                      </Text>
+                    </TouchableOpacity>
         </View>
       </>
     );
+
+   
 
     return (
       <>

@@ -179,6 +179,14 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                       <MaterialIcons name="chat" size={20} color="#25D366" />
                       <Text style={[styles.text, theme === "dark" && { color: "white" }]}>WhatsApp Chat</Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.row}
+                      onPress={() => open("https://www.youtube.com/@deverp")}
+                    >
+                      <MaterialIcons name='video-chat' size={20} color="#fc6554" />
+                      <Text style={[styles.text, theme === "dark" && { color: "white" }]}>Youtube</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
 
@@ -381,6 +389,14 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
                     WhatsApp Chat
                   </Text>
                 </TouchableOpacity>
+
+                 <TouchableOpacity
+                      style={styles.row}
+                      onPress={() => open("https://www.youtube.com/@deverp")}
+                    >
+                      <MaterialIcons name='video-chat' size={20} color="#fc6554" />
+                      <Text style={[styles.text, theme === "dark" && { color: "white" }]}>Youtube</Text>
+                    </TouchableOpacity>
               </View>
 
               {/* SOCIAL */}
