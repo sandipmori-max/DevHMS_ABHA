@@ -67,11 +67,12 @@ const BusinessCardView = ({
   const { t } = useTranslations();
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
+
   const getImageUri = (type: "small" | "large") => {
     const base =
       imageUri ||
       `${baseLink}fileupload/1/${infoData?.tableName}/${infoData?.id}/${type === "small" ? `${item?.text}` : item?.text
-      }`; 
+      }`;
     return `${base}?cb=${cacheBuster}`;
   };
 
@@ -461,7 +462,7 @@ const BusinessCardView = ({
     )[0];
     if (bestDesignation?.score > 3) result.designation = bestDesignation.text;
 
-    // 🏠 Improved Address Extraction Logic
+    // 🏠 Improved Address Extraction Logic 
     const addressKeywords =
       /(street|road|st\.|rd\.|ave|avenue|sector|block|area|society|city|district|village|plot|no\.|building|bldg|floor|lane|cross|main|pin|zip|pincode|india|gujarat|maharashtra|delhi|bangalore|bengaluru|hyderabad|pune|chennai|kolkata|noida|gurgaon|jaipur|ahmedabad|surat|vadodara|mumbai|thane|coimbatore|kochi|trivandrum|indore|bhopal|patna|ranchi|nagpur|lucknow|kanpur|chandigarh|mysore|vizag|vishakhapatnam|goa|odisha|orissa|uttar\s*pradesh|madhya\s*pradesh|west\s*bengal|tamil\s*nadu|karnataka|kerala|andhra\s*pradesh|telangana|address|landmark|behind|near|beside|opposite|post|po\s*box|zip\s*code|state|country|floor|flat|apt|apartment|tower|complex|society|colony|enclave|vihar|nagar)/i;
 
@@ -475,19 +476,16 @@ const BusinessCardView = ({
     if (addrStart !== -1) {
       const addrLines = [];
       for (let i = addrStart; i < lines.length; i++) {
-        // stop if another contact-related line appears
         if (/(@|www|mob|phone|tel|mail)/i.test(lines[i])) break;
         addrLines.push(lines[i]);
       }
 
-      // Join and clean up
       result.address = addrLines
         .join(", ")
         .replace(/\s{2,}/g, " ")
         .replace(/[,;]+$/g, "")
         .trim();
     } else {
-      // fallback: last 4 lines, excluding contact info
       const tail = lines
         .slice(-5)
         .filter((l) => !/@|www|mob|phone|tel/.test(l));
@@ -544,11 +542,11 @@ const BusinessCardView = ({
             "base64",
           );
           setCacheBuster(Date.now());
-           setBase64(
-                `${item?.field}.jpeg; data:image/jpeg;base64,${base64Data}`
-              ); 
+          setBase64(
+            `${item?.field}.jpeg; data:image/jpeg;base64,${base64Data}`
+          );
         } else {
-setCacheBuster(Date.now());
+          setCacheBuster(Date.now());
           setBase64(
             `${item?.field}.jpeg; data:image/jpeg;base64,${processed[0]?.base64}`,
           );

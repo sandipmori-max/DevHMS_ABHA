@@ -192,42 +192,54 @@ const ReadableView = ({
       item?.image && item?.image?.replace(/^https:\/\\/, "http://");
     const authUser = item?.authuser;
     const qty = item?.qty;
+ 
+ const shareTextToWhatsApp = async () => {
+  const phone = '918154877969';
+  const text = encodeURIComponent('Hello Sandip');
 
- const sharePdf = async () => {
   try {
-    const url = 'https://pdfobject.com/pdf/sample.pdf';
+    await Linking.openURL(
+      `whatsapp://send?phone=${phone}&text=${text}`,
+    );
+  } catch {
+    await Linking.openURL(
+      `https://wa.me/${phone}?text=${text}`,
+    );
+  }
+};
+
+const sharePdf = async () => {
+  try {
+    const pdfUrl = 'https://pdfobject.com/pdf/sample.pdf';
 
     const localFile =
       `${RNFS.DocumentDirectoryPath}/sample.pdf`;
 
-    const downloadResult = await RNFS.downloadFile({
-      fromUrl: url,
+    await RNFS.downloadFile({
+      fromUrl: pdfUrl,
       toFile: localFile,
     }).promise;
-
-    console.log('Download Result:', downloadResult);
-
-    const exists = await RNFS.exists(localFile);
-
-    console.log('File Exists:', exists);
-    console.log('File Path:', localFile);
 
     await Share.open({
       url: `file://${localFile}`,
       type: 'application/pdf',
       failOnCancel: false,
     });
-// await Share.shareSingle({
-//   social: Share.Social.WHATSAPP as any,
-//   url: `file://${localFile}`,
-//   type: 'application/pdf',
-// });
-    console.log('Share Opened');
-  } catch (error) {
-    console.log('SHARE ERROR =>', error);
+  } catch (e) {
+    console.log(e);
   }
 };
 
+const openShareDialog = async () => {
+  try {
+    await Share.open({
+      message: 'Hello from React Native',
+      failOnCancel: false,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
     const { user } = useAppSelector((state) => state.auth);
     const avatarLetter =
       typeof name === "string" && name.trim() !== ""
@@ -653,7 +665,32 @@ const ReadableView = ({
               </View>
             )}
 
-              {/* <TouchableOpacity
+              <TouchableOpacity
+                      key={`whatsapp`}
+                      style={{
+                        backgroundColor: '#4e0404',
+                        paddingHorizontal: 6,
+                        paddingVertical: 4,
+                        borderRadius: 4,
+                        flexGrow: 1,
+                        maxWidth: screenWidth / 4,
+                        alignItems: "center",
+                        alignSelf:'flex-end'
+                      }}
+                       onPress={shareTextToWhatsApp}
+                    >
+                      <Text
+                        style={{
+                          color: ERP_COLOR_CODE.ERP_WHITE,
+                          fontWeight: "600",
+                          fontSize: 12,
+                        }}
+                      >
+                        shareTextToWhatsApp
+                      </Text>
+                    </TouchableOpacity>
+
+                     <TouchableOpacity
                       key={`whatsapp`}
                       style={{
                         backgroundColor: '#4e0404',
@@ -674,9 +711,34 @@ const ReadableView = ({
                           fontSize: 12,
                         }}
                       >
-                        Share with
+                        sharePdf
                       </Text>
-                    </TouchableOpacity> */}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      key={`whatsapp`}
+                      style={{
+                        backgroundColor: '#4e0404',
+                        paddingHorizontal: 6,
+                        paddingVertical: 4,
+                        borderRadius: 4,
+                        flexGrow: 1,
+                        maxWidth: screenWidth / 4,
+                        alignItems: "center",
+                        alignSelf:'flex-end'
+                      }}
+                       onPress={openShareDialog}
+                    >
+                      <Text
+                        style={{
+                          color: ERP_COLOR_CODE.ERP_WHITE,
+                          fontWeight: "600",
+                          fontSize: 12,
+                        }}
+                      >
+                       openShareDialog
+                      </Text>
+                    </TouchableOpacity>
         </View>
       </>
     );
