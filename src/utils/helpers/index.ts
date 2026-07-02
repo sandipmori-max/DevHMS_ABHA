@@ -12,6 +12,7 @@ import RNFS from "react-native-fs";
 import FastImage from "react-native-fast-image";
 import { ERP_COLOR_CODE } from "../constants";
 import messaging from "@react-native-firebase/messaging";
+import Share from 'react-native-share';
 
 
 export const formatDateMonthDateYear = (dateString: string) => {
@@ -1485,4 +1486,97 @@ export const requestAndroidPermission = async () => {
   );
 
   return granted === PermissionsAndroid.RESULTS.GRANTED;
+};
+
+
+ const getFileNameFromUrl = (
+  url: string,
+  mimeType?: string,
+) => {
+  try {
+    const cleanUrl = url.split('?')[0];
+    const name = cleanUrl.substring(
+      cleanUrl.lastIndexOf('/') + 1,
+    );
+
+    // URL already contains filename
+    if (name && name.includes('.')) {
+      return decodeURIComponent(name);
+    }
+
+    // Generate filename
+    const extension =
+      mimeType?.split('/')[1] || 'bin';
+
+    return `file_${Date.now()}.${extension}`;
+  } catch {
+    return `file_${Date.now()}.bin`;
+  }
+};
+
+  //   // Download PDF
+export const downloadAndShare = async (
+  fileUrl: string,
+  mimeType = 'application/octet-stream',
+) => {
+  console.log('========== DOWNLOAD & SHARE ==========');
+  console.log('File URL:', fileUrl);
+  console.log('Mime Type:', mimeType);
+
+  try {
+    const fileName = getFileNameFromUrl(fileUrl, mimeType);
+    console.log('File Name:', fileName);
+
+    const localPath = `${RNFS.CachesDirectoryPath}/${fileName}`;
+    console.log('Local Path:', localPath);
+
+    // Delete old file
+    if (await RNFS.exists(localPath)) {
+      console.log('Old file exists. Deleting...');
+      await RNFS.unlink(localPath);
+    }
+
+    console.log('Starting download... ');
+
+    const downloadResult = await RNFS.downloadFile({
+      fromUrl: fileUrl,
+      toFile: localPath,
+      background: true,
+      discretionary: true,
+    }).promise;
+
+    console.log('Download Result:', downloadResult);
+
+    const exists = await RNFS.exists(localPath);
+    console.log('File Exists:', exists);
+
+    if (!exists) {
+      throw new Error('Downloaded file does not exist.');
+    }
+
+    const stat = await RNFS.stat(localPath);
+    console.log('File Stat:', stat);
+    console.log('File Size:', stat.size);
+
+    console.log('Sharing to WhatsApp...');
+
+    const shareResult = await Share.shareSingle({
+      social: Share.Social.WHATSAPP,
+      url: `file://${localPath}`,
+      type: mimeType,
+      filename: fileName,
+      failOnCancel: false,
+    });
+
+    console.log('Share Success:', shareResult);
+    console.log('========== SUCCESS ==========');
+  } catch (e: any) {
+    console.log('========== ERROR ==========');
+    console.log('Error:', e);
+    console.log('Error JSON:', JSON.stringify(e, null, 2));
+    console.log('Code:', e?.code);
+    console.log('Message:', e?.message);
+    console.log('Stack:', e?.stack);
+    console.log('===========================');
+  }
 };

@@ -29,6 +29,7 @@ import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import RNFS from "react-native-fs";
 import ImageResizer from "@bam.tech/react-native-image-resizer";
 import { useNavigation } from "@react-navigation/native";
+import { downloadAndShare } from "../../../../utils/helpers";
 
 
 const { DocumentScanner } = NativeModules;
@@ -605,6 +606,36 @@ const BusinessCardView = ({
           }]}>
             <MaterialIcons name="edit" size={16} color="#fff" />
           </View>
+
+          <View style={[styles.shareIcon, {
+            backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+          }]}>
+            <TouchableOpacity
+
+              onPress={() => {
+                console.log("Share button pressed");
+                downloadAndShare(getImageUri("large"), "image/jpeg");
+              }}
+            >
+              <MaterialIcons name="share" size={16} color="#fff" />
+
+            </TouchableOpacity>
+
+          </View>
+
+
+          {/* <TouchableOpacity
+
+            onPress={() => {
+              downloadAndShare(getImageUri("large"), "image/jpeg");
+            }}
+          >
+            <View style={[styles.editIcon, {
+              backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+            }]}>
+              <MaterialIcons name="share" size={16} color="#fff" />
+            </View>
+          </TouchableOpacity> */}
         </TouchableOpacity>
       </View>
 
@@ -696,7 +727,15 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 4,
   },
-
+  shareIcon: {
+    position: "absolute",
+    top: 8,
+    right: 38,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 6,
+    elevation: 3,
+  },
   editIcon: {
     position: "absolute",
     top: 8,

@@ -31,7 +31,8 @@ import RNFS from "react-native-fs";
 import LableInfo from "./LableInfo";
 import { useNavigation } from "@react-navigation/native";
 import DeviceInfo from "react-native-device-info";
-
+import { downloadAndShare } from "../../../../utils/helpers";
+ 
 const Media = ({
   isValidate,
   item,
@@ -271,6 +272,10 @@ const Media = ({
   //     setLoadingSmall(false)
   // },[])
   // -------------------- Render Media Options --------------------
+
+ 
+
+
   const renderMedia = () => {
     if (item?.field?.startsWith("gallary_camera_") && item?.ctltype === "IMAGE") {
       return [
@@ -770,6 +775,19 @@ const Media = ({
                 },
               ]}
             >
+            <TouchableOpacity
+                style={styles.closeBtnShare}
+                onPress={() => {
+                  downloadAndShare(getImageUri("large"), "image/jpeg");
+                }}
+              >
+                <MaterialIcons
+                  name="share"
+                  size={30}
+                  color={theme === "dark" ? "white" : ERP_COLOR_CODE.ERP_WHITE}
+                />
+              </TouchableOpacity>
+
               <TouchableOpacity
                 style={styles.closeBtn}
                 onPress={() => {
@@ -1044,10 +1062,28 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  closeBtnShare: {
+position: "absolute",
+    top: 80,
+    right: 80,
+    zIndex: 20,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    justifyContent: "center",
+    alignItems: "center",
+
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 6,
+  },
 
   closeBtn: {
     position: "absolute",
-    top: 48,
+    top: 80,
     right: 20,
     zIndex: 20,
 
