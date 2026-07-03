@@ -1275,7 +1275,9 @@ export const applyFormula = (config, values) => {
 
     const from = values[config.fromField];
     const to = values[config.toField];
-
+    if (from && to && new Date(from) > new Date(to)) {
+      return { ...values, [config.fieldName]: "-" };
+    }
     if (!from || !to) {
       return { ...values, [config.fieldName]: "" };
     }
@@ -1447,7 +1449,6 @@ export const getDashboardIcon = (type) => {
     if (s === "punch missing") return "#9e9e9e"; // grey
     if (s === "working") return "#4caf50"; // green-ish
     if (s === "fullday") return "#4caf50";
-
     return ERP_COLOR_CODE.ERP_APP_COLOR;
   };
 

@@ -133,7 +133,7 @@ const ScanScreen = ({ item, errors , onValueChange}: any) => {
         {qrText !== "" && !cameraShown && (
           <View style={styles.resultBox}>
             <MaterialIcons name="check-circle" size={20} color="green" />
-            <Text style={styles.resultText}>Scanned: {'qrText'}</Text>
+            <Text style={styles.resultText}>Scanned: {qrText}</Text>
           </View>
         )}
 

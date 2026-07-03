@@ -141,27 +141,17 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
   const [errorsList, setErrorsList] = useState<string[]>([]);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [isValidate, setIsValidate] = useState(false);
-
-  console.log(
-    "controls+++++++++++++++++++++++++++++++++++------------------------------++++",
-    controls,
-  );
   const [tapLoader, setTapLoader] = useState(false);
-
   const [error, setError] = useState<string | null>(null);
   const [formValues, setFormValues] = useState<any>({});
-
   const [datePickerVisible, setDatePickerVisible] = useState(false);
-
   const [dateTimePickerVisible, setDateTimePickerVisible] = useState(false);
   const [activeDateTimeField, setActiveDateTimeField] = useState<string | null>(
     null,
   );
   const [activeDateTime, setActiveDateTime] = useState<string | null>(null);
-
   const [activeDateField, setActiveDateField] = useState<string | null>(null);
   const [activeDate, setActiveDate] = useState<string | null>(null);
-
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [alertVisible, setAlertVisible] = useState(false);
   const [locationVisible, setLocationVisible] = useState(false);
@@ -175,15 +165,11 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
     message: "",
     type: "info" as "error" | "success" | "info",
   });
-
   const [locationEnabled, setLocationEnabled] = useState<boolean | null>(null);
   const [modalClose, setModalClose] = useState(false);
   const [isSettingVisible, setIsSettingVisible] = useState(false);
   const [myScript, setMyScript] = useState();
-
-  console.log("myScript++++++++++++++++++++++++", myScript);
   const [backgroundDeniedModal, setBackgroundDeniedModal] = useState(false);
-
   const isCheckingPermission = useRef(false);
   const locationSyncInterval = useRef(null);
   const [scriptErrorMessage, setScriptErrorMessage] = useState<any>();
@@ -209,7 +195,6 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-
     const checkLocation = async () => {
       const enabled = await DeviceInfo.isLocationEnabled();
       setLocationEnabled(enabled);
@@ -314,7 +299,6 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
             type: "error",
           });
           setModalClose(false);
-
           setAlertVisible(true);
           setIsSettingVisible(true);
         }
@@ -557,14 +541,13 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
       setActionSaveLoader(false);
     }
   }
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: {
         backgroundColor:
           theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
-
       },
-
       headerBackTitle: "",
       headerTintColor: "#fff",
       headerTitleAlign: "left",
@@ -584,7 +567,6 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
             }}
             text={isFromForceLeave ? "Attendance" : title || pageTitle || "Details"}
           ></TranslatedText>
-
           <TranslatedText
             numberOfLines={1}
             style={{
@@ -654,11 +636,8 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
       const parsed = await dispatch(
         getERPPageThunk({ page: isFromForceLeave ? pageUrl : url, id: isFromNew || isFromForceLeave ? 0 : id }),
       ).unwrap();
-      console.log("script---++++++------------------++++++++++---", parsed);
       if (parsed?.script) {
-        console.log("script---++++++++++++++++---", parsed?.script);
         let script = parsed?.script;
-
         if (typeof script === "string") {
           try {
             script = JSON.parse(script.replace(/'/g, '"'));
@@ -667,10 +646,7 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
             script = [];
           }
         }
-
         setMyScript(script);
-        // setMyScript(parsed?.script);
-        // setMyScript();
       }
 
       if (!isFromNew) {
@@ -752,9 +728,7 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
 
   const safeParse = (data) => {
     if (!data) return [];
-
     if (typeof data === "object") return data; // already parsed ✅
-
     if (typeof data === "string") {
       try {
         return JSON.parse(data);
@@ -763,687 +737,9 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
         return [];
       }
     }
-
     return [];
   };
 
-  // const [vendorTemplate] = useState({
-  //   title: "P1",
-  //   pageControls: [
-  //     {
-  //       dtlid: 200002608,
-  //       id: 156,
-  //       seqno: 1,
-  //       field: "projectteamid",
-  //       dfield: "",
-  //       fieldtitle: "Project Team ID",
-  //       title: "Project Team ID",
-  //       text: "",
-  //       dtext: "",
-  //       defaultvalue: "",
-  //       tooltip: "Project Team",
-  //       size: "",
-  //       ctltype: "NUMERIC",
-  //       ddl: "",
-  //       ddlfield: "",
-  //       ddlwhere: "",
-  //       ajax: 0,
-  //       visible: "1",
-  //       refcol: 0,
-  //       mandatory: "0",
-  //       disabled: "1",
-  //     },
-  //     {
-  //       dtlid: 200002609,
-  //       id: 156,
-  //       seqno: 2,
-  //       field: "projectid",
-  //       dfield: "projectname",
-  //       fieldtitle: "Project Name",
-  //       title: "Project Name",
-  //       text: "",
-  //       dtext: "",
-  //       defaultvalue: "",
-  //       tooltip: "Project Name",
-  //       size: "",
-  //       ctltype: "NUMERIC",
-  //       ddl: "ViewProjects-ProjectName,ProjectID",
-  //       ddlfield: "ProjectName",
-  //       ddlwhere: "Status in (~A~,~R~,~N~)",
-  //       ajax: 1,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "1",
-  //       disabled: "0",
-  //     },
-  //     {
-  //       dtlid: 200002610,
-  //       id: 156,
-  //       seqno: 3,
-  //       field: "userid",
-  //       dfield: "developer",
-  //       fieldtitle: "Developer",
-  //       title: "Developer",
-  //       text: "",
-  //       dtext: "",
-  //       defaultvalue: "",
-  //       tooltip: "Developer Name",
-  //       size: "",
-  //       ctltype: "NUMERIC",
-  //       ddl: "ViewUserMaster-UserName,UserID,RoleID,RoleName",
-  //       ddlfield: "Developer,DesigID",
-  //       ddlwhere: "Status=~A~",
-  //       ajax: 1,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "1",
-  //       disabled: "0",
-  //     },
-  //     {
-  //       dtlid: 200002611,
-  //       id: 156,
-  //       seqno: 4,
-  //       field: "desigid",
-  //       dfield: "",
-  //       fieldtitle: "Role Name",
-  //       title: "Role Name",
-  //       text: "",
-  //       dtext: "",
-  //       defaultvalue: "",
-  //       tooltip: "Designation",
-  //       size: "",
-  //       ctltype: "INT",
-  //       ddl: "RoleMst-RoleID,RoleName",
-  //       ddlfield: "RoleName",
-  //       ddlwhere: "Status=~A~",
-  //       ajax: 0,
-  //       visible: "1",
-  //       refcol: 0,
-  //       mandatory: "0",
-  //       disabled: "0",
-  //     },
-  //     {
-  //       dtlid: 200002612,
-  //       id: 156,
-  //       seqno: 5,
-  //       field: "fordays",
-  //       dfield: "",
-  //       fieldtitle: "For Days",
-  //       title: "For Days",
-  //       text: 1,
-  //       dtext: "",
-  //       defaultvalue: 1,
-  //       tooltip: "For Days",
-  //       size: "",
-  //       ctltype: "INT",
-  //       ddl: "1,2,3,4,5,6,7-",
-  //       ddlfield: "ForDays",
-  //       ddlwhere: "1=1",
-  //       ajax: 0,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "1",
-  //       disabled: "0",
-  //     },
-  //     {
-  //       dtlid: 200002613,
-  //       id: 156,
-  //       seqno: 6,
-  //       field: "todate",
-  //       dfield: "",
-  //       fieldtitle: "To Date",
-  //       title: "To Date",
-  //       text: "",
-  //       dtext: "",
-  //       defaultvalue: "",
-  //       tooltip: "To Date",
-  //       size: "",
-  //       ctltype: "STRING",
-  //       ddl: "",
-  //       ddlfield: "",
-  //       ddlwhere: "",
-  //       ajax: 0,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "0",
-  //       disabled: "1",
-  //     },
-  //     {
-  //       dtlid: 200002614,
-  //       id: 156,
-  //       seqno: 7,
-  //       field: "cuid",
-  //       dfield: "entryby",
-  //       fieldtitle: "Entry By",
-  //       title: "Entry By",
-  //       text: 113,
-  //       dtext: "Sandip Mori",
-  //       defaultvalue: "#useridname",
-  //       tooltip: "Entry By (Who have entered the entry)",
-  //       size: "",
-  //       ctltype: "NUMERIC",
-  //       ddl: "UserMaster-UserName,UserID",
-  //       ddlfield: "EntryBy",
-  //       ddlwhere: "Status=~A~",
-  //       ajax: 1,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "0",
-  //       disabled: "1",
-  //     },
-  //     {
-  //       dtlid: 200002615,
-  //       id: 156,
-  //       seqno: 8,
-  //       field: "editmode",
-  //       dfield: "",
-  //       fieldtitle: "Edit Mode",
-  //       title: "Edit Mode",
-  //       text: "Edit",
-  //       dtext: "",
-  //       defaultvalue: "Edit",
-  //       tooltip: "Edit Mode",
-  //       size: "",
-  //       ctltype: "STRING",
-  //       ddl: "Edit,View-",
-  //       ddlfield: "EditMode",
-  //       ddlwhere: "1=1",
-  //       ajax: 0,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "1",
-  //       disabled: "0",
-  //     },
-  //     {
-  //       dtlid: 200002616,
-  //       id: 156,
-  //       seqno: 9,
-  //       field: "muid",
-  //       dfield: "updateby",
-  //       fieldtitle: "Update By",
-  //       title: "Update By",
-  //       text: 113,
-  //       dtext: "Sandip Mori",
-  //       defaultvalue: "#useridname",
-  //       tooltip: "Update By (Who have last updated the entry)",
-  //       size: "",
-  //       ctltype: "NUMERIC",
-  //       ddl: "UserMaster-UserName,UserID",
-  //       ddlfield: "UpdateBy",
-  //       ddlwhere: "Status=~A~",
-  //       ajax: 1,
-  //       visible: "1",
-  //       refcol: 0,
-  //       mandatory: "0",
-  //       disabled: "1",
-  //     },
-  //   ],
-  //   buttonControls: [],
-  // });
-
-  // const [purchaseTemplate] = useState({
-  //   title: "P2",
-  //   pageControls: [
-  //     {
-  //       dtlid: 200002608,
-  //       id: 156,
-  //       seqno: 1,
-  //       field: "projectteamid",
-  //       dfield: "",
-  //       fieldtitle: "Project Team ID",
-  //       title: "Project Team ID",
-  //       text: "",
-  //       dtext: "",
-  //       defaultvalue: "",
-  //       tooltip: "Project Team",
-  //       size: "",
-  //       ctltype: "NUMERIC",
-  //       ddl: "",
-  //       ddlfield: "",
-  //       ddlwhere: "",
-  //       ajax: 0,
-  //       visible: "1",
-  //       refcol: 0,
-  //       mandatory: "0",
-  //       disabled: "1",
-  //     },
-  //     {
-  //       dtlid: 200002609,
-  //       id: 156,
-  //       seqno: 2,
-  //       field: "projectid",
-  //       dfield: "projectname",
-  //       fieldtitle: "Project Name",
-  //       title: "Project Name",
-  //       text: "",
-  //       dtext: "",
-  //       defaultvalue: "",
-  //       tooltip: "Project Name",
-  //       size: "",
-  //       ctltype: "NUMERIC",
-  //       ddl: "ViewProjects-ProjectName,ProjectID",
-  //       ddlfield: "ProjectName",
-  //       ddlwhere: "Status in (~A~,~R~,~N~)",
-  //       ajax: 1,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "1",
-  //       disabled: "0",
-  //     },
-  //     {
-  //       dtlid: 200002610,
-  //       id: 156,
-  //       seqno: 3,
-  //       field: "userid",
-  //       dfield: "developer",
-  //       fieldtitle: "Developer",
-  //       title: "Developer",
-  //       text: "",
-  //       dtext: "",
-  //       defaultvalue: "",
-  //       tooltip: "Developer Name",
-  //       size: "",
-  //       ctltype: "NUMERIC",
-  //       ddl: "ViewUserMaster-UserName,UserID,RoleID,RoleName",
-  //       ddlfield: "Developer,DesigID",
-  //       ddlwhere: "Status=~A~",
-  //       ajax: 1,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "1",
-  //       disabled: "0",
-  //     },
-  //     {
-  //       dtlid: 200002611,
-  //       id: 156,
-  //       seqno: 4,
-  //       field: "desigid",
-  //       dfield: "",
-  //       fieldtitle: "Role Name",
-  //       title: "Role Name",
-  //       text: "",
-  //       dtext: "",
-  //       defaultvalue: "",
-  //       tooltip: "Designation",
-  //       size: "",
-  //       ctltype: "INT",
-  //       ddl: "RoleMst-RoleID,RoleName",
-  //       ddlfield: "RoleName",
-  //       ddlwhere: "Status=~A~",
-  //       ajax: 0,
-  //       visible: "1",
-  //       refcol: 0,
-  //       mandatory: "0",
-  //       disabled: "0",
-  //     },
-  //     {
-  //       dtlid: 200002612,
-  //       id: 156,
-  //       seqno: 5,
-  //       field: "fordays",
-  //       dfield: "",
-  //       fieldtitle: "For Days",
-  //       title: "For Days",
-  //       text: 1,
-  //       dtext: "",
-  //       defaultvalue: 1,
-  //       tooltip: "For Days",
-  //       size: "",
-  //       ctltype: "INT",
-  //       ddl: "1,2,3,4,5,6,7-",
-  //       ddlfield: "ForDays",
-  //       ddlwhere: "1=1",
-  //       ajax: 0,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "1",
-  //       disabled: "0",
-  //     },
-  //     {
-  //       dtlid: 200002613,
-  //       id: 156,
-  //       seqno: 6,
-  //       field: "todate",
-  //       dfield: "",
-  //       fieldtitle: "To Date",
-  //       title: "To Date",
-  //       text: "",
-  //       dtext: "",
-  //       defaultvalue: "",
-  //       tooltip: "To Date",
-  //       size: "",
-  //       ctltype: "STRING",
-  //       ddl: "",
-  //       ddlfield: "",
-  //       ddlwhere: "",
-  //       ajax: 0,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "0",
-  //       disabled: "1",
-  //     },
-  //     {
-  //       dtlid: 200002614,
-  //       id: 156,
-  //       seqno: 7,
-  //       field: "cuid",
-  //       dfield: "entryby",
-  //       fieldtitle: "Entry By",
-  //       title: "Entry By",
-  //       text: 113,
-  //       dtext: "Sandip Mori",
-  //       defaultvalue: "#useridname",
-  //       tooltip: "Entry By (Who have entered the entry)",
-  //       size: "",
-  //       ctltype: "NUMERIC",
-  //       ddl: "UserMaster-UserName,UserID",
-  //       ddlfield: "EntryBy",
-  //       ddlwhere: "Status=~A~",
-  //       ajax: 1,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "0",
-  //       disabled: "1",
-  //     },
-  //     {
-  //       dtlid: 200002615,
-  //       id: 156,
-  //       seqno: 8,
-  //       field: "editmode",
-  //       dfield: "",
-  //       fieldtitle: "Edit Mode",
-  //       title: "Edit Mode",
-  //       text: "Edit",
-  //       dtext: "",
-  //       defaultvalue: "Edit",
-  //       tooltip: "Edit Mode",
-  //       size: "",
-  //       ctltype: "STRING",
-  //       ddl: "Edit,View-",
-  //       ddlfield: "EditMode",
-  //       ddlwhere: "1=1",
-  //       ajax: 0,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "1",
-  //       disabled: "0",
-  //     },
-  //     {
-  //       dtlid: 200002616,
-  //       id: 156,
-  //       seqno: 9,
-  //       field: "muid",
-  //       dfield: "updateby",
-  //       fieldtitle: "Update By",
-  //       title: "Update By",
-  //       text: 113,
-  //       dtext: "Sandip Mori",
-  //       defaultvalue: "#useridname",
-  //       tooltip: "Update By (Who have last updated the entry)",
-  //       size: "",
-  //       ctltype: "NUMERIC",
-  //       ddl: "UserMaster-UserName,UserID",
-  //       ddlfield: "UpdateBy",
-  //       ddlwhere: "Status=~A~",
-  //       ajax: 1,
-  //       visible: "1",
-  //       refcol: 0,
-  //       mandatory: "0",
-  //       disabled: "1",
-  //     },
-  //   ],
-  //   buttonControls: [],
-  // });
-  // const [userTemplate] = useState({
-  //   title: "P3",
-  //   pageControls: [
-  //     {
-  //       dtlid: 200002608,
-  //       id: 156,
-  //       seqno: 1,
-  //       field: "projectteamid",
-  //       dfield: "",
-  //       fieldtitle: "Project Team ID",
-  //       title: "Project Team ID",
-  //       text: "",
-  //       dtext: "",
-  //       defaultvalue: "",
-  //       tooltip: "Project Team",
-  //       size: "",
-  //       ctltype: "NUMERIC",
-  //       ddl: "",
-  //       ddlfield: "",
-  //       ddlwhere: "",
-  //       ajax: 0,
-  //       visible: "1",
-  //       refcol: 0,
-  //       mandatory: "0",
-  //       disabled: "1",
-  //     },
-  //     {
-  //       dtlid: 200002609,
-  //       id: 156,
-  //       seqno: 2,
-  //       field: "projectid",
-  //       dfield: "projectname",
-  //       fieldtitle: "Project Name",
-  //       title: "Project Name",
-  //       text: "",
-  //       dtext: "",
-  //       defaultvalue: "",
-  //       tooltip: "Project Name",
-  //       size: "",
-  //       ctltype: "NUMERIC",
-  //       ddl: "ViewProjects-ProjectName,ProjectID",
-  //       ddlfield: "ProjectName",
-  //       ddlwhere: "Status in (~A~,~R~,~N~)",
-  //       ajax: 1,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "1",
-  //       disabled: "0",
-  //     },
-  //     {
-  //       dtlid: 200002610,
-  //       id: 156,
-  //       seqno: 3,
-  //       field: "userid",
-  //       dfield: "developer",
-  //       fieldtitle: "Developer",
-  //       title: "Developer",
-  //       text: "",
-  //       dtext: "",
-  //       defaultvalue: "",
-  //       tooltip: "Developer Name",
-  //       size: "",
-  //       ctltype: "NUMERIC",
-  //       ddl: "ViewUserMaster-UserName,UserID,RoleID,RoleName",
-  //       ddlfield: "Developer,DesigID",
-  //       ddlwhere: "Status=~A~",
-  //       ajax: 1,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "1",
-  //       disabled: "0",
-  //     },
-  //     {
-  //       dtlid: 200002611,
-  //       id: 156,
-  //       seqno: 4,
-  //       field: "desigid",
-  //       dfield: "",
-  //       fieldtitle: "Role Name",
-  //       title: "Role Name",
-  //       text: "",
-  //       dtext: "",
-  //       defaultvalue: "",
-  //       tooltip: "Designation",
-  //       size: "",
-  //       ctltype: "INT",
-  //       ddl: "RoleMst-RoleID,RoleName",
-  //       ddlfield: "RoleName",
-  //       ddlwhere: "Status=~A~",
-  //       ajax: 0,
-  //       visible: "1",
-  //       refcol: 0,
-  //       mandatory: "0",
-  //       disabled: "0",
-  //     },
-  //     {
-  //       dtlid: 200002612,
-  //       id: 156,
-  //       seqno: 5,
-  //       field: "fordays",
-  //       dfield: "",
-  //       fieldtitle: "For Days",
-  //       title: "For Days",
-  //       text: 1,
-  //       dtext: "",
-  //       defaultvalue: 1,
-  //       tooltip: "For Days",
-  //       size: "",
-  //       ctltype: "INT",
-  //       ddl: "1,2,3,4,5,6,7-",
-  //       ddlfield: "ForDays",
-  //       ddlwhere: "1=1",
-  //       ajax: 0,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "1",
-  //       disabled: "0",
-  //     },
-  //     {
-  //       dtlid: 200002613,
-  //       id: 156,
-  //       seqno: 6,
-  //       field: "todate",
-  //       dfield: "",
-  //       fieldtitle: "To Date",
-  //       title: "To Date",
-  //       text: "",
-  //       dtext: "",
-  //       defaultvalue: "",
-  //       tooltip: "To Date",
-  //       size: "",
-  //       ctltype: "STRING",
-  //       ddl: "",
-  //       ddlfield: "",
-  //       ddlwhere: "",
-  //       ajax: 0,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "0",
-  //       disabled: "1",
-  //     },
-  //     {
-  //       dtlid: 200002614,
-  //       id: 156,
-  //       seqno: 7,
-  //       field: "cuid",
-  //       dfield: "entryby",
-  //       fieldtitle: "Entry By",
-  //       title: "Entry By",
-  //       text: 113,
-  //       dtext: "Sandip Mori",
-  //       defaultvalue: "#useridname",
-  //       tooltip: "Entry By (Who have entered the entry)",
-  //       size: "",
-  //       ctltype: "NUMERIC",
-  //       ddl: "UserMaster-UserName,UserID",
-  //       ddlfield: "EntryBy",
-  //       ddlwhere: "Status=~A~",
-  //       ajax: 1,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "0",
-  //       disabled: "1",
-  //     },
-  //     {
-  //       dtlid: 200002615,
-  //       id: 156,
-  //       seqno: 8,
-  //       field: "editmode",
-  //       dfield: "",
-  //       fieldtitle: "Edit Mode",
-  //       title: "Edit Mode",
-  //       text: "Edit",
-  //       dtext: "",
-  //       defaultvalue: "Edit",
-  //       tooltip: "Edit Mode",
-  //       size: "",
-  //       ctltype: "STRING",
-  //       ddl: "Edit,View-",
-  //       ddlfield: "EditMode",
-  //       ddlwhere: "1=1",
-  //       ajax: 0,
-  //       visible: "0",
-  //       refcol: 0,
-  //       mandatory: "1",
-  //       disabled: "0",
-  //     },
-  //     {
-  //       dtlid: 200002616,
-  //       id: 156,
-  //       seqno: 9,
-  //       field: "muid",
-  //       dfield: "updateby",
-  //       fieldtitle: "Update By",
-  //       title: "Update By",
-  //       text: 113,
-  //       dtext: "Sandip Mori",
-  //       defaultvalue: "#useridname",
-  //       tooltip: "Update By (Who have last updated the entry)",
-  //       size: "",
-  //       ctltype: "NUMERIC",
-  //       ddl: "UserMaster-UserName,UserID",
-  //       ddlfield: "UpdateBy",
-  //       ddlwhere: "Status=~A~",
-  //       ajax: 1,
-  //       visible: "1",
-  //       refcol: 0,
-  //       mandatory: "0",
-  //       disabled: "1",
-  //     },
-  //   ],
-  //   buttonControls: [
-  //     {
-  //       btn_name: "Save",
-  //       btn_color: "black",
-  //       btn_icon_name: "add",
-  //     },
-  //     {
-  //       btn_name: "Update",
-  //       btn_color: "green",
-  //       btn_icon_name: "edit",
-  //     },
-  //     {
-  //       btn_name: "Delete",
-  //       btn_color: "red",
-  //       btn_icon_name: "delete",
-  //     },
-  //   ],
-  // });
-  // const sections = [
-  //   {
-  //     key: vendorTemplate?.title,
-  //     template: vendorTemplate?.pageControls,
-  //     buttons: vendorTemplate?.buttonControls,
-  //   },
-  //   {
-  //     key: "purchase",
-  //     template: purchaseTemplate?.pageControls,
-  //     buttons: purchaseTemplate?.buttonControls,
-  //   },
-  //   {
-  //     key: "userInfo",
-  //     template: userTemplate?.pageControls,
-  //     buttons: userTemplate?.buttonControls,
-  //   },
-  // ];
-
-  // const [allData, setAllData] = useState({});
-
-  console.log("RENDERING... ", controls, formValues);
   const renderItem = useCallback(
     ({
       item,
@@ -1455,21 +751,12 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
       isFromChild: boolean;
     }) => {
       const setValue = (val, source) => {
-        console.log("SET VALUE START 👉", item?.field, val);
-
         if (myScript && source && source === "isFromDropdown") {
-          console.log(
-            "SET VALUE START 👉",
-            myScript,
-            item?.field,
-            val
-          );
-           const raw = myScript.find((obj) =>
+          const raw = myScript.find((obj) =>
             obj.rules?.some(
               (rule) => rule.triggerFields === item?.field
             )
           );
-
           if (!raw) {
             setFormValues((prev) => ({
               ...prev,
@@ -1477,12 +764,10 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
             }));
             return;
           }
-
           const isDayCalculation = raw.rules?.some(
             (rule) =>
               rule.formulaType === "dayCalculationForLeave"
           );
-
           if (!isDayCalculation) {
             setFormValues((prev) => ({
               ...prev,
@@ -1490,21 +775,17 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
             }));
             return;
           }
-
           const fieldName = raw.rules.find(
             (rule) => rule.triggerFields === item.field
           )?.fieldName;
-
           const calculationFields = raw.rules.find(
             (rule) =>
               rule.formulaType === "dayCalculationForLeave"
           )?.calculationFields;
-
           const typeFields = raw.rules.find(
             (rule) =>
               rule.formulaType === "dayCalculationForLeave"
           )?.typeFields;
-
           if (
             !fieldName ||
             !calculationFields ||
@@ -1512,37 +793,27 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
           ) {
             return;
           }
-
           setFormValues((prev) => {
             const updated = {
               ...prev,
               [item.field]: val,
             };
-
             const fromDate =
               updated[calculationFields[0]];
-
             const toDate =
               updated[calculationFields[1]];
-
             if (!fromDate || !toDate) {
               return updated;
             }
-
             const from = new Date(fromDate);
             const to = new Date(toDate);
-            
             let total =
               Math.floor(
                 (to - from) /
                 (1000 * 60 * 60 * 24)
               ) + 1;
-
             const fromType = updated[typeFields[0]];
-            console.log("fromType", fromType,  typeFields[0])
             const toType = updated[typeFields[1]];
-            console.log("toType", toType,  typeFields[1])
-
 
             if (total === 1) {
               if (
@@ -1562,7 +833,6 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
               ) {
                 total -= 0.5;
               }
-
               if (
                 toType === "1Half" ||
                 toType === "2Half"
@@ -1578,32 +848,15 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
         } else {
           setFormValues((prev) => {
             let updatedValues;
-
             if (typeof val === "object" && val !== null) {
               updatedValues = { ...prev, ...val };
             } else {
               updatedValues = { ...prev, [item.field]: val };
             }
-
-            console.log(
-              "Updated Values (before rules):",
-              myScript,
-              typeof myScript,
-            );
             const parsed = safeParse(myScript);
-            console.log("parsed-----------------", parsed);
-
             const safeRules = Array.isArray(parsed) ? parsed : [parsed];
-
-            console.log("safeRules-----------------", safeRules);
             const result = runDynamicRules(safeRules, updatedValues, item.field);
-
-            console.log("After Rules Values 👉", result.values);
-            console.log("Actions 👉", result.actions);
-            console.log("Messages 👉", result.messages);
-
             let finalValues = { ...result.values };
-
             result.actions.forEach((action) => {
               if (action?.action === "setValue" && action?.field) {
                 finalValues[action.field] = action.value ?? "";
@@ -1611,9 +864,6 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
               }
             });
 
-            //   ===
-            // 4️⃣ UPDATE CONTROLS
-            //   ===
             if (result.actions?.length) {
               const updatedControls = applyActionsToControls(
                 controls,
@@ -1622,17 +872,10 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
               setControls(updatedControls);
             }
 
-            //   ===
-            // 5️⃣ CLEAR ERROR
-            //   ===
             setErrors((prevErr) => ({
               ...prevErr,
               [item.field]: "",
             }));
-
-            console.log("FINAL VALUES ✅", finalValues);
-            console.log("SET VALUE END  ==");
-
             return finalValues;
           });
         }
@@ -1644,7 +887,6 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
           ? ""
           : formValues[item?.field] || formValues[item?.text] || "";
 
-      console.log("item 0000000 ------------------------------- ", item);
       if (item?.visible === "1") return null;
 
       let content = null;
@@ -1787,25 +1029,6 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
           </>
         );
       }
-      // Disabled + Date time
-      //
-      // else if (item?.disabled === "1" && (item?.ctltype === "DATETIME" || item?.ctltype === "DATE") && (item?.field.includes("starttime") || item?.field.includes("endtime"))) {
-      //   content = (
-      //     <DisabledDateTime
-      //       isFromChild={isFromChild}
-      //       item={item}
-      //       value={value}
-      //       type={item?.ctltype}
-      //       handleOnSubmit={(item, val) => {
-      //         console.log("DisabledDateTime onSubmit 👉", val);
-      //         setFormValues((prev) => {
-      //           return { ...prev, [item?.field]: val };
-      //         });
-      //       }}
-      //     />
-      //   );
-      // }
-
       //Disabled
       else if (item?.disabled === "1" && item?.ajax !== 1) {
         content = (
@@ -1944,7 +1167,7 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
     setActiveDateField(null);
   };
 
-  const handleConfirm = (date: Date) => {
+  const handleConfirm = async (date: Date) => {
     if (!activeDateField) return;
     if (myScript) {
       setFormValues((prev) => {
@@ -1961,7 +1184,78 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
         );
         return result.values;
       });
+      await new Promise(res => setTimeout(res, 400));
+      const hasDayCalculation = myScript.some(item =>
+        item.rules.some(
+          rule => rule.formulaType === "dayCalculationForLeave"
+        )
+      );
+      const dayCalculationRules = myScript.flatMap(item =>
+        item.rules.filter(
+          rule => rule.formulaType === "dayCalculationForLeave"
+        )
+      );
+      if (hasDayCalculation) {
+        const calculationFields = dayCalculationRules[0]?.calculationFields
+        const typeFields = dayCalculationRules[0]?.typeFields
 
+        const fromDate = activeDateField === calculationFields[0] ? date.toISOString() : formValues[calculationFields[0]];
+        const toDate = activeDateField === calculationFields[1] ? date.toISOString() : formValues[calculationFields[1]];
+
+        console.log("fromDate ++ ++ + +++ ", formValues, fromDate, toDate)
+        if (fromDate && toDate && new Date(fromDate) > new Date(toDate)) {
+          hideDatePicker();
+          return;
+        }
+        if (!fromDate || !toDate) {
+          hideDatePicker();
+          return;
+        }
+
+        const from = new Date(fromDate);
+        const to = new Date(toDate);
+
+        let total =
+          Math.floor(
+            (to - from) /
+            (1000 * 60 * 60 * 24)
+          ) + 1;
+
+        const fromType = formValues[typeFields[0]];
+        const toType = formValues[typeFields[1]];
+
+
+        if (total === 1) {
+          if (
+            fromType === "1Half" ||
+            fromType === "2Half" ||
+            toType === "1Half" ||
+            toType === "2Half"
+          ) {
+            total = 0.5;
+          } else {
+            total = 1;
+          }
+        } else {
+          if (
+            fromType === "1Half" ||
+            fromType === "2Half"
+          ) {
+            total -= 0.5;
+          }
+          if (
+            toType === "1Half" ||
+            toType === "2Half"
+          ) {
+            total -= 0.5;
+          }
+        }
+        console.log("Tototototototot", total)
+        setFormValues((prev) => ({
+          ...prev,
+          [dayCalculationRules[0]?.fieldName]: total,
+        }));
+      }
       hideDatePicker();
     } else {
       if (activeDateField) {
@@ -2172,23 +1466,7 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
                     contentContainerStyle={{ paddingBottom: keyboardHeight }}
                     keyboardShouldPersistTaps="handled"
                     numColumns={isIpad ? (isLandscape ? 3 : 1) : (isLandscape ? 2 : 1)}
-                  //  ListFooterComponent={() => {
-                  //   return (
-                  //     <ScrollView>
-                  //       {sections.map((section) => (
-                  //         <DynamicTable
-                  //           key={section.key}
-                  //           sectionKey={section.key}
-                  //           template={section.template}
-                  //           buttons={section.buttons}
-                  //           allData={allData}
-                  //           setAllData={setAllData}
-                  //           renderItem={renderItem}
-                  //         />
-                  //       ))}
-                  //     </ScrollView>
-                  //   );
-                  // }}
+                 
                   />{" "}
                 </>
               ) : (
@@ -2231,23 +1509,6 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
                   contentContainerStyle={{ paddingBottom: keyboardHeight }}
                   keyboardShouldPersistTaps="handled"
                   numColumns={isLandscape ? 2 : 1}
-                // ListFooterComponent={() => {
-                //   return (
-                //     <ScrollView>
-                //       {sections.map((section) => (
-                //         <DynamicTable
-                //           key={section.key}
-                //           sectionKey={section.key}
-                //           template={section.template}
-                //           buttons={section.buttons}
-                //           allData={allData}
-                //           setAllData={setAllData}
-                //           renderItem={renderItem}
-                //         />
-                //       ))} 
-                //     </ScrollView>
-                //   );
-                // }}
                 />
               )}
 
@@ -2277,11 +1538,7 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
                   </Text>
                 </TouchableOpacity>
               }
-
-
             </View>
-
-
             {loader && (
               <View
                 style={{
@@ -2343,7 +1600,6 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
             modalPropsIOS={{
               supportedOrientations: ["portrait", "landscape"],
             }}
-
           />
         )}
 
@@ -2361,7 +1617,6 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
             modalPropsIOS={{
               supportedOrientations: ["portrait", "landscape"],
             }}
-
           />
         )}
 
@@ -2401,7 +1656,6 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
           message={alertConfig.message}
           type={alertConfig.type}
           onClose={() => {
-            console.log("Alert closed 22222222222222222");
             setTapLoader(false);
             setAlertVisible(false);
             if (goBack) {
