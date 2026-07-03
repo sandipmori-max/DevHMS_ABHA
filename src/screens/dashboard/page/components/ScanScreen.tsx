@@ -22,7 +22,7 @@ import InputError from "../../../../components/error/InputError";
 import LableInfo from "./LableInfo";
 import DeviceInfo from "react-native-device-info";
 
-const ScanScreen = ({ item, errors }: any) => {
+const ScanScreen = ({ item, errors , onValueChange}: any) => {
   const { askPermissions } = usePermissions(EPermissionTypes.CAMERA);
   const [cameraShown, setCameraShown] = useState(false);
   const [qrText, setQrText] = useState("");
@@ -87,10 +87,12 @@ const ScanScreen = ({ item, errors }: any) => {
       });
   };
 
+ 
   // Handle scanned code
   const handleReadCode = (value: string) => {
     setQrText(value);
     setCameraShown(false);
+    onValueChange(value)
   };
 
   return (
@@ -131,7 +133,7 @@ const ScanScreen = ({ item, errors }: any) => {
         {qrText !== "" && !cameraShown && (
           <View style={styles.resultBox}>
             <MaterialIcons name="check-circle" size={20} color="green" />
-            <Text style={styles.resultText}>Scanned: {qrText}</Text>
+            <Text style={styles.resultText}>Scanned: {'qrText'}</Text>
           </View>
         )}
 
@@ -140,6 +142,8 @@ const ScanScreen = ({ item, errors }: any) => {
           <CameraScanner
             setIsCameraShown={setCameraShown}
             onReadCode={handleReadCode}
+            item={item}
+            onValueChange={onValueChange}
           />
         )}
       </View>
@@ -188,7 +192,8 @@ const styles = StyleSheet.create({
 
   /* Scan Result Box */
   resultBox: {
-    marginTop: 12,
+    marginVertical: 2,
+    marginBottom: 8,
     padding: 10,
     borderRadius: 8,
     backgroundColor: "#E8F5E9",

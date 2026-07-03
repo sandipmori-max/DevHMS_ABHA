@@ -316,9 +316,9 @@ const CustomPicker = ({
                     ]}
                     onPress={() => {
                       if (!isForceOpen) {
-                        onValueChange(opt);
+                        onValueChange(opt, "isFromDropdown");
                       } else {
-                        onValueChange(opt?.value);
+                        onValueChange(opt?.value, "isFromDropdown");
                       }
                       setSelectedOption(opt?.name);
                       closeBottomSheet();

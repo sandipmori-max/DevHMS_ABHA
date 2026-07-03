@@ -22,7 +22,7 @@ import InputError from '../../../../components/error/InputError';
 import LableInfo from './LableInfo';
 import DeviceInfo from 'react-native-device-info';
 
-const BarCodeScan = ({ item, isFromChild = false, errors }: any) => {
+const BarCodeScan = ({ item, isFromChild = false, errors, onValueChange }: any) => {
   const { askPermissions } = usePermissions(EPermissionTypes.CAMERA);
   const [cameraShown, setCameraShown] = useState(false);
   const [scannedValue, setScannedValue] = useState('');
@@ -79,11 +79,12 @@ const BarCodeScan = ({ item, isFromChild = false, errors }: any) => {
         }
       });
   };
-
+ 
   // Scanner Callback
   const handleReadCode = (value: string) => {
     setScannedValue(value);
     setCameraShown(false);
+    onValueChange(value)
   };
 
   return (
@@ -132,6 +133,8 @@ const BarCodeScan = ({ item, isFromChild = false, errors }: any) => {
           <BarCodeCameraScanner
             setIsCameraShown={setCameraShown}
             onReadCode={handleReadCode}
+            item={item}
+            onValueChange={onValueChange}
           />
         )}
 
@@ -180,7 +183,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   resultBox: {
-    marginTop: 12,
+    marginVertical: 2,
+    marginBottom: 8,
     padding: 10,
     borderRadius: 8,
     backgroundColor: '#E8F5E9',

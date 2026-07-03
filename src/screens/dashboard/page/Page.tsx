@@ -123,7 +123,7 @@ export async function requestLocationPermissions(): Promise<
   return "granted";
 }
 
-const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
+const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
   console.log("isFromForceLeave, pageUrl", isFromForceLeave, pageUrl)
   const { height, width } = useWindowDimensions();
   const isLandscape = width > height;
@@ -500,7 +500,7 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
           setLoader(true);
           await dispatch(
             savePageThunk({
-              page: isFromForceLeave ? pageUrl :  url,
+              page: isFromForceLeave ? pageUrl : url,
               id,
               data: { ...submitValues },
             }),
@@ -588,12 +588,12 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
           <TranslatedText
             numberOfLines={1}
             style={{
-              fontSize: isFromForceLeave ? 16 :18,
+              fontSize: isFromForceLeave ? 16 : 18,
               fontWeight: !isFromForceLeave ? "700" : undefined,
               color: ERP_COLOR_CODE.ERP_WHITE,
               marginLeft: 4,
             }}
-            text={ isFromForceLeave ? '' :
+            text={isFromForceLeave ? '' :
               isFromNew
                 ? `- ( ${t("text.text44")} )`
                 : `- ( ${t("text.text45")} )`
@@ -652,12 +652,25 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
       setError(null);
       setLoadingPageId(isFromNew ? "0" : id);
       const parsed = await dispatch(
-        getERPPageThunk({ page: isFromForceLeave ? pageUrl : url, id:  isFromNew || isFromForceLeave ? 0 : id }),
+        getERPPageThunk({ page: isFromForceLeave ? pageUrl : url, id: isFromNew || isFromForceLeave ? 0 : id }),
       ).unwrap();
       console.log("script---++++++------------------++++++++++---", parsed);
       if (parsed?.script) {
         console.log("script---++++++++++++++++---", parsed?.script);
-        setMyScript(parsed?.script);
+        let script = parsed?.script;
+
+        if (typeof script === "string") {
+          try {
+            script = JSON.parse(script.replace(/'/g, '"'));
+          } catch (e) {
+            console.error("Invalid script:", e);
+            script = [];
+          }
+        }
+
+        setMyScript(script);
+        // setMyScript(parsed?.script);
+        // setMyScript();
       }
 
       if (!isFromNew) {
@@ -754,681 +767,681 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
     return [];
   };
 
-  const [vendorTemplate] = useState({
-    title: "P1",
-    pageControls: [
-      {
-        dtlid: 200002608,
-        id: 156,
-        seqno: 1,
-        field: "projectteamid",
-        dfield: "",
-        fieldtitle: "Project Team ID",
-        title: "Project Team ID",
-        text: "",
-        dtext: "",
-        defaultvalue: "",
-        tooltip: "Project Team",
-        size: "",
-        ctltype: "NUMERIC",
-        ddl: "",
-        ddlfield: "",
-        ddlwhere: "",
-        ajax: 0,
-        visible: "1",
-        refcol: 0,
-        mandatory: "0",
-        disabled: "1",
-      },
-      {
-        dtlid: 200002609,
-        id: 156,
-        seqno: 2,
-        field: "projectid",
-        dfield: "projectname",
-        fieldtitle: "Project Name",
-        title: "Project Name",
-        text: "",
-        dtext: "",
-        defaultvalue: "",
-        tooltip: "Project Name",
-        size: "",
-        ctltype: "NUMERIC",
-        ddl: "ViewProjects-ProjectName,ProjectID",
-        ddlfield: "ProjectName",
-        ddlwhere: "Status in (~A~,~R~,~N~)",
-        ajax: 1,
-        visible: "0",
-        refcol: 0,
-        mandatory: "1",
-        disabled: "0",
-      },
-      {
-        dtlid: 200002610,
-        id: 156,
-        seqno: 3,
-        field: "userid",
-        dfield: "developer",
-        fieldtitle: "Developer",
-        title: "Developer",
-        text: "",
-        dtext: "",
-        defaultvalue: "",
-        tooltip: "Developer Name",
-        size: "",
-        ctltype: "NUMERIC",
-        ddl: "ViewUserMaster-UserName,UserID,RoleID,RoleName",
-        ddlfield: "Developer,DesigID",
-        ddlwhere: "Status=~A~",
-        ajax: 1,
-        visible: "0",
-        refcol: 0,
-        mandatory: "1",
-        disabled: "0",
-      },
-      {
-        dtlid: 200002611,
-        id: 156,
-        seqno: 4,
-        field: "desigid",
-        dfield: "",
-        fieldtitle: "Role Name",
-        title: "Role Name",
-        text: "",
-        dtext: "",
-        defaultvalue: "",
-        tooltip: "Designation",
-        size: "",
-        ctltype: "INT",
-        ddl: "RoleMst-RoleID,RoleName",
-        ddlfield: "RoleName",
-        ddlwhere: "Status=~A~",
-        ajax: 0,
-        visible: "1",
-        refcol: 0,
-        mandatory: "0",
-        disabled: "0",
-      },
-      {
-        dtlid: 200002612,
-        id: 156,
-        seqno: 5,
-        field: "fordays",
-        dfield: "",
-        fieldtitle: "For Days",
-        title: "For Days",
-        text: 1,
-        dtext: "",
-        defaultvalue: 1,
-        tooltip: "For Days",
-        size: "",
-        ctltype: "INT",
-        ddl: "1,2,3,4,5,6,7-",
-        ddlfield: "ForDays",
-        ddlwhere: "1=1",
-        ajax: 0,
-        visible: "0",
-        refcol: 0,
-        mandatory: "1",
-        disabled: "0",
-      },
-      {
-        dtlid: 200002613,
-        id: 156,
-        seqno: 6,
-        field: "todate",
-        dfield: "",
-        fieldtitle: "To Date",
-        title: "To Date",
-        text: "",
-        dtext: "",
-        defaultvalue: "",
-        tooltip: "To Date",
-        size: "",
-        ctltype: "STRING",
-        ddl: "",
-        ddlfield: "",
-        ddlwhere: "",
-        ajax: 0,
-        visible: "0",
-        refcol: 0,
-        mandatory: "0",
-        disabled: "1",
-      },
-      {
-        dtlid: 200002614,
-        id: 156,
-        seqno: 7,
-        field: "cuid",
-        dfield: "entryby",
-        fieldtitle: "Entry By",
-        title: "Entry By",
-        text: 113,
-        dtext: "Sandip Mori",
-        defaultvalue: "#useridname",
-        tooltip: "Entry By (Who have entered the entry)",
-        size: "",
-        ctltype: "NUMERIC",
-        ddl: "UserMaster-UserName,UserID",
-        ddlfield: "EntryBy",
-        ddlwhere: "Status=~A~",
-        ajax: 1,
-        visible: "0",
-        refcol: 0,
-        mandatory: "0",
-        disabled: "1",
-      },
-      {
-        dtlid: 200002615,
-        id: 156,
-        seqno: 8,
-        field: "editmode",
-        dfield: "",
-        fieldtitle: "Edit Mode",
-        title: "Edit Mode",
-        text: "Edit",
-        dtext: "",
-        defaultvalue: "Edit",
-        tooltip: "Edit Mode",
-        size: "",
-        ctltype: "STRING",
-        ddl: "Edit,View-",
-        ddlfield: "EditMode",
-        ddlwhere: "1=1",
-        ajax: 0,
-        visible: "0",
-        refcol: 0,
-        mandatory: "1",
-        disabled: "0",
-      },
-      {
-        dtlid: 200002616,
-        id: 156,
-        seqno: 9,
-        field: "muid",
-        dfield: "updateby",
-        fieldtitle: "Update By",
-        title: "Update By",
-        text: 113,
-        dtext: "Sandip Mori",
-        defaultvalue: "#useridname",
-        tooltip: "Update By (Who have last updated the entry)",
-        size: "",
-        ctltype: "NUMERIC",
-        ddl: "UserMaster-UserName,UserID",
-        ddlfield: "UpdateBy",
-        ddlwhere: "Status=~A~",
-        ajax: 1,
-        visible: "1",
-        refcol: 0,
-        mandatory: "0",
-        disabled: "1",
-      },
-    ],
-    buttonControls: [],
-  });
+  // const [vendorTemplate] = useState({
+  //   title: "P1",
+  //   pageControls: [
+  //     {
+  //       dtlid: 200002608,
+  //       id: 156,
+  //       seqno: 1,
+  //       field: "projectteamid",
+  //       dfield: "",
+  //       fieldtitle: "Project Team ID",
+  //       title: "Project Team ID",
+  //       text: "",
+  //       dtext: "",
+  //       defaultvalue: "",
+  //       tooltip: "Project Team",
+  //       size: "",
+  //       ctltype: "NUMERIC",
+  //       ddl: "",
+  //       ddlfield: "",
+  //       ddlwhere: "",
+  //       ajax: 0,
+  //       visible: "1",
+  //       refcol: 0,
+  //       mandatory: "0",
+  //       disabled: "1",
+  //     },
+  //     {
+  //       dtlid: 200002609,
+  //       id: 156,
+  //       seqno: 2,
+  //       field: "projectid",
+  //       dfield: "projectname",
+  //       fieldtitle: "Project Name",
+  //       title: "Project Name",
+  //       text: "",
+  //       dtext: "",
+  //       defaultvalue: "",
+  //       tooltip: "Project Name",
+  //       size: "",
+  //       ctltype: "NUMERIC",
+  //       ddl: "ViewProjects-ProjectName,ProjectID",
+  //       ddlfield: "ProjectName",
+  //       ddlwhere: "Status in (~A~,~R~,~N~)",
+  //       ajax: 1,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "1",
+  //       disabled: "0",
+  //     },
+  //     {
+  //       dtlid: 200002610,
+  //       id: 156,
+  //       seqno: 3,
+  //       field: "userid",
+  //       dfield: "developer",
+  //       fieldtitle: "Developer",
+  //       title: "Developer",
+  //       text: "",
+  //       dtext: "",
+  //       defaultvalue: "",
+  //       tooltip: "Developer Name",
+  //       size: "",
+  //       ctltype: "NUMERIC",
+  //       ddl: "ViewUserMaster-UserName,UserID,RoleID,RoleName",
+  //       ddlfield: "Developer,DesigID",
+  //       ddlwhere: "Status=~A~",
+  //       ajax: 1,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "1",
+  //       disabled: "0",
+  //     },
+  //     {
+  //       dtlid: 200002611,
+  //       id: 156,
+  //       seqno: 4,
+  //       field: "desigid",
+  //       dfield: "",
+  //       fieldtitle: "Role Name",
+  //       title: "Role Name",
+  //       text: "",
+  //       dtext: "",
+  //       defaultvalue: "",
+  //       tooltip: "Designation",
+  //       size: "",
+  //       ctltype: "INT",
+  //       ddl: "RoleMst-RoleID,RoleName",
+  //       ddlfield: "RoleName",
+  //       ddlwhere: "Status=~A~",
+  //       ajax: 0,
+  //       visible: "1",
+  //       refcol: 0,
+  //       mandatory: "0",
+  //       disabled: "0",
+  //     },
+  //     {
+  //       dtlid: 200002612,
+  //       id: 156,
+  //       seqno: 5,
+  //       field: "fordays",
+  //       dfield: "",
+  //       fieldtitle: "For Days",
+  //       title: "For Days",
+  //       text: 1,
+  //       dtext: "",
+  //       defaultvalue: 1,
+  //       tooltip: "For Days",
+  //       size: "",
+  //       ctltype: "INT",
+  //       ddl: "1,2,3,4,5,6,7-",
+  //       ddlfield: "ForDays",
+  //       ddlwhere: "1=1",
+  //       ajax: 0,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "1",
+  //       disabled: "0",
+  //     },
+  //     {
+  //       dtlid: 200002613,
+  //       id: 156,
+  //       seqno: 6,
+  //       field: "todate",
+  //       dfield: "",
+  //       fieldtitle: "To Date",
+  //       title: "To Date",
+  //       text: "",
+  //       dtext: "",
+  //       defaultvalue: "",
+  //       tooltip: "To Date",
+  //       size: "",
+  //       ctltype: "STRING",
+  //       ddl: "",
+  //       ddlfield: "",
+  //       ddlwhere: "",
+  //       ajax: 0,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "0",
+  //       disabled: "1",
+  //     },
+  //     {
+  //       dtlid: 200002614,
+  //       id: 156,
+  //       seqno: 7,
+  //       field: "cuid",
+  //       dfield: "entryby",
+  //       fieldtitle: "Entry By",
+  //       title: "Entry By",
+  //       text: 113,
+  //       dtext: "Sandip Mori",
+  //       defaultvalue: "#useridname",
+  //       tooltip: "Entry By (Who have entered the entry)",
+  //       size: "",
+  //       ctltype: "NUMERIC",
+  //       ddl: "UserMaster-UserName,UserID",
+  //       ddlfield: "EntryBy",
+  //       ddlwhere: "Status=~A~",
+  //       ajax: 1,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "0",
+  //       disabled: "1",
+  //     },
+  //     {
+  //       dtlid: 200002615,
+  //       id: 156,
+  //       seqno: 8,
+  //       field: "editmode",
+  //       dfield: "",
+  //       fieldtitle: "Edit Mode",
+  //       title: "Edit Mode",
+  //       text: "Edit",
+  //       dtext: "",
+  //       defaultvalue: "Edit",
+  //       tooltip: "Edit Mode",
+  //       size: "",
+  //       ctltype: "STRING",
+  //       ddl: "Edit,View-",
+  //       ddlfield: "EditMode",
+  //       ddlwhere: "1=1",
+  //       ajax: 0,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "1",
+  //       disabled: "0",
+  //     },
+  //     {
+  //       dtlid: 200002616,
+  //       id: 156,
+  //       seqno: 9,
+  //       field: "muid",
+  //       dfield: "updateby",
+  //       fieldtitle: "Update By",
+  //       title: "Update By",
+  //       text: 113,
+  //       dtext: "Sandip Mori",
+  //       defaultvalue: "#useridname",
+  //       tooltip: "Update By (Who have last updated the entry)",
+  //       size: "",
+  //       ctltype: "NUMERIC",
+  //       ddl: "UserMaster-UserName,UserID",
+  //       ddlfield: "UpdateBy",
+  //       ddlwhere: "Status=~A~",
+  //       ajax: 1,
+  //       visible: "1",
+  //       refcol: 0,
+  //       mandatory: "0",
+  //       disabled: "1",
+  //     },
+  //   ],
+  //   buttonControls: [],
+  // });
 
-  const [purchaseTemplate] = useState({
-    title: "P2",
-    pageControls: [
-      {
-        dtlid: 200002608,
-        id: 156,
-        seqno: 1,
-        field: "projectteamid",
-        dfield: "",
-        fieldtitle: "Project Team ID",
-        title: "Project Team ID",
-        text: "",
-        dtext: "",
-        defaultvalue: "",
-        tooltip: "Project Team",
-        size: "",
-        ctltype: "NUMERIC",
-        ddl: "",
-        ddlfield: "",
-        ddlwhere: "",
-        ajax: 0,
-        visible: "1",
-        refcol: 0,
-        mandatory: "0",
-        disabled: "1",
-      },
-      {
-        dtlid: 200002609,
-        id: 156,
-        seqno: 2,
-        field: "projectid",
-        dfield: "projectname",
-        fieldtitle: "Project Name",
-        title: "Project Name",
-        text: "",
-        dtext: "",
-        defaultvalue: "",
-        tooltip: "Project Name",
-        size: "",
-        ctltype: "NUMERIC",
-        ddl: "ViewProjects-ProjectName,ProjectID",
-        ddlfield: "ProjectName",
-        ddlwhere: "Status in (~A~,~R~,~N~)",
-        ajax: 1,
-        visible: "0",
-        refcol: 0,
-        mandatory: "1",
-        disabled: "0",
-      },
-      {
-        dtlid: 200002610,
-        id: 156,
-        seqno: 3,
-        field: "userid",
-        dfield: "developer",
-        fieldtitle: "Developer",
-        title: "Developer",
-        text: "",
-        dtext: "",
-        defaultvalue: "",
-        tooltip: "Developer Name",
-        size: "",
-        ctltype: "NUMERIC",
-        ddl: "ViewUserMaster-UserName,UserID,RoleID,RoleName",
-        ddlfield: "Developer,DesigID",
-        ddlwhere: "Status=~A~",
-        ajax: 1,
-        visible: "0",
-        refcol: 0,
-        mandatory: "1",
-        disabled: "0",
-      },
-      {
-        dtlid: 200002611,
-        id: 156,
-        seqno: 4,
-        field: "desigid",
-        dfield: "",
-        fieldtitle: "Role Name",
-        title: "Role Name",
-        text: "",
-        dtext: "",
-        defaultvalue: "",
-        tooltip: "Designation",
-        size: "",
-        ctltype: "INT",
-        ddl: "RoleMst-RoleID,RoleName",
-        ddlfield: "RoleName",
-        ddlwhere: "Status=~A~",
-        ajax: 0,
-        visible: "1",
-        refcol: 0,
-        mandatory: "0",
-        disabled: "0",
-      },
-      {
-        dtlid: 200002612,
-        id: 156,
-        seqno: 5,
-        field: "fordays",
-        dfield: "",
-        fieldtitle: "For Days",
-        title: "For Days",
-        text: 1,
-        dtext: "",
-        defaultvalue: 1,
-        tooltip: "For Days",
-        size: "",
-        ctltype: "INT",
-        ddl: "1,2,3,4,5,6,7-",
-        ddlfield: "ForDays",
-        ddlwhere: "1=1",
-        ajax: 0,
-        visible: "0",
-        refcol: 0,
-        mandatory: "1",
-        disabled: "0",
-      },
-      {
-        dtlid: 200002613,
-        id: 156,
-        seqno: 6,
-        field: "todate",
-        dfield: "",
-        fieldtitle: "To Date",
-        title: "To Date",
-        text: "",
-        dtext: "",
-        defaultvalue: "",
-        tooltip: "To Date",
-        size: "",
-        ctltype: "STRING",
-        ddl: "",
-        ddlfield: "",
-        ddlwhere: "",
-        ajax: 0,
-        visible: "0",
-        refcol: 0,
-        mandatory: "0",
-        disabled: "1",
-      },
-      {
-        dtlid: 200002614,
-        id: 156,
-        seqno: 7,
-        field: "cuid",
-        dfield: "entryby",
-        fieldtitle: "Entry By",
-        title: "Entry By",
-        text: 113,
-        dtext: "Sandip Mori",
-        defaultvalue: "#useridname",
-        tooltip: "Entry By (Who have entered the entry)",
-        size: "",
-        ctltype: "NUMERIC",
-        ddl: "UserMaster-UserName,UserID",
-        ddlfield: "EntryBy",
-        ddlwhere: "Status=~A~",
-        ajax: 1,
-        visible: "0",
-        refcol: 0,
-        mandatory: "0",
-        disabled: "1",
-      },
-      {
-        dtlid: 200002615,
-        id: 156,
-        seqno: 8,
-        field: "editmode",
-        dfield: "",
-        fieldtitle: "Edit Mode",
-        title: "Edit Mode",
-        text: "Edit",
-        dtext: "",
-        defaultvalue: "Edit",
-        tooltip: "Edit Mode",
-        size: "",
-        ctltype: "STRING",
-        ddl: "Edit,View-",
-        ddlfield: "EditMode",
-        ddlwhere: "1=1",
-        ajax: 0,
-        visible: "0",
-        refcol: 0,
-        mandatory: "1",
-        disabled: "0",
-      },
-      {
-        dtlid: 200002616,
-        id: 156,
-        seqno: 9,
-        field: "muid",
-        dfield: "updateby",
-        fieldtitle: "Update By",
-        title: "Update By",
-        text: 113,
-        dtext: "Sandip Mori",
-        defaultvalue: "#useridname",
-        tooltip: "Update By (Who have last updated the entry)",
-        size: "",
-        ctltype: "NUMERIC",
-        ddl: "UserMaster-UserName,UserID",
-        ddlfield: "UpdateBy",
-        ddlwhere: "Status=~A~",
-        ajax: 1,
-        visible: "1",
-        refcol: 0,
-        mandatory: "0",
-        disabled: "1",
-      },
-    ],
-    buttonControls: [],
-  });
-  const [userTemplate] = useState({
-    title: "P3",
-    pageControls: [
-      {
-        dtlid: 200002608,
-        id: 156,
-        seqno: 1,
-        field: "projectteamid",
-        dfield: "",
-        fieldtitle: "Project Team ID",
-        title: "Project Team ID",
-        text: "",
-        dtext: "",
-        defaultvalue: "",
-        tooltip: "Project Team",
-        size: "",
-        ctltype: "NUMERIC",
-        ddl: "",
-        ddlfield: "",
-        ddlwhere: "",
-        ajax: 0,
-        visible: "1",
-        refcol: 0,
-        mandatory: "0",
-        disabled: "1",
-      },
-      {
-        dtlid: 200002609,
-        id: 156,
-        seqno: 2,
-        field: "projectid",
-        dfield: "projectname",
-        fieldtitle: "Project Name",
-        title: "Project Name",
-        text: "",
-        dtext: "",
-        defaultvalue: "",
-        tooltip: "Project Name",
-        size: "",
-        ctltype: "NUMERIC",
-        ddl: "ViewProjects-ProjectName,ProjectID",
-        ddlfield: "ProjectName",
-        ddlwhere: "Status in (~A~,~R~,~N~)",
-        ajax: 1,
-        visible: "0",
-        refcol: 0,
-        mandatory: "1",
-        disabled: "0",
-      },
-      {
-        dtlid: 200002610,
-        id: 156,
-        seqno: 3,
-        field: "userid",
-        dfield: "developer",
-        fieldtitle: "Developer",
-        title: "Developer",
-        text: "",
-        dtext: "",
-        defaultvalue: "",
-        tooltip: "Developer Name",
-        size: "",
-        ctltype: "NUMERIC",
-        ddl: "ViewUserMaster-UserName,UserID,RoleID,RoleName",
-        ddlfield: "Developer,DesigID",
-        ddlwhere: "Status=~A~",
-        ajax: 1,
-        visible: "0",
-        refcol: 0,
-        mandatory: "1",
-        disabled: "0",
-      },
-      {
-        dtlid: 200002611,
-        id: 156,
-        seqno: 4,
-        field: "desigid",
-        dfield: "",
-        fieldtitle: "Role Name",
-        title: "Role Name",
-        text: "",
-        dtext: "",
-        defaultvalue: "",
-        tooltip: "Designation",
-        size: "",
-        ctltype: "INT",
-        ddl: "RoleMst-RoleID,RoleName",
-        ddlfield: "RoleName",
-        ddlwhere: "Status=~A~",
-        ajax: 0,
-        visible: "1",
-        refcol: 0,
-        mandatory: "0",
-        disabled: "0",
-      },
-      {
-        dtlid: 200002612,
-        id: 156,
-        seqno: 5,
-        field: "fordays",
-        dfield: "",
-        fieldtitle: "For Days",
-        title: "For Days",
-        text: 1,
-        dtext: "",
-        defaultvalue: 1,
-        tooltip: "For Days",
-        size: "",
-        ctltype: "INT",
-        ddl: "1,2,3,4,5,6,7-",
-        ddlfield: "ForDays",
-        ddlwhere: "1=1",
-        ajax: 0,
-        visible: "0",
-        refcol: 0,
-        mandatory: "1",
-        disabled: "0",
-      },
-      {
-        dtlid: 200002613,
-        id: 156,
-        seqno: 6,
-        field: "todate",
-        dfield: "",
-        fieldtitle: "To Date",
-        title: "To Date",
-        text: "",
-        dtext: "",
-        defaultvalue: "",
-        tooltip: "To Date",
-        size: "",
-        ctltype: "STRING",
-        ddl: "",
-        ddlfield: "",
-        ddlwhere: "",
-        ajax: 0,
-        visible: "0",
-        refcol: 0,
-        mandatory: "0",
-        disabled: "1",
-      },
-      {
-        dtlid: 200002614,
-        id: 156,
-        seqno: 7,
-        field: "cuid",
-        dfield: "entryby",
-        fieldtitle: "Entry By",
-        title: "Entry By",
-        text: 113,
-        dtext: "Sandip Mori",
-        defaultvalue: "#useridname",
-        tooltip: "Entry By (Who have entered the entry)",
-        size: "",
-        ctltype: "NUMERIC",
-        ddl: "UserMaster-UserName,UserID",
-        ddlfield: "EntryBy",
-        ddlwhere: "Status=~A~",
-        ajax: 1,
-        visible: "0",
-        refcol: 0,
-        mandatory: "0",
-        disabled: "1",
-      },
-      {
-        dtlid: 200002615,
-        id: 156,
-        seqno: 8,
-        field: "editmode",
-        dfield: "",
-        fieldtitle: "Edit Mode",
-        title: "Edit Mode",
-        text: "Edit",
-        dtext: "",
-        defaultvalue: "Edit",
-        tooltip: "Edit Mode",
-        size: "",
-        ctltype: "STRING",
-        ddl: "Edit,View-",
-        ddlfield: "EditMode",
-        ddlwhere: "1=1",
-        ajax: 0,
-        visible: "0",
-        refcol: 0,
-        mandatory: "1",
-        disabled: "0",
-      },
-      {
-        dtlid: 200002616,
-        id: 156,
-        seqno: 9,
-        field: "muid",
-        dfield: "updateby",
-        fieldtitle: "Update By",
-        title: "Update By",
-        text: 113,
-        dtext: "Sandip Mori",
-        defaultvalue: "#useridname",
-        tooltip: "Update By (Who have last updated the entry)",
-        size: "",
-        ctltype: "NUMERIC",
-        ddl: "UserMaster-UserName,UserID",
-        ddlfield: "UpdateBy",
-        ddlwhere: "Status=~A~",
-        ajax: 1,
-        visible: "1",
-        refcol: 0,
-        mandatory: "0",
-        disabled: "1",
-      },
-    ],
-    buttonControls: [
-      {
-        btn_name: "Save",
-        btn_color: "black",
-        btn_icon_name: "add",
-      },
-      {
-        btn_name: "Update",
-        btn_color: "green",
-        btn_icon_name: "edit",
-      },
-      {
-        btn_name: "Delete",
-        btn_color: "red",
-        btn_icon_name: "delete",
-      },
-    ],
-  });
-  const sections = [
-    {
-      key: vendorTemplate?.title,
-      template: vendorTemplate?.pageControls,
-      buttons: vendorTemplate?.buttonControls,
-    },
-    {
-      key: "purchase",
-      template: purchaseTemplate?.pageControls,
-      buttons: purchaseTemplate?.buttonControls,
-    },
-    {
-      key: "userInfo",
-      template: userTemplate?.pageControls,
-      buttons: userTemplate?.buttonControls,
-    },
-  ];
+  // const [purchaseTemplate] = useState({
+  //   title: "P2",
+  //   pageControls: [
+  //     {
+  //       dtlid: 200002608,
+  //       id: 156,
+  //       seqno: 1,
+  //       field: "projectteamid",
+  //       dfield: "",
+  //       fieldtitle: "Project Team ID",
+  //       title: "Project Team ID",
+  //       text: "",
+  //       dtext: "",
+  //       defaultvalue: "",
+  //       tooltip: "Project Team",
+  //       size: "",
+  //       ctltype: "NUMERIC",
+  //       ddl: "",
+  //       ddlfield: "",
+  //       ddlwhere: "",
+  //       ajax: 0,
+  //       visible: "1",
+  //       refcol: 0,
+  //       mandatory: "0",
+  //       disabled: "1",
+  //     },
+  //     {
+  //       dtlid: 200002609,
+  //       id: 156,
+  //       seqno: 2,
+  //       field: "projectid",
+  //       dfield: "projectname",
+  //       fieldtitle: "Project Name",
+  //       title: "Project Name",
+  //       text: "",
+  //       dtext: "",
+  //       defaultvalue: "",
+  //       tooltip: "Project Name",
+  //       size: "",
+  //       ctltype: "NUMERIC",
+  //       ddl: "ViewProjects-ProjectName,ProjectID",
+  //       ddlfield: "ProjectName",
+  //       ddlwhere: "Status in (~A~,~R~,~N~)",
+  //       ajax: 1,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "1",
+  //       disabled: "0",
+  //     },
+  //     {
+  //       dtlid: 200002610,
+  //       id: 156,
+  //       seqno: 3,
+  //       field: "userid",
+  //       dfield: "developer",
+  //       fieldtitle: "Developer",
+  //       title: "Developer",
+  //       text: "",
+  //       dtext: "",
+  //       defaultvalue: "",
+  //       tooltip: "Developer Name",
+  //       size: "",
+  //       ctltype: "NUMERIC",
+  //       ddl: "ViewUserMaster-UserName,UserID,RoleID,RoleName",
+  //       ddlfield: "Developer,DesigID",
+  //       ddlwhere: "Status=~A~",
+  //       ajax: 1,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "1",
+  //       disabled: "0",
+  //     },
+  //     {
+  //       dtlid: 200002611,
+  //       id: 156,
+  //       seqno: 4,
+  //       field: "desigid",
+  //       dfield: "",
+  //       fieldtitle: "Role Name",
+  //       title: "Role Name",
+  //       text: "",
+  //       dtext: "",
+  //       defaultvalue: "",
+  //       tooltip: "Designation",
+  //       size: "",
+  //       ctltype: "INT",
+  //       ddl: "RoleMst-RoleID,RoleName",
+  //       ddlfield: "RoleName",
+  //       ddlwhere: "Status=~A~",
+  //       ajax: 0,
+  //       visible: "1",
+  //       refcol: 0,
+  //       mandatory: "0",
+  //       disabled: "0",
+  //     },
+  //     {
+  //       dtlid: 200002612,
+  //       id: 156,
+  //       seqno: 5,
+  //       field: "fordays",
+  //       dfield: "",
+  //       fieldtitle: "For Days",
+  //       title: "For Days",
+  //       text: 1,
+  //       dtext: "",
+  //       defaultvalue: 1,
+  //       tooltip: "For Days",
+  //       size: "",
+  //       ctltype: "INT",
+  //       ddl: "1,2,3,4,5,6,7-",
+  //       ddlfield: "ForDays",
+  //       ddlwhere: "1=1",
+  //       ajax: 0,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "1",
+  //       disabled: "0",
+  //     },
+  //     {
+  //       dtlid: 200002613,
+  //       id: 156,
+  //       seqno: 6,
+  //       field: "todate",
+  //       dfield: "",
+  //       fieldtitle: "To Date",
+  //       title: "To Date",
+  //       text: "",
+  //       dtext: "",
+  //       defaultvalue: "",
+  //       tooltip: "To Date",
+  //       size: "",
+  //       ctltype: "STRING",
+  //       ddl: "",
+  //       ddlfield: "",
+  //       ddlwhere: "",
+  //       ajax: 0,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "0",
+  //       disabled: "1",
+  //     },
+  //     {
+  //       dtlid: 200002614,
+  //       id: 156,
+  //       seqno: 7,
+  //       field: "cuid",
+  //       dfield: "entryby",
+  //       fieldtitle: "Entry By",
+  //       title: "Entry By",
+  //       text: 113,
+  //       dtext: "Sandip Mori",
+  //       defaultvalue: "#useridname",
+  //       tooltip: "Entry By (Who have entered the entry)",
+  //       size: "",
+  //       ctltype: "NUMERIC",
+  //       ddl: "UserMaster-UserName,UserID",
+  //       ddlfield: "EntryBy",
+  //       ddlwhere: "Status=~A~",
+  //       ajax: 1,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "0",
+  //       disabled: "1",
+  //     },
+  //     {
+  //       dtlid: 200002615,
+  //       id: 156,
+  //       seqno: 8,
+  //       field: "editmode",
+  //       dfield: "",
+  //       fieldtitle: "Edit Mode",
+  //       title: "Edit Mode",
+  //       text: "Edit",
+  //       dtext: "",
+  //       defaultvalue: "Edit",
+  //       tooltip: "Edit Mode",
+  //       size: "",
+  //       ctltype: "STRING",
+  //       ddl: "Edit,View-",
+  //       ddlfield: "EditMode",
+  //       ddlwhere: "1=1",
+  //       ajax: 0,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "1",
+  //       disabled: "0",
+  //     },
+  //     {
+  //       dtlid: 200002616,
+  //       id: 156,
+  //       seqno: 9,
+  //       field: "muid",
+  //       dfield: "updateby",
+  //       fieldtitle: "Update By",
+  //       title: "Update By",
+  //       text: 113,
+  //       dtext: "Sandip Mori",
+  //       defaultvalue: "#useridname",
+  //       tooltip: "Update By (Who have last updated the entry)",
+  //       size: "",
+  //       ctltype: "NUMERIC",
+  //       ddl: "UserMaster-UserName,UserID",
+  //       ddlfield: "UpdateBy",
+  //       ddlwhere: "Status=~A~",
+  //       ajax: 1,
+  //       visible: "1",
+  //       refcol: 0,
+  //       mandatory: "0",
+  //       disabled: "1",
+  //     },
+  //   ],
+  //   buttonControls: [],
+  // });
+  // const [userTemplate] = useState({
+  //   title: "P3",
+  //   pageControls: [
+  //     {
+  //       dtlid: 200002608,
+  //       id: 156,
+  //       seqno: 1,
+  //       field: "projectteamid",
+  //       dfield: "",
+  //       fieldtitle: "Project Team ID",
+  //       title: "Project Team ID",
+  //       text: "",
+  //       dtext: "",
+  //       defaultvalue: "",
+  //       tooltip: "Project Team",
+  //       size: "",
+  //       ctltype: "NUMERIC",
+  //       ddl: "",
+  //       ddlfield: "",
+  //       ddlwhere: "",
+  //       ajax: 0,
+  //       visible: "1",
+  //       refcol: 0,
+  //       mandatory: "0",
+  //       disabled: "1",
+  //     },
+  //     {
+  //       dtlid: 200002609,
+  //       id: 156,
+  //       seqno: 2,
+  //       field: "projectid",
+  //       dfield: "projectname",
+  //       fieldtitle: "Project Name",
+  //       title: "Project Name",
+  //       text: "",
+  //       dtext: "",
+  //       defaultvalue: "",
+  //       tooltip: "Project Name",
+  //       size: "",
+  //       ctltype: "NUMERIC",
+  //       ddl: "ViewProjects-ProjectName,ProjectID",
+  //       ddlfield: "ProjectName",
+  //       ddlwhere: "Status in (~A~,~R~,~N~)",
+  //       ajax: 1,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "1",
+  //       disabled: "0",
+  //     },
+  //     {
+  //       dtlid: 200002610,
+  //       id: 156,
+  //       seqno: 3,
+  //       field: "userid",
+  //       dfield: "developer",
+  //       fieldtitle: "Developer",
+  //       title: "Developer",
+  //       text: "",
+  //       dtext: "",
+  //       defaultvalue: "",
+  //       tooltip: "Developer Name",
+  //       size: "",
+  //       ctltype: "NUMERIC",
+  //       ddl: "ViewUserMaster-UserName,UserID,RoleID,RoleName",
+  //       ddlfield: "Developer,DesigID",
+  //       ddlwhere: "Status=~A~",
+  //       ajax: 1,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "1",
+  //       disabled: "0",
+  //     },
+  //     {
+  //       dtlid: 200002611,
+  //       id: 156,
+  //       seqno: 4,
+  //       field: "desigid",
+  //       dfield: "",
+  //       fieldtitle: "Role Name",
+  //       title: "Role Name",
+  //       text: "",
+  //       dtext: "",
+  //       defaultvalue: "",
+  //       tooltip: "Designation",
+  //       size: "",
+  //       ctltype: "INT",
+  //       ddl: "RoleMst-RoleID,RoleName",
+  //       ddlfield: "RoleName",
+  //       ddlwhere: "Status=~A~",
+  //       ajax: 0,
+  //       visible: "1",
+  //       refcol: 0,
+  //       mandatory: "0",
+  //       disabled: "0",
+  //     },
+  //     {
+  //       dtlid: 200002612,
+  //       id: 156,
+  //       seqno: 5,
+  //       field: "fordays",
+  //       dfield: "",
+  //       fieldtitle: "For Days",
+  //       title: "For Days",
+  //       text: 1,
+  //       dtext: "",
+  //       defaultvalue: 1,
+  //       tooltip: "For Days",
+  //       size: "",
+  //       ctltype: "INT",
+  //       ddl: "1,2,3,4,5,6,7-",
+  //       ddlfield: "ForDays",
+  //       ddlwhere: "1=1",
+  //       ajax: 0,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "1",
+  //       disabled: "0",
+  //     },
+  //     {
+  //       dtlid: 200002613,
+  //       id: 156,
+  //       seqno: 6,
+  //       field: "todate",
+  //       dfield: "",
+  //       fieldtitle: "To Date",
+  //       title: "To Date",
+  //       text: "",
+  //       dtext: "",
+  //       defaultvalue: "",
+  //       tooltip: "To Date",
+  //       size: "",
+  //       ctltype: "STRING",
+  //       ddl: "",
+  //       ddlfield: "",
+  //       ddlwhere: "",
+  //       ajax: 0,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "0",
+  //       disabled: "1",
+  //     },
+  //     {
+  //       dtlid: 200002614,
+  //       id: 156,
+  //       seqno: 7,
+  //       field: "cuid",
+  //       dfield: "entryby",
+  //       fieldtitle: "Entry By",
+  //       title: "Entry By",
+  //       text: 113,
+  //       dtext: "Sandip Mori",
+  //       defaultvalue: "#useridname",
+  //       tooltip: "Entry By (Who have entered the entry)",
+  //       size: "",
+  //       ctltype: "NUMERIC",
+  //       ddl: "UserMaster-UserName,UserID",
+  //       ddlfield: "EntryBy",
+  //       ddlwhere: "Status=~A~",
+  //       ajax: 1,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "0",
+  //       disabled: "1",
+  //     },
+  //     {
+  //       dtlid: 200002615,
+  //       id: 156,
+  //       seqno: 8,
+  //       field: "editmode",
+  //       dfield: "",
+  //       fieldtitle: "Edit Mode",
+  //       title: "Edit Mode",
+  //       text: "Edit",
+  //       dtext: "",
+  //       defaultvalue: "Edit",
+  //       tooltip: "Edit Mode",
+  //       size: "",
+  //       ctltype: "STRING",
+  //       ddl: "Edit,View-",
+  //       ddlfield: "EditMode",
+  //       ddlwhere: "1=1",
+  //       ajax: 0,
+  //       visible: "0",
+  //       refcol: 0,
+  //       mandatory: "1",
+  //       disabled: "0",
+  //     },
+  //     {
+  //       dtlid: 200002616,
+  //       id: 156,
+  //       seqno: 9,
+  //       field: "muid",
+  //       dfield: "updateby",
+  //       fieldtitle: "Update By",
+  //       title: "Update By",
+  //       text: 113,
+  //       dtext: "Sandip Mori",
+  //       defaultvalue: "#useridname",
+  //       tooltip: "Update By (Who have last updated the entry)",
+  //       size: "",
+  //       ctltype: "NUMERIC",
+  //       ddl: "UserMaster-UserName,UserID",
+  //       ddlfield: "UpdateBy",
+  //       ddlwhere: "Status=~A~",
+  //       ajax: 1,
+  //       visible: "1",
+  //       refcol: 0,
+  //       mandatory: "0",
+  //       disabled: "1",
+  //     },
+  //   ],
+  //   buttonControls: [
+  //     {
+  //       btn_name: "Save",
+  //       btn_color: "black",
+  //       btn_icon_name: "add",
+  //     },
+  //     {
+  //       btn_name: "Update",
+  //       btn_color: "green",
+  //       btn_icon_name: "edit",
+  //     },
+  //     {
+  //       btn_name: "Delete",
+  //       btn_color: "red",
+  //       btn_icon_name: "delete",
+  //     },
+  //   ],
+  // });
+  // const sections = [
+  //   {
+  //     key: vendorTemplate?.title,
+  //     template: vendorTemplate?.pageControls,
+  //     buttons: vendorTemplate?.buttonControls,
+  //   },
+  //   {
+  //     key: "purchase",
+  //     template: purchaseTemplate?.pageControls,
+  //     buttons: purchaseTemplate?.buttonControls,
+  //   },
+  //   {
+  //     key: "userInfo",
+  //     template: userTemplate?.pageControls,
+  //     buttons: userTemplate?.buttonControls,
+  //   },
+  // ];
 
-  const [allData, setAllData] = useState({});
+  // const [allData, setAllData] = useState({});
 
   console.log("RENDERING... ", controls, formValues);
   const renderItem = useCallback(
@@ -1441,68 +1454,189 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
       index: number;
       isFromChild: boolean;
     }) => {
-      const setValue = (val) => {
+      const setValue = (val, source) => {
         console.log("SET VALUE START 👉", item?.field, val);
 
-        setFormValues((prev) => {
-          let updatedValues;
+        if (myScript && source && source === "isFromDropdown") {
+          console.log(
+            "SET VALUE START 👉",
+            myScript,
+            item?.field,
+            val
+          );
+           const raw = myScript.find((obj) =>
+            obj.rules?.some(
+              (rule) => rule.triggerFields === item?.field
+            )
+          );
 
-          if (typeof val === "object" && val !== null) {
-            updatedValues = { ...prev, ...val };
-          } else {
-            updatedValues = { ...prev, [item.field]: val };
+          if (!raw) {
+            setFormValues((prev) => ({
+              ...prev,
+              [item.field]: val,
+            }));
+            return;
           }
 
-          console.log(
-            "Updated Values (before rules):",
-            myScript,
-            typeof myScript,
+          const isDayCalculation = raw.rules?.some(
+            (rule) =>
+              rule.formulaType === "dayCalculationForLeave"
           );
-          const parsed = safeParse(myScript);
-          console.log("parsed-----------------", parsed);
 
-          const safeRules = Array.isArray(parsed) ? parsed : [parsed];
+          if (!isDayCalculation) {
+            setFormValues((prev) => ({
+              ...prev,
+              [item.field]: val,
+            }));
+            return;
+          }
 
-          console.log("safeRules-----------------", safeRules);
-          const result = runDynamicRules(safeRules, updatedValues, item.field);
+          const fieldName = raw.rules.find(
+            (rule) => rule.triggerFields === item.field
+          )?.fieldName;
 
-          console.log("After Rules Values 👉", result.values);
-          console.log("Actions 👉", result.actions);
-          console.log("Messages 👉", result.messages);
+          const calculationFields = raw.rules.find(
+            (rule) =>
+              rule.formulaType === "dayCalculationForLeave"
+          )?.calculationFields;
 
-          let finalValues = { ...result.values };
+          const typeFields = raw.rules.find(
+            (rule) =>
+              rule.formulaType === "dayCalculationForLeave"
+          )?.typeFields;
 
-          result.actions.forEach((action) => {
-            if (action?.action === "setValue" && action?.field) {
-              finalValues[action.field] = action.value ?? "";
-              console.log(`📝 setValue → ${action.field} = ${action.value}`);
+          if (
+            !fieldName ||
+            !calculationFields ||
+            calculationFields.length < 2
+          ) {
+            return;
+          }
+
+          setFormValues((prev) => {
+            const updated = {
+              ...prev,
+              [item.field]: val,
+            };
+
+            const fromDate =
+              updated[calculationFields[0]];
+
+            const toDate =
+              updated[calculationFields[1]];
+
+            if (!fromDate || !toDate) {
+              return updated;
             }
+
+            const from = new Date(fromDate);
+            const to = new Date(toDate);
+            
+            let total =
+              Math.floor(
+                (to - from) /
+                (1000 * 60 * 60 * 24)
+              ) + 1;
+
+            const fromType = updated[typeFields[0]];
+            console.log("fromType", fromType,  typeFields[0])
+            const toType = updated[typeFields[1]];
+            console.log("toType", toType,  typeFields[1])
+
+
+            if (total === 1) {
+              if (
+                fromType === "1Half" ||
+                fromType === "2Half" ||
+                toType === "1Half" ||
+                toType === "2Half"
+              ) {
+                total = 0.5;
+              } else {
+                total = 1;
+              }
+            } else {
+              if (
+                fromType === "1Half" ||
+                fromType === "2Half"
+              ) {
+                total -= 0.5;
+              }
+
+              if (
+                toType === "1Half" ||
+                toType === "2Half"
+              ) {
+                total -= 0.5;
+              }
+            }
+            updated[fieldName] = total;
+            return updated;
           });
 
-          //   ===
-          // 4️⃣ UPDATE CONTROLS
-          //   ===
-          if (result.actions?.length) {
-            const updatedControls = applyActionsToControls(
-              controls,
-              result.actions,
+          return;
+        } else {
+          setFormValues((prev) => {
+            let updatedValues;
+
+            if (typeof val === "object" && val !== null) {
+              updatedValues = { ...prev, ...val };
+            } else {
+              updatedValues = { ...prev, [item.field]: val };
+            }
+
+            console.log(
+              "Updated Values (before rules):",
+              myScript,
+              typeof myScript,
             );
-            setControls(updatedControls);
-          }
+            const parsed = safeParse(myScript);
+            console.log("parsed-----------------", parsed);
 
-          //   ===
-          // 5️⃣ CLEAR ERROR
-          //   ===
-          setErrors((prevErr) => ({
-            ...prevErr,
-            [item.field]: "",
-          }));
+            const safeRules = Array.isArray(parsed) ? parsed : [parsed];
 
-          console.log("FINAL VALUES ✅", finalValues);
-          console.log("SET VALUE END  ==");
+            console.log("safeRules-----------------", safeRules);
+            const result = runDynamicRules(safeRules, updatedValues, item.field);
 
-          return finalValues;
-        });
+            console.log("After Rules Values 👉", result.values);
+            console.log("Actions 👉", result.actions);
+            console.log("Messages 👉", result.messages);
+
+            let finalValues = { ...result.values };
+
+            result.actions.forEach((action) => {
+              if (action?.action === "setValue" && action?.field) {
+                finalValues[action.field] = action.value ?? "";
+                console.log(`📝 setValue → ${action.field} = ${action.value}`);
+              }
+            });
+
+            //   ===
+            // 4️⃣ UPDATE CONTROLS
+            //   ===
+            if (result.actions?.length) {
+              const updatedControls = applyActionsToControls(
+                controls,
+                result.actions,
+              );
+              setControls(updatedControls);
+            }
+
+            //   ===
+            // 5️⃣ CLEAR ERROR
+            //   ===
+            setErrors((prevErr) => ({
+              ...prevErr,
+              [item.field]: "",
+            }));
+
+            console.log("FINAL VALUES ✅", finalValues);
+            console.log("SET VALUE END  ==");
+
+            return finalValues;
+          });
+        }
+
       };
 
       const value =
@@ -1515,17 +1649,6 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
 
       let content = null;
 
-      // if(true){
-      // return content = ( <DocScan
-      //   label="📄 Scan Invoice"
-      //   onScanResult={(files) => {
-      //     console.log("BASE64 IMAGES:", files);
-
-      //     // example: send to API
-      //     // handleAttachment(files);
-      //   }}
-      //   /> )
-      // }
       //BoolInput
       if (item?.ctltype === "BOOL") {
         const rawVal = formValues[item?.field] ?? item?.text;
@@ -1546,8 +1669,8 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
             item={item}
             label={item?.fieldtitle}
             onScanResult={(files, val) => {
-              if(!files && !val){
-                return ;
+              if (!files && !val) {
+                return;
               }
               setFormValues((prev) => {
                 return { ...prev, [val]: files };
@@ -1593,14 +1716,14 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
       }
       //ScanScreen
       else if (item?.ctltype === "QRSCANNER" && item?.title === "QR Scan") {
-        content = <ScanScreen errors={errors} isFromChild={isFromChild} item={item} />;
+        content = <ScanScreen errors={errors} isFromChild={isFromChild} item={item} onValueChange={setValue} />;
       }
       //BarCodeScan
       else if (
         item?.ctltype === "QRSCANNER" &&
         item?.title === "Barcode Scan"
       ) {
-        content = <BarCodeScan errors={errors} isFromChild={isFromChild} item={item} />;
+        content = <BarCodeScan errors={errors} isFromChild={isFromChild} item={item} onValueChange={setValue} />;
       }
       //LocationRow
       else if (item?.defaultvalue === "#location") {
@@ -1829,23 +1952,13 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
           ...prev,
           [activeDateField]: date.toISOString(),
         };
-
         const parsed = safeParse(myScript);
-
         const safeRules = Array.isArray(parsed) ? parsed : [parsed];
-
-        // const result = runDynamicRules(
-        //   safeRules,
-        //   updatedValues,
-        //   item.field
-        // );
-
         const result = runDynamicRules(
           safeRules,
           updatedValues,
           activeDateField,
         );
-
         return result.values;
       });
 
@@ -1891,17 +2004,14 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
     }
 
     const isHidden = (item) => item?.visible === "1";
-
     const isLongTitle = (item) => {
       const text = item?.fieldtitle ? String(item.fieldtitle) : "";
       const dtext = item?.tooltip ? String(item.tooltip) : "";
-
       return text.length > 10 || dtext.length > 20;
     };
     const isLongText = (item) => {
       const text = item?.text ? String(item.text) : "";
       const dtext = item?.dtext ? String(item.dtext) : "";
-
       return text.length > 20 || dtext.length > 20;
     };
 
@@ -1937,7 +2047,6 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
       const current = ctr[i];
 
       if (isHidden(current)) continue;
-
       // ✅ FORCE SINGLE RULE (highest priority)
       if (
         isForceSingle(current) ||
@@ -2019,7 +2128,7 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
           flex: 1,
           padding: 10,
           backgroundColor:
-          isFromForceLeave ? 'transparent' :  theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE,
+            isFromForceLeave ? 'transparent' : theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE,
         }}
       >
         {loadingPageId ? (
@@ -2041,7 +2150,7 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
             <View
               style={{
                 flex: 1,
-                height: isFromForceLeave ?  Dimensions.get("screen").height - 240 : Dimensions.get("screen").height,
+                height: isFromForceLeave ? Dimensions.get("screen").height - 240 : Dimensions.get("screen").height,
                 backgroundColor:
                   isFromForceLeave ? 'transparent' : theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_WHITE,
               }}
@@ -2140,7 +2249,7 @@ const PageScreen = ({isFromForceLeave, pageUrl}: any) => {
                 //   );
                 // }}
                 />
-              )} 
+              )}
 
               {
                 (user?.company_code?.toLowerCase()?.includes("oeuvre01") || isFromForceLeave) && <TouchableOpacity

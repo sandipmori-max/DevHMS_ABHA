@@ -727,7 +727,6 @@ const operators = {
     if (isNaN(numA) || isNaN(numB)) {
       return false;
     }
-
     return numA < numB;
   },
 
@@ -1571,6 +1570,7 @@ export const downloadAndShare = async (
     console.log('Share Success:', shareResult);
     console.log('========== SUCCESS ==========');
   } catch (e: any) {
+    Alert.alert('Error', `${JSON.stringify(e)}`)
     console.log('========== ERROR ==========');
     console.log('Error:', e);
     console.log('Error JSON:', JSON.stringify(e, null, 2));

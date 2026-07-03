@@ -27,6 +27,8 @@ import { uiStyles } from "./style";
 export const CameraScanner = ({
   setIsCameraShown,
   onReadCode,
+  item,
+  onValueChange
 }: ICameraScannerProps) => {
 
   const { t } = useTranslation();
