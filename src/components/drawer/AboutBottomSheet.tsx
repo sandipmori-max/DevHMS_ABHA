@@ -60,7 +60,9 @@ const AboutBottomSheet = ({ visible, onClose }: any) => {
           }
         ]}
       >
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView 
+          bounces={false}
+        showsVerticalScrollIndicator={false}>
           {/* Handle */}
           <View style={styles.handle} />
 

@@ -130,7 +130,7 @@ const CustomMultiPicker = ({
           {loader ? (
             <FullViewLoader isShowTop={false} />
           ) : options.length > 0 ? (
-            <ScrollView style={{ maxHeight: 200 }}>
+            <ScrollView    bounces={false} style={{ maxHeight: 200 }}>
               {options.map((opt: any, i: number) => (
                 <TouchableOpacity
                   key={i}

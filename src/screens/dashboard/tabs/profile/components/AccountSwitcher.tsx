@@ -516,6 +516,8 @@ const isIpad =
           }}
         >
           <FlatList
+                            bounces={false}
+
             key={isLandscape ? "landscape" : "portrait"}
             data={accounts}
             renderItem={renderAccount}

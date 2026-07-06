@@ -678,7 +678,9 @@ const AttendanceForm = ({ setBlockAction, resData, isFromDashboard }: any) => {
                       </View>
                     </View>
                   </View>
-                  <ScrollView style={{ width: "50%" }} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
+                  <ScrollView 
+                    bounces={false}
+                  style={{ width: "50%" }} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                     <View >
                       <View style={{}}>
                         <Animated.View

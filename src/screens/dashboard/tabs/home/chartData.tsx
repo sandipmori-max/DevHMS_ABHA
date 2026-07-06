@@ -119,6 +119,8 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                     }}
                   ></View>
                   <FlatList
+                                    bounces={false}
+
                     data={firstList}
                     key={isLandscape ? "landscape" : "portrait"}
                     showsHorizontalScrollIndicator={false}
@@ -201,6 +203,8 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
                     }}
                   >
                     <FlatList
+                                      bounces={false}
+
                       showsHorizontalScrollIndicator={false}
                       showsVerticalScrollIndicator={false}
                       horizontal={isLandscape ? false : true}
@@ -263,6 +267,8 @@ const PieChartSection = ({ pieChartData, navigation, t }: any) => {
           >
             <View>
               <FlatList
+                                bounces={false}
+
                 key={isLandscape ? "landscape" : "portrait"}
                 showsHorizontalScrollIndicator={false}
                 showsVerticalScrollIndicator={false}

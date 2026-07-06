@@ -383,6 +383,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
     >
       {showFilter && (
         <ScrollView
+          bounces={false}
           horizontal
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
@@ -443,6 +444,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                   }}
                 >
                   <ScrollView
+                    bounces={false}
                     showsHorizontalScrollIndicator={false}
                     showsVerticalScrollIndicator={false}
                   >
@@ -511,6 +513,8 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                       }}
                     >
                       <FlatList
+                                        bounces={false}
+
                         data={timelineData}
                         keyExtractor={(item, index) => index.toString()}
                         showsVerticalScrollIndicator={false}
@@ -921,6 +925,8 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
         <>
           {listData.length > 0 ? (
             <FlatList
+                              bounces={false}
+
               data={["calendar"]}
               keyExtractor={(item, index) => index.toString()}
               showsVerticalScrollIndicator={false}
@@ -1134,6 +1140,8 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                       }}
                     >
                       <FlatList
+                                        bounces={false}
+
                         data={timelineData}
                         keyExtractor={(item, index) => index.toString()}
                         showsVerticalScrollIndicator={false}

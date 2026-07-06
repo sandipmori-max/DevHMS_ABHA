@@ -310,7 +310,7 @@ const CustomMultiplePicker = ({
           {loader ? (
             <FullViewLoader isShowTop={false} />
           ) : (
-            <ScrollView>
+            <ScrollView   bounces={false}>
               {filteredOptions.length > 0 ? (
                 filteredOptions.map((opt: any, i: number) => {
                   const selected = isForMultipleSelection

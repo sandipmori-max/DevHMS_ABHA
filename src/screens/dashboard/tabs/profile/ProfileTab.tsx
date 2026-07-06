@@ -161,6 +161,7 @@ const ProfileTab = () => {
                 backgroundColor: "black",
               },
             ]}
+              bounces={false}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={[
               styles.scrollContent,
@@ -325,6 +326,7 @@ const ProfileTab = () => {
         </>
       ) : (
         <ScrollView
+          bounces={false}
           style={[
             styles.scrollContainer,
             theme === "dark" && {

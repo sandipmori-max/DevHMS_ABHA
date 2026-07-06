@@ -283,6 +283,7 @@ const CustomPicker = ({
             <FullViewLoader isShowTop={false} />
           ) : (
             <ScrollView
+              bounces={false}
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
               onContentSizeChange={(w, h) => {

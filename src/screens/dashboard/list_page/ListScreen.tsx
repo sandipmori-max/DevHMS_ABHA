@@ -1275,6 +1275,7 @@ const ListScreen = () => {
                     theme === "dark" && {
                       borderWidth: 1,
                       borderColor: "white",
+                      backgroundColor: 'black'
                     },
                     {
                       width: isIpad ? isLandscape  ? "40%" : "48%" : "100%",
@@ -1351,9 +1352,10 @@ const ListScreen = () => {
                     style={[
                       styles.picker,
                       {
-                        backgroundColor: "white",
+                        backgroundColor: theme === "dark" ? "black" :  "white",
                       },
                     ]}
+                    themeVariant={theme === "dark" ? "dark" : "light"}
                   />
                 </View>
               </View>
@@ -1373,6 +1375,7 @@ const ListScreen = () => {
               display="spinner"
               is24Hour={false}
               onChange={handleDateChange}
+              themeVariant={theme === "dark" ? "dark" : "light"}
             />
           )}
         </View>

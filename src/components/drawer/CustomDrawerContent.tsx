@@ -349,7 +349,9 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
 
       {/* ================= MENU ================= */}
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        bounces={false}
+      showsVerticalScrollIndicator={false}>
         <View
           style={[
             !isLandscape && styles.menuContainer,

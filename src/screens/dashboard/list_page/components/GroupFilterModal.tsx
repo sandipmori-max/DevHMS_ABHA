@@ -103,6 +103,8 @@ const GroupFilterModal = ({
           {/* KEY LIST */}
           <FlatList
             data={availableKeys}
+                              bounces={false}
+
             keyExtractor={(item) => item}
             renderItem={({ item }) => {
               const isSelected =

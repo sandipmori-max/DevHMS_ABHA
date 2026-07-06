@@ -398,6 +398,7 @@ const AttendanceScreen = () => {
                   theme === "dark" && {
                     borderWidth: 1,
                     borderColor: "white",
+                    backgroundColor: 'black'
                   },
                   {
                     width: isLandscape ? "40%" : "100%",
@@ -475,9 +476,10 @@ const AttendanceScreen = () => {
                   style={[
                     styles.picker,
                     {
-                      backgroundColor: "white",
+                      backgroundColor: theme === "dark" ? 'black': "white",
                     },
                   ]}
+                  themeVariant={theme === "dark" ? "dark" : "light"}
                 />
               </View>
             </View>
@@ -497,6 +499,7 @@ const AttendanceScreen = () => {
             display="spinner"
             is24Hour={false}
             onChange={handleDateChange}
+            themeVariant={theme === "dark" ? "dark" : "light"}
           />
         )}
 
@@ -524,6 +527,7 @@ const AttendanceScreen = () => {
                   display="spinner"
                   is24Hour={false}
                   onChange={onChangeDate}
+                  themeVariant={theme === "dark" ? "dark" : "light"}
                 />
               )}
             </View>

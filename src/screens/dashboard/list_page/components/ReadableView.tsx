@@ -710,6 +710,8 @@ const openShareDialog = async () => {
   return (
     <View style={{ flex: 1, marginTop: 0 }}>
       <FlatList
+                        bounces={false}
+
         keyExtractor={(_, index) => index.toString()}
         data={listData}
         keyboardShouldPersistTaps="handled"

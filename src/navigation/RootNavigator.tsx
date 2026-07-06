@@ -186,6 +186,10 @@ const RootNavigator = () => {
       DevERPService.setAppId(appid || "");
       DevERPService.setDevice(name);
       try {
+        const state = await NetInfo.fetch();
+        if (!state.isConnected) {
+          return;
+        }
         dispatch(setLoading(true));
         console.log("Checking auth state...");
         await dispatch(checkAuthStateThunk()).unwrap();

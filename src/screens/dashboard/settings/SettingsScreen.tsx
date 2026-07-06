@@ -532,6 +532,7 @@ const SettingsScreen = () => {
           <View style={{ flexDirection: "row" }}>
             <View style={{ width: "50%" }}>
               <ScrollView
+                bounces={false}
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
@@ -551,6 +552,8 @@ const SettingsScreen = () => {
                     {t("settings.notifications")}
                   </Text>
                   <FlatList
+                                    bounces={false}
+
                   key={isLandscape ? "landscape" : "portrait"}    
                     keyboardShouldPersistTaps="handled"
                     data={settings.filter(
@@ -576,6 +579,8 @@ const SettingsScreen = () => {
                     {t("settings.appearance")}
                   </Text>
                   <FlatList
+                                    bounces={false}
+
                   key={isLandscape ? "landscape" : "portrait"}    
                     keyboardShouldPersistTaps="handled"
                     data={settings.filter((item) => item.id === "3")}
@@ -589,6 +594,7 @@ const SettingsScreen = () => {
 
             <View style={{ width: "50%" }}>
               <ScrollView
+                bounces={false}
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
@@ -609,6 +615,8 @@ const SettingsScreen = () => {
                     {t("settings.security")}
                   </Text>
                   <FlatList
+                                    bounces={false}
+
                   key={isLandscape ? "landscape" : "portrait"}    
                     keyboardShouldPersistTaps="handled"
                     data={settings.filter(
@@ -636,6 +644,8 @@ const SettingsScreen = () => {
                     {t("settings.general")}
                   </Text>
                   <FlatList
+                                    bounces={false}
+
                   key={isLandscape ? "landscape" : "portrait"}    
                     keyboardShouldPersistTaps="handled"
                     data={settings.filter(
@@ -664,6 +674,8 @@ const SettingsScreen = () => {
                     {t("settings.account")}
                   </Text>
                   <FlatList
+                                    bounces={false}
+
                     keyboardShouldPersistTaps="handled"
                     data={settings.filter((item) => item.id === "9")}
                     renderItem={renderSettingItem}
@@ -678,6 +690,7 @@ const SettingsScreen = () => {
         </>
       ) : (
         <ScrollView
+          bounces={false}
           style={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
@@ -697,6 +710,8 @@ const SettingsScreen = () => {
               {t("settings.notifications")}
             </Text>
             <FlatList
+                              bounces={false}
+
               keyboardShouldPersistTaps="handled"
               data={settings.filter(
                 (item) => item.id === "1" || item.id === "2",
@@ -722,6 +737,8 @@ const SettingsScreen = () => {
               {t("settings.appearance")}
             </Text>
             <FlatList
+                              bounces={false}
+
               keyboardShouldPersistTaps="handled"
               data={settings.filter((item) => item.id === "3")}
               renderItem={renderSettingItem}
@@ -745,6 +762,8 @@ const SettingsScreen = () => {
               {t("settings.security")}
             </Text>
             <FlatList
+                              bounces={false}
+
               keyboardShouldPersistTaps="handled"
               data={settings.filter(
                 (item) => item.id === "4" || item.id === "5",
@@ -770,6 +789,8 @@ const SettingsScreen = () => {
               {t("settings.general")}
             </Text>
             <FlatList
+                              bounces={false}
+
               keyboardShouldPersistTaps="handled"
               data={settings.filter(
                 (item) => item.id === "6" || item.id === "7" || item.id === "8",
@@ -795,6 +816,8 @@ const SettingsScreen = () => {
               {t("settings.account")}
             </Text>
             <FlatList
+                              bounces={false}
+
               key={isLandscape ? "landscape" : "portrait"}    
               keyboardShouldPersistTaps="handled"
               data={settings.filter((item) => item.id === "9")}
@@ -855,6 +878,8 @@ const SettingsScreen = () => {
 
             {/* List */}
             <FlatList
+                              bounces={false}
+
               data={languages}
               keyboardShouldPersistTaps="handled"
               renderItem={renderLanguageOption}

@@ -62,6 +62,7 @@ const TermsAndConsent = ({ onAccept }: any) => {
               </Text>
       {/*  ==== OLD TERMS & CONDITIONS (UNCHANGED FLOW)  ==== */}
       <ScrollView
+        bounces={false}
         showsVerticalScrollIndicator={false}
         style={styles.container}
         contentContainerStyle={{

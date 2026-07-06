@@ -150,6 +150,8 @@ export default function DashboardListSheet({
 
           <FlatList
             data={data}
+                              bounces={false}
+
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}

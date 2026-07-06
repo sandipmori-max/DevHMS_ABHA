@@ -4247,3 +4247,7 @@ getDDL / getAjax → dropdown & lookup data
 savePage / pageDelete / pageAuth / pageDeAuth / pageCancel → CRUD & workflow
 
 ------ date ka diff har baar checkk kro - na ki nuumber of day ------
+
+
+--- WORKING ON DARK THEME 
+--- Manully ajax - input wala 

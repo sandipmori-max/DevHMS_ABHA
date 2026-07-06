@@ -617,6 +617,7 @@ const TableView = ({
     >
       <ScrollView
         horizontal
+
         showsHorizontalScrollIndicator={
           false
         }
@@ -626,6 +627,8 @@ const TableView = ({
         <View>
           <FlatList
             data={groupedData}
+                              bounces={false}
+
             keyExtractor={(
               item: any,
               index,

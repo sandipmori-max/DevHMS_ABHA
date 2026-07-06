@@ -95,6 +95,8 @@ const SortingFilterModal: React.FC<Props> = ({
 
           {/* LIST */}
           <FlatList
+                            bounces={false}
+
             data={data}
             keyExtractor={(item) => item}
             renderItem={({ item }) => {

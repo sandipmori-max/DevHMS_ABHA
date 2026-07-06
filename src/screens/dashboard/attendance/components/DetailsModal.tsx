@@ -121,7 +121,9 @@ const DetailsBottomSheet = ({ visible, onClose, item, baseLink }: any) => {
           </Animated.View>
 
           {item ? (
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView 
+              bounces={false}
+            showsVerticalScrollIndicator={false}>
               {/* Images */}
               <Animated.View
                 style={{

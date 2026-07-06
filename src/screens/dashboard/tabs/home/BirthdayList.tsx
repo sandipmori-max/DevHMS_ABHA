@@ -270,6 +270,8 @@ const BirthdayList = ({ html, item }: any) => {
             </View>
 
             <FlatList
+                              bounces={false}
+
               data={users}
               numColumns={2}
               keyExtractor={(

@@ -564,7 +564,7 @@ const BusinessCardView = ({
   };
 
   return (
-    <ScrollView>
+    <ScrollView   bounces={false}>
       <Text style={styles.title}>{item?.fieldtitle}</Text>
 
       <View style={[styles.cardContainer,]}>

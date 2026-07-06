@@ -45,17 +45,17 @@ const useFcmToken = () => {
             return true;
 
           case messaging.AuthorizationStatus.DENIED:
-            Alert.alert(
-              'Permission Denied',
-              'You denied notification permission. To enable notifications, please go to Settings.',
-              [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                  text: 'Open Settings',
-                  onPress: () => Linking.openSettings(),
-                },
-              ]
-            );
+            // Alert.alert(
+            //   'Permission Denied',
+            //   'You denied notification permission. To enable notifications, please go to Settings.',
+            //   [
+            //     { text: 'Cancel', style: 'cancel' },
+            //     {
+            //       text: 'Open Settings',
+            //       onPress: () => Linking.openSettings(),
+            //     },
+            //   ]
+            // );
             return false;
 
           case messaging.AuthorizationStatus.NOT_DETERMINED:

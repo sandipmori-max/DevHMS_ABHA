@@ -516,6 +516,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                   behavior={Platform.OS === "ios" ? "padding" : "height"}
                 >
                   <ScrollView
+                    bounces={false}
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
                   >
@@ -894,6 +895,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
             >
               <>
                 <ScrollView
+                  bounces={false}
                   keyboardShouldPersistTaps="handled"
                   showsVerticalScrollIndicator={false}
                 >
@@ -911,6 +913,8 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                     ]}
                   >
                     <FlatList
+                                      bounces={false}
+
                       showsHorizontalScrollIndicator={false}
                       showsVerticalScrollIndicator={false}
                       keyExtractor={(item, index) => index.toString()}

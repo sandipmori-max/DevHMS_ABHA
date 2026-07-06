@@ -202,6 +202,8 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
                 >
                   <FlatList
                     data={errors}
+                                      bounces={false}
+
                     keyExtractor={(_, i) => i.toString()}
                     renderItem={({ item }) => (
                       <Text style={styles.errorText}>• {item}</Text>
@@ -241,6 +243,8 @@ const ErrorModal = ({ visible, errors, onClose }: any) => {
               <View style={{ height: 20 }} />
               <FlatList
                 data={errors}
+                                  bounces={false}
+
                 keyExtractor={(_, i) => i.toString()}
                 renderItem={({ item }) => (
                   <Text style={styles.errorText}>• {item}</Text>

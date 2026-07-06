@@ -764,6 +764,8 @@ const MenuTab = ({
       ) : (
         <>
           <FlatList
+                            bounces={false}
+
             key={
               isLandscape
                 ? `${isHorizontal}-${showBookmarksOnly}-${searchText}-landscape`

@@ -1455,6 +1455,7 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
                   <FlatList
                     showsVerticalScrollIndicator={false}
                     data={controls}
+                     bounces={false}
                     key={
                       isLandscape
                         ? `${isLandscape}-landscape`
@@ -1473,6 +1474,7 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
                 <FlatList
                   showsVerticalScrollIndicator={false}
                   data={groupControls(controls)}
+                  bounces={false}
                   key={
                     isLandscape
                       ? `${isLandscape}-landscape`

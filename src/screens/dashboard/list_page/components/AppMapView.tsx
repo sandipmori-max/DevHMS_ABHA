@@ -306,6 +306,8 @@ const AppMapView = () => {
           <FlatList
             data={employees}
             horizontal
+                              bounces={false}
+
             keyExtractor={(item) => item.id}
             renderItem={renderEmployeeItem}
             showsHorizontalScrollIndicator={false}

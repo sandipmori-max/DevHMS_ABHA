@@ -170,7 +170,10 @@ const StackNavigator = () => {
       /> */}
       {/* <Stack.Screen options={screenOptions} name="File Manager" component={ScanScreen} /> */}
       <Stack.Screen
-        options={screenOptions}
+        options={{
+          ...screenOptions,
+          gestureEnabled: false,
+        }}
         name="Privacy Policy"
         component={PrivacyPolicyScreen}
       />

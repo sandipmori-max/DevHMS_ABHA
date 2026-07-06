@@ -163,6 +163,8 @@ const setupNotification = async () => {
         >
           <FlatList
             data={[""]}
+                              bounces={false}
+
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{

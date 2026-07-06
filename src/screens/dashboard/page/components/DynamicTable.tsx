@@ -210,7 +210,7 @@ export default function DynamicTable({
           }}
         >
           {/* Left Buttons */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <ScrollView   bounces={false} horizontal showsHorizontalScrollIndicator={false}>
             <View style={{ flexDirection: "row",  }}>
               {buttons.map((btn, index) => (
                 <TouchableOpacity

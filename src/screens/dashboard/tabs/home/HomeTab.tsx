@@ -1488,6 +1488,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                       theme === "dark" && {
                         borderWidth: 1,
                         borderColor: "white",
+                        backgroundColor: 'black'
                       },
                       {
                         width: (isLandscape || isIpad) ? "40%" : "100%",
@@ -1559,6 +1560,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                       }
                       mode="date"
                       display="spinner"
+                      themeVariant={theme === "dark" ? "dark" : "light"}
                       is24Hour={false}
                       onChange={(event, selectedDate) => {
                         if (selectedDate) {
@@ -1568,7 +1570,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                       style={[
                         styles.picker,
                         {
-                          backgroundColor: "white",
+                          backgroundColor: theme === "dark" ? 'black' : "white",
                         },
                       ]}
                     />
@@ -1589,6 +1591,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                 }
                 mode="date"
                 onChange={handleDateChange}
+                themeVariant={theme === "dark" ? "dark" : "light"}
               />
             )}
           </View>
@@ -1635,6 +1638,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
+      bounces={false}
       style={{
         height: Dimensions.get("screen").height,
         flex: 1,
@@ -1941,6 +1945,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                   theme === "dark" && {
                     borderWidth: 1,
                     borderColor: "white",
+                    backgroundColor: 'black'
                   },
                   {
                     width: (isLandscape || isIpad) ? "40%" : "100%",
@@ -2011,6 +2016,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                         ? parseCustomDate(toDate)
                         : new Date()
                   }
+                  themeVariant={theme === "dark" ? "dark" : "light"}
                   mode="date"
                   display="spinner"
                   is24Hour={false}
@@ -2022,7 +2028,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                   style={[
                     styles.picker,
                     {
-                      backgroundColor: "white",
+                      backgroundColor: theme === 'dark' ? 'black' : "white",
                     },
                   ]}
                 />
@@ -2044,6 +2050,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
             display={"spinner"}
             is24Hour={false}
             onChange={handleDateChange}
+            themeVariant={theme === "dark" ? "dark" : "light"}
           />
         )}
       </View>
@@ -2064,6 +2071,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
         </> : <FlatList
           data={[""]}
+                            bounces={false}
+
           key={
             isLandscape
               ? `${isHorizontal}-landscape1`
@@ -2309,6 +2318,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                   }}
                                 >
                                   <FlatList
+                                                    bounces={false}
+
                                     key={
                                       isLandscape
                                         ? `${isHorizontal}-landscape3`
@@ -2385,6 +2396,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                                 }}
                               >
                                 <FlatList
+                                                  bounces={false}
+
                                   key={
                                     isLandscape
                                       ? `${isHorizontal}-landscape3`
@@ -2419,6 +2432,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
                               ]}
                             >
                               <FlatList
+                                                bounces={false}
+
                                 key={
                                   isLandscape
                                     ? `${isHorizontal}-landscape2`
@@ -3060,106 +3075,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
         />
       }
 
-      <Modal
-        visible={openSheet}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setOpenSheet(false)}
-      >
-        <TouchableWithoutFeedback
-          onPress={() => setOpenSheet(false)}
-        >
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: "rgba(0,0,0,0.3)",
-              justifyContent: "flex-end",
-            }}
-          >
-            <TouchableWithoutFeedback>
-              <View
-                style={{
-                  backgroundColor: "#FFF",
-                  borderTopLeftRadius: 24,
-                  borderTopRightRadius: 24,
-                  padding: 20,
-                  maxHeight: "60%",
-                }}
-              >
-                <View
-                  style={{
-                    width: 50,
-                    height: 5,
-                    backgroundColor: "#CCC",
-                    borderRadius: 10,
-                    alignSelf: "center",
-                    marginBottom: 20,
-                  }}
-                />
-
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: "600",
-                    marginBottom: 20,
-                  }}
-                >
-                  Select Chart Type
-                </Text>
-
-                {CHART_TYPES.map((item) => {
-                  const active = chartType === item.type;
-
-                  return (
-                    <TouchableOpacity
-                      key={item.type}
-                      onPress={() => {
-                        if (item?.type === 'Default') {
-                          setChartType('');
-                          setOpenSheet(false);
-                        } else {
-                          setChartType(item.type);
-                          setOpenSheet(false);
-                        }
-
-                      }}
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        paddingVertical: 8,
-                        paddingHorizontal: 8,
-                        borderRadius: 4,
-                        backgroundColor: active
-                          ? "#F2F2F2"
-                          : "#FFF",
-                        marginBottom: 2,
-                      }}
-                    >
-                      <MaterialIcons
-                        name={item.icon}
-                        size={22}
-                        color="#000"
-                      />
-
-                      <Text
-                        style={{
-                          flex: 1,
-                          marginLeft: 14,
-                          fontSize: 15,
-                          fontWeight: "500",
-                        }}
-                      >
-                        {item.type}
-                      </Text>
-
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+       
     </ScrollView>
   );
 };

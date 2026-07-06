@@ -304,6 +304,7 @@ const AjaxPicker = ({
                 </View>
               ) : (
                 <ScrollView
+                  bounces={false}
                   keyboardShouldPersistTaps="handled"
                   showsVerticalScrollIndicator={false}
                 >
