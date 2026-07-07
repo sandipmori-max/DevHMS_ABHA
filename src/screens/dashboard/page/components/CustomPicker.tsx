@@ -1,12 +1,10 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import {
-  Text,
   TouchableOpacity,
   View,
   Modal,
   Animated,
   TouchableWithoutFeedback,
-  Dimensions,
   ScrollView,
   useWindowDimensions,
   Platform,

@@ -1290,6 +1290,8 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
     return <FullViewLoader isShowTop={theme === "dark" ? false : true} />;
   }
 
+
+  console.log('formik + + + + + + + + + ++. + ++ + +. + +', formValues)
   const groupControls = (ctr) => {
     const rows = [];
 

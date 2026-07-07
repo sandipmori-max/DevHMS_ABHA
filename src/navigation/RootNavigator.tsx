@@ -38,6 +38,7 @@ import {
 import { useTranslation } from "react-i18next";
 import NetInfo from "@react-native-community/netinfo";
 import NoInternetScreen from "../screens/noInternet/NoInternet";
+import { getActiveAccount, getDBConnection } from "../utils/sqlite";
 
 // ------------------------- Location Permission Helper -------------------------
 export async function requestLocationPermissions(): Promise<
@@ -101,7 +102,8 @@ const RootNavigator = () => {
   const isLandscape = width > height;
   const { isLoading, isAuthenticated, accounts, user, attendanceDone, appColorCode, attendanceSecurityLevel } =
     useAppSelector((state) => state.auth);
-  console.log("appColorCode", appColorCode, attendanceSecurityLevel)
+
+  const [forceLoader, setForceLoader] = useState(false);
   const { reLoading } = useAppSelector((state) => state.reloadApp);
 
   const langCode = useAppSelector((state) => state.theme.langcode);
@@ -157,6 +159,7 @@ const RootNavigator = () => {
   const [noInterNet, setNoInterNet] = useState(false)
   // ------------------------- Device Setup -------------------------
   const init = async () => {
+    setForceLoader(true)
     const state = await NetInfo.fetch();
     if (!state.isConnected) {
       setNoInterNet(true)
@@ -185,6 +188,11 @@ const RootNavigator = () => {
     await DevERPService.initialize().then(async () => {
       DevERPService.setAppId(appid || "");
       DevERPService.setDevice(name);
+      const db = await getDBConnection();
+       const activeAccount = await getActiveAccount(db);
+       if(activeAccount){
+        DevERPService.setToken(activeAccount.user.token);
+       }
       try {
         const state = await NetInfo.fetch();
         if (!state.isConnected) {
@@ -195,7 +203,6 @@ const RootNavigator = () => {
         await dispatch(checkAuthStateThunk()).unwrap();
         await new Promise(res => setTimeout(res, 900));
         console.log("Auth state checked successfully.");
-
         if (isAuthenticated) {
           setERPAppColor(appColorCode)
           try {
@@ -238,7 +245,8 @@ const RootNavigator = () => {
     })
       .catch((err) => {
         console.log("Initialization failed", err);
-      });;
+      });
+    setForceLoader(false)
 
 
   };
@@ -401,7 +409,7 @@ const RootNavigator = () => {
   }, [isAuthenticated, reLoading, attendanceDone]);
 
   // ------------------------- Render -------------------------
-  if (isLoading) return <FullViewLoader />;
+  if (isLoading || forceLoader) return <FullViewLoader />;
 
   return (
     <>
@@ -410,50 +418,56 @@ const RootNavigator = () => {
           <NoInternetScreen onRetry={() => { }} />
         </View>
       }
-      {isAuthenticated ? <StackNavigator /> : <AuthNavigator />}
-      {isAuthenticated && (
-        <CustomAlert
-          visible={alertVisible}
-          title={alertConfig.title}
-          message={alertConfig.message}
-          type={alertConfig.type}
-          onClose={() => {
-            // setAlertVisible(true)
-          }}
-          isSettingVisible={openSettings}
-          actionLoader={undefined}
-          closeHide={true}
-        />
-      )}
-      {isAuthenticated && (
-        <Modal
-          visible={backgroundDeniedModal}
-          supportedOrientations={["portrait", "landscape"]}
-          transparent
-        >
-          <View
-            style={[
-              styles.overlay,
-              isLandscape && {
-                alignContent: "center",
-                alignItems: "center",
-              },
-            ]}
-          >
-            <View style={[styles.modalContainer, {}]}>
-              <Text style={styles.title}>{t("test21")}</Text>
-              <Text style={styles.message}>{t("test22")}</Text>
-              <TouchableOpacity
-                style={styles.btnPrimary}
-                onPress={() => Linking.openSettings()}
-              >
-                <Text style={styles.btnText}>{t("test23")}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-      )}
+      {
+        forceLoader ? <>
+          <FullViewLoader />
+        </> : <>
 
+          {isAuthenticated ? <StackNavigator /> : <AuthNavigator />}
+          {isAuthenticated && (
+            <CustomAlert
+              visible={alertVisible}
+              title={alertConfig.title}
+              message={alertConfig.message}
+              type={alertConfig.type}
+              onClose={() => {
+                // setAlertVisible(true)
+              }}
+              isSettingVisible={openSettings}
+              actionLoader={undefined}
+              closeHide={true}
+            />
+          )}
+          {isAuthenticated && (
+            <Modal
+              visible={backgroundDeniedModal}
+              supportedOrientations={["portrait", "landscape"]}
+              transparent
+            >
+              <View
+                style={[
+                  styles.overlay,
+                  isLandscape && {
+                    alignContent: "center",
+                    alignItems: "center",
+                  },
+                ]}
+              >
+                <View style={[styles.modalContainer, {}]}>
+                  <Text style={styles.title}>{t("test21")}</Text>
+                  <Text style={styles.message}>{t("test22")}</Text>
+                  <TouchableOpacity
+                    style={styles.btnPrimary}
+                    onPress={() => Linking.openSettings()}
+                  >
+                    <Text style={styles.btnText}>{t("test23")}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+          )}
+        </>
+      }
     </>
   );
 };
