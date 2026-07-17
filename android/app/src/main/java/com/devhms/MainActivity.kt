@@ -1,4 +1,4 @@
-package com.deverp
+package com.devhms
 
 import android.content.res.Configuration
 import com.facebook.react.ReactActivity
@@ -8,7 +8,7 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate
 
 class MainActivity : ReactActivity() {
 
-  override fun getMainComponentName(): String = "DevERP"
+  override fun getMainComponentName(): String = "DevHMS"
 
   override fun createReactActivityDelegate(): ReactActivityDelegate =
     DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)

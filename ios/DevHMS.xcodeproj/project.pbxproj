@@ -26,20 +26,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		13B07F961A680F5B00A75B9A /* DevERP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DevERP.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = DevERP/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = DevERP/Info.plist; sourceTree = "<group>"; };
-		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = DevERP/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		13B07F961A680F5B00A75B9A /* DevHMS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DevHMS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "DevHMS/Images.xcassets"; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = "DevHMS/Info.plist"; sourceTree = "<group>"; };
+		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = DevHMS/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		1AB1D406F944F7D2287F8EDC /* Pods_DevERP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DevERP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		574CFC59E105F22AD2B6876E /* Pods-DevERP.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DevERP.release.xcconfig"; path = "Target Support Files/Pods-DevERP/Pods-DevERP.release.xcconfig"; sourceTree = "<group>"; };
-		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = DevERP/AppDelegate.swift; sourceTree = "<group>"; };
-		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = DevERP/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		BE81B34BB904C53395BC93E4 /* Pods-DevERP.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DevERP.debug.xcconfig"; path = "Target Support Files/Pods-DevERP/Pods-DevERP.debug.xcconfig"; sourceTree = "<group>"; };
+		574CFC59E105F22AD2B6876E /* Pods-DevHMS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DevHMS.release.xcconfig"; path = "Target Support Files/Pods-DevHMS/Pods-DevHMS.release.xcconfig"; sourceTree = "<group>"; };
+		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = DevHMS/AppDelegate.swift; sourceTree = "<group>"; };
+		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = "DevHMS/LaunchScreen.storyboard"; sourceTree = "<group>"; };
+		BE81B34BB904C53395BC93E4 /* Pods-DevHMS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DevHMS.debug.xcconfig"; path = "Target Support Files/Pods-DevHMS/Pods-DevHMS.debug.xcconfig"; sourceTree = "<group>"; };
 		C7899459CCB842D0AD5CF70D /* Handlee-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Handlee-Regular.ttf"; path = "../assets/fonts/Handlee-Regular.ttf"; sourceTree = "<group>"; };
 		DA73448C2EB886B1002F7399 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		DAAFE8E92F1BACF200F00D76 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		DAAFE8EB2F1BAD0500F00D76 /* LocationModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LocationModule.m; sourceTree = "<group>"; };
-		DAAFE8ED2F1BAD0900F00D76 /* DevERP-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DevERP-Bridging-Header.h"; sourceTree = "<group>"; };
+		DAAFE8ED2F1BAD0900F00D76 /* DevHMS-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DevHMS-Bridging-Header.h"; sourceTree = "<group>"; };
 		DAB5A1872F05534500923390 /* LocationModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationModule.swift; sourceTree = "<group>"; };
 		DAB5FD792F9B84B6007D0EDD /* DocumentScanner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DocumentScanner.h; sourceTree = "<group>"; };
 		DAB5FD7A2F9B84C1007D0EDD /* DocumentScanner.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DocumentScanner.mm; sourceTree = "<group>"; };
@@ -66,7 +66,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		13B07FAE1A68108700A75B9A /* DevERP */ = {
+		13B07FAE1A68108700A75B9A /* DevHMS */ = {
 			isa = PBXGroup;
 			children = (
 				DAB5FD7A2F9B84C1007D0EDD /* DocumentScanner.mm */,
@@ -81,9 +81,9 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
-				DAAFE8ED2F1BAD0900F00D76 /* DevERP-Bridging-Header.h */,
+				DAAFE8ED2F1BAD0900F00D76 /* DevHMS-Bridging-Header.h */,
 			);
-			name = DevERP;
+			name = "DevHMS";
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
@@ -117,7 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				DA73448C2EB886B1002F7399 /* GoogleService-Info.plist */,
-				13B07FAE1A68108700A75B9A /* DevERP */,
+				13B07FAE1A68108700A75B9A /* DevHMS */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
@@ -132,7 +132,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* DevERP.app */,
+				13B07F961A680F5B00A75B9A /* DevHMS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -140,8 +140,8 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				BE81B34BB904C53395BC93E4 /* Pods-DevERP.debug.xcconfig */,
-				574CFC59E105F22AD2B6876E /* Pods-DevERP.release.xcconfig */,
+				BE81B34BB904C53395BC93E4 /* Pods-DevHMS.debug.xcconfig */,
+				574CFC59E105F22AD2B6876E /* Pods-DevHMS.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -149,9 +149,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		13B07F861A680F5B00A75B9A /* DevERP */ = {
+		13B07F861A680F5B00A75B9A /* DevHMS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "DevERP" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "DevHMS" */;
 			buildPhases = (
 				B7DD2BB919AD49C36237DAC4 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
@@ -166,9 +166,9 @@
 			);
 			dependencies = (
 			);
-			name = DevERP;
-			productName = DevERP;
-			productReference = 13B07F961A680F5B00A75B9A /* DevERP.app */;
+			name = "DevHMS";
+			productName = "DevHMS";
+			productReference = 13B07F961A680F5B00A75B9A /* DevHMS.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -184,7 +184,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "DevERP" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "DevHMS" */;
 			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -197,7 +197,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* DevERP */,
+				13B07F861A680F5B00A75B9A /* DevHMS */,
 			);
 		};
 /* End PBXProject section */
@@ -255,19 +255,19 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DevERP/Pods-DevERP-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-DevHMS/Pods-DevHMS-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			inputPaths = (
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DevERP/Pods-DevERP-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-DevHMS/Pods-DevHMS-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DevERP/Pods-DevERP-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DevHMS/Pods-DevHMS-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B7DD2BB919AD49C36237DAC4 /* [CP] Check Pods Manifest.lock */ = {
@@ -285,7 +285,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-DevERP-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-DevHMS-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -298,19 +298,19 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DevERP/Pods-DevERP-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-DevHMS/Pods-DevHMS-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			inputPaths = (
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DevERP/Pods-DevERP-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-DevHMS/Pods-DevHMS-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DevERP/Pods-DevERP-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DevHMS/Pods-DevHMS-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -335,7 +335,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BE81B34BB904C53395BC93E4 /* Pods-DevERP.debug.xcconfig */;
+			baseConfigurationReference = BE81B34BB904C53395BC93E4 /* Pods-DevHMS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
@@ -345,8 +345,9 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9HDP6J823K;
 				ENABLE_BITCODE = NO;
-				INFOPLIST_FILE = DevERP/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = DevERP;
+				INFOPLIST_FILE = "DevHMS/Info.plist";
+             INFOPLIST_KEY_CFBundleDisplayName = "DevHMS";
+				INFOPLIST_KEY_CFBundleDisplayName = DevHMS;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -359,12 +360,12 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.deverp.erpx;
-				PRODUCT_NAME = DevERP;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.devhms";
+				PRODUCT_NAME = "DevHMS";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "DevERP-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "DevHMS-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -374,7 +375,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 574CFC59E105F22AD2B6876E /* Pods-DevERP.release.xcconfig */;
+			baseConfigurationReference = 574CFC59E105F22AD2B6876E /* Pods-DevHMS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
@@ -383,8 +384,9 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9HDP6J823K;
-				INFOPLIST_FILE = DevERP/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = DevERP;
+				INFOPLIST_FILE = "DevHMS/Info.plist";
+             INFOPLIST_KEY_CFBundleDisplayName = "DevHMS";
+				INFOPLIST_KEY_CFBundleDisplayName = DevHMS;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -397,12 +399,12 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.deverp.erpx;
-				PRODUCT_NAME = DevERP;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.devhms";
+				PRODUCT_NAME = "DevHMS";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "DevERP-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "DevHMS-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -580,7 +582,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "DevERP" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "DevHMS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -589,7 +591,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "DevERP" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "DevHMS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
