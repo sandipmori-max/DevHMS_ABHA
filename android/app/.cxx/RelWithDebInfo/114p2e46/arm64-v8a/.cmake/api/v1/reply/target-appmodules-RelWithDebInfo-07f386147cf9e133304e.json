@@ -427,14 +427,6 @@
 	[
 		{
 			"backtrace" : 4,
-			"id" : "react_codegen_RNImageResizerSpec::@781b039b46879c00d842"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_rnasyncstorage::@1596841e19ec5b9eeffe"
-		},
-		{
-			"backtrace" : 4,
 			"id" : "react_codegen_RNDateTimePickerCGen::@59b70ddc31ba2f8ef1d2"
 		},
 		{
@@ -512,6 +504,14 @@
 		{
 			"backtrace" : 4,
 			"id" : "react_codegen_RNWorkletsSpec::@c787b30dd2b0f948dced"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNImageResizerSpec::@781b039b46879c00d842"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rnasyncstorage::@1596841e19ec5b9eeffe"
 		}
 	],
 	"id" : "appmodules::@6890427a1f51a3e7e1df",

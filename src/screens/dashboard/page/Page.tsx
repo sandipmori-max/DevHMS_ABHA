@@ -518,6 +518,7 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
             navigation.goBack();
           }, 1800);
         } catch (err: any) {
+          console.error("Save error + + + + + ++ +:", err);
           setLoader(false);
           setAlertConfig({
             title: t("title.title177"),

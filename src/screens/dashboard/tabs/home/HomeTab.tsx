@@ -952,6 +952,8 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
           getERPPageThunk({ page: "Dashboard", id: "" }),
         ).unwrap();
 
+        console.log("parsed-----", parsed)
+
         const normalizedControls = (parsed?.pagectl || []).map((c) => ({
           ...c,
           disabled: String(c?.disabled ?? "0"),
@@ -963,7 +965,7 @@ const HomeScreen = ({ setHideTab, hideTab }: any) => {
 
         await fetchData(normalizedControls, fromDate, toDate);
       } catch (e) {
-        console.log("fetchPageData error:", e);
+        console.log("fetchPageData error 66 ++ ++ + + ++ + + + + :", e);
       } finally {
         setControlsLoader(false);
         setLoadingPageId(null);

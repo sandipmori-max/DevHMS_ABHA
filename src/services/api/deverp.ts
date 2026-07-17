@@ -1,4 +1,4 @@
-import { Platform } from "react-native";
+import { Alert, Platform } from "react-native";
 import { generateGUID } from "../../utils/helpers";
 import { getActiveAccount, getDBConnection } from "../../utils/sqlite";
 import apiClient from "./config";
@@ -24,9 +24,9 @@ class DevERPService {
   private appid: string = generateGUID();
   private device: string = "";
 
-  private async checkNetwork() {
+  private async checkNetwork(): Promise<boolean> {
     const netInfo = await NetInfo.fetch();
-    if (!netInfo.isConnected) throw new Error("Please check your network and try again. You can tap Refresh or close and reopen the app");
+    return !!(netInfo.isConnected && netInfo.isInternetReachable !== false);
   }
 
   private async ensureAuthToken(forceRefresh = false) {
@@ -52,9 +52,15 @@ class DevERPService {
     return this.getAuth();
   }
 
-  private async apiCall<T>(endpoint: string, payload: any): Promise<T> {
+  private async apiCall<T>(endpoint: string, payload: any): Promise<any> {
     try {
-      await this.checkNetwork();
+      const isConnected = await this.checkNetwork();
+
+      if (!isConnected) {
+        
+        return;
+      }
+
       await this.ensureAuthToken();
 
       const response = await apiClient.post<T>(
@@ -82,8 +88,13 @@ class DevERPService {
     }
   }
 
-  async getAppLink(code: string): Promise<DevERPResponse> {
-    await this.checkNetwork();
+  async getAppLink(code: string): Promise<any> {
+    const isConnected = await this.checkNetwork();
+
+    if (!isConnected) {
+      
+      return;
+    }
 
     const response = await apiClient.post<DevERPResponse>(
       `${this.baseUrl}/appcode.aspx/getLink`,
@@ -99,7 +110,7 @@ class DevERPService {
       }
       await AsyncStorage.setItem("erp_link", this.link);
     }
-    console.log("this.link",this.link)
+    console.log("this.link", this.link)
     return response.data;
   }
 
@@ -108,12 +119,12 @@ class DevERPService {
       const response = await this.getAppLink(code);
       return response.success === 1
         ? {
-            isValid: true,
-            appName: response?.name,
-            appUrl: response?.link,
-            message: "Company code validated successfully",
-            response: response,
-          }
+          isValid: true,
+          appName: response?.name,
+          appUrl: response?.link,
+          message: "Company code validated successfully",
+          response: response,
+        }
         : { isValid: false, message: "Invalid company code" };
     } catch (e) {
       return { isValid: false, message: "Failed to validate company code" };
@@ -124,9 +135,14 @@ class DevERPService {
     user: string;
     pass: string;
     firebaseid?: string;
-  }): Promise<LoginResponse> {
+  }): Promise<any> {
     console.error(" 👈 👈 👈 Login credentials received: 👈👈👈👈 ---- -- - -- - - - - -", credentials); // 👈 added log
-    await this.checkNetwork();
+    const isConnected = await this.checkNetwork();
+
+      if (!isConnected) {
+        
+        return;
+      }
     const app_id = generateGUID();
     await AsyncStorage.setItem("appid", app_id);
     this.appid = app_id;
@@ -153,21 +169,23 @@ class DevERPService {
     }
   }
 
-  async getAuth(): Promise<string> {
-    await this.checkNetwork();
-
+  async getAuth(): Promise<any> {
+    const isConnected = await this.checkNetwork();
+      if (!isConnected) {
+         
+        return;
+      }
+    await new Promise(res => setTimeout(res, 600));
     const tokenData: TokenRequest = { appid: this.appid, device: this.device };
+    console.log("tokenData", tokenData)
     const response = await apiClient.post<TokenResponse>(
       `${this.link}msp_api.aspx/getAuth`,
       tokenData,
     );
-
-    if (String(response?.data.success) !== "1")
-    {
-      return 'token_expired';
-      // throw new Error(response?.data?.message || "Failed to get auth token");
+    console.log("response", response?.data?.success)
+    if (`${response?.data?.success}` !== '1') {
+      return 'token_expired'
     }
-    
 
     this.token = response?.data?.token || "";
     this.tokenValidTill = response?.data?.validTill || "";
@@ -198,7 +216,7 @@ class DevERPService {
           );
         }
       }
-    } catch (err) {}
+    } catch (err) { }
 
     return this.token;
   }
@@ -211,7 +229,7 @@ class DevERPService {
 
   getAppMenu() {
     return this.apiCall<MenuResponse>("msp_api.aspx/getAppConfig", {
-      token: this.token ,
+      token: this.token,
     }).then((res) => JSON.stringify(res));
   }
 
@@ -233,7 +251,7 @@ class DevERPService {
 
   getPage(page: string, id: string) {
     return this.apiCall<any>("msp_api.aspx/getPage", {
-      token: this.token ,
+      token: this.token,
       page,
       id,
     });
@@ -252,19 +270,19 @@ class DevERPService {
     );
   }
 
-getConfigData(page: string) {
-  return this.apiCall<ListDataResponse>("msp_api.aspx/getListConfig", {
-    token: this.token,
-    page,
-  }).then((res) => {
-    console.log("API Response (getConfigData):", res); // 👈 added log
+  getConfigData(page: string) {
+    return this.apiCall<ListDataResponse>("msp_api.aspx/getListConfig", {
+      token: this.token,
+      page,
+    }).then((res) => {
+      console.log("API Response (getConfigData):", res); // 👈 added log
 
-    return JSON.stringify({
-      data: res,
-      config: res || [],
+      return JSON.stringify({
+        data: res,
+        config: res || [],
+      });
     });
-  });
-}
+  }
 
   markAttendance(rawData: any, isPunchIn: boolean, user: any, id: any) {
     const pageType = isPunchIn ? "punchin" : "punchout";
@@ -292,6 +310,14 @@ getConfigData(page: string) {
   }
 
   savePage(page: string, id: string, rawData: any) {
+
+    console.log("sabe page -------- ", page)
+    console.log("rawData  page -------- ", {
+      token: this.token,
+      page,
+      data: JSON.stringify(rawData),
+    })
+
     return this.apiCall<any>(`msp_api.aspx/pageSave`, {
       token: this.token,
       page,

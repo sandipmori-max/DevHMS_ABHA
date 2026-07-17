@@ -59,7 +59,7 @@ const TermsAndConsent = ({ onAccept }: any) => {
       </Text>
         <Text style={styles.updated}>
                 Last updated: December 10, 2025
-              </Text>
+        </Text>
       {/*  ==== OLD TERMS & CONDITIONS (UNCHANGED FLOW)  ==== */}
       <ScrollView
         bounces={false}

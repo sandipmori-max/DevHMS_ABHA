@@ -14,7 +14,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Linking, Alert } from 'react-native';
+import { Linking } from 'react-native';
 import { formatDateList } from "../../../../utils/helpers";
 import { styles } from "../list_page_style";
 import NoData from "../../../../components/no_data/NoData";
@@ -116,8 +116,8 @@ const ReadableView = ({
     loadingListId,
     filteredData,
   );
- const isIpad =
-   ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
+  const isIpad =
+    (Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
   const slideAnim = useRef(new Animated.Value(300)).current; // right se start
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -189,67 +189,67 @@ const ReadableView = ({
     const amount = item?.amount;
     const btnKeys = Object.keys(item).filter((key) => key.startsWith("btn_"));
     const baseUrl =
-      item?.image && item?.image?.replace(/^https:\/\\/, "http://");
+      item?.image;
     const authUser = item?.authuser;
     const qty = item?.qty;
- 
- const shareTextToWhatsApp = async () => {
-  const phone = '918154877969';
-  const text = encodeURIComponent('Hello Sandip');
 
-  try {
-    await Linking.openURL(
-      `whatsapp://send?phone=${phone}&text=${text}`,
-    );
-  } catch {
-    await Linking.openURL(
-      `https://wa.me/${phone}?text=${text}`,
-    );
-  }
-};
+    const shareTextToWhatsApp = async () => {
+      const phone = '918154877969';
+      const text = encodeURIComponent('Hello Sandip');
 
-const sharePdf = async () => {
-  try {
-    const pdfUrl = 'https://pdfobject.com/pdf/sample.pdf';
+      try {
+        await Linking.openURL(
+          `whatsapp://send?phone=${phone}&text=${text}`,
+        );
+      } catch {
+        await Linking.openURL(
+          `https://wa.me/${phone}?text=${text}`,
+        );
+      }
+    };
 
-    const localFile =
-      `${RNFS.DocumentDirectoryPath}/sample.pdf`;
+    const sharePdf = async () => {
+      try {
+        const pdfUrl = 'https://pdfobject.com/pdf/sample.pdf';
 
-    await RNFS.downloadFile({
-      fromUrl: pdfUrl,
-      toFile: localFile,
-    }).promise;
+        const localFile =
+          `${RNFS.DocumentDirectoryPath}/sample.pdf`;
 
-    await Share.open({
-      url: `file://${localFile}`,
-      type: 'application/pdf',
-      failOnCancel: false,
-    });
-  } catch (e) {
-    console.log(e);
-  }
-};
+        await RNFS.downloadFile({
+          fromUrl: pdfUrl,
+          toFile: localFile,
+        }).promise;
 
-const openShareDialog = async () => {
-  try {
-    await Share.open({
-      message: 'Hello from React Native',
-      failOnCancel: false,
-    });
-  } catch (e) {
-    console.log(e);
-  }
-};
+        await Share.open({
+          url: `file://${localFile}`,
+          type: 'application/pdf',
+          failOnCancel: false,
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    const openShareDialog = async () => {
+      try {
+        await Share.open({
+          message: 'Hello from React Native',
+          failOnCancel: false,
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    };
     const { user } = useAppSelector((state) => state.auth);
     const avatarLetter =
       typeof name === "string" && name.trim() !== ""
         ? name
-            .trim()
-            .split(" ")
-            .filter(Boolean)
-            .slice(0, 2)
-            .map((w) => w.charAt(0).toUpperCase())
-            .join("")
+          .trim()
+          .split(" ")
+          .filter(Boolean)
+          .slice(0, 2)
+          .map((w) => w.charAt(0).toUpperCase())
+          .join("")
         : (name || "").toString().substring(0, 2).toUpperCase();
 
     const card = (
@@ -260,8 +260,8 @@ const openShareDialog = async () => {
               theme === "dark"
                 ? "black"
                 : isFromAlertCard
-                ? "#f8fff8ff"
-                : ERP_COLOR_CODE.ERP_WHITE,
+                  ? "#f8fff8ff"
+                  : ERP_COLOR_CODE.ERP_WHITE,
             borderRadius: 6,
             paddingHorizontal: 8,
             paddingBottom: 6,
@@ -529,15 +529,15 @@ const openShareDialog = async () => {
           </TouchableOpacity>
           {
             <View>
-              {amount && qty &&  <View
-                    style={{
-                      marginBottom: 4,
-                      borderWidth: 1,
-                      borderStyle: "dashed",
-                      borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
-                      opacity: 0.4,
-                    }}
-                  />}
+              {amount && qty && <View
+                style={{
+                  marginBottom: 4,
+                  borderWidth: 1,
+                  borderStyle: "dashed",
+                  borderColor: ERP_COLOR_CODE.ERP_BORDER_LINE,
+                  opacity: 0.4,
+                }}
+              />}
 
               <View
                 style={{
@@ -668,7 +668,7 @@ const openShareDialog = async () => {
       </>
     );
 
-   
+
 
     return (
       <>
@@ -710,7 +710,7 @@ const openShareDialog = async () => {
   return (
     <View style={{ flex: 1, marginTop: 0 }}>
       <FlatList
-                        bounces={false}
+        bounces={false}
 
         keyExtractor={(_, index) => index.toString()}
         data={listData}

@@ -18,42 +18,46 @@ export const checkAuthStateThunk = createAsyncThunk(
       const db = await getDBConnection();
       await createAccountsTable(db);
 
-      const accounts = await getAccounts(db);
-      const activeAccount = await getActiveAccount(db);
+      // const accounts = await getAccounts(db);
+      // const activeAccount = await getActiveAccount(db);
 
-      if (activeAccount?.user?.token && activeAccount?.user?.tokenValidTill) {
-        const validTill =
-          typeof activeAccount.user.tokenValidTill === "number"
-            ? new Date(activeAccount.user.tokenValidTill * 1000)
-            : new Date(activeAccount.user.tokenValidTill);
+      // if (activeAccount?.user?.token && activeAccount?.user?.tokenValidTill) {
+      //   const validTill =
+      //     typeof activeAccount.user.tokenValidTill === "number"
+      //       ? new Date(activeAccount.user.tokenValidTill * 1000)
+      //       : new Date(activeAccount.user.tokenValidTill);
 
-        if (validTill.getTime() > Date.now()) {
-        console.error(" 👈 👈 👈 validTill validTill validTill: 👈👈👈👈 ---- -- - -- - - - - -", validTill); // 👈 added log
-          DevERPService.setToken(activeAccount.user.token);
-          return {
-            accounts,
-            activeAccountId: activeAccount.id,
-            user: activeAccount.user,
-          };
-        }
-      }
+      //   if (validTill.getTime() > Date.now()) {
+      //   console.error(" 👈 👈 👈 validTill validTill validTill: 👈👈👈👈 ---- -- - -- - - - - -", validTill); // 👈 added log
+      //     DevERPService.setToken(activeAccount.user.token);
+      //     return {
+      //       accounts,
+      //       activeAccountId: activeAccount.id,
+      //       user: activeAccount.user,
+      //     };
+      //   }
+      // }
       console.error(" 👈 👈 👈 getAuth getAuth getAuth: 👈👈👈👈 ---- -- - -- - - - - -"); // 👈 added log
       // 🔄 Token expired → try refresh
       try {
-        await DevERPService.getAuth();
+        const res =  await DevERPService.getAuth();
+         console.error(" 👈 👈 👈 res res res: 👈👈👈👈 ---- -- - -- - - - - -", res); 
+         if(res === 'token_expired'){
+            return rejectWithValue("token_expired");
+         }
       } catch (err: any) {
         // 👇 THIS is where you detect expiry / failure
         return rejectWithValue("token_expired");
       }
 
       const updatedAccounts = await getAccounts(db);
-      const updatedActiveAccount = await getActiveAccount(db);
-      DevERPService.setToken(updatedActiveAccount?.user?.token || "");
-      return {
-        accounts: updatedAccounts,
-        activeAccountId: updatedActiveAccount?.id || null,
-        user: updatedActiveAccount?.user || null,
-      };
+        const updatedActiveAccount = await getActiveAccount(db);
+        DevERPService.setToken(updatedActiveAccount?.user?.token || "");
+        return {
+          accounts: updatedAccounts,
+          activeAccountId: updatedActiveAccount?.id || null,
+          user: updatedActiveAccount?.user || null,
+        };
 
     } catch (error) {
       return rejectWithValue("Failed to check authentication state");
@@ -340,7 +344,7 @@ export const getERPAppConfigMenuThunk = createAsyncThunk(
 
       return rejectWithValue('Invalid menu response format');
     } catch (error: any) {
-       console.log("response---error---------------=======================", error)
+      console.log("response---error---------------=======================", error)
       return rejectWithValue(error?.message || 'Failed to get ERP menu');
     }
   },
@@ -356,12 +360,12 @@ export const getERPDashboardThunk = createAsyncThunk(
   "auth/getERPDashboard",
   async ({ branch, type, fd, td }: ERPDashboardParams, { rejectWithValue }) => {
     try {
-      if(branch === '' && type === ''){
+      if (branch === '' && type === '') {
         return []
       }
-      console.log("#######dashboard----------- api. called with params +++++++++++++++", "branch----", branch  , "type------", type, "fd-----", fd, "td-----", td )
+      console.log("#######dashboard----------- api. called with params +++++++++++++++", "branch----", branch, "type------", type, "fd-----", fd, "td-----", td)
       const dashboard = await DevERPService.getDashboard(branch, type, fd, td);
-      console.log("dashboard-----------response----------",  branch, type, fd, td , "-------", dashboard)
+      console.log("dashboard-----------response----------", branch, type, fd, td, "-------", dashboard)
       return dashboard;
     } catch (error: any) {
       console.log("dashboard-----------error----------", error);
@@ -392,9 +396,10 @@ export const getERPListDataThunk = createAsyncThunk(
       toDate,
       param,
       branch
-    }: { page: string; fromDate: string; toDate: string; param: string, branch: string},
+    }: { page: string; fromDate: string; toDate: string; param: string, branch: string },
     { rejectWithValue },
   ) => {
+    console.log("page,,,,fromDate,,,,toDate,,,,,param,,,,branch", page, fromDate, toDate)
     try {
       const listData = await DevERPService.getListData(
         page,
@@ -415,14 +420,14 @@ export const getERPConfigDataThunk = createAsyncThunk(
   "auth/getListConfig",
   async (
     {
-      page, 
-    }: { page: string},
+      page,
+    }: { page: string },
     { rejectWithValue },
   ) => {
     try {
       console.log("page =================", page)
       const listData = await DevERPService.getConfigData(
-        page, 
+        page,
       );
       return listData;
     } catch (error: any) {

@@ -222,6 +222,7 @@ const isIpad =
     const isActive = user?.id.toString() === item?.user?.id.toString();
     const lastLogin = formatDateHr(item?.lastLoginAt, false);
     const lastLoginHr = formatTimeTo12Hour(item?.lastLoginAt);
+    console.log("item?.user?.token", item?.user?.token)
 
     let normalizedBase = (item?.user?.companyLink || "").replace(/\/+$/, "");
     normalizedBase = normalizedBase.replace(/\/devws\/?/, "/");
@@ -384,6 +385,7 @@ const isIpad =
                     style={styles.lastLogin}
                   ></TranslatedText>
                 </View>
+                
               </View>
             </View>
             {isActive && (
@@ -406,6 +408,7 @@ const isIpad =
                 </Text>
               </View>
             )}
+            
           </View>
           {!isActive && accounts?.length > 1 && (
             <TouchableOpacity

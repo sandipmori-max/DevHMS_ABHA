@@ -31,6 +31,9 @@ class LocationModule(private val reactContext: ReactApplicationContext) :
         ContextCompat.startForegroundService(reactContext, serviceIntent)
     }
 
+companion object {
+    var removeNotification = false
+}
     @ReactMethod
     fun setUserTokens(data: ReadableArray) {
         for (i in 0 until data.size()) {
@@ -50,15 +53,15 @@ class LocationModule(private val reactContext: ReactApplicationContext) :
         Log.d("LocationModule", "✅ Received token-link pairs: ${LocationService.userDataList}")
     }
 
-    @ReactMethod
-    fun stopService() {
-        Log.d(
-            "LocationModule",
-            "❌ stopService called"
-        )
-        val serviceIntent = Intent(reactContext, LocationService::class.java)
-        reactContext.stopService(serviceIntent)
-    }
+ @ReactMethod
+fun stopService() {
+    Log.d("LocationModule", "❌ stopService called")
+
+    LocationService.removeNotification = true
+
+    val serviceIntent = Intent(reactContext, LocationService::class.java)
+    reactContext.stopService(serviceIntent)
+}
 
   @ReactMethod
 fun getCurrentLocation(
@@ -187,4 +190,6 @@ fun getCurrentLocation(
         )
     }
 }
+
+
 }

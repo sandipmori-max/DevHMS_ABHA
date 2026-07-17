@@ -609,6 +609,7 @@ const ListScreen = () => {
       }
 
       setConfigData(configArray);
+      console.log("dataArray------12312313----------", dataArray)
       setListData(dataArray);
       setFilteredData(dataArray);
     } catch (e: any) {
@@ -675,6 +676,7 @@ const ListScreen = () => {
       }
 
       setConfigData(configArray);
+      console.log("dataArray----------------", dataArray)
       setListData(dataArray);
       setFilteredData(dataArray);
     } catch (e) {

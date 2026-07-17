@@ -35,6 +35,7 @@ class LocationService : Service() {
 
     companion object {
         var userDataList: MutableList<UserData> = mutableListOf()
+         var removeNotification = false
     }
 
     private val MIN_DISTANCE_METERS = 25f
@@ -65,13 +66,31 @@ class LocationService : Service() {
         return START_STICKY
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        fusedLocationClient.removeLocationUpdates(locationCallback)
-        handler.removeCallbacksAndMessages(null)
+  override fun onDestroy() {
+    Log.d("LocationService", "Service destroyed")
+
+    fusedLocationClient.removeLocationUpdates(locationCallback)
+    handler.removeCallbacksAndMessages(null)
+
+    try {
         unregisterReceiver(locationReceiver)
-        apiExecutor.shutdown()
+    } catch (_: Exception) {
     }
+
+    apiExecutor.shutdown()
+
+    if (removeNotification) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+        } else {
+            @Suppress("DEPRECATION")
+            stopForeground(true)
+        }
+        removeNotification = false
+    }
+
+    super.onDestroy()
+}
 
     override fun onBind(intent: Intent?): IBinder? = null
 

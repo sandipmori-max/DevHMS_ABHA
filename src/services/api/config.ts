@@ -63,8 +63,6 @@ const apiClient: AxiosInstance = axios.create({
   
 });
 
- 
-
 function unwrapString(value: any): any {
   if (typeof value !== "string") return value;
 
@@ -148,45 +146,45 @@ apiClient.interceptors.response.use(
      
     let raw = response?.data?.d;
     let parsedData = safeParse(safeParse(raw));
-    if ((parsedData?.success === "0" || parsedData?.success === 0) && parsedData?.message === "Invalid Token") {
-      const db = await getDBConnection();
-      await createAccountsTable(db);
-      const activeUser = await getActiveAccount(db);
-      const newActiveUser = await logoutUser(db, activeUser?.id);
-      if (newActiveUser) {
-        batch(() => {
-          store.dispatch(setDashboard([]));
-          store.dispatch(setEmptyMenu([]));
-          store.dispatch(resetAjaxState());
-          store.dispatch(resetAttendanceState());
-          store.dispatch(clearAuthState());
-          store.dispatch(resetDropdownState());
-          store.dispatch(resetSyncLocationState());
-          store.dispatch(resetAttendanceState());
-          store.dispatch(switchAccountThunk(newActiveUser?.id));
-        });
+    // if ((parsedData?.success === "0" || parsedData?.success === 0) && parsedData?.message === "Invalid Token") {
+    //   const db = await getDBConnection();
+    //   await createAccountsTable(db);
+    //   const activeUser = await getActiveAccount(db);
+    //   const newActiveUser = await logoutUser(db, activeUser?.id);
+    //   if (newActiveUser) {
+    //     batch(() => {
+    //       store.dispatch(setDashboard([]));
+    //       store.dispatch(setEmptyMenu([]));
+    //       store.dispatch(resetAjaxState());
+    //       store.dispatch(resetAttendanceState());
+    //       store.dispatch(clearAuthState());
+    //       store.dispatch(resetDropdownState());
+    //       store.dispatch(resetSyncLocationState());
+    //       store.dispatch(resetAttendanceState());
+    //       store.dispatch(switchAccountThunk(newActiveUser?.id));
+    //     });
 
-        return;
-      }
-      batch(() => {
-        store.dispatch(setDashboard([]));
-        store.dispatch(setEmptyMenu([]));
-        store.dispatch(resetAjaxState());
-        store.dispatch(resetAttendanceState());
-        store.dispatch(clearAuthState());
-        store.dispatch(resetDropdownState());
-        store.dispatch(resetSyncLocationState());
-        store.dispatch(resetAttendanceState());
-        setERPAppColor('#251d50');
-        store.dispatch(logoutUserThunk());
-      });
+    //     return;
+    //   }
+    //   batch(() => {
+    //     store.dispatch(setDashboard([]));
+    //     store.dispatch(setEmptyMenu([]));
+    //     store.dispatch(resetAjaxState());
+    //     store.dispatch(resetAttendanceState());
+    //     store.dispatch(clearAuthState());
+    //     store.dispatch(resetDropdownState());
+    //     store.dispatch(resetSyncLocationState());
+    //     store.dispatch(resetAttendanceState());
+    //     setERPAppColor('#251d50');
+    //     store.dispatch(logoutUserThunk());
+    //   });
 
-      return Promise.reject({
-        message: parsedData?.message + " ---+++--- " + `${response?.config?.url?.split("/").filter(Boolean).pop()}` || "API request failed",
-        statusCode: response?.status,
-        data: {},
-      });
-    }
+    //   return Promise.reject({
+    //     message: parsedData?.message + " ---+++--- " + `${response?.config?.url?.split("/").filter(Boolean).pop()}` || "API request failed",
+    //     statusCode: response?.status,
+    //     data: {},
+    //   });
+    // }
     try {
       if (response.data && response.data.d) {
         let raw = response?.data?.d;

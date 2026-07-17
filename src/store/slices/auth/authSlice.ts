@@ -157,6 +157,7 @@ const authSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(checkAuthStateThunk.fulfilled, (state, action) => {
+         console.log("fulfilled fulfilled fulfilled fulfilled fulfilled fulfilled ++++++++++", action.payload)
         if (action.payload) {
           if (action?.payload?.accounts) {
             state.accounts = action?.payload?.accounts;
@@ -175,6 +176,7 @@ const authSlice = createSlice({
         // state.isLoading = false;
       })
       .addCase(checkAuthStateThunk.rejected, (state, action) => {
+        console.log("rejected rejected rejected rejected rejected rejected ++++++++++")
         state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;

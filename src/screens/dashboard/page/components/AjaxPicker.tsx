@@ -20,7 +20,6 @@ import useTranslations from "../../../../hooks/useTranslations";
 import InputError from "../../../../components/error/InputError";
 import NoData from "../../../../components/no_data/NoData";
 import TranslatedText from "../../tabs/home/TranslatedText";
-import InfoTooltip from "./Tooltip";
 import LableInfo from "./LableInfo";
 import DeviceInfo from "react-native-device-info";
 
@@ -42,7 +41,6 @@ const AjaxPicker = ({
   );
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<any[]>([]);
-  console.log("options++++++++++++++++++++++++++++++++++++++++", options)
   const [loader, setLoader] = useState(false);
   const [search, setSearch] = useState("");
   const theme = useAppSelector((state) => state?.theme.mode);
