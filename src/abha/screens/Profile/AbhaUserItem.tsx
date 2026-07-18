@@ -95,7 +95,7 @@ const AbhaUserItem = ({ item, onPress }: any) => {
                     <MaterialIcons
                         name='numbers'
                         size={18}
-                        color="#251d50"
+                        color="#1565C0"
                     />
                     <Text style={styles.label}>ABHA</Text>
                     <Text style={[styles.value, {
@@ -116,7 +116,7 @@ const AbhaUserItem = ({ item, onPress }: any) => {
                         <MaterialIcons
                             name='copy-all'
                             size={18}
-                            color="#251d50"
+                            color="#1565C0"
                         />
                     </TouchableOpacity>
                 </View>
@@ -131,7 +131,7 @@ const AbhaUserItem = ({ item, onPress }: any) => {
                     <MaterialIcons
                         name='person'
                         size={18}
-                        color="#251d50"
+                        color="#1565C0"
                     />
                     <Text
                         style={styles.value}

@@ -1033,7 +1033,7 @@ const styles =
     },
 
     done: {
-      color: "#251d50",
+      color: "#1565C0",
       fontSize: 15,
       fontWeight: "600",
     },
@@ -1125,9 +1125,9 @@ const styles =
 
     genderSelected: {
       backgroundColor:
-        "#251d50",
+        "#1565C0",
       borderColor:
-        "#251d50",
+        "#1565C0",
     },
 
     genderText: {
@@ -1178,7 +1178,7 @@ const styles =
       height: 46,
       borderRadius: 6,
       backgroundColor:
-        "#251d50",
+        "#1565C0",
       justifyContent:
         "center",
       alignItems: "center",
@@ -1206,7 +1206,7 @@ const styles =
 
     genderCardSelected: {
       backgroundColor: "#EEF4FF",
-      borderColor: "#251d50",
+      borderColor: "#1565C0",
       borderWidth: 2,
     },
 
@@ -1222,7 +1222,7 @@ const styles =
     },
 
     genderLabelSelected: {
-      color: "#251d50",
+      color: "#1565C0",
     },
     termsContainer: {
       marginTop: 8,
@@ -1311,7 +1311,7 @@ const styles =
       flex: 1,
       height: 50,
       borderRadius: 12,
-      backgroundColor: "#251d50",
+      backgroundColor: "#1565C0",
       justifyContent: "center",
       alignItems: "center",
     },

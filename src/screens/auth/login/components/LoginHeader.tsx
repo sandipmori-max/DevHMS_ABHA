@@ -49,13 +49,9 @@ const LoginHeader = ({
         ],
       }}
     >
+      <View style={{height: 80}}/>
       <Text style={styles.title}>
         DevHMS
-      </Text>
-
-
-      <Text style={styles.title}>
-        Hospital Management System
       </Text>
 
       <Text style={styles.subtitle}>

@@ -101,9 +101,9 @@ mobileNumer }: any) => {
 
             }}>
               <Text style={{
-                color: '#251d50',
+                color: '#1565C0',
                 borderBottomWidth: 1,
-                borderBottomColor: '#251d50',
+                borderBottomColor: '#1565C0',
               }}>Verify</Text>
             </TouchableOpacity>
 
@@ -292,9 +292,9 @@ mobileNumer }: any) => {
                       }}
                     >
                       <Text style={{
-                        color: '#251d50',
+                        color: '#1565C0',
                         borderBottomWidth: 1,
-                        borderBottomColor: '#251d50',
+                        borderBottomColor: '#1565C0',
                       }}>Verify</Text>
                     </TouchableOpacity>
                   </View>

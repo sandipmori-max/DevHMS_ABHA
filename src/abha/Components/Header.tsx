@@ -139,7 +139,7 @@ const Header = ({
 const styles = StyleSheet.create({
   header: {
     height: 60,
-    backgroundColor: "#251d50",
+    backgroundColor: "#1565C0",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",

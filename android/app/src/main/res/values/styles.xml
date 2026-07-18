@@ -4,12 +4,12 @@
    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
     <!-- Primary colors -->
-    <item name="colorPrimary">#251d50</item>
+    <item name="colorPrimary">#1565C0</item>
     <item name="colorPrimaryVariant">#1a1440</item>
     <item name="colorOnPrimary">#FFFFFF</item>
 
     <!-- Accent -->
-    <item name="colorSecondary">#251d50</item>
+    <item name="colorSecondary">#1565C0</item>
     <item name="colorOnSecondary">#FFFFFF</item>
 
     <!-- Surface (important for dialogs) -->
@@ -28,12 +28,12 @@
     <style name="CustomDatePickerTheme" parent="Theme.MaterialComponents.DayNight.Dialog">
 
        <!-- Primary colors -->
-    <item name="colorPrimary">#251d50</item>
+    <item name="colorPrimary">#1565C0</item>
     <item name="colorPrimaryVariant">#1a1440</item>
     <item name="colorOnPrimary">#FFFFFF</item>
 
     <!-- Accent -->
-    <item name="colorSecondary">#251d50</item>
+    <item name="colorSecondary">#1565C0</item>
     <item name="colorOnSecondary">#FFFFFF</item>
 
     <!-- Surface (important for dialogs) -->

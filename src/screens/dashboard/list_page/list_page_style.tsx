@@ -650,7 +650,7 @@ export const styles = StyleSheet.create({
     registerBtn: {
         height: 48,
         borderWidth: 2,
-        borderColor: '#251d50',
+        borderColor: '#1565C0',
         borderRadius: 4,
         justifyContent: 'center',
         alignItems: 'center',
@@ -658,14 +658,14 @@ export const styles = StyleSheet.create({
 
     loginBtn: {
         height: 48,
-        backgroundColor: '#251d50',
+        backgroundColor: '#1565C0',
         borderRadius: 4,
         justifyContent: 'center',
         alignItems: 'center',
     },
 
     registerText: {
-        color: '#251d50',
+        color: '#1565C0',
         fontSize: 18,
         fontWeight: '600',
     },
@@ -721,7 +721,7 @@ export const styles = StyleSheet.create({
     },
 
     selectedOption: {
-        borderColor: '#251d50',
+        borderColor: '#1565C0',
         backgroundColor: '#FFF7F2',
     },
 
@@ -736,14 +736,14 @@ export const styles = StyleSheet.create({
     },
 
     radioOuterActive: {
-        borderColor: '#251d50',
+        borderColor: '#1565C0',
     },
 
     radioInner: {
         width: 10,
         height: 10,
         borderRadius: 5,
-        backgroundColor: '#251d50',
+        backgroundColor: '#1565C0',
     },
 
     optionText: {
@@ -767,7 +767,7 @@ export const styles = StyleSheet.create({
     createBtn: {
         marginTop: 4,
         height: 48,
-        backgroundColor: '#251d50',
+        backgroundColor: '#1565C0',
         borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',

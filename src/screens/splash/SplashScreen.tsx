@@ -176,7 +176,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
             <View style={styles.loaderSection}>
               <ActivityIndicator
                 size="large"
-                color="#251d50"
+                color="#1565C0"
               />
     
               <Text style={styles.loadingText}>

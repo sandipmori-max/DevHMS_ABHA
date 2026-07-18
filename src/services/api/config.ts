@@ -175,7 +175,7 @@ apiClient.interceptors.response.use(
     //     store.dispatch(resetDropdownState());
     //     store.dispatch(resetSyncLocationState());
     //     store.dispatch(resetAttendanceState());
-    //     setERPAppColor('#251d50');
+    //     setERPAppColor('#1565C0');
     //     store.dispatch(logoutUserThunk());
     //   });
 

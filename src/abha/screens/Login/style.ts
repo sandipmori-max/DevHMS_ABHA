@@ -122,7 +122,7 @@ export const styles = StyleSheet.create({
   nextButton: {
     paddingHorizontal: 24,
     paddingVertical: 12,
-    backgroundColor: '#251d50',
+    backgroundColor: '#1565C0',
     borderRadius: 8,
   },
 
@@ -245,7 +245,7 @@ export const styles = StyleSheet.create({
     fontWeight: '800', 
   },
   forgotText: {
-    color: '#251d50',
+    color: '#1565C0',
     fontWeight: '600',
   },
   card: {
@@ -275,13 +275,13 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   radioOuterActive: {
-    borderColor: '#251d50',
+    borderColor: '#1565C0',
   },
   radioInner: {
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: '#251d50',
+    backgroundColor: '#1565C0',
   },
   radioText: {
     marginLeft: 12,
@@ -334,7 +334,7 @@ export const styles = StyleSheet.create({
 
   createNow: {
     marginLeft: 6,
-    color: '#251d50',
+    color: '#1565C0',
     fontSize: 10,
     fontWeight: '700',
   },

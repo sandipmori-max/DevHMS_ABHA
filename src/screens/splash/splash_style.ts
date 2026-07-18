@@ -122,6 +122,6 @@ subtitle: {
     marginTop: 4,
     fontSize: 15,
     fontWeight: "600",
-    color: "#251d50",
+    color: "#1565C0",
   },
 });

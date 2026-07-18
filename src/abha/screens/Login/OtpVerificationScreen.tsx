@@ -790,7 +790,7 @@ const OtpVerificationScreen = () => {
                         styles.otpBox,
                         isActive && {
                           borderColor:
-                            '#251d50',
+                            '#1565C0',
                         },
                       ]}
                     >
@@ -1051,7 +1051,7 @@ const styles =
     resendText: {
       fontSize: 15,
       fontWeight: '700',
-      color: '#251d50',
+      color: '#1565C0',
     },
 
     bottomBar: { 
