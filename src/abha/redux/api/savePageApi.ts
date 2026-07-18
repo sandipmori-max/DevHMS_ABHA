@@ -1,6 +1,8 @@
 import { RootState } from "../../../store/store";
 import { baseApi } from "./baseApi";
 import { showToast } from "../../utils/toast";
+import { API_BOOL } from "./end_points";
+import { Platform } from "react-native";
 
 const MOCK_SAVE_PAGE = false;
 
@@ -21,7 +23,13 @@ export const savePageApi = baseApi.injectEndpoints({
     savePage: builder.mutation<SavePageResponse, SavePagePayload>({
       async queryFn(body, api, _extraOptions, baseQuery) {
         const state = api.getState() as RootState;
-        const baseUrl = state.abha.devERPBaseUrl;
+         const baseUrl = state.auth.user?.companyLink;
+       
+                       let normalizedBase = (baseUrl || "").replace(/\/+$/, ""); 
+                           normalizedBase = normalizedBase.replace(
+                             /^https:\/\//i,
+                             Platform.OS === "ios" ? "https://" : "http://",
+                           );
 
         console.log("========== SAVE PAGE ==========");
         console.log("Request URL =>", `${baseUrl}/savePage`);
@@ -45,7 +53,7 @@ export const savePageApi = baseApi.injectEndpoints({
 
         // ACTUAL API
         const response: any = await baseQuery({
-          url: `${baseUrl}/pageSave`,
+          url: `${normalizedBase}/msp_api.aspx/pageSave`,
           method: "POST",
           body,
         });

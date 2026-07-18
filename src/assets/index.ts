@@ -26,6 +26,9 @@ const money = require(`${ERP_BASE_URL_GIF}/money.gif`);
 const RemoteMonitoring = require(`${ERP_BASE_URL_GIF}/RemoteMonitoring.gif`);
 const DEV_APP_LOGO = require(`${ERP_BASE_URL_ICONS}/dev_logo.png`);
 const ABHA_LOGO = require(`${ABHA_BASE_URL_ICONS}/abha.png`);
+const DevHospital = require(`${ERP_BASE_URL_ICONS}/DevHospital.png`);
+
+
 
 export const ERP_ICON = {
   APP_LOGO,
@@ -35,7 +38,8 @@ export const ERP_ICON = {
   ALERT,
   EXITS,
   PROFILE1,
-  VALIDATON
+  VALIDATON,
+  DevHospital
  };
 
 export const ERP_GIF = {

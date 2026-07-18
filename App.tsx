@@ -85,10 +85,7 @@ const AppContent = () => {
     createSession
   ] = useCreateSessionMutation();
 
-
-
   const { width } = useWindowDimensions();
-
   const isConnected = useNetworkStatus();
 
   const theme = useAppSelector((state) => state?.theme?.mode);
@@ -133,7 +130,6 @@ const AppContent = () => {
     const init = async () => {
       try {
         dispatch(showLoader());
-
         await handleSession();
       } catch (error) {
         console.log(error);
@@ -177,6 +173,7 @@ const AppContent = () => {
 
     createChannel();
   }, []);
+  
   // 🔹 Notifications
   useEffect(() => {
     const initNotifications = async () => {
@@ -290,7 +287,7 @@ const AppContent = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setReady(true);
-    }, 300); // 300–500ms
+    }, 300); 
 
     return () => clearTimeout(timer);
   }, []);

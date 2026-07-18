@@ -6,10 +6,10 @@ import {
 import { showToast } from "../../utils/toast";
 import { setTxnId } from "../slices/abhaSlice";
 import { baseApi } from "./baseApi";
-import { END_POINTS } from "./end_points";
+import { API_BOOL, END_POINTS } from "./end_points";
 
 
-const MOCK_ABHA_ADDRESS_REQUEST_OTP = false;
+const MOCK_ABHA_ADDRESS_REQUEST_OTP = API_BOOL;
 
 
 export interface AbhaAddressRequestOtpPayload {

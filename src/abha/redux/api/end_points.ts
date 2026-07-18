@@ -28,3 +28,5 @@ export const END_POINTS = {
   abhaAddressVerifyOtp: "/phr/web/login/abha/verify",
   profileByToken: "phr/web/login/profile/abha-profile"
 }
+
+export const API_BOOL = true;

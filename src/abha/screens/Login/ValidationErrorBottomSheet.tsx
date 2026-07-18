@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { ERP_COLOR_CODE } from "../../../utils/constants";
 
 interface Props {
   visible: boolean;
@@ -93,7 +94,9 @@ const ValidationErrorBottomSheet = ({
           {/* Footer */}
           <TouchableOpacity
             activeOpacity={0.8}
-            style={styles.button}
+            style={[styles.button, {
+              backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+            }]}
             onPress={onClose}
           >
             <Text style={styles.buttonText}>

@@ -15,6 +15,8 @@ import { showToast } from "../../utils/toast";
 const AbhaUserItem = ({ item, onPress }: any) => {
     const initials = `${item.firstName?.[0] ?? ""}${item.lastName?.[0] ?? ""}`;
 
+    console.log("item.image", item.image)
+
     return (
         <TouchableOpacity
             activeOpacity={0.8}
@@ -29,9 +31,9 @@ const AbhaUserItem = ({ item, onPress }: any) => {
                     <Image
                         source={{
                             uri:
-                                Platform.OS === "android"
+                                (Platform.OS === "android"
                                     ? item.image?.replace("https://", "http://")
-                                    : item.image,
+                                    : item.image) + `?t=${Date.now()}`,
                         }}
                         style={styles.avatar}
                     />

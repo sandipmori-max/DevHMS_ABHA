@@ -1,6 +1,6 @@
 // erp_colors.ts
 const lightColors = {
-  ERP_APP_COLOR: '#251d50',
+  ERP_APP_COLOR: '#1565C0',
   ERP_DE_ACTIVE_BUTTON: '#c2bdbdff',
   ERP_REMOVE_BUTTON: '#ff3b30',
   ERP_WHITE: '#FFFFFF',

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Image, Text, Animated } from 'react-native';
+import { Image, Text, Animated, View } from 'react-native';
 import { styles } from '../login_style';
 import { ERP_ICON } from '../../../../assets';
 
@@ -11,7 +11,7 @@ const LoginHeader = ({
   t: any;
 }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(30)).current; 
+  const slideAnim = useRef(new Animated.Value(30)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
 
   useEffect(() => {
@@ -37,7 +37,7 @@ const LoginHeader = ({
         useNativeDriver: true,
       }),
     ]).start();
-  }, [isAddingAccount]); 
+  }, [isAddingAccount]);
 
   return (
     <Animated.View
@@ -49,23 +49,34 @@ const LoginHeader = ({
         ],
       }}
     >
-      <Image
-        source={ERP_ICON.APP_LOGO}
-        style={styles.logo}
-        resizeMode="contain"
-      />
+      <Text style={styles.title}>
+        DevHMS
+      </Text>
+
 
       <Text style={styles.title}>
-        {isAddingAccount
-          ? t('auth.addAccount')
-          : t('auth.welcomeDevERP')}
+        Hospital Management System
       </Text>
 
       <Text style={styles.subtitle}>
-        {isAddingAccount
-          ? t('auth.signInToAddAccount')
-          : t('auth.signInToAccount')}
+        Care • Trust • Health
       </Text>
+      <Image
+        source={ERP_ICON.DevHospital}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+      <View style={{
+        alignItems: 'center',
+        marginVertical: 12, justifyContent: 'center', alignContent: 'center'
+      }}>
+        <Text style={styles.title}>
+          Welcome Back!
+        </Text>
+        <Text  >
+          Login to continue
+        </Text>
+      </View>
     </Animated.View>
   );
 };

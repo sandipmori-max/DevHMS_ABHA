@@ -58,15 +58,11 @@ export const getPageApi = baseApi.injectEndpoints({
                 const state = api.getState() as RootState;
                 const baseUrl = state.auth.user?.companyLink;
 
-                let normalizedBase = (baseUrl || "").replace(/\/+$/, "");
-                    normalizedBase = normalizedBase.replace(/\/devws\/?/, "/");
+                let normalizedBase = (baseUrl || "").replace(/\/+$/, ""); 
                     normalizedBase = normalizedBase.replace(
                       /^https:\/\//i,
                       Platform.OS === "ios" ? "https://" : "http://",
                     );
-                console.log("baseUrlbaseUrlbaseUrlbaseUrl", normalizedBase , 'state.abha.devERPBaseUrl', state.auth.user?.companyLink)
-
-
                 return await baseQuery({
                     url: `${normalizedBase}/msp_api.aspx/getPage`,
                     method: "POST",

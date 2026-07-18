@@ -2,9 +2,9 @@ import { BASE_URL_API, getErrorMessage } from "../../utils/helpers";
 import { showToast } from "../../utils/toast";
 import { setTxnId } from "../slices/abhaSlice";
 import { baseApi } from "./baseApi";
-import { END_POINTS } from "./end_points";
+import { API_BOOL, END_POINTS } from "./end_points";
 
-const MOCK_ENROLLMENT_OTP = false;
+const MOCK_ENROLLMENT_OTP = API_BOOL;
 
 export interface EnrollmentRequestOtpPayload {
   scope: string[];

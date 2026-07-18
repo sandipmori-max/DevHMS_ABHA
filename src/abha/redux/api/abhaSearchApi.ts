@@ -5,10 +5,10 @@ import {
 
 import { showToast } from "../../utils/toast";
 import { baseApi } from "./baseApi";
-import { END_POINTS } from "./end_points";
+import { API_BOOL, END_POINTS } from "./end_points";
 
 
-const MOCK_SEARCH_ABHA_ADDRESS = false;
+const MOCK_SEARCH_ABHA_ADDRESS = API_BOOL;
 
 
 export const abhaSearchApi =

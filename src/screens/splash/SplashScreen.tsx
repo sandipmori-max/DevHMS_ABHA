@@ -161,12 +161,12 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
               <Image
                 source={{
                   uri: 'https://play-lh.googleusercontent.com/4o2xmTJIFLjpToZnWJZUYsCYcWGuJlH_SVGue1a6z39stjg-1Xl3KWxggo9p2pSMYE94Ol2HjeF4Z-83rLmPyA=w240-h480-rw'
-                }} // apna logo
+                }}
                 style={styles.logo}
                 resizeMode="contain"
               />
     
-              <Text style={styles.title}>ABHA Health</Text>
+              <Text style={styles.title}>DevHMS</Text>
     
               <Text style={styles.subtitle}>
                 Your Digital Health Identity
@@ -190,7 +190,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
               </Text>
     
               <Text style={styles.abdm}>
-                Ayushman Bharat Digital Mission
+                DevERP Solutions Pvt. Ltd.
               </Text>
             </View>
           </View>

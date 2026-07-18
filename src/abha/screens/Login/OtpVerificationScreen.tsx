@@ -36,6 +36,7 @@ import { useLazyProfileAbhaCardQuery } from '../../redux/api/abhaCardApi';
 import { useAbhaAddressRequestOtpMutation } from '../../redux/api/abhaAddressLoginApi';
 import { useAbhaAddressVerifyOtpMutation } from '../../redux/api/abhaAddressVerifyApi';
 import { useLazyAbhaProfileQuery } from '../../redux/api/profileByTokenApi';
+import { ERP_COLOR_CODE } from '../../../utils/constants';
 
 const OtpVerificationScreen = () => {
   const navigation = useNavigation<any>();
@@ -59,7 +60,7 @@ const OtpVerificationScreen = () => {
   );
 
   const txnId = useSelector(
-    (state: any) => state.abha.txnId
+    (state: any) => state.abhaauth.txnId
   );
   const [loginVerify, { isLoading }] =
     useLoginVerifyMutation();
@@ -74,7 +75,7 @@ const OtpVerificationScreen = () => {
     getAbhaProfile,
   ] = useLazyAbhaProfileQuery();
   const activeUser = useSelector(
-    (state: any) => state.abha.activeUser
+    (state: any) => state.auth.user
   );
   const {
     loginType = '',
@@ -330,8 +331,8 @@ const OtpVerificationScreen = () => {
             const resABHACard = await getAbhaCard();
 
             if (payloadRow) {
-              payloadRow.qrCode = `qrCode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
-              payloadRow.abhaCard = `abhaCard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
+              payloadRow.qrcode = `qrcode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
+              payloadRow.abhacard = `abhacard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
             }
 
             const payloadData = {
@@ -344,6 +345,7 @@ const OtpVerificationScreen = () => {
 
 
             const resAbha = await savePage(payloadData).unwrap();
+              console.log("resAbha13", resAbha)
             if (resAbha?.success !== '0' || resAbha?.success !== 0) {
               showToast(
                 "success",
@@ -447,8 +449,8 @@ const OtpVerificationScreen = () => {
             const resABHACard = await getAbhaCard();
 
             if (payloadRow) {
-              payloadRow.qrCode = `qrCode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
-              payloadRow.abhaCard = `abhaCard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
+              payloadRow.qrcode = `qrcode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
+              payloadRow.abhacard = `abhacard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
             }
 
             const payloadData = {
@@ -457,6 +459,7 @@ const OtpVerificationScreen = () => {
               data: JSON.stringify(payloadRow),
             };
             const resAbha = await savePage(payloadData).unwrap();
+              console.log("resAbha12", resAbha)
             if (resAbha?.success !== '0' || resAbha?.success !== 0) {
               showToast(
                 "success",
@@ -581,8 +584,8 @@ const OtpVerificationScreen = () => {
         const resABHACard = await getAbhaCard();
 
         if (payloadRow) {
-          payloadRow.qrCode = `qrCode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
-          payloadRow.abhaCard = `abhaCard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
+          payloadRow.qccode = `qrCode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
+          payloadRow.abhacard = `abhaCard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
         }
         const payloadData = {
           token: activeUser?.token,
@@ -590,6 +593,7 @@ const OtpVerificationScreen = () => {
           data: JSON.stringify(payloadRow),
         };
         const resAbha = await savePage(payloadData).unwrap();
+        console.log("resAbha1", resAbha)
         if (resAbha?.success !== '0' || resAbha?.success !== 0) {
           showToast(
             "success",
@@ -606,14 +610,15 @@ const OtpVerificationScreen = () => {
         );
       }
     }
+
     catch (e) {
       console.log("Error in handleVerify", e)
       dispatch(hideLoader());
     } finally {
       dispatch(hideLoader());
-      setTimeout(() => {
-        navigation.goBack();
-      }, 200)
+      // setTimeout(() => {
+      //   navigation.goBack();
+      // }, 200)
     }
 
   };
@@ -878,6 +883,9 @@ const OtpVerificationScreen = () => {
             }
             style={[
               styles.verifyBtn,
+              {
+                backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+              },
               otp.length !== 6 && {
                 opacity: 0.5,
               },

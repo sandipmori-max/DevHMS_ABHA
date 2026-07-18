@@ -4,10 +4,10 @@ import {
 } from "../../utils/helpers";
 import { showToast } from "../../utils/toast";
 import { baseApi } from "./baseApi";
-import { END_POINTS } from "./end_points";
+import { API_BOOL, END_POINTS } from "./end_points";
 
 const MOCK_ENROL_ABHA_ADDRESS =
-  false;
+  API_BOOL;
 
 export interface EnrolAbhaAddressPayload {
   txnId: string;

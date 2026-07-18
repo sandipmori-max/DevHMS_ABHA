@@ -1,9 +1,9 @@
 import { BASE_URL_API, getErrorMessage } from "../../utils/helpers";
 import { showToast } from "../../utils/toast";
 import { baseApi } from "./baseApi";
-import { END_POINTS } from "./end_points";
+import { API_BOOL, END_POINTS } from "./end_points";
 
-const MOCK_AUTH_BY_ABDM = false;
+const MOCK_AUTH_BY_ABDM = API_BOOL;
 
 export interface AuthByAbdmPayload {
   scope: string[];

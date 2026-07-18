@@ -4,9 +4,9 @@ import {
 } from "../../utils/helpers";
 import { showToast } from "../../utils/toast";
 import { baseApi } from "./baseApi";
-import { END_POINTS } from "./end_points";
+import { API_BOOL, END_POINTS } from "./end_points";
 
-const MOCK_PROFILE_ACCOUNT = false;
+const MOCK_PROFILE_ACCOUNT = API_BOOL;
 
 export const profileAccountApi =
   baseApi.injectEndpoints({
@@ -43,12 +43,12 @@ export const profileAccountApi =
               return {
                 data: {
                   
-                  "ABHANumber": "91-7561-4088-XXXX",
-                  "preferredAbhaAddress": "++++++++++++++sandip1997@sbx",
-                  "mobile": "8154877969",
-                  "firstName": "Sandip test ",
-                  "middleName": "Test",
-                  "lastName": "Test",
+                  "ABHANumber": "91-7561-4088-1233",
+                  "preferredAbhaAddress": "+sandip1997@sbx",
+                  "mobile": "8154877900",
+                  "firstName": "Sandip UPDATE",
+                  "middleName": "UPDATE",
+                  "lastName": "UPDATE",
                   "name": "sandip",
                   "yearOfBirth": "1999",
                   "dayOfBirth": "26",
@@ -151,3 +151,4 @@ export const {
   useProfileAccountQuery,
   useLazyProfileAccountQuery,
 } = profileAccountApi;
+// - // 

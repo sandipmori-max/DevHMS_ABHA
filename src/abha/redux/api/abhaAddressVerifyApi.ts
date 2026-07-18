@@ -5,10 +5,10 @@ import {
 
 import { showToast } from "../../utils/toast";
 import { baseApi } from "./baseApi";
-import { END_POINTS } from "./end_points";
+import { API_BOOL, END_POINTS } from "./end_points";
 
 
-const MOCK_ABHA_ADDRESS_VERIFY_OTP = false;
+const MOCK_ABHA_ADDRESS_VERIFY_OTP = API_BOOL;
 
 
 

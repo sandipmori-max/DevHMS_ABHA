@@ -154,7 +154,7 @@ const setupNotification = async () => {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ImageBackground
-          source={theme === "dark" ? "" : ERP_GIF.BACK_IMG}
+          // source={theme === "dark" ? "" : ERP_GIF.BACK_IMG}
           style={{
             height: Dimensions.get("screen").height,
             width: Dimensions.get("screen").width,

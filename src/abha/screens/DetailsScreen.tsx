@@ -9,6 +9,7 @@ import {
   Dimensions,
   TouchableOpacity,
   StatusBar,
+  Platform,
 } from "react-native";
 import Header from "../Components/Header";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
@@ -52,7 +53,7 @@ const DetailsScreen = ({ route }: any) => {
       console.log("respon+ + + + + + ++ + + se", pagectl)
       setAbhaDetail(pagectl);
     } catch (error) {
-        console.log("error++++++++++++++++++++++", error)
+      console.log("error++++++++++++++++++++++", error)
       dispatch(hideLoader())
     } finally {
       dispatch(hideLoader())
@@ -192,7 +193,7 @@ const DetailsScreen = ({ route }: any) => {
 
   return (
     <SafeAreaView style={[styles.container]}>
-      
+
       <ScrollView
         stickyHeaderIndices={[0]}
         showsVerticalScrollIndicator={false}
@@ -211,7 +212,7 @@ const DetailsScreen = ({ route }: any) => {
                 {getValue("profilephoto") ? (
                   <Image
                     source={{
-                      uri: `${url}/fileupload/1/PatientABHAProfile/${item?.id}/profilephoto.jpeg`,
+                      uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/profilephoto.jpeg?t=${Date.now()}`,
                     }}
                     style={styles.profileImage}
                   />
@@ -227,7 +228,9 @@ const DetailsScreen = ({ route }: any) => {
 
                 <View style={{ flex: 1, marginLeft: 16 }}>
 
-                  <Text style={styles.profileName}>
+                  <Text 
+                  numberOfLines={1}
+                  style={[styles.profileName,  ]}>
                     {getValue("firstname")} {getValue("middlename")} {getValue("lasttname")}
                   </Text>
 
@@ -1028,7 +1031,7 @@ const styles = StyleSheet.create({
   },
   profileCard: {
     backgroundColor: "#FFFFFF",
-    marginHorizontal: 16,
+    marginHorizontal: 10,
     marginTop: 16,
     borderRadius: 8,
     padding: 14,
@@ -1160,8 +1163,7 @@ const styles = StyleSheet.create({
   },
 
   detailValue: {
-    flex: 1,
-    textAlign: "right",
+    flex: 1, 
     color: "#212121",
     fontWeight: "600",
     marginLeft: 12,
@@ -1169,8 +1171,8 @@ const styles = StyleSheet.create({
   detailLabel: {
     marginLeft: 12,
     fontSize: 15,
-    color: "#616161",
-    flex: 1,
+    color: "#616161", 
+    width: '54%',
   },
   authContainer: {
     flexDirection: "row",
