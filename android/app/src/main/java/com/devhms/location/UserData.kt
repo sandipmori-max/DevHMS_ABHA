@@ -1,4 +1,4 @@
-package com.deverp.location
+package com.devhms.location
 
 data class UserData(
     val token: String,

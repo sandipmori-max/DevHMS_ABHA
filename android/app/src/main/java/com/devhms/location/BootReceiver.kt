@@ -1,4 +1,4 @@
-package com.deverp.location
+package com.devhms.location
 
 import android.content.BroadcastReceiver
 import android.content.Context

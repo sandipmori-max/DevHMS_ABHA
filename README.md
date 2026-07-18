@@ -2,6 +2,14 @@
 
 // Multiple build creation with different Name + icon + package name
 
+<!-- aa = 5412 4551 2032 -->
+
+<!-- 
+7619 8714 0371
+2865 6926 3981
+8991 3736 2188
+-->
+
 // --- android build ----
 // ./gradlew --stop
 // ./gradlew clean

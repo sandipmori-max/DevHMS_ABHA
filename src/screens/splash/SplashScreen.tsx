@@ -7,6 +7,8 @@ import {
   Easing,
   useWindowDimensions,
   Platform,
+  Text,
+  ActivityIndicator,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SvgUri } from "react-native-svg";
@@ -154,254 +156,44 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
   });
 
   return (
-    <LinearGradient colors={gradientColors} style={styles.container}>
-      <StatusBar hidden />
-
-      {/* TOP LEFT SVG */}
-      {/* <Animated.View
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          height: isLandscape ? 180 : 300,
-          width: isLandscape ? 120 : 190,
-          zIndex: 1,
-          transform: [{ translateY: topImageAnim }],
-        }}
-      >
-        <SvgUri
-          width="100%"
-          height="100%"
-          uri="https://res.cloudinary.com/dht4ddwtn/image/upload/v1741437043/Group_119_a7nurz.svg"
-        />
-      </Animated.View> */}
-
-      {/* TOP RIGHT SVG */}
-      <Animated.View
-        style={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          height: isLandscape ? 70 : 100,
-          width: isLandscape ? 70 : 100,
-          zIndex: 1,
-          transform: [{ translateY: topImageAnim }],
-        }}
-      >
-        {/* <SvgUri
-          width="100%"
-          height="100%"
-          uri="https://res.cloudinary.com/dht4ddwtn/image/upload/v1741434380/Group_116_lclkz2.svg"
-        /> */}
-      </Animated.View>
-
-      {/* BOTTOM LEFT SVG */}
-      <Animated.View
-        style={{
-          position: "absolute",
-          bottom: -30,
-          left: -10,
-          height: isLandscape ? 120 : 160,
-          width: isLandscape ? 120 : 160,
-          zIndex: 1,
-          transform: [{ translateY: bottomImageAnim }],
-        }}
-      >
-        {/* <SvgUri
-          width="100%"
-          height="100%"
-          uri="https://res.cloudinary.com/dht4ddwtn/image/upload/v1741411663/Group_156_qsmeiy.svg"
-        /> */}
-      </Animated.View>
-
-      {isLandscape ? (
-        <View style={{ flexDirection: "row", flex: 1 }}>
-          {/* LEFT SIDE */}
-          <View
-            style={{
-              width: "50%",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 2,
-            }}
-          >
-            <Animated.View
-              style={[
-                styles.logoWrapper,
-                {
-                  opacity: fadeAnim,
-                  transform: [
-                    { scale: scaleAnim },
-                    { rotate: rotateInterpolate },
-                  ],
-                },
-              ]}
-            >
+     <View style={styles.container}>
+            <View style={styles.topSection}>
               <Image
-                source={user?.companyLogo || ERP_ICON.APP_LOGO}
-                style={{ height: 90, width: 90 }}
+                source={{
+                  uri: 'https://play-lh.googleusercontent.com/4o2xmTJIFLjpToZnWJZUYsCYcWGuJlH_SVGue1a6z39stjg-1Xl3KWxggo9p2pSMYE94Ol2HjeF4Z-83rLmPyA=w240-h480-rw'
+                }} // apna logo
+                style={styles.logo}
                 resizeMode="contain"
               />
-            </Animated.View>
-
-            {user?.name && (
-              <Animated.Text
-                style={[
-                  styles.helloTitle,
-                  {
-                    opacity: greetingOpacity,
-                    transform: [{ translateY: textTranslateY }],
-                    color: "#fff",
-                  },
-                ]}
-              >
-                {greeting}, {firstLetterUpperCase(user?.name)}
-              </Animated.Text>
-            )}
+    
+              <Text style={styles.title}>ABHA Health</Text>
+    
+              <Text style={styles.subtitle}>
+                Your Digital Health Identity
+              </Text>
+            </View>
+    
+            <View style={styles.loaderSection}>
+              <ActivityIndicator
+                size="large"
+                color="#251d50"
+              />
+    
+              <Text style={styles.loadingText}>
+                Connecting securely...
+              </Text>
+            </View>
+    
+            <View style={styles.bottomSection}>
+              <Text style={styles.powered}>
+                Powered by
+              </Text>
+    
+              <Text style={styles.abdm}>
+                Ayushman Bharat Digital Mission
+              </Text>
+            </View>
           </View>
-
-          {/* RIGHT SIDE */}
-          <View
-            style={{
-              width: "50%",
-              justifyContent: "center",
-              alignItems: "center",
-              paddingHorizontal: 20,
-              zIndex: 2,
-            }}
-          >
-            <Animated.Text
-              style={[
-                styles.title,
-                {
-                  transform: [{ translateY: textTranslateY }],
-                  color: "#fff",
-                  textAlign: "center",
-                },
-              ]}
-            >
-              {user?.companyName
-                ? `Welcome to\n${user.companyName}`
-                : t("text.text53")}
-            </Animated.Text>
-
-            <Animated.Text
-              style={[
-                styles.subtitle,
-                {
-                  opacity: subtitleOpacity,
-                  color: "#ddd",
-                  textAlign: "center",
-                },
-              ]}
-            >
-              {t("text.text54")}
-            </Animated.Text>
-
-            <Animated.Text
-              style={[
-                styles.poweredBy,
-                {
-                  opacity: subtitleOpacity,
-                  color: "#aaa",
-                },
-              ]}
-            >
-              Powered by - DevERP Solutions Pvt. Ltd.
-            </Animated.Text>
-          </View>
-        </View>
-      ) : (
-        <>
-          {/* LOGO */}
-          <Animated.View
-            style={[
-              styles.logoWrapper,
-              {
-                opacity: fadeAnim,
-                transform: [
-                  { scale: scaleAnim },
-                  { rotate: rotateInterpolate },
-                ],
-                zIndex: 2,
-              },
-            ]}
-          >
-            <Image
-              source={user?.companyLogo || ERP_ICON.APP_LOGO}
-              style={[styles.logo, isIpad && {
-                  height: 90,
-                  width: 90,
-              }]}
-              resizeMode="contain"
-            />
-          </Animated.View>
-
-          {/* GREETING */}
-          {user?.name && (
-            <Animated.Text
-              style={[
-                styles.helloTitle,
-                {
-                  opacity: greetingOpacity,
-                  transform: [{ translateY: textTranslateY }],
-                  color: "#fff",
-                  zIndex: 2,
-                },
-              ]}
-            >
-              {greeting}, {firstLetterUpperCase(user?.name)}
-            </Animated.Text>
-          )}
-
-          {/* TITLE */}
-          <Animated.Text
-            style={[
-              styles.title,
-              {
-                transform: [{ translateY: textTranslateY }],
-                color: "#fff",
-                textAlign: "center",
-                zIndex: 2,
-              },
-            ]}
-          >
-            {user?.companyName
-              ? `Welcome to\n${user.companyName}`
-              : t("text.text53")}
-          </Animated.Text>
-
-          {/* SUBTITLE */}
-          <Animated.Text
-            style={[
-              styles.subtitle,
-              {
-                opacity: subtitleOpacity,
-                color: "#ddd",
-                textAlign: "center",
-                zIndex: 2,
-              },
-            ]}
-          >
-            {t("text.text54")}
-          </Animated.Text>
-
-          {/* FOOTER */}
-          <Animated.Text
-            style={[
-              styles.poweredBy,
-              {
-                opacity: subtitleOpacity,
-                color: "#aaa",
-                zIndex: 2,
-              },
-            ]}
-          >
-            Powered by - DevERP Solutions Pvt. Ltd.
-          </Animated.Text>
-        </>
-      )}
-    </LinearGradient>
   );
 };
 

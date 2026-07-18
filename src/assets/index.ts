@@ -1,5 +1,6 @@
 const ERP_BASE_URL_ICONS = './icons';
 const ERP_BASE_URL_GIF = './gif';
+const ABHA_BASE_URL_ICONS = './icons';
 
 const APP_LOGO = require(`${ERP_BASE_URL_ICONS}/logo.png`);
 
@@ -24,6 +25,7 @@ const DataManagement = require(`${ERP_BASE_URL_GIF}/DataManagement.gif`);
 const money = require(`${ERP_BASE_URL_GIF}/money.gif`);
 const RemoteMonitoring = require(`${ERP_BASE_URL_GIF}/RemoteMonitoring.gif`);
 const DEV_APP_LOGO = require(`${ERP_BASE_URL_ICONS}/dev_logo.png`);
+const ABHA_LOGO = require(`${ABHA_BASE_URL_ICONS}/abha.png`);
 
 export const ERP_ICON = {
   APP_LOGO,
@@ -50,3 +52,7 @@ export const ERP_GIF = {
   LOCATION
 };
 
+export const ABHA_ICON = {
+  ABHA_LOGO,
+  NO_DATA
+ };

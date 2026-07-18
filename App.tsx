@@ -9,8 +9,11 @@ import {
   Easing,
   useWindowDimensions,
   Platform,
+  ActivityIndicator,
+  Text,
+  Image,
 } from "react-native";
-import { Provider } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -39,16 +42,23 @@ import { useAppSelector } from "./src/store/hooks";
 import ExitBottomSheet from "./src/components/ExitBottomSheet";
 import RootNavigatorTvOS from "./src/navigation/RootNavigatorTvOs";
 import { navigate, navigationRef } from "./src/navigation/navigationService";
-import { activeControllers } from "./networkManager";
+import GlobalLoader from "./GlobalLoader";
+import Toast from 'react-native-toast-message';
+import { toastConfig } from "./ToastConfig";
+import { getGetAuthPayload, useGetAuthMutation } from "./src/abha/redux/api/getAuth";
+import { useCreateSessionMutation } from "./src/abha/redux/api/sessionApi";
+import { hideLoader, showLoader } from "./src/abha/redux/slices/loaderSlice";
 
 const App = () => {
   return (
     <Provider store={store}>
       <TranslationProvider>
         <AppContent />
-        {
-          Platform.OS === 'android' &&  <ExitBottomSheet />
-        }
+        {/* {
+          Platform.OS === 'android' && <ExitBottomSheet />
+        } */}
+        <GlobalLoader />
+        <Toast config={toastConfig} topOffset={Platform.OS === 'ios' ? 70 : 80} />
       </TranslationProvider>
     </Provider>
   );
@@ -58,6 +68,24 @@ const AppContent = () => {
   const splashOpacity = useRef(new Animated.Value(1)).current;
   const appOpacity = useRef(new Animated.Value(0)).current;
   const appTranslateY = useRef(new Animated.Value(120)).current;
+  const dispatch = useDispatch();
+  const proReduxData = useSelector(
+    (state: any) => state.abha.activeUser
+  );
+  const appId = useSelector(
+    (state: any) => state.auth.appId
+  );
+  const deviceName = useSelector(
+    (state: any) => state.auth.deviceName
+  );
+  const [getAuth] = useGetAuthMutation();
+  const [ready, setReady] = useState(false);
+
+  const [
+    createSession
+  ] = useCreateSessionMutation();
+
+
 
   const { width } = useWindowDimensions();
 
@@ -66,7 +94,7 @@ const AppContent = () => {
   const theme = useAppSelector((state) => state?.theme?.mode);
   const user = useAppSelector((state) => state?.auth);
 
-  const [statusBarColor, setStatusBarColor]= useState(theme === "dark" ? "#000000" : ERP_COLOR_CODE.ERP_APP_COLOR)
+  const [statusBarColor, setStatusBarColor] = useState(theme === "dark" ? "#000000" : ERP_COLOR_CODE.ERP_APP_COLOR)
 
   const [isSplashVisible, setSplashVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -74,7 +102,7 @@ const AppContent = () => {
 
   const barStyle = "light-content";
 
-  const isTv =  Platform.isTV;
+  const isTv = Platform.isTV;
   // 🔹 Clear temp files
   useEffect(() => {
     clearAllTempFiles();
@@ -83,6 +111,40 @@ const AppContent = () => {
   useEffect(() => {
     setStatusBarColor(theme === "dark" ? "#000000" : ERP_COLOR_CODE.ERP_APP_COLOR)
   }, [user])
+
+  const handleSession = async () => {
+    try {
+      const response =
+        await createSession()
+          .unwrap();
+      console.log(
+        "Session Response+++++++++++++++",
+        response
+      );
+    } catch (err) {
+      console.log(
+        "Session Error+++++++++++",
+        err
+      );
+    }
+  };
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        dispatch(showLoader());
+
+        await handleSession();
+      } catch (error) {
+        console.log(error);
+      } finally {
+        dispatch(hideLoader());
+      }
+    };
+
+    init();
+  }, []);
+
 
   useEffect(() => {
     const checkAcceptance = async () => {
@@ -105,139 +167,168 @@ const AppContent = () => {
   }, []);
 
   useEffect(() => {
-  async function createChannel() {
-    await notifee.createChannel({
-      id: 'default',
-      name: 'Default Channel',
-      importance: AndroidImportance.HIGH,
-    });
-  }
+    async function createChannel() {
+      await notifee.createChannel({
+        id: 'default',
+        name: 'Default Channel',
+        importance: AndroidImportance.HIGH,
+      });
+    }
 
-  createChannel();
-}, []);
+    createChannel();
+  }, []);
   // 🔹 Notifications
-useEffect(() => {
-   const initNotifications = async () => {
-    await requestUserPermission();
+  useEffect(() => {
+    const initNotifications = async () => {
+      await requestUserPermission();
 
-    // KILLED STATE
-    const initialNotification =
-      await notifee?.getInitialNotification();
+      // KILLED STATE
+      const initialNotification =
+        await notifee?.getInitialNotification();
 
-    if (initialNotification) {
-      console.log(
-        'APP OPENED FROM KILLED NOTIFICATION',
-        initialNotification?.notification?.data,
-      );
-
-      const screen =
-        initialNotification?.notification?.data?.screen;
-
-      if (screen) {
-        navigate(
-          screen,
+      if (initialNotification) {
+        console.log(
+          'APP OPENED FROM KILLED NOTIFICATION',
           initialNotification?.notification?.data,
         );
+
+        const screen =
+          initialNotification?.notification?.data?.screen;
+
+        if (screen) {
+          navigate(
+            screen,
+            initialNotification?.notification?.data,
+          );
+        }
+      } else {
+        console.log('NORMAL APP LAUNCH');
       }
-    } else {
-      console.log('NORMAL APP LAUNCH');
-    }
-  };
+    };
 
-  initNotifications();
+    initNotifications();
 
-  // Foreground FCM
-  const unsubscribeForeground = onMessageListener(
-    async remoteMessage => {
-      console.log(
-        'FCM Foreground',
-        JSON.stringify(remoteMessage, null, 2),
-      );
+    // Foreground FCM
+    const unsubscribeForeground = onMessageListener(
+      async remoteMessage => {
+        console.log(
+          'FCM Foreground',
+          JSON.stringify(remoteMessage, null, 2),
+        );
 
-      await notifee.displayNotification({
-        title: remoteMessage.notification?.title,
-        body: remoteMessage.notification?.body,
+        await notifee.displayNotification({
+          title: remoteMessage.notification?.title,
+          body: remoteMessage.notification?.body,
 
-        // IMPORTANT
-        data: remoteMessage.data,
+          // IMPORTANT
+          data: remoteMessage.data,
 
-        android: {
-          channelId: 'default',
+          android: {
+            channelId: 'default',
 
-          pressAction: {
-            id: 'default',
+            pressAction: {
+              id: 'default',
+            },
+
+            actions: [
+              {
+                title: 'Open',
+                pressAction: {
+                  id: 'open',
+                },
+              },
+              {
+                title: 'Dismiss',
+                pressAction: {
+                  id: 'dismiss',
+                },
+              },
+            ],
           },
+        });
+      },
+    );
 
-          actions: [
-            {
-              title: 'Open',
-              pressAction: {
-                id: 'open',
-              },
-            },
-            {
-              title: 'Dismiss',
-              pressAction: {
-                id: 'dismiss',
-              },
-            },
-          ],
-        },
-      });
-    },
-  );
+    // Foreground Notification Click
+    const unsubscribeNotifee =
+      notifee.onForegroundEvent(({ type, detail }) => {
+        const data = detail.notification?.data;
 
-  // Foreground Notification Click
-  const unsubscribeNotifee =
-    notifee.onForegroundEvent(({ type, detail }) => {
-      const data = detail.notification?.data;
-
-      switch (type) {
-        case EventType.PRESS:
-          navigate(data?.screen, data);
-          break;
-
-        case EventType.ACTION_PRESS:
-          if (detail.pressAction.id === 'open') {
+        switch (type) {
+          case EventType.PRESS:
             navigate(data?.screen, data);
-          }
-          break;
-      }
-    });
+            break;
 
-  // Background Notification Click
-  const unsubscribeBackground =
-    onNotificationOpenedAppListener(remoteMessage => {
-      const screen = remoteMessage?.data?.screen;
+          case EventType.ACTION_PRESS:
+            if (detail.pressAction.id === 'open') {
+              navigate(data?.screen, data);
+            }
+            break;
+        }
+      });
 
-      navigate(screen, remoteMessage?.data);
-    });
+    // Background Notification Click
+    const unsubscribeBackground =
+      onNotificationOpenedAppListener(remoteMessage => {
+        const screen = remoteMessage?.data?.screen;
 
-  return () => {
-    unsubscribeForeground?.();
-    unsubscribeBackground?.();
-    unsubscribeNotifee?.();
-  };
-}, []);
+        navigate(screen, remoteMessage?.data);
+      });
+
+    return () => {
+      unsubscribeForeground?.();
+      unsubscribeBackground?.();
+      unsubscribeNotifee?.();
+    };
+  }, []);
 
   const handleAccept = async () => {
     await AsyncStorage.setItem("TERMS_ACCEPTED", "true");
     setAccepted(true);
   };
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setReady(true);
+    }, 300); // 300–500ms
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!proReduxData) return;
+    if (!appId || !deviceName) return;
+
+    const fetchAuth = async () => {
+      try {
+        const response = await getAuth(
+          getGetAuthPayload(appId, deviceName)
+        ).unwrap();
+
+        console.log("Auth + + + + + + + + + + + + + + + + + +  Response =>", response);
+      } catch (error) {
+        console.log("Auth Error =>", error);
+      }
+    };
+
+    fetchAuth();
+  }, [appId, deviceName]);
+
+   
+
   // 🔥 Loader
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1 }}>
-        <FullViewLoader />
-      </View>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <View style={{ flex: 1 }}>
+  //       <FullViewLoader />
+  //     </View>
+  //   );
+  // }
 
   // 🔥 Terms
-  if (!accepted && !isTv) {
-    return <TermsAndConsent onAccept={handleAccept} />;
-  }
+  // if (!accepted && !isTv) {
+  //   return <TermsAndConsent onAccept={handleAccept} />;
+  // }
 
   return (
     <>
@@ -260,13 +351,13 @@ useEffect(() => {
         <SafeAreaView
           edges={["left", "right", "bottom"]}
           style={[styles.safeArea, {
-            backgroundColor : theme === 'dark' ? 'black' : 'white'
+            backgroundColor: theme === 'dark' ? 'black' : 'white'
           }]}
         >
           <NavigationContainer ref={navigationRef}>
             {
               Platform.isTV ? <RootNavigatorTvOS /> : <RootNavigator />
-            } 
+            }
           </NavigationContainer>
         </SafeAreaView>
       </Animated.View>
@@ -274,7 +365,7 @@ useEffect(() => {
       {/* 🔥 No Internet */}
       {!isConnected && (
         <View style={[StyleSheet.absoluteFillObject, { zIndex: 1000 }]}>
-          <NoInternetScreen onRetry={() => {}} />
+          <NoInternetScreen onRetry={() => { }} />
         </View>
       )}
 

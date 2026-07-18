@@ -1,6 +1,7 @@
-import { Platform, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet, useWindowDimensions } from 'react-native';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
 
+  const { height, width } = Dimensions.get('screen');
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -533,4 +534,342 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+    tab: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+
+    circle: {
+        width: 65,
+        height: 65,
+        borderRadius: 33,
+        justifyContent: "center",
+        alignItems: "center",
+        bottom: 30,
+    },
+
+    fab: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        backgroundColor: "#D96A27",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    container: {
+        flex: 1,
+        backgroundColor: '#FFFFFF',
+    },
+    logo: {
+        backgroundColor: 'white',
+        top: -30,
+        position: 'absolute',
+        height: 100, width: 100, alignSelf: 'center',
+        borderRadius: 12,
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 10,
+    },
+
+    iconButton: {
+        width: 42,
+        height: 42,
+        borderRadius: 21,
+        borderWidth: 1,
+        borderColor: '#173D8F',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    iconText: {
+        fontSize: 18,
+        color: '#173D8F',
+        fontWeight: '600',
+    },
+
+    languageText: {
+        fontSize: 18,
+        fontWeight: '500',
+        color: '#000',
+    },
+
+    slide: {
+        width,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 25,
+    },
+
+    image: {
+        width: width * 0.8,
+        height: height * 0.3,
+        marginBottom: 40,
+    },
+
+    title: {
+        fontSize: 32,
+        fontWeight: '700',
+        color: '#173D8F',
+        marginBottom: 15,
+        textAlign: 'center',
+    },
+
+    description: {
+        fontSize: 18,
+        lineHeight: 28,
+        color: '#333',
+        textAlign: 'center',
+    },
+
+    pagination: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginBottom: 35,
+    },
+
+    dot: {
+        width: 16,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: '#173D8F',
+        marginHorizontal: 4,
+        marginLeft: 8
+    },
+
+    buttonContainer: {
+        flexDirection: 'row',
+        paddingHorizontal: 20,
+        marginBottom: 30,
+    },
+
+    registerBtn: {
+        height: 48,
+        borderWidth: 2,
+        borderColor: '#251d50',
+        borderRadius: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    loginBtn: {
+        height: 48,
+        backgroundColor: '#251d50',
+        borderRadius: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    registerText: {
+        color: '#251d50',
+        fontSize: 18,
+        fontWeight: '600',
+    },
+
+    loginText: {
+        color: '#FFF',
+        fontSize: 18,
+        fontWeight: '600',
+    },
+
+    ///
+    backdrop: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+    },
+
+    bottomSheet: {
+        position: 'absolute',
+        bottom: 0,
+        height: '60%',
+        width: '94%',
+        backgroundColor: '#fff',
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        padding: 20,
+        marginHorizontal: 12
+    },
+
+    dragHandle: {
+        width: 50,
+        height: 5,
+        backgroundColor: '#DDD',
+        borderRadius: 5,
+        alignSelf: 'center',
+        marginBottom: 20,
+    },
+
+    sheetTitle: {
+        fontSize: 22,
+        fontWeight: '700',
+        marginBottom: 4,
+    },
+
+    optionRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 14,
+        paddingHorizontal: 16,
+        borderRadius: 12,
+        marginBottom: 10,
+        borderWidth: 1,
+        borderColor: '#EEE',
+    },
+
+    selectedOption: {
+        borderColor: '#251d50',
+        backgroundColor: '#FFF7F2',
+    },
+
+    radioOuter: {
+        width: 22,
+        height: 22,
+        borderRadius: 8,
+        borderWidth: 2,
+        borderColor: '#999',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    radioOuterActive: {
+        borderColor: '#251d50',
+    },
+
+    radioInner: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        backgroundColor: '#251d50',
+    },
+
+    optionText: {
+        marginLeft: 15,
+        fontSize: 16,
+        fontWeight: '500',
+    },
+
+    bottomInfo: {
+        marginTop: 'auto',
+    },
+
+    infoText: {
+        textAlign: 'center',
+        color: '#555',
+    },
+    loginBtnText: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    createBtn: {
+        marginTop: 4,
+        height: 48,
+        backgroundColor: '#251d50',
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    createBtnText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: '700',
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: "700",
+        color: "#111",
+        textAlign: "center",
+    },
+
+    subtitle: {
+        marginTop: 8,
+        fontSize: 14,
+        color: "#666",
+        textAlign: "center",
+    },
+
+
+    flowContainer: {
+        marginTop: 40,
+    },
+
+
+    option: {
+        flexDirection: "row",
+        alignItems: "center",
+        padding: 18,
+        borderWidth: 1,
+        borderColor: "#DDD",
+        borderRadius: 8,
+        backgroundColor: "#FFF",
+    },
+
+
+    selectedOption: {
+        borderColor: "#d67031",
+        backgroundColor: "#f6f1ed",
+    },
+
+
+    radio: {
+        width: 22,
+        height: 22,
+        borderRadius: 11,
+        borderWidth: 2,
+        borderColor: "#999",
+        marginRight: 15,
+    },
+
+
+    radioActive: {
+        borderColor: "#d67031",
+        backgroundColor: "#d67031",
+    },
+
+
+    optionTitle: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: "#111",
+    },
+
+
+    optionDesc: {
+        marginTop: 4,
+        fontSize: 13,
+        color: "#666",
+    },
+
+
+    connector: {
+        height: 12,
+        width: 2,
+        marginLeft: 28,
+    },
+
+
+    button: {
+        marginTop: 50,
+        height: 52,
+        borderRadius: 10,
+        backgroundColor: "#d67031",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
+
+    disabledButton: {
+        backgroundColor: "#CCC",
+    },
+
+
+    buttonText: {
+        color: "#FFF",
+        fontSize: 16,
+        fontWeight: "600",
+    },
 });

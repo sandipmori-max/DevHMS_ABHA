@@ -28,6 +28,7 @@ import MemoizedFooterView from "./MemoizedFooterView";
 import DeviceInfo from "react-native-device-info";
 import Share from 'react-native-share';
 import RNFS from "react-native-fs";
+import AbhaUserItem from "../../../../abha/screens/Profile/AbhaUserItem";
 
 if (
   Platform.OS === "android" &&
@@ -113,7 +114,7 @@ const ReadableView = ({
   const theme = useAppSelector((state) => state?.theme?.mode);
   console.log(
     "Rendering+++++++++++++ TableView with data length:",
-    loadingListId,
+    parsedConfig,
     filteredData,
   );
   const isIpad =
@@ -715,8 +716,21 @@ const ReadableView = ({
         keyExtractor={(_, index) => index.toString()}
         data={listData}
         keyboardShouldPersistTaps="handled"
-        renderItem={({ item, index }) => (
-          <RenderCard item={item} index={index} />
+        renderItem={({ item, index }) => (<>
+
+          {
+            parsedConfig?.title.includes('ABHA') ? <AbhaUserItem
+              item={item}
+              onPress={(item) => {
+                navigation.navigate('Details', {
+                  item
+                })
+              }}
+            /> : <RenderCard item={item} index={index} />
+          }
+        </>
+
+          // 
         )}
         key={isIpad ? isLandscape ? "ipad-list" : "ipad-landscape" : isLandscape ? "landscape" : "portrait"}
         numColumns={isIpad ? isLandscape ? 3 : 2 : isLandscape ? 2 : 1}

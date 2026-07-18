@@ -67,4 +67,61 @@ subtitle: {
     fontWeight: "500",
     textAlign: "center",
   },
+   container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 60,
+    paddingHorizontal: 24,
+  },
+
+  topSection: {
+    alignItems: "center",
+    marginTop: 40,
+  },
+
+  logo: {
+    width: 120,
+    height: 120,
+  },
+
+  title: {
+    fontSize: 30,
+    fontWeight: "700",
+    color: "#003366",
+    marginTop: 20,
+  },
+
+  subtitle: {
+    marginTop: 10,
+    color: "#64748B",
+    fontSize: 16,
+  },
+
+  loaderSection: {
+    alignItems: "center",
+  },
+
+  loadingText: {
+    marginTop: 16,
+    fontSize: 15,
+    color: "#475569",
+  },
+
+  bottomSection: {
+    alignItems: "center",
+  },
+
+  powered: {
+    fontSize: 13,
+    color: "#94A3B8",
+  },
+
+  abdm: {
+    marginTop: 4,
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#251d50",
+  },
 });
