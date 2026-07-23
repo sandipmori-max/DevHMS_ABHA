@@ -130,6 +130,7 @@ const OtpInput = ({
   };
 
   const handleResend = () => {
+    setOtp('');
     if (resendCount >= 2) {
       return;
     }

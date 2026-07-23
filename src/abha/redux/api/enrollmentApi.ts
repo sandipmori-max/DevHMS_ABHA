@@ -59,7 +59,9 @@ export const enrollmentApi = baseApi.injectEndpoints({
             },
           };
         }
-
+console.log(
+            "========== body body body ==========", body
+          );
         // ACTUAL API CALL
         return await baseQuery({
           url: `${BASE_URL_API}${END_POINTS.enrollmentRequestOtp}`,
@@ -98,9 +100,12 @@ export const enrollmentApi = baseApi.injectEndpoints({
           );
 
           const { data } = result;
-
+console.log(
+            "Response Data qqqqq =>",
+             data
+          );
           console.log(
-            "Response Data =>",
+            "Response Data => 1 2 1 2 1 2 1 2 1 2 1 2 1 2 1 2 ",
             JSON.stringify(
               data,
               null,
@@ -119,6 +124,10 @@ export const enrollmentApi = baseApi.injectEndpoints({
             );
           }
         } catch (error: any) {
+
+          console.log(
+            "========== error error error ==========", error
+          );
           showToast(
             "error",
             "Enrollment Failed",
@@ -195,3 +204,5 @@ export const enrollmentApi = baseApi.injectEndpoints({
 export const {
   useEnrollmentRequestOtpMutation,
 } = enrollmentApi;
+
+// 

@@ -29,4 +29,4 @@ export const END_POINTS = {
   profileByToken: "phr/web/login/profile/abha-profile"
 }
 
-export const API_BOOL = true;
+export const API_BOOL = false;

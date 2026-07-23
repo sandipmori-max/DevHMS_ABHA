@@ -94,7 +94,7 @@ export const loginVerifyUserApi =
             const { data } = result;
 
             console.log(
-              "Response Data =>",
+              "Response Data =>10 1 0 1 01 01 0 1 0 1 0 1 0 ",
               JSON.stringify(
                 data,
                 null,

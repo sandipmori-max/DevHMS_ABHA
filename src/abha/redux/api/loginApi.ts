@@ -100,7 +100,7 @@ export const loginApi = baseApi.injectEndpoints({
           const { data } = result;
 
           console.log(
-            "Response Data =>",
+            "Response Data =>8 8 8 8 8 8 8 8 8 8 ", data, 
             JSON.stringify(
               data,
               null,
@@ -122,6 +122,7 @@ export const loginApi = baseApi.injectEndpoints({
               "txnId not found in response"
             );
           }
+          
         } catch (error: any) {
           const errorData =
             error?.error?.data ||

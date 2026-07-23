@@ -87,7 +87,7 @@ export const enrolAbhaAddressApi =
                 await queryFulfilled;
 
               console.log(
-                "Response Data =>",
+                "Response Data => 3 3 3 3 3 3 3 3 3 ",
                 JSON.stringify(
                   result.data,
                   null,

@@ -125,7 +125,7 @@ export const authByAbdmApi =
               );
 
               console.log(
-                "Response Data =>",
+                "Response Data => 0 00 0 0 0 ",
                 JSON.stringify(
                   result.data,
                   null,

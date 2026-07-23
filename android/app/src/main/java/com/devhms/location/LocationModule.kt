@@ -1,12 +1,12 @@
 package com.devhms.location
 
-import android.content.Intent
+ import android.content.Intent
 import androidx.core.content.ContextCompat
 import com.facebook.react.bridge.*
 import android.util.Log
-import com.devhms.location.LocationService
+import com.gayatrirubtech.location.LocationService
 import com.facebook.react.bridge.ReadableArray
-import com.devhms.location.UserData
+import com.gayatrirubtech.location.UserData
 import java.lang.Exception
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -31,9 +31,6 @@ class LocationModule(private val reactContext: ReactApplicationContext) :
         ContextCompat.startForegroundService(reactContext, serviceIntent)
     }
 
-companion object {
-    var removeNotification = false
-}
     @ReactMethod
     fun setUserTokens(data: ReadableArray) {
         for (i in 0 until data.size()) {
@@ -53,16 +50,20 @@ companion object {
         Log.d("LocationModule", "✅ Received token-link pairs: ${LocationService.userDataList}")
     }
 
- @ReactMethod
-fun stopService() {
-    Log.d("LocationModule", "❌ stopService called")
-
-    LocationService.removeNotification = true
-
-    val serviceIntent = Intent(reactContext, LocationService::class.java)
-    reactContext.stopService(serviceIntent)
+    @ReactMethod
+    fun stopService() {
+        Log.d(
+            "LocationModule",
+            "❌ stopService called"
+        )
+        val serviceIntent = Intent(reactContext, LocationService::class.java)
+        reactContext.stopService(serviceIntent)
+    }
+    @ReactMethod
+fun clearUserTokens() {
+    LocationService.userDataList.clear()
+    Log.d("LocationModule", "🧹 User tokens cleared")
 }
-
   @ReactMethod
 fun getCurrentLocation(
     promise: Promise
@@ -190,6 +191,4 @@ fun getCurrentLocation(
         )
     }
 }
-
-
 }

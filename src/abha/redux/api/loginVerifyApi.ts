@@ -119,7 +119,7 @@ export const loginVerifyApi =
             const { data } = result;
 
             console.log(
-              "Response Data =>",
+              "Response Data =>9 9 9 9 9 9 9 9 9 ",
               JSON.stringify(
                 data,
                 null,
@@ -169,6 +169,8 @@ export const getLoginVerifyPayload = (
   txnId: string,
   encryptedOtp: string
 ): LoginVerifyPayload => {
+
+  console.log("txnId------", txnId)
   return {
     scope:
       loginType ===
@@ -185,7 +187,7 @@ export const getLoginVerifyPayload = (
     authData: {
       authMethods: ["otp"],
       otp: {
-        txnId,
+        txnId: txnId,
         otpValue: encryptedOtp,
       },
     },

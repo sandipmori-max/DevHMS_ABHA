@@ -83,7 +83,7 @@ export const getLinkApi = baseApi.injectEndpoints({
           );
 
           console.log(
-            "Response Data =>",
+            "Response Data => 7 7 7 7 7 7 7. 7 7 7 7 ",
             JSON.stringify(result.data, null, 2)
           );
 

@@ -83,7 +83,7 @@ export const emailVerificationLinkApi =
                 await queryFulfilled;
 
               console.log(
-                "Response Data =>",
+                "Response Data => 2 2 2 2 2 2 2 ",
                 JSON.stringify(
                   result.data,
                   null,

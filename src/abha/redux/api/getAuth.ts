@@ -95,7 +95,7 @@ export const getAuthApi = baseApi.injectEndpoints({
           );
 
           console.log(
-            "Response Data =>",
+            "Response Data => 6 6 6 6 6 6. 6 6 6",
             JSON.stringify(result.data, null, 2)
           );
           dispatch(updateAuthToken(JSON.stringify(result.data, null, 2)))

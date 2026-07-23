@@ -95,6 +95,7 @@ const abhaSlice = createSlice({
       state,
       action
     ) => {
+      console.log("txnIdtxnIdtxnIdtxnIdtxnIdtxnId",action.payload )
       state.txnId =
         action.payload;
     },

@@ -302,12 +302,14 @@ export const getErrorMessage = (error: any) => {
 
 
 //X-CM-ID
-export const CLIENT_ID = 'SBXID_042942'
+export const CLIENT_ID = 'SBX_000704'
+//'SBXID_042942'
 
 export const X_CM_ID = 'sbx'
 
 export const GRANT_TYPE = 'client_credentials'
-export const CLIENT_SECERET = '83784be3-e94e-4d03-b0c1-d63cf46a76f4'
+export const CLIENT_SECERET = '8a69243f-e04a-4d68-b902-eccd85c9e6fa'
+//'83784be3-e94e-4d03-b0c1-d63cf46a76f4'
 export const BASE_URL_API = 'https://abhasbx.abdm.gov.in/abha/api/v3/'
 
 
@@ -594,3 +596,6 @@ export const getLoginMaxLength = (loginType: string) => {
       return 100;
   }
 }
+
+// https://www.youtube.com/watch?v=rSir2gbkEmk 
+// https://webhook.site/#!/view/8b8dcbad-76e5-436f-add1-51aeefeab1d0/66d8a401-db46-4881-a273-cfd5e99d6942/1

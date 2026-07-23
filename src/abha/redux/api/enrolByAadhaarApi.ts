@@ -172,7 +172,7 @@ export const enrolByAadhaarApi =
               );
 
               console.log(
-                "Response Data =>",
+                "Response Data => 4 4 4 4 4 4 4 4. 4 4",
                 JSON.stringify(
                   result.data,
                   null,

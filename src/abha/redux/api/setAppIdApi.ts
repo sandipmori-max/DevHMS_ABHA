@@ -105,7 +105,7 @@ export const setAppIdApi = baseApi.injectEndpoints({
                     );
 
                     console.log(
-                        "Response Data =>-----",
+                        "Response Data =>----- -----========**********",
                         JSON.stringify(result.data, null, 2)
                     );
                     

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -41,10 +41,12 @@ import { useSearchAbhaAddressMutation } from '../../redux/api/abhaSearchApi';
 import { useAbhaAddressRequestOtpMutation } from '../../redux/api/abhaAddressLoginApi';
 import { isValidAadhaar } from '../../utils/aadhaarValidator';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
+import ABHACard from './ABHACard';
 
 const LoginScreen = () => {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
+  
   const dispatch = useDispatch()
 
   const publicKey = useSelector(
@@ -55,6 +57,8 @@ const LoginScreen = () => {
   const { txnId } = useSelector((state: any) => state.abha);
   const { loginType, isFromRegister = false, isFromCreate = false, isFromMobileRegister = false, isFromForgotAbhaNumber = false, isFromForgotAbhaNumberWithType = false, } = route.params ?? {};
 
+  const [searchProfile, setSearchProfile] = useState()
+  const [showSearchProfile, setShowSearchProfile] = useState(false)
   const {
     stepOne, setStepOne, stepTwo, setStepTwo, stepThree, setStepThree, stepFour,
     stepOneDL, setStepOneDL, currentStep, setCurrentStep,
@@ -295,7 +299,11 @@ const LoginScreen = () => {
               </View>
 
 
-              <Text style={[styles.welcome, isFromRegister && {
+              <Text style={[styles.welcome,
+              {
+                color: ERP_COLOR_CODE.ERP_APP_COLOR
+              },
+              isFromRegister && {
                 fontSize: 18
               }]}>
                 {steps[currentStep - 1]}
@@ -342,6 +350,9 @@ const LoginScreen = () => {
                               style={[
                                 styles.circle,
                                 isActive && styles.activeCircle,
+                                isActive && {
+                                  backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+                                },
                               ]}
                             >
                               <Text
@@ -530,8 +541,8 @@ const LoginScreen = () => {
                             }
                           }}
                           style={[styles.nextButton, {
-                        backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
-                      }]}
+                            backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+                          }]}
                         >
                           <Text style={{ color: '#FFF' }}>
                             {'Next'}
@@ -606,6 +617,7 @@ const LoginScreen = () => {
                           />
 
                         </> : <>  <TextInput
+                          editable={showSearchProfile ? false : true}
                           value={loginValue}
                           onChangeText={text => {
                             setLoginValue(formatLoginInput(loginType, text))
@@ -633,7 +645,7 @@ const LoginScreen = () => {
                     }}>
                       <MaterialIcons name='info-outline' color={'#869bea'} style={{ marginRight: 4 }} />
                       <Text style={{
-                        color:'#869bea'
+                        color: '#869bea'
                       }}>Please ensure that mobile number is linked with Aadhaar as it will be required for OTP authentication.</Text>
                     </View>
                   }
@@ -766,6 +778,11 @@ const LoginScreen = () => {
                   </Text>
                 </View>
               )}
+
+              {
+                showSearchProfile &&  <ABHACard abhaData={searchProfile} />
+              }
+             
               {loginType === 'ABHA Address' && (
                 <View style={styles.card}>
                   <Text style={styles.cardTitle}>
@@ -844,6 +861,29 @@ const LoginScreen = () => {
                 ]}
                 onPress={async () => {
                   try {
+
+                    if(loginType === 'ABHA Address' && showSearchProfile && searchProfile){
+                      const encryptedValue = encryptData(searchProfile?.mobile, publicKey,);
+
+                        const payload: any = getPayloadData(otpMethod, encryptedValue)
+                        console.log("payload + + + + + + getPayloadData + + + + ", payload)
+                        const result = await abhaAddressRequestOtp(payload).unwrap();
+
+                        console.log("result+++++++++++++++", result)
+                        showToast(
+                          "success",
+                          result?.message || "OTP sent successfully"
+                        );
+                        setTimeout(() => {
+                          navigation.replace('OtpVerification', {
+                            loginType,
+                            mobileNumber: loginValue,
+                            payload: payload,
+                            otpMethod: otpMethod
+                          });
+                        }, 1000);
+                        return;
+                    }
                     const errors = validateForm(
                       loginType,
                       loginValue,
@@ -851,7 +891,7 @@ const LoginScreen = () => {
                       isAgreed,
                       captchaValue,
                       captcha,
-                      otpMethod
+                       otpMethod 
                     );
 
                     if (errors.length > 0) {
@@ -894,7 +934,7 @@ const LoginScreen = () => {
                     } else {
 
                       if (loginType === 'ABHA Address') {
-                         
+
 
                         const response =
                           await searchAbhaAddress({
@@ -907,26 +947,10 @@ const LoginScreen = () => {
                           "SUCCESS => + + + + + + + + + + + + + +",
                           response
                         );
+                        setShowSearchProfile(true)
+                        setSearchProfile(response)
 
-                        const encryptedValue = encryptData(response?.mobile, publicKey,);
-
-                        const payload: any = getPayloadData(otpMethod, encryptedValue)
-                        console.log("payload + + + + + + getPayloadData + + + + ", payload)
-                        const result = await abhaAddressRequestOtp(payload).unwrap();
-
-                        console.log("result+++++++++++++++", result)
-                        showToast(
-                          "success",
-                          result?.message || "OTP sent successfully"
-                        );
-                        setTimeout(() => {
-                          navigation.replace('OtpVerification', {
-                            loginType,
-                            mobileNumber: loginValue,
-                            payload: payload,
-                            otpMethod: otpMethod
-                          });
-                        }, 1000);
+                        return;
 
 
                       } else {
@@ -964,7 +988,10 @@ const LoginScreen = () => {
                 }}
               >
                 <Text style={styles.continueText}>
-                  {isFromCreate ? "Next" : "Continue"}
+                  {
+                    loginType === 'ABHA Address' && !showSearchProfile ? 'Search' :  isFromCreate ? "Next" : "Continue"
+                  }
+                 
                 </Text>
               </TouchableOpacity>
 

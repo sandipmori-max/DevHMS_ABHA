@@ -60,8 +60,10 @@ const OtpVerificationScreen = () => {
   );
 
   const txnId = useSelector(
-    (state: any) => state.abhaauth.txnId
+    (state: any) => state.abha.txnId
   );
+  console.log('OTP:----------txnId--------', txnId)
+
   const [loginVerify, { isLoading }] =
     useLoginVerifyMutation();
   const [requestOtp] = useRequestOtpMutation
@@ -112,6 +114,7 @@ const OtpVerificationScreen = () => {
 
 
   const handleResend = async () => {
+    setOtp('');
     if (resendCount >= 2) {
       return;
     }
@@ -485,7 +488,7 @@ const OtpVerificationScreen = () => {
 
     try {
       dispatch(showLoader());
-      console.log('OTP:', otp);
+      console.log('OTP:------------------', otp, txnId);
       const encryptedValue =
         encryptData(
           otp,

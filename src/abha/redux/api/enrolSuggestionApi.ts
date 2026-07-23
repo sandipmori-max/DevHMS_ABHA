@@ -91,7 +91,7 @@ export const enrolSuggestionApi =
                 await queryFulfilled;
 
               console.log(
-                "Response Data =>",
+                "Response Data => 5 5 5 5 5 5 5 5 5. 5 ",
                 JSON.stringify(
                   result.data,
                   null,
