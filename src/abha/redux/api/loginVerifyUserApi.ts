@@ -1,8 +1,10 @@
+import { RootState } from "../../../store/store";
 import {
   BASE_URL_API,
   getErrorMessage,
 } from "../../utils/helpers";
 import { showToast } from "../../utils/toast";
+import { setTToken } from "../slices/abhaSlice";
 import { baseApi } from "./baseApi";
 import { API_BOOL, END_POINTS } from "./end_points";
 
@@ -26,8 +28,10 @@ export const loginVerifyUserApi =
           _extraOptions,
           baseQuery
         ) {
+          const state = _api.getState() as RootState;
+          const xtoken = state.abha?.tToken;
           console.log(
-            "========== LOGIN VERIFY USER =========="
+            "========== LOGIN VERIFY  xtokenxtokenxtokenxtokenxtokenxtokenxtoken ==========", xtoken
           );
 
           console.log(
@@ -60,6 +64,10 @@ export const loginVerifyUserApi =
             url: `${BASE_URL_API}${END_POINTS.loginVerifyUser}`,
             method: "POST",
             body,
+             headers: {
+                "T-token":
+                  `Bearer ${xtoken}`
+              }
           });
         },
 
@@ -67,6 +75,7 @@ export const loginVerifyUserApi =
           arg,
           {
             queryFulfilled,
+            dispatch
           }
         ) {
           console.log(
@@ -107,7 +116,7 @@ export const loginVerifyUserApi =
                 "User Login Verified Successfully"
               );
 
-              // dispatch(setUserToken(data.token))
+              dispatch(setTToken(data.token))
               // dispatch(setRefreshToken(data.refreshToken))
             }
           } catch (error: any) {

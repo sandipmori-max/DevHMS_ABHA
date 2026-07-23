@@ -23,10 +23,12 @@ import { hideLoader, showLoader } from "../redux/slices/loaderSlice";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { showToast } from "../utils/toast";
 import { useAppSelector } from "../../store/hooks";
+import { ERP_COLOR_CODE } from "../../utils/constants";
+import { useGenerateLinkTokenMutation } from "../redux/api/linkAbhaApi";
 
 const DetailsScreen = ({ route }: any) => {
   const { item } = route.params || {};
-  console.log("itemitemitemitemitem", item)
+ 
   const [open, setOpen] = useState(false);
   const [abhaDetail, setAbhaDetail] = useState<any>([]);
   const dispatch = useDispatch();
@@ -35,9 +37,11 @@ const DetailsScreen = ({ route }: any) => {
   const baseUrl = baseURL.substring(0, baseURL.lastIndexOf("/") + 1);
   const url = new URL(baseUrl).origin;
 
+  const [generateLinkToken, { isLoading }] =
+    useGenerateLinkTokenMutation();
+
   const [getPage] = useGetPageMutation();
   const { accounts, user } = useAppSelector((state) => state.auth);
-  console.log("urlurlurlurlurlurlurlurl------ ", url)
   const fetchProfile = async () => {
     try {
       dispatch(showLoader())
@@ -47,7 +51,6 @@ const DetailsScreen = ({ route }: any) => {
         item?.id
       );
       const response = await getPage(payload);
-      console.log("response++++++++++++++++++++++", response, typeof response)
       const parsedData = JSON.parse(response?.data.d);
       const pagectl = parsedData.pagectl;
       console.log("respon+ + + + + + ++ + + se", pagectl)
@@ -66,14 +69,12 @@ const DetailsScreen = ({ route }: any) => {
 
 
   const getValue = (fieldName: any) => {
-    console.log("abhaDetail", abhaDetail)
     if (abhaDetail.length === 0) {
       return;
     }
     const fieldMap = Object.fromEntries(
       abhaDetail.map(item => [item.field, item.text])
     );
-    console.log("statename", fieldMap)
     return fieldMap[fieldName];
   };
 
@@ -82,7 +83,6 @@ const DetailsScreen = ({ route }: any) => {
     .map((item: string) => item.trim())
     .filter(Boolean) || [];
 
-  console.log("authMethods++++++++++++++++++++++++++++++++", authMethods)
 
   const DetailItem = ({
     icon,
@@ -191,6 +191,55 @@ const DetailsScreen = ({ route }: any) => {
     showToast('success', 'Copied!!')
   };
 
+  const handleLinkAbha = async () => {
+    try {
+      dispatch(showLoader())
+      console.log("getValue(abhanumber)", getValue("abhanumber"))
+      const payload = {
+        abhaNumber: Number(
+          String(getValue('abhanumber')).replace(/-/g, '')
+        ),
+
+        abhaAddress: getValue('abhaAddress'),
+
+        name: `${getValue("firstname")} ${getValue("middlename")} ${getValue("lasttname")}`,
+
+        gender: getValue('gender'),
+
+        yearOfBirth: Number(getValue('yearOfBirth')),
+      };
+
+      console.log(
+        '========== GENERATE LINK TOKEN PAYLOAD =========='
+      );
+      console.log(
+        JSON.stringify(payload, null, 2)
+      );
+
+      const response = await generateLinkToken(payload).unwrap();
+
+      console.log(
+        '========== GENERATE LINK TOKEN RESPONSE =========='
+      );
+      console.log(
+        JSON.stringify(response, null, 2)
+      );
+
+      console.log('Link Token =>', response);
+      dispatch(hideLoader())
+
+      // Next screen me bhejo
+      // navigation.navigate('SelectCareContext', {
+      //   linkToken: response.token,
+      //   transactionId: response.transactionId,
+      //   patient,
+      // });
+    } catch (e) {
+      dispatch(hideLoader())
+      console.log('Link ABHA Error =>', e);
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container]}>
 
@@ -209,7 +258,9 @@ const DetailsScreen = ({ route }: any) => {
             {/* Profile */}
             <View style={styles.profileCard}>
               <View style={styles.profileTop}>
-                {getValue("profilephoto") ? (
+                <View>
+
+                   {getValue("profilephoto") ? (
                   <Image
                     source={{
                       uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/profilephoto.jpeg?t=${Date.now()}`,
@@ -225,12 +276,31 @@ const DetailsScreen = ({ route }: any) => {
                     />
                   </View>
                 )}
+                <View style={{height: 4}}/>
+                {getValue("kycphoto") ? (
+                  <Image
+                    source={{
+                      uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/kycphoto.jpeg?t=${Date.now()}`,
+                    }}
+                    style={styles.profileImage}
+                  />
+                ) : (
+                  <View style={styles.profilePlaceholder}>
+                    <MaterialIcons
+                      name="person"
+                      size={42}
+                      color="#FFFFFF"
+                    />
+                  </View>
+                )}
+                </View>
+                
 
                 <View style={{ flex: 1, marginLeft: 16 }}>
 
-                  <Text 
-                  numberOfLines={1}
-                  style={[styles.profileName,  ]}>
+                  <Text
+                    numberOfLines={1}
+                    style={[styles.profileName,]}>
                     {getValue("firstname")} {getValue("middlename")} {getValue("lasttname")}
                   </Text>
 
@@ -247,6 +317,30 @@ const DetailsScreen = ({ route }: any) => {
                     <TouchableOpacity
                       onPress={() => {
                         copyText(getValue("abhanumber"))
+                      }}
+                    >
+                      <MaterialIcons
+                        name="content-copy"
+                        size={20}
+                        color="#1565C0"
+                      />
+                    </TouchableOpacity>
+
+                  </View>
+
+                  <Text style={styles.profileLabel}>
+                    ABHA Address
+                  </Text>
+
+                  <View style={styles.numberRow}>
+
+                    <Text style={styles.abhaNumber}>
+                      {getValue("preferredabhaaddress")}
+                    </Text>
+
+                    <TouchableOpacity
+                      onPress={() => {
+                        copyText(getValue("preferredabhaaddress"))
                       }}
                     >
                       <MaterialIcons
@@ -674,9 +768,6 @@ const DetailsScreen = ({ route }: any) => {
             <View style={{ height: 30 }} />
           </>
         }
-
-
-
         {
           open && <CustomBottomSheet
             visible={open}
@@ -734,7 +825,27 @@ const DetailsScreen = ({ route }: any) => {
           </CustomBottomSheet>
         }
       </ScrollView>
-
+      <TouchableOpacity
+        onPress={() => {
+          handleLinkAbha()
+        }}
+        style={{
+          height: 46,
+          width: '92%',
+          backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+          borderRadius: 4,
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'absolute',
+          bottom: 0,
+          marginLeft: 14
+        }}>
+        <Text style={{
+          color: '#fff',
+          fontSize: 16,
+          fontWeight: '600'
+        }}>Link ABHA</Text>
+      </TouchableOpacity>
 
     </SafeAreaView>
   );
@@ -744,8 +855,8 @@ export default DetailsScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "#F5F7FA",
+
   },
   avatar: {
     width: 60,
@@ -1163,7 +1274,7 @@ const styles = StyleSheet.create({
   },
 
   detailValue: {
-    flex: 1, 
+    flex: 1,
     color: "#212121",
     fontWeight: "600",
     marginLeft: 12,
@@ -1171,7 +1282,7 @@ const styles = StyleSheet.create({
   detailLabel: {
     marginLeft: 12,
     fontSize: 15,
-    color: "#616161", 
+    color: "#616161",
     width: '54%',
   },
   authContainer: {

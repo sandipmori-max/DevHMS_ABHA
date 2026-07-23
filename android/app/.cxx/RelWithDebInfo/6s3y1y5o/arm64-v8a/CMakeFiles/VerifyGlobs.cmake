@@ -472,19 +472,12 @@ file(GLOB NEW_GLOB LIST_DIRECTORIES true "/Users/deverp/Desktop/Sandip_Mori/DevH
 set(OLD_GLOB
   "/Users/deverp/Desktop/Sandip_Mori/DevHMS/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSFullWindowOverlayShadowNode.cpp"
   "/Users/deverp/Desktop/Sandip_Mori/DevHMS/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSModalScreenShadowNode.cpp"
-  "/Users/deverp/Desktop/Sandip_Mori/DevHMS/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSSafeAreaViewShadowNode.cpp"
-  "/Users/deverp/Desktop/Sandip_Mori/DevHMS/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSSafeAreaViewState.cpp"
   "/Users/deverp/Desktop/Sandip_Mori/DevHMS/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNode.cpp"
-  "/Users/deverp/Desktop/Sandip_Mori/DevHMS/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNodeCommitHook.cpp"
   "/Users/deverp/Desktop/Sandip_Mori/DevHMS/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSScreenStackHeaderConfigShadowNode.cpp"
   "/Users/deverp/Desktop/Sandip_Mori/DevHMS/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSScreenStackHeaderConfigState.cpp"
   "/Users/deverp/Desktop/Sandip_Mori/DevHMS/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSScreenStackHeaderSubviewShadowNode.cpp"
   "/Users/deverp/Desktop/Sandip_Mori/DevHMS/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSScreenStackHeaderSubviewState.cpp"
   "/Users/deverp/Desktop/Sandip_Mori/DevHMS/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSScreenState.cpp"
-  "/Users/deverp/Desktop/Sandip_Mori/DevHMS/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSSplitViewScreenShadowNode.cpp"
-  "/Users/deverp/Desktop/Sandip_Mori/DevHMS/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSTabsBottomAccessoryShadowNode.cpp"
-  "/Users/deverp/Desktop/Sandip_Mori/DevHMS/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSTabsHostShadowNode.cpp"
-  "/Users/deverp/Desktop/Sandip_Mori/DevHMS/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSTabsHostState.cpp"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   message("-- GLOB mismatch!")

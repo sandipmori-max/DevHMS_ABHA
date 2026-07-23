@@ -78,6 +78,7 @@ import {
     useLazyProfileAbhaCardQuery,
 } from "../../redux/api/abhaCardApi";
 import { useNavigation } from '@react-navigation/native';
+import { setTToken } from "../../redux/slices/abhaSlice";
 
 interface UseLoginFlowProps {
     loginType: string;
@@ -439,8 +440,10 @@ export const useLoginFlow = ({
             return;
         }
 
+        console.log("loginValueloginValueloginValueloginValue", loginValue)
+        
         const encryptedValue = encryptData(
-            loginValue,
+            stepOne?.aadhaarNumber,
             publicKey
         );
 
@@ -503,17 +506,15 @@ export const useLoginFlow = ({
 
             const result =
                 await enrolByAadhaar(payload).unwrap();
-
+            console.log("resultresultresultresultresult 123 ", result)
             setAbhaResult(result);
+            dispatch(setTToken(result?.tokens?.token))
 
             if (
-                result?.isNew &&
-                result?.ABHAProfile?.mobile ===
-                stepTwo.stepTwoMobileNumber
+                result?.ABHAProfile?.isNew === false || result?.ABHAProfile?.isNew === 'false'
             ) {
                 const responseProfile =
-                    await getProfileAccount();
-
+                await getProfileAccount();
                 await handleProfile(responseProfile);
                 return;
             }
@@ -611,7 +612,7 @@ export const useLoginFlow = ({
         await enrolAbhaAddress(
             getEnrolAbhaAddressPayload(
                 txnId,
-                `${stepFour.userName}@abdm`,
+                `${stepFour.userName}`,
                 1
             )
         ).unwrap();

@@ -4,9 +4,9 @@ package com.devhms.location
 import androidx.core.content.ContextCompat
 import com.facebook.react.bridge.*
 import android.util.Log
-import com.gayatrirubtech.location.LocationService
+import com.devhms.location.LocationService
 import com.facebook.react.bridge.ReadableArray
-import com.gayatrirubtech.location.UserData
+import com.devhms.location.UserData
 import java.lang.Exception
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority

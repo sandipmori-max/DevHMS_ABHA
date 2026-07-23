@@ -1,3 +1,4 @@
+import { RootState } from "../../../store/store";
 import {
   BASE_URL_API,
   getErrorMessage,
@@ -21,6 +22,8 @@ export const profileQrCodeApi =
           console.log(
             "========== PROFILE QR CODE =========="
           );
+          const state = _api.getState() as RootState;
+                      const xtoken = state.abha?.tToken;
 
           console.log(
             "Request URL =>",
@@ -43,6 +46,10 @@ export const profileQrCodeApi =
           return await baseQuery({
             url: `${BASE_URL_API}${END_POINTS.profileQrCode}`,
             method: "GET",
+              headers: {
+                "X-token":
+                  `Bearer ${xtoken}`
+              }
           });
         },
 

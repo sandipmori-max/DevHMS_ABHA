@@ -5,6 +5,7 @@ import {
 import { showToast } from "../../utils/toast";
 import { baseApi } from "./baseApi";
 import { API_BOOL, END_POINTS } from "./end_points";
+import { RootState } from "../../../store/store";
 
 const MOCK_PROFILE_ACCOUNT = API_BOOL;
 
@@ -19,10 +20,15 @@ export const profileAccountApi =
             _extraOptions,
             baseQuery
           ) {
-            console.log(
-              "========== PROFILE ACCOUNT =========="
-            );
+          
 
+            const state = _api.getState() as RootState;
+            const xtoken = state.abha?.tToken;
+
+
+              console.log(
+              "========== PROFILE ACCOUNTxtokenxtokenxtokenxtokenxtokenxtokenxtoken ==========", xtoken
+            );
             console.log(
               "Request URL =>",
               END_POINTS.profileAccount
@@ -42,7 +48,7 @@ export const profileAccountApi =
 
               return {
                 data: {
-                  
+
                   "ABHANumber": "91-7561-4088-1233",
                   "preferredAbhaAddress": "+sandip1997@sbx",
                   "mobile": "8154877900",
@@ -99,6 +105,10 @@ export const profileAccountApi =
             return await baseQuery({
               url: `${BASE_URL_API}${END_POINTS.profileAccount}`,
               method: "GET",
+              headers: {
+                "X-token":
+                  `Bearer ${xtoken}`
+              }
             });
           },
 

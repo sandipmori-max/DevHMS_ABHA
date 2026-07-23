@@ -26,7 +26,8 @@ export const END_POINTS = {
   searchAbhaAddress: "phr/web/login/abha/search",
   abhaAddressRequestOtp: "phr/web/login/abha/request/otp",
   abhaAddressVerifyOtp: "/phr/web/login/abha/verify",
-  profileByToken: "phr/web/login/profile/abha-profile"
+  profileByToken: "phr/web/login/profile/abha-profile",
+  generateLinkToken: 'token/generate-token'
 }
 
 export const API_BOOL = false;

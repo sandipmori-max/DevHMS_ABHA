@@ -58,6 +58,7 @@ const AadhaarInput = ({
     part2: string,
     part3: string
   ) => {
+    console.log("onChangeonChangeonChangeonChangeonChange", part1 + part2 + part3)
     onChange(part1 + part2 + part3);
   };
 

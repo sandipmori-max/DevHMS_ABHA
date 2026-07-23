@@ -57,6 +57,7 @@ const LoginScreen = () => {
   const { txnId } = useSelector((state: any) => state.abha);
   const { loginType, isFromRegister = false, isFromCreate = false, isFromMobileRegister = false, isFromForgotAbhaNumber = false, isFromForgotAbhaNumberWithType = false, } = route.params ?? {};
 
+  
   const [searchProfile, setSearchProfile] = useState()
   const [showSearchProfile, setShowSearchProfile] = useState(false)
   const {

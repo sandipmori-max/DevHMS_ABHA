@@ -29,7 +29,7 @@ import { hideLoader, showLoader } from '../../redux/slices/loaderSlice';
 import { showToast } from '../../utils/toast';
 import { getLoginVerifyUserPayload, useLoginVerifyUserMutation } from '../../redux/api/loginVerifyUserApi';
 import { useLazyProfileAccountQuery } from '../../redux/api/profileAccountApi';
-import { setActiveUser } from '../../redux/slices/abhaSlice';
+import { setActiveUser, setTToken } from '../../redux/slices/abhaSlice';
 import { useSavePageMutation } from '../../redux/api/savePageApi';
 import { useLazyProfileQrCodeQuery } from '../../redux/api/qrCodeApi';
 import { useLazyProfileAbhaCardQuery } from '../../redux/api/abhaCardApi';
@@ -37,6 +37,7 @@ import { useAbhaAddressRequestOtpMutation } from '../../redux/api/abhaAddressLog
 import { useAbhaAddressVerifyOtpMutation } from '../../redux/api/abhaAddressVerifyApi';
 import { useLazyAbhaProfileQuery } from '../../redux/api/profileByTokenApi';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
+import AccountList from './AccountList';
 
 const OtpVerificationScreen = () => {
   const navigation = useNavigation<any>();
@@ -76,6 +77,12 @@ const OtpVerificationScreen = () => {
   const [
     getAbhaProfile,
   ] = useLazyAbhaProfileQuery();
+
+  const [abhaAccounts, setAbhaAccounts] = useState<any>();
+  const [showAbhaAccount, setShowAbhaAccount] = useState<any>();
+  const [selectedAccount, setSelectedAccount] = useState<any>(null);
+  const [apiAbhaRes, setApiAbhaRes] = useState<any>()
+
   const activeUser = useSelector(
     (state: any) => state.auth.user
   );
@@ -231,6 +238,100 @@ const OtpVerificationScreen = () => {
 
   };
 
+  const hanldeAbhaProfile = async () => {
+    if(!selectedAccount){
+      showToast('error', "Abha selection", 'Please selecte profile')
+      return;
+    }
+    const payload =
+      getLoginVerifyUserPayload(
+        selectedAccount?.ABHANumber,
+        apiAbhaRes?.txnId
+      );
+
+    const response1 =
+      await loginVerifyUser(
+        payload
+      ).unwrap();
+
+    console.log('response1+++++++++++++', response1);
+
+    const responseProfile: any =
+      await getProfileAccount();
+
+    const res = responseProfile?.data;
+
+    const payloadRow = {
+      "patientabhaid": "",
+      "abhanumber": res?.ABHANumber,
+      "abhaname": res?.abhaName || res?.name,
+      "aadharnumber": res?.aadharNumber,
+      "firstname": res?.firstName,
+      "middlename": res?.middleName,
+      "lastname": res?.lastName,
+      "fullname": res?.name,
+      "dob": `${res?.yearOfBirth}-${res?.monthOfBirth}-${res?.dayOfBirth}`,
+      "yearofbirth": res?.yearOfBirth,
+      "monthofbirth": res?.monthOfBirth,
+      "dayofbirth": res?.dayOfBirth,
+      "gender": res?.gender,
+      "mobileno": res?.mobile,
+      "address": res?.address,
+      "statename": res?.stateName,
+      "statecode": res?.stateCode,
+      "districtname": res?.districtName,
+      "districtcode": res?.districtCode,
+      "subdistrictname": res?.subdistrictName,
+      "pincode": res?.pincode,
+      "preferredabhaaddress": res?.preferredAbhaAddress,
+      "photo": res?.photo,
+      "profilephoto": `profilephoto.jpeg;data:image/jpeg;base64,${res?.profilePhoto}`,
+      "kycphoto": `kycphoto.jpeg;data:image/jpeg;base64,${res?.kycPhoto}`,
+      "localizedname": res?.localizedDetails?.name,
+      "localizedgender": res?.localizedDetails?.gender,
+      "localizedtownname": res?.localizedDetails?.townName,
+      "localizeddistrictname": res?.localizedDetails?.districtName,
+      "localizedvillagename": res?.localizedDetails?.villageName,
+      "localizedstatename": res?.localizedDetails?.stateName,
+      "phraddress": res?.phraddress,
+      "authmethods": res?.authMethods?.join(","),
+      "tags": res?.tags,
+      "localizedlabels": res?.localizedDetails?.localizedLabels,
+      "registrationsource": "",
+      "profilestatus": res?.profileStatus,
+      "abhatype": res?.abhatype,
+      "abhastatus": res?.status,
+      "verificationtype": res?.verificationType,
+      "verificationstatus": res?.verificationStatus,
+      "iskycverified": res?.kycVerified,
+      "isnew": res?.isNew,
+      "cdt": new Date(),
+      "date": res?.createdDate,
+
+    }
+
+    const resQRCode = await getQrCode();
+    const resABHACard = await getAbhaCard();
+
+    if (payloadRow) {
+      payloadRow.qccode = `qrCode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
+      payloadRow.abhacard = `abhaCard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
+    }
+    const payloadData = {
+      token: activeUser?.token,
+      page: "PatientABHAProfile",
+      data: JSON.stringify(payloadRow),
+    };
+    const resAbha = await savePage(payloadData).unwrap();
+    console.log("resAbha1", resAbha)
+    if (resAbha?.success !== '0' || resAbha?.success !== 0) {
+      showToast(
+        "success",
+        resAbha?.message
+      );
+      navigation.goBack();
+    }
+  }
   const handleVerify = async () => {
     if (otp.length !== 6) {
       showToast(
@@ -307,7 +408,7 @@ const OtpVerificationScreen = () => {
               "preferredabhaaddress": res?.preferredAbhaAddress,
               "photo": res?.photo,
               "profilephoto": `profilephoto.jpeg;data:image/jpeg;base64,${res?.profilePhoto}`,
-              "kycphoto": `kycphoto.jpeg;data:image/jpeg;base64,${res?.kycphoto}`,
+              "kycphoto": `kycphoto.jpeg;data:image/jpeg;base64,${res?.kycPhoto}`,
               "localizedname": res?.localizedDetails?.name,
               "localizedgender": res?.localizedDetails?.gender,
               "localizedtownname": res?.localizedDetails?.townName,
@@ -325,8 +426,9 @@ const OtpVerificationScreen = () => {
               "verificationtype": res?.verificationType,
               "verificationstatus": res?.verificationStatus,
               "iskycverified": res?.kycVerified,
-              "isnew": "false",
-              "cdt": new Date()
+              "isnew": res?.isNew,
+              "cdt": new Date(),
+               "date": res?.createdDate,
 
             }
 
@@ -348,7 +450,7 @@ const OtpVerificationScreen = () => {
 
 
             const resAbha = await savePage(payloadData).unwrap();
-              console.log("resAbha13", resAbha)
+            console.log("resAbha13", resAbha)
             if (resAbha?.success !== '0' || resAbha?.success !== 0) {
               showToast(
                 "success",
@@ -425,7 +527,7 @@ const OtpVerificationScreen = () => {
               "preferredabhaaddress": res?.preferredAbhaAddress,
               "photo": res?.photo,
               "profilephoto": `profilephoto.jpeg;data:image/jpeg;base64,${res?.profilePhoto}`,
-              "kycphoto": `kycphoto.jpeg;data:image/jpeg;base64,${res?.kycphoto}`,
+              "kycphoto": `kycphoto.jpeg;data:image/jpeg;base64,${res?.kycPhoto}`,
               "localizedname": res?.localizedDetails?.name,
               "localizedgender": res?.localizedDetails?.gender,
               "localizedtownname": res?.localizedDetails?.townName,
@@ -443,8 +545,9 @@ const OtpVerificationScreen = () => {
               "verificationtype": res?.verificationType,
               "verificationstatus": res?.verificationStatus,
               "iskycverified": res?.kycVerified,
-              "isnew": "false",
-              "cdt": new Date()
+              "isnew": res?.isNew,
+              "cdt": new Date(),
+               "date": res?.createdDate,
 
             }
 
@@ -462,7 +565,7 @@ const OtpVerificationScreen = () => {
               data: JSON.stringify(payloadRow),
             };
             const resAbha = await savePage(payloadData).unwrap();
-              console.log("resAbha12", resAbha)
+            console.log("resAbha12", resAbha)
             if (resAbha?.success !== '0' || resAbha?.success !== 0) {
               showToast(
                 "success",
@@ -513,98 +616,11 @@ const OtpVerificationScreen = () => {
           "success",
           response?.message || "Verification successful"
         );
-
-        const payload =
-          getLoginVerifyUserPayload(
-            response?.accounts[0]?.ABHANumber,
-            response?.txnId
-          );
-
-        const response1 =
-          await loginVerifyUser(
-            payload
-          ).unwrap();
-
-        console.log('response1+++++++++++++', response1);
-
-        const responseProfile: any =
-          await getProfileAccount();
-
-        const res = responseProfile?.data;
-
-        const payloadRow = {
-          "patientabhaid": "",
-          "abhanumber": res?.ABHANumber,
-          "abhaname": res?.abhaName || res?.name,
-          "aadharnumber": res?.aadharNumber,
-          "firstname": res?.firstName,
-          "middlename": res?.middleName,
-          "lastname": res?.lastName,
-          "fullname": res?.name,
-          "dob": `${res?.yearOfBirth}-${res?.monthOfBirth}-${res?.dayOfBirth}`,
-          "yearofbirth": res?.yearOfBirth,
-          "monthofbirth": res?.monthOfBirth,
-          "dayofbirth": res?.dayOfBirth,
-          "gender": res?.gender,
-          "mobileno": res?.mobile,
-          "address": res?.address,
-          "statename": res?.stateName,
-          "statecode": res?.stateCode,
-          "districtname": res?.districtName,
-          "districtcode": res?.districtCode,
-          "subdistrictname": res?.subdistrictName,
-          "pincode": res?.pincode,
-          "preferredabhaaddress": res?.preferredAbhaAddress,
-          "photo": res?.photo,
-          "profilephoto": `profilephoto.jpeg;data:image/jpeg;base64,${res?.profilePhoto}`,
-          "kycphoto": `kycphoto.jpeg;data:image/jpeg;base64,${res?.kycphoto}`,
-          "localizedname": res?.localizedDetails?.name,
-          "localizedgender": res?.localizedDetails?.gender,
-          "localizedtownname": res?.localizedDetails?.townName,
-          "localizeddistrictname": res?.localizedDetails?.districtName,
-          "localizedvillagename": res?.localizedDetails?.villageName,
-          "localizedstatename": res?.localizedDetails?.stateName,
-          "phraddress": res?.phraddress,
-          "authmethods": res?.authMethods?.join(","),
-          "tags": res?.tags,
-          "localizedlabels": res?.localizedDetails?.localizedLabels,
-          "registrationsource": "",
-          "profilestatus": res?.profileStatus,
-          "abhatype": res?.abhatype,
-          "abhastatus": res?.status,
-          "verificationtype": res?.verificationType,
-          "verificationstatus": res?.verificationStatus,
-          "iskycverified": res?.kycVerified,
-          "isnew": "false",
-          "cdt": new Date()
-
-        }
-
-
-        console.log("payloadData", payloadData)
-
-        const resQRCode = await getQrCode();
-        const resABHACard = await getAbhaCard();
-
-        if (payloadRow) {
-          payloadRow.qccode = `qrCode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
-          payloadRow.abhacard = `abhaCard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
-        }
-        const payloadData = {
-          token: activeUser?.token,
-          page: "PatientABHAProfile",
-          data: JSON.stringify(payloadRow),
-        };
-        const resAbha = await savePage(payloadData).unwrap();
-        console.log("resAbha1", resAbha)
-        if (resAbha?.success !== '0' || resAbha?.success !== 0) {
-          showToast(
-            "success",
-            resAbha?.message
-          );
-          navigation.goBack();
-        }
-
+        dispatch(setTToken(response?.token))
+        setShowAbhaAccount(true)
+        setAbhaAccounts(response?.accounts)
+        setApiAbhaRes(response)
+        return;
 
       } else {
         showToast(
@@ -625,6 +641,7 @@ const OtpVerificationScreen = () => {
     }
 
   };
+
   const blinkAnim =
     useRef(
       new Animated.Value(1),
@@ -719,7 +736,10 @@ const OtpVerificationScreen = () => {
           </TouchableOpacity>
 
           <Text style={styles.headerTitle}>
-            OTP Verification
+            {
+              showAbhaAccount ? 'Profile selection' : 'OTP Verification'
+            }
+            
           </Text>
 
           <View
@@ -727,148 +747,154 @@ const OtpVerificationScreen = () => {
           />
         </View>
 
-        <View
-        
-        >
-          {/* Illustration */}
+        {
+          showAbhaAccount ? <>
+            <AccountList
+              accounts={abhaAccounts}
+              setSelectedAccount={setSelectedAccount}
+              selectedAccount={selectedAccount}
+            />
 
-          
+          </> : <View>
+            {/* Illustration */}
 
-          {/* Title */}
+            {/* Title */}
 
-          <Text style={styles.title}>
-            Verify Your Identity
-          </Text>
-
-          <Text
-            style={styles.subtitle}
-          >
-            {result?.message || 'Please enter the OTP sent to your registered mobile number.'}
-          </Text>
-
-          {/* Hidden Input */}
-
-          <TextInput
-            ref={inputRef}
-            value={otp}
-            onChangeText={
-              handleChangeOtp
-            }
-            keyboardType="number-pad"
-            maxLength={6}
-            autoFocus
-            caretHidden
-             placeholderTextColor="#999999"
-            contextMenuHidden={
-              false
-            }
-            style={
-              styles.hiddenInput
-            }
-          />
-
-          {/* OTP Boxes */}
-
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() =>
-              inputRef.current?.focus()
-            }
-          >
-            <View
-              style={
-                styles.otpContainer
-              }
-            >
-              {[0, 1, 2, 3, 4, 5].map(
-                index => {
-                  const isActive =
-                    otp.length ===
-                    index;
-
-                  return (
-                    <View
-                      key={index}
-                      style={[
-                        styles.otpBox,
-                        isActive && {
-                          borderColor:
-                            '#1565C0',
-                        },
-                      ]}
-                    >
-                      {otp[index] ? (
-                        <Text
-                          style={
-                            styles.otpText
-                          }
-                        >
-                          {
-                            otp[
-                            index
-                            ]
-                          }
-                        </Text>
-                      ) : isActive &&
-                        otp.length <
-                        6 ? (
-                        <Animated.View
-                          style={[
-                            styles.cursor,
-                            {
-                              opacity:
-                                blinkAnim,
-                            },
-                          ]}
-                        />
-                      ) : null}
-                    </View>
-                  );
-                },
-              )}
-            </View>
-          </TouchableOpacity>
-
-          {/* Timer */}
-
-          <View
-            style={
-              styles.timerContainer
-            }
-          >
-            <Text
-              style={
-                styles.timerText
-              }
-            >
-              Resend in:{' '}
-              {timer}s
+            <Text style={styles.title}>
+              Verify Your Identity
             </Text>
 
-            <TouchableOpacity
-              disabled={
-                timer > 0 ||
-                resendCount >= 2
+            <Text
+              style={styles.subtitle}
+            >
+              {result?.message || 'Please enter the OTP sent to your registered mobile number.'}
+            </Text>
+
+            {/* Hidden Input */}
+
+            <TextInput
+              ref={inputRef}
+              value={otp}
+              onChangeText={
+                handleChangeOtp
               }
-              onPress={
-                handleResend
+              keyboardType="number-pad"
+              maxLength={6}
+              autoFocus
+              caretHidden
+              placeholderTextColor="#999999"
+              contextMenuHidden={
+                false
+              }
+              style={
+                styles.hiddenInput
+              }
+            />
+
+            {/* OTP Boxes */}
+
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={() =>
+                inputRef.current?.focus()
+              }
+            >
+              <View
+                style={
+                  styles.otpContainer
+                }
+              >
+                {[0, 1, 2, 3, 4, 5].map(
+                  index => {
+                    const isActive =
+                      otp.length ===
+                      index;
+
+                    return (
+                      <View
+                        key={index}
+                        style={[
+                          styles.otpBox,
+                          isActive && {
+                            borderColor:
+                              '#1565C0',
+                          },
+                        ]}
+                      >
+                        {otp[index] ? (
+                          <Text
+                            style={
+                              styles.otpText
+                            }
+                          >
+                            {
+                              otp[
+                              index
+                              ]
+                            }
+                          </Text>
+                        ) : isActive &&
+                          otp.length <
+                          6 ? (
+                          <Animated.View
+                            style={[
+                              styles.cursor,
+                              {
+                                opacity:
+                                  blinkAnim,
+                              },
+                            ]}
+                          />
+                        ) : null}
+                      </View>
+                    );
+                  },
+                )}
+              </View>
+            </TouchableOpacity>
+
+            {/* Timer */}
+
+            <View
+              style={
+                styles.timerContainer
               }
             >
               <Text
-                style={[
-                  styles.resendText,
-                  (timer > 0 || resendCount >= 2) && {
-                    opacity: 0.4,
-                  }
-                ]}
+                style={
+                  styles.timerText
+                }
               >
-                {resendCount >= 2
-                  ? 'Resend limit reached'
-                  : 'Resend OTP'}
+                Resend in:{' '}
+                {timer}s
               </Text>
-            </TouchableOpacity>
+
+              <TouchableOpacity
+                disabled={
+                  timer > 0 ||
+                  resendCount >= 2
+                }
+                onPress={
+                  handleResend
+                }
+              >
+                <Text
+                  style={[
+                    styles.resendText,
+                    (timer > 0 || resendCount >= 2) && {
+                      opacity: 0.4,
+                    }
+                  ]}
+                >
+                  {resendCount >= 2
+                    ? 'Resend limit reached'
+                    : 'Resend OTP'}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        }
+
 
         {/* Bottom Button */}
 
@@ -882,7 +908,13 @@ const OtpVerificationScreen = () => {
               otp.length !== 6
             }
             onPress={
-              handleVerify
+              () => {
+                if (showAbhaAccount) {
+                  hanldeAbhaProfile()
+                } else {
+                  handleVerify()
+                }
+              }
             }
             style={[
               styles.verifyBtn,
@@ -899,7 +931,10 @@ const OtpVerificationScreen = () => {
                 styles.verifyText
               }
             >
-              Verify OTP
+              {
+                showAbhaAccount ? 'Continue' : 'Verify OTP'
+              }
+
             </Text>
           </TouchableOpacity>
         </View>
@@ -1057,7 +1092,7 @@ const styles =
       color: '#1565C0',
     },
 
-    bottomBar: { 
+    bottomBar: {
       bottom: 0,
       left: 0,
       right: 0,
