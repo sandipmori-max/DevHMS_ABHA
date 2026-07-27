@@ -275,7 +275,6 @@ export const getErrorMessage = (error: any) => {
     error?.error?.data?.loginId ||
     error?.error?.data?.message ||
 
-
     error?.error?.authMethods ||
     error?.error?.mobile ||
 

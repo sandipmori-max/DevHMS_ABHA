@@ -50,23 +50,23 @@ const LinkCareContextScreen = ({ route }: any) => {
     const careContextList = [
         {
             referenceNumber: 'c7e95611-3d63-41bb-bd90-d11d0b1cb0b2',
-            display: 'ABC #1',
+            display: 'ABC ',
             hiType: 'Prescription',
         },
         {
             referenceNumber: '8dd392ae-f94d-4b47-a08f-bbc07afdaae7',
-            display: 'DEF #2',
+            display: 'DEF ',
             hiType: 'Prescription',
         },
         {
             referenceNumber: '711bd3a2-7b44-433c-95fe-8b5a67673089',
-            display: 'GHI #3',
+            display: 'GHI ',
             hiType: 'Prescription',
         },
         {
             referenceNumber: '711bd3a2-7b44-433c-95fe-8b5a67673088',
-            display: 'JKL #4',
-            hiType: 'Prescrip',
+            display: 'JKL req',
+            hiType: 'DiagnosticReport',
         },
     ];
 
