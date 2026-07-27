@@ -25,9 +25,11 @@ import { showToast } from "../utils/toast";
 import { useAppSelector } from "../../store/hooks";
 import { ERP_COLOR_CODE } from "../../utils/constants";
 import { useGenerateLinkTokenMutation } from "../redux/api/linkAbhaApi";
+import { useNavigation } from "@react-navigation/native";
 
 const DetailsScreen = ({ route }: any) => {
   const { item } = route.params || {};
+   const navigation = useNavigation();
  
   const [open, setOpen] = useState(false);
   const [abhaDetail, setAbhaDetail] = useState<any>([]);
@@ -193,20 +195,17 @@ const DetailsScreen = ({ route }: any) => {
 
   const handleLinkAbha = async () => {
     try {
+
       dispatch(showLoader())
       console.log("getValue(abhanumber)", getValue("abhanumber"))
       const payload = {
         abhaNumber: Number(
           String(getValue('abhanumber')).replace(/-/g, '')
         ),
-
-        abhaAddress: getValue('abhaAddress'),
-
-        name: `${getValue("firstname")} ${getValue("middlename")} ${getValue("lasttname")}`,
-
+        abhaAddress: getValue('preferredabhaaddress'),
+        name: `${getValue("firstname")} ${getValue("middlename")} ${getValue("lastname")}`,
         gender: getValue('gender'),
-
-        yearOfBirth: Number(getValue('yearOfBirth')),
+        yearOfBirth: Number(formatDate(getValue("dob")).split("/").pop()),
       };
 
       console.log(
@@ -227,13 +226,17 @@ const DetailsScreen = ({ route }: any) => {
 
       console.log('Link Token =>', response);
       dispatch(hideLoader())
-
-      // Next screen me bhejo
-      // navigation.navigate('SelectCareContext', {
+      navigation.navigate("LinkCareContext", {
+        abhaDetail: abhaDetail
+      }) 
+    // Next screen me bhejo
+      
+    // navigation.navigate('SelectCareContext', {
       //   linkToken: response.token,
       //   transactionId: response.transactionId,
       //   patient,
       // });
+    
     } catch (e) {
       dispatch(hideLoader())
       console.log('Link ABHA Error =>', e);
@@ -301,7 +304,7 @@ const DetailsScreen = ({ route }: any) => {
                   <Text
                     numberOfLines={1}
                     style={[styles.profileName,]}>
-                    {getValue("firstname")} {getValue("middlename")} {getValue("lasttname")}
+                    {getValue("firstname")} {getValue("middlename")} {getValue("lastname")}
                   </Text>
 
                   <Text style={styles.profileLabel}>

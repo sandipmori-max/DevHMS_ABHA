@@ -8,7 +8,8 @@ const initialState = {
   txnId: null,
   activeUser: null,
   devERPBaseUrl: "",
-  abhaDrProfile: ""
+  abhaDrProfile: "",
+  linkToken: ""
 };
 
 const abhaSlice = createSlice({
@@ -32,6 +33,16 @@ const abhaSlice = createSlice({
       state.activeUser =
         action.payload;
     },
+
+     setLinkToken: (
+      state,
+      action
+    ) => {
+      console.log("linkTokenlinkTokenlinkToken", action?.payload)
+      state.linkToken =
+        action.payload;
+    },
+
      setAbhaDrProfile: (
       state,
       action
@@ -117,7 +128,8 @@ export const {
   setActiveUser,
   setDevERPBaseUrl,
   setAbhaDrProfile,
-  updateAuthToken
+  updateAuthToken,
+  setLinkToken
 } = abhaSlice.actions;
 
 export default abhaSlice.reducer;

@@ -27,7 +27,8 @@ export const END_POINTS = {
   abhaAddressRequestOtp: "phr/web/login/abha/request/otp",
   abhaAddressVerifyOtp: "/phr/web/login/abha/verify",
   profileByToken: "phr/web/login/profile/abha-profile",
-  generateLinkToken: 'token/generate-token'
+  generateLinkToken: 'token/generate-token',
+  linkCareContext: "link/carecontext"
 }
 
 export const API_BOOL = false;

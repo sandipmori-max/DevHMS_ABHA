@@ -24,6 +24,7 @@ import PrivacyPolicyScreen from "../screens/dashboard/privacy/PrivacyPolicyScree
 import LoginScreen from "../abha/screens/Login/LoginScreen";
 import OtpVerificationScreen from "../abha/screens/Login/OtpVerificationScreen";
 import DetailsScreen from "../abha/screens/DetailsScreen";
+import LinkCareContextScreen from "../abha/screens/LinkCareContext/LinkCareContextScreen";
 
 const Stack = createStackNavigator<any>();
 
@@ -156,6 +157,15 @@ const StackNavigator = () => {
         name="Details"
         component={DetailsScreen}
       />
+
+      <Stack.Screen
+       options={{
+          headerShown: false
+         }}
+        name="LinkCareContext"
+        component={LinkCareContextScreen}
+      />
+
       <Stack.Screen
         options={screenOptions}
         name="Settings"
