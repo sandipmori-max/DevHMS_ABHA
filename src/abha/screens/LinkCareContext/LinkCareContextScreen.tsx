@@ -184,13 +184,18 @@ const LinkCareContextScreen = ({ route }: any) => {
         return date.split(" ")[0];
     };
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container, {
+            backgroundColor :ERP_COLOR_CODE.ERP_APP_COLOR
+        }]}>
             {/* Header */}
 
             <ScrollView
                 stickyHeaderIndices={[0]}
                 showsVerticalScrollIndicator={false}
                 bounces={false}
+                style={{
+          backgroundColor: '#F5F7FA'
+        }}
                 contentContainerStyle={{
                     paddingBottom: 40,
                 }}>
@@ -213,12 +218,7 @@ const LinkCareContextScreen = ({ route }: any) => {
 
                     <View style={styles.topRow}>
 
-                        <Image
-                            source={{
-                                uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${getValue("id")}/profilephoto.jpeg?t=${Date.now()}`,
-                            }}
-                            style={styles.avatar}
-                        />
+                         
 
                         <View style={{ flex: 1 }}>
 
@@ -532,6 +532,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginBottom : 14
     },
 
     name: {

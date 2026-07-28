@@ -229,14 +229,7 @@ const DetailsScreen = ({ route }: any) => {
       navigation.navigate("LinkCareContext", {
         abhaDetail: abhaDetail
       }) 
-    // Next screen me bhejo
-      
-    // navigation.navigate('SelectCareContext', {
-      //   linkToken: response.token,
-      //   transactionId: response.transactionId,
-      //   patient,
-      // });
-    
+     
     } catch (e) {
       dispatch(hideLoader())
       console.log('Link ABHA Error =>', e);
@@ -244,12 +237,18 @@ const DetailsScreen = ({ route }: any) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container]}>
+    <SafeAreaView style={[styles.container, {
+      backgroundColor : ERP_COLOR_CODE.ERP_APP_COLOR
+    }]}>
+      
 
       <ScrollView
         stickyHeaderIndices={[0]}
         showsVerticalScrollIndicator={false}
         bounces={false}
+        style={{
+          backgroundColor: '#F5F7FA'
+        }}
       >
         <Header title="ABHA Details" isMenu={false} isSearch={false} isShare={true} handleShare={() => {
           setOpen(true)
@@ -283,7 +282,8 @@ const DetailsScreen = ({ route }: any) => {
                 {getValue("kycphoto") ? (
                   <Image
                     source={{
-                      uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/kycphoto.jpeg?t=${Date.now()}`,
+                      uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/250px-QR_code_for_mobile_English_Wikipedia.svg.png'
+                      // uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/kycphoto.jpeg?t=${Date.now()}`,
                     }}
                     style={styles.profileImage}
                   />

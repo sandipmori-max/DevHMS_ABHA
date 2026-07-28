@@ -37,7 +37,6 @@ const authPersistConfig = {
     "dashboardTypeId",
     "birthdayUsers",
     "attendanceSecurityLevel",
-    "linkToken"
   ],
 };
 
@@ -57,11 +56,9 @@ const abhaPersistConfig = {
   key: "abha",
   storage: AsyncStorage,
   whitelist: [
-    "activeUser",
-    "txnId",
-    "tToken",
-    "abhaDrProfile",
+    "activeUser",  
     "devERPBaseUrl",
+    "linkToken"
   ],
 };
 

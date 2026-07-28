@@ -23,7 +23,7 @@ export const profileQrCodeApi =
             "========== PROFILE QR CODE =========="
           );
           const state = _api.getState() as RootState;
-                      const xtoken = state.abha?.tToken;
+          const xtoken = state.abha?.tToken;
 
           console.log(
             "Request URL =>",
@@ -31,7 +31,7 @@ export const profileQrCodeApi =
           );
 
           console.log(
-            "Request Method => GET"
+            "Request Method => GET profileQrCode profileQrCode profileQrCode++++++", xtoken
           );
 
           // MOCK RESPONSE
@@ -42,15 +42,42 @@ export const profileQrCodeApi =
               },
             };
           }
+          const url = `${BASE_URL_API}${END_POINTS.profileQrCode}`;
 
-          return await baseQuery({
-            url: `${BASE_URL_API}${END_POINTS.profileQrCode}`,
-            method: "GET",
-              headers: {
-                "X-token":
-                  `Bearer ${xtoken}`
-              }
+          const headers = {
+            'X-Token': `Bearer ${xtoken}`,
+          };
+
+                      console.log(`
+            ================== CURL ==================
+
+            curl --location '${url}' \\
+            --header 'X-Token: Bearer ${xtoken}'
+
+            ==========================================
+            `);
+
+          console.log('URL =>', url);
+          console.log('Method => GET');
+          console.log('Headers =>', JSON.stringify(headers, null, 2));
+
+          const result = await baseQuery({
+            url,
+            method: 'GET',
+            headers,
           });
+
+          console.log('Response =>', JSON.stringify(result, null, 2));
+
+          return result;
+          // return await baseQuery({
+          //   url: `${BASE_URL_API}${END_POINTS.profileQrCode}`,
+          //   method: "GET",
+          //     headers: {
+          //       "X-token":
+          //         `Bearer ${xtoken}`
+          //     }
+          // });
         },
 
         async onQueryStarted(

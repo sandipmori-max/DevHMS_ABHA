@@ -864,7 +864,7 @@ const LoginScreen = () => {
                   try {
 
                     if(loginType === 'ABHA Address' && showSearchProfile && searchProfile){
-                      const encryptedValue = encryptData(searchProfile?.mobile, publicKey,);
+                      const encryptedValue = encryptData(searchProfile?.abhaAddress, publicKey,);
 
                         const payload: any = getPayloadData(otpMethod, encryptedValue)
                         console.log("payload + + + + + + getPayloadData + + + + ", payload)
@@ -876,12 +876,17 @@ const LoginScreen = () => {
                           result?.message || "OTP sent successfully"
                         );
                         setTimeout(() => {
-                          navigation.replace('OtpVerification', {
+                           navigation.replace('OtpVerification', {
                             loginType,
                             mobileNumber: loginValue,
-                            payload: payload,
-                            otpMethod: otpMethod
+                            loginValue: loginValue,
+                            txnId: txnId,
+                            otpMethod: otpMethod,
+                            result: result,
+                            payload: payload
                           });
+
+                          
                         }, 1000);
                         return;
                     }

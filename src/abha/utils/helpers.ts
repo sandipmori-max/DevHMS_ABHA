@@ -513,8 +513,8 @@ export const getPayloadForProfile = (stepOne, stepTwo, stepThree, stepFour, resp
     tokens: abhaResult?.tokens?.token,
     txnId: txnId
   };
-
-  console.log("payload.data.authMethods.join------------------------------------------------", payload.data.authMethods.join(","))
+  console.log("responseProfile++++++++++++++++-----------------------", responseProfile)
+  console.log("payload.++++++++++------------------------------------------------", payload)
 
   const payloadRow = {
     "patientabhaid": "",
@@ -575,9 +575,13 @@ export const getPayloadForProfile = (stepOne, stepTwo, stepThree, stepFour, resp
     "verificationstatus": payload.data.verificationStatus,
     "iskycverified": payload.data.kycVerified,
     "isnew": payload.isNew,
-    "date": payload?.data?.createdDate,
-    "cdt": new Date()
+    "createddate": payload?.data?.createdDate,
+    "cdt": new Date(),
+    "date": payload?.data?.createdDate
   }
+
+  console.log("payloadRowpayloadRow.++++++++++------------------------------------------------", payloadRow)
+
   return payloadRow
 }
 

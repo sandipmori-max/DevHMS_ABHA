@@ -105,8 +105,10 @@ export const useLoginFlow = ({
         (state: any) => state.abhaauth.publicKey
     );
 
-    const {
-        activeUser: proReduxData,
+    const activeUser = useSelector(
+    (state: any) => state.auth.user
+  );
+    const { 
         txnId,
     } = useSelector((state: any) => state.abha);
 
@@ -381,7 +383,7 @@ export const useLoginFlow = ({
         console.log("resQRCode + + + + + + + + + + + + + + + +", resQRCode)
         console.log("abhaCard + + + + + + + + + + + + + + + +", resABHACard)
         const payloadData = {
-            token: proReduxData?.token,
+            token: activeUser?.token,
             page: "PatientABHAProfile",
             data: JSON.stringify(payloadRow),
         };
@@ -754,7 +756,7 @@ export const useLoginFlow = ({
         // Redux values
         publicKey,
         txnId,
-        proReduxData,
+        activeUser,
 
         // Utils
         dispatch,
