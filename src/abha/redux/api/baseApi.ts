@@ -13,10 +13,10 @@ export const baseApi =
 
       prepareHeaders: (
         headers,
-        { getState }
+        { getState, endpoint }
       ) => {
         console.log(
-          "========== PREPARE HEADERS =========="
+          "========== PREPARE HEADERS ==========", endpoint
         );
 
         const state =
@@ -87,10 +87,20 @@ export const baseApi =
           timestamp
         );
 
-        headers.set(
-          "Content-Type",
-          "application/json"
-        );
+        const skipEndpoints = [
+          "profileQrCode",
+          "profileAbhaCard",
+        ];
+
+        if (skipEndpoints.includes(endpoint)) {
+          headers.delete("Content-Type");
+          headers.delete("content-type");
+          headers.delete("Accept");
+          headers.delete("accept");
+        } else {
+          headers.set("Content-Type", "application/json");
+        }
+
 
         console.log(
           "Final Headers =>",

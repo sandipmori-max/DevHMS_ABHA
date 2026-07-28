@@ -38,6 +38,8 @@ import { useAbhaAddressVerifyOtpMutation } from '../../redux/api/abhaAddressVeri
 import { useLazyAbhaProfileQuery } from '../../redux/api/profileByTokenApi';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
 import AccountList from './AccountList';
+import { BASE_URL_API, generateGUID } from '../../utils/helpers';
+import { END_POINTS } from '../../redux/api/end_points';
 
 const OtpVerificationScreen = () => {
   const navigation = useNavigation<any>();
@@ -58,6 +60,12 @@ const OtpVerificationScreen = () => {
   const route = useRoute<any>();
   const publicKey = useSelector(
     (state: any) => state.abhaauth.publicKey
+  );
+  const xtoken = useSelector(
+    (state: any) => state.abha.tToken
+  );
+  const token = useSelector(
+    (state: any) => state.abhaauth.accessToken
   );
 
   const txnId = useSelector(
@@ -242,6 +250,7 @@ const OtpVerificationScreen = () => {
   };
 
   const hanldeAbhaProfile = async () => {
+   dispatch(showLoader())
     if (!selectedAccount) {
       showToast('error', "Abha selection", 'Please selecte profile')
       return;
@@ -325,10 +334,12 @@ const OtpVerificationScreen = () => {
         "success",
         resAbha?.message
       );
+      dispatch(hideLoader())
       navigation.goBack();
     }
   }
   const handleVerify = async () => {
+     dispatch(showLoader())
     console.log("handleVerifyhandleVerifyhandleVerifyhandleVerify", loginValue, loginType, otpMethod)
     if (otp.length !== 6) {
       showToast(
@@ -373,9 +384,35 @@ const OtpVerificationScreen = () => {
               response?.message || "Verification successful"
             );
 
+              try {
+  const r1 = await fetch(
+    `${BASE_URL_API}${END_POINTS.profileQrCode}`,
+    {
+      method: "GET",
+      headers: {
+        "X-token": `Bearer ${response?.tokens?.token}`,
+        Authorization: `Bearer ${token}`,
+        "REQUEST-ID": generateGUID(),
+        TIMESTAMP: new Date().toISOString(),
+      },
+    }
+  );
+
+  console.log("Status =>", r1.status);
+  console.log("OK =>", r1.ok);
+
+  const body = await r1.text();
+  console.log("Body =>", body);
+
+} catch (error) {
+  console.log("Fetch Error =>", error);
+}
+
             const responseProfile: any = await getAbhaProfile({
-                json_web_token: response?.tokens?.token,
-              }).unwrap();
+              json_web_token: response?.tokens?.token,
+            }).unwrap();
+
+
 
             const res = responseProfile;
 
@@ -429,6 +466,9 @@ const OtpVerificationScreen = () => {
               "date": res?.createdDate
 
             }
+
+        
+
 
             const resQRCode = await getQrCode();
             console.log("resQRCoderesQRCoderesQRCode2222222", resQRCode)
@@ -599,7 +639,6 @@ const OtpVerificationScreen = () => {
     }
 
     try {
-      dispatch(showLoader());
       console.log('OTP:------------------', otp, txnId);
       const encryptedValue =
         encryptData(

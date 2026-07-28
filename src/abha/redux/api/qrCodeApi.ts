@@ -45,14 +45,14 @@ export const profileQrCodeApi =
           const url = `${BASE_URL_API}${END_POINTS.profileQrCode}`;
 
           const headers = {
-            'X-Token': `Bearer ${xtoken}`,
+            'X-token': `Bearer ${xtoken}`,
           };
 
                       console.log(`
             ================== CURL ==================
 
             curl --location '${url}' \\
-            --header 'X-Token: Bearer ${xtoken}'
+            --header 'X-token: Bearer ${xtoken}'
 
             ==========================================
             `);
