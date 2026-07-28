@@ -29,7 +29,7 @@ import { hideLoader, showLoader } from '../../redux/slices/loaderSlice';
 import { showToast } from '../../utils/toast';
 import { getLoginVerifyUserPayload, useLoginVerifyUserMutation } from '../../redux/api/loginVerifyUserApi';
 import { useLazyProfileAccountQuery } from '../../redux/api/profileAccountApi';
-import { setTToken } from '../../redux/slices/abhaSlice';
+import { setTToken, setTxnId } from '../../redux/slices/abhaSlice';
 import { useSavePageMutation } from '../../redux/api/savePageApi';
 import { useLazyProfileQrCodeQuery } from '../../redux/api/qrCodeApi';
 import { useLazyProfileAbhaCardQuery } from '../../redux/api/abhaCardApi';
@@ -94,7 +94,7 @@ const OtpVerificationScreen = () => {
     payload,
     otpMethod
   } = route?.params || {};
- 
+
   console.log("otpMethod", otpMethod)
   const [otp, setOtp] = useState('');
   const [timer, setTimer] = useState(120);
@@ -242,24 +242,13 @@ const OtpVerificationScreen = () => {
   };
 
   const hanldeAbhaProfile = async () => {
-    if(!selectedAccount){
+    if (!selectedAccount) {
       showToast('error', "Abha selection", 'Please selecte profile')
       return;
     }
 
     console.log("selectedAccountselectedAccountselectedAccount", selectedAccount)
-    const payload =
-      getLoginVerifyUserPayload(
-        selectedAccount?.ABHANumber,
-        apiAbhaRes?.txnId
-      );
 
-    const response1 =
-      await loginVerifyUser(
-        payload
-      ).unwrap();
-
-    console.log('response1+++++++++++++', response1);
     const responseProfile: any =
       await getProfileAccount();
 
@@ -319,7 +308,7 @@ const OtpVerificationScreen = () => {
 
     const resABHACard = await getAbhaCard();
 
-     console.log("resABHACardresABHACard11111111", resABHACard)
+    console.log("resABHACardresABHACard11111111", resABHACard)
     if (payloadRow) {
       payloadRow.qccode = `qrCode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
       payloadRow.abhacard = `abhaCard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
@@ -340,7 +329,7 @@ const OtpVerificationScreen = () => {
     }
   }
   const handleVerify = async () => {
-    console.log("handleVerifyhandleVerifyhandleVerifyhandleVerify", loginType, otpMethod)
+    console.log("handleVerifyhandleVerifyhandleVerifyhandleVerify", loginValue, loginType, otpMethod)
     if (otp.length !== 6) {
       showToast(
         "error",
@@ -354,7 +343,7 @@ const OtpVerificationScreen = () => {
         if (otpMethod === 'Aadhaar OTP') {
           const encryptedOtp =
             encryptData(
-              loginValue,
+              otp,
               publicKey,
             );
           const response = await verifyAbhaOtp({
@@ -377,14 +366,14 @@ const OtpVerificationScreen = () => {
           console.log("responseresponseresponseresponseresponse", response)
 
           if (response?.authResult === 'success') {
-             dispatch(setTToken(response?.token))
+            dispatch(setTToken(response?.tokens.token))
+            dispatch(setTxnId(response?.txnId))
             showToast(
               "success",
               response?.message || "Verification successful"
             );
 
-            const responseProfile: any =
-              await getAbhaProfile({
+            const responseProfile: any = await getAbhaProfile({
                 json_web_token: response?.tokens?.token,
               }).unwrap();
 
@@ -441,12 +430,12 @@ const OtpVerificationScreen = () => {
 
             }
 
-             const resQRCode = await getQrCode();
-    console.log("resQRCoderesQRCoderesQRCode2222222", resQRCode)
+            const resQRCode = await getQrCode();
+            console.log("resQRCoderesQRCoderesQRCode2222222", resQRCode)
 
-    const resABHACard = await getAbhaCard();
+            const resABHACard = await getAbhaCard();
 
-     console.log("resABHACardresABHACard2222222", resABHACard)
+            console.log("resABHACardresABHACard2222222", resABHACard)
 
             if (payloadRow) {
               payloadRow.qrcode = `qrcode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
@@ -482,7 +471,7 @@ const OtpVerificationScreen = () => {
         } else if (otpMethod === 'Mobile OTP') {
           const encryptedOtp =
             encryptData(
-              loginValue,
+              otp,
               publicKey,
             );
           const response = await verifyAbhaOtp({
@@ -507,7 +496,8 @@ const OtpVerificationScreen = () => {
               "success",
               response?.message || "Verification successful"
             );
-             dispatch(setTToken(response?.token))
+            dispatch(setTToken(response?.tokens.token))
+            dispatch(setTxnId(response?.txnId))
 
             const responseProfile: any =
               await getAbhaProfile({
@@ -561,17 +551,17 @@ const OtpVerificationScreen = () => {
               "iskycverified": res?.kycVerified,
               "isnew": res?.isNew,
               "cdt": new Date(),
-               "createddate": res?.createdDate,
-                "date": res?.createdDate
+              "createddate": res?.createdDate,
+              "date": res?.createdDate
 
             }
 
             const resQRCode = await getQrCode();
-    console.log("resQRCoderesQRCoderesQRCode3333333333", resQRCode)
+            console.log("resQRCoderesQRCoderesQRCode3333333333", resQRCode)
 
-    const resABHACard = await getAbhaCard();
+            const resABHACard = await getAbhaCard();
 
-     console.log("resABHACardresABHACard3333333333", resABHACard)
+            console.log("resABHACardresABHACard3333333333", resABHACard)
 
             if (payloadRow) {
               payloadRow.qrcode = `qrcode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
@@ -758,7 +748,7 @@ const OtpVerificationScreen = () => {
             {
               showAbhaAccount ? 'Profile selection' : 'OTP Verification'
             }
-            
+
           </Text>
 
           <View
