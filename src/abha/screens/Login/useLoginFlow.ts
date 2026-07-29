@@ -102,9 +102,7 @@ export const useLoginFlow = ({
         (state: any) => state.abhaauth.publicKey
     );
 
-     const xtoken = useSelector(
-        (state: any) => state.abha.tToken
-      );
+    
       const token = useSelector(
         (state: any) => state.abhaauth.accessToken
       );
@@ -276,7 +274,7 @@ export const useLoginFlow = ({
         [isFromRegister]
     );
 
-    const getProfileQrCode = async (endpoints: any) => {
+    const getProfileQrCode = async (endpoints: any, xtoken: any) => {
         try {
           const response = await fetch(
             `${BASE_URL_API}${endpoints}`,
@@ -444,6 +442,7 @@ export const useLoginFlow = ({
 
     const handleProfile = async (
         responseProfile: any,
+        xtoken
     ) => {
         await createSession()
             .unwrap();
@@ -458,7 +457,7 @@ export const useLoginFlow = ({
         );
 
         try {
-             const qrResponse = await getProfileQrCode(END_POINTS.profileQrCode);
+             const qrResponse = await getProfileQrCode(END_POINTS.profileQrCode, xtoken);
              payloadRow.qrcode = `qrCode.jpeg; ${qrResponse}`;
            } catch (error) {
              console.log(
@@ -468,7 +467,7 @@ export const useLoginFlow = ({
            }
        
            try {
-             const qrResponse = await getProfileQrCode(END_POINTS.profileAbhaCard);
+             const qrResponse = await getProfileQrCode(END_POINTS.profileAbhaCard, xtoken);
              payloadRow.abhacard = `abhaCard.jpeg; ${qrResponse}`;
            } catch (error) {
              console.log(
@@ -607,13 +606,13 @@ export const useLoginFlow = ({
             console.log("resultresultresultresultresult 123 ", result)
             setAbhaResult(result);
             dispatch(setTToken(result?.tokens?.token))
-
+            showToast('info', result?.message)
             if (
-                result?.ABHAProfile?.isNew === false || result?.ABHAProfile?.isNew === 'false'
+                result?.isNew === false || result?.isNew === 'false'
             ) {
                 const responseProfile =
                     await getProfileAccount();
-                await handleProfile(responseProfile);
+                await handleProfile(responseProfile, result?.tokens?.token);
                 return;
             }
 

@@ -29,8 +29,8 @@ import { useNavigation } from "@react-navigation/native";
 
 const DetailsScreen = ({ route }: any) => {
   const { item } = route.params || {};
-   const navigation = useNavigation();
- 
+  const navigation = useNavigation();
+
   const [open, setOpen] = useState(false);
   const [abhaDetail, setAbhaDetail] = useState<any>([]);
   const dispatch = useDispatch();
@@ -152,10 +152,26 @@ const DetailsScreen = ({ route }: any) => {
     }
   };
 
+  const shareImage = async (imageUrl) => {
+    try {
+      await Share.open({
+        title: 'Share ABHA Card',
+        message: 'ABHA Card',
+        url: imageUrl,
+        type: 'image/jpeg', // image/png ho to change karo
+        failOnCancel: false,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const printPdfFromUrl = async () => {
     try {
+      let uri = `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/abhacard.jpeg?t=${Date.now()}`;
+
       const pdfPath = await downloadPDF(
-        'https://pdfobject.com/pdf/sample.pdf',
+        uri
       );
 
       await RNPrint.print({
@@ -228,8 +244,8 @@ const DetailsScreen = ({ route }: any) => {
       dispatch(hideLoader())
       navigation.navigate("LinkCareContext", {
         abhaDetail: abhaDetail
-      }) 
-     
+      })
+
     } catch (e) {
       dispatch(hideLoader())
       console.log('Link ABHA Error =>', e);
@@ -238,9 +254,9 @@ const DetailsScreen = ({ route }: any) => {
 
   return (
     <SafeAreaView style={[styles.container, {
-      backgroundColor : ERP_COLOR_CODE.ERP_APP_COLOR
+      backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
     }]}>
-      
+
 
       <ScrollView
         stickyHeaderIndices={[0]}
@@ -262,42 +278,31 @@ const DetailsScreen = ({ route }: any) => {
               <View style={styles.profileTop}>
                 <View>
 
-                   {getValue("profilephoto") ? (
+                  {getValue("profilephoto") ? (
+                    <Image
+                      source={{
+                        uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/profilephoto.jpeg?t=${Date.now()}`,
+                      }}
+                      style={styles.profileImage}
+                    />
+                  ) : (
+                    <View style={styles.profilePlaceholder}>
+                      <MaterialIcons
+                        name="person"
+                        size={42}
+                        color="#FFFFFF"
+                      />
+                    </View>
+                  )}
+                  <View style={{ height: 4 }} />
                   <Image
                     source={{
-                      uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/profilephoto.jpeg?t=${Date.now()}`,
+                      uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/qrcode.jpeg?t=${Date.now()}`,
                     }}
                     style={styles.profileImage}
                   />
-                ) : (
-                  <View style={styles.profilePlaceholder}>
-                    <MaterialIcons
-                      name="person"
-                      size={42}
-                      color="#FFFFFF"
-                    />
-                  </View>
-                )}
-                <View style={{height: 4}}/>
-                {getValue("kycphoto") ? (
-                  <Image
-                    source={{
-                      uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/250px-QR_code_for_mobile_English_Wikipedia.svg.png'
-                      // uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/kycphoto.jpeg?t=${Date.now()}`,
-                    }}
-                    style={styles.profileImage}
-                  />
-                ) : (
-                  <View style={styles.profilePlaceholder}>
-                    <MaterialIcons
-                      name="person"
-                      size={42}
-                      color="#FFFFFF"
-                    />
-                  </View>
-                )}
                 </View>
-                
+
 
                 <View style={{ flex: 1, marginLeft: 16 }}>
 
@@ -520,7 +525,7 @@ const DetailsScreen = ({ route }: any) => {
               <DetailItem
                 icon="badge"
                 label="ABHA Address"
-                value={getValue("abhaaddress")}
+                value={getValue("preferredabhaaddress")}
               />
 
             </View>
@@ -717,7 +722,7 @@ const DetailsScreen = ({ route }: any) => {
                     </View>
 
                     <Text style={styles.dateTitle}>
-                      ABHA Creation Date
+                      Creation Date
                     </Text>
                   </View>
 
@@ -779,9 +784,10 @@ const DetailsScreen = ({ route }: any) => {
           >
             <View style={styles.qrCard}>
               <Image
-                source={{ uri: 'https://wordpresscmsprodstor.blob.core.windows.net/wp-cms/2022/03/2-1.webp' }}
+                source={{
+                  uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/abhacard.jpeg?t=${Date.now()}`,
+                }}
                 style={styles.qrImage}
-                resizeMode="contain"
               />
 
               <Text style={styles.qrInfo}>
@@ -794,8 +800,8 @@ const DetailsScreen = ({ route }: any) => {
                 style={styles.shareBtn}
                 activeOpacity={0.8}
                 onPress={async () => {
-                  const pdfPath = await downloadPDF('https://pdfobject.com/pdf/sample.pdf');
-                  await sharePDF(pdfPath);
+                  let uri = `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/abhacard.jpeg?t=${Date.now()}`;
+                  await shareImage(uri)
                 }}
               >
                 <MaterialIcons
@@ -1065,7 +1071,7 @@ const styles = StyleSheet.create({
 
   qrImage: {
     width: Dimensions.get('screen').width - 20,
-    height: 200,
+    height: 300,
   },
 
   qrInfo: {
