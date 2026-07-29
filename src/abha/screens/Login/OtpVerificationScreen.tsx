@@ -30,9 +30,7 @@ import { showToast } from '../../utils/toast';
 import { getLoginVerifyUserPayload, useLoginVerifyUserMutation } from '../../redux/api/loginVerifyUserApi';
 import { useLazyProfileAccountQuery } from '../../redux/api/profileAccountApi';
 import { setTToken, setTxnId } from '../../redux/slices/abhaSlice';
-import { useSavePageMutation } from '../../redux/api/savePageApi';
-import { useLazyProfileQrCodeQuery } from '../../redux/api/qrCodeApi';
-import { useLazyProfileAbhaCardQuery } from '../../redux/api/abhaCardApi';
+import { useSavePageMutation } from '../../redux/api/savePageApi'; 
 import { useAbhaAddressRequestOtpMutation } from '../../redux/api/abhaAddressLoginApi';
 import { useAbhaAddressVerifyOtpMutation } from '../../redux/api/abhaAddressVerifyApi';
 import { useLazyAbhaProfileQuery } from '../../redux/api/profileByTokenApi';
@@ -40,6 +38,7 @@ import { ERP_COLOR_CODE } from '../../../utils/constants';
 import AccountList from './AccountList';
 import { BASE_URL_API, generateGUID } from '../../utils/helpers';
 import { END_POINTS } from '../../redux/api/end_points';
+import { useCreateSessionMutation } from '../../redux/api/sessionApi';
 
 const OtpVerificationScreen = () => {
   const navigation = useNavigation<any>();
@@ -48,11 +47,6 @@ const OtpVerificationScreen = () => {
   const [savePage] =
     useSavePageMutation();
 
-  const [getQrCode] =
-    useLazyProfileQrCodeQuery();
-
-  const [getAbhaCard] =
-    useLazyProfileAbhaCardQuery();
   const [
     abhaAddressRequestOtp
   ] = useAbhaAddressRequestOtpMutation();
@@ -67,7 +61,6 @@ const OtpVerificationScreen = () => {
   const token = useSelector(
     (state: any) => state.abhaauth.accessToken
   );
-
   const txnId = useSelector(
     (state: any) => state.abha.txnId
   );
@@ -75,8 +68,8 @@ const OtpVerificationScreen = () => {
 
   const [loginVerify, { isLoading }] =
     useLoginVerifyMutation();
-  const [requestOtp] = useRequestOtpMutation
-    ();
+
+  const [requestOtp] = useRequestOtpMutation();
   const [
     loginVerifyUser,
   ] = useLoginVerifyUserMutation();
@@ -112,7 +105,9 @@ const OtpVerificationScreen = () => {
   const [
     verifyAbhaOtp
   ] = useAbhaAddressVerifyOtpMutation();
-
+  const [
+    createSession
+  ] = useCreateSessionMutation();
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
@@ -139,6 +134,8 @@ const OtpVerificationScreen = () => {
     setResendCount(prev => prev + 1);
     if (loginType === 'ABHA Address') {
       try {
+        await createSession()
+          .unwrap();
         const result = await abhaAddressRequestOtp(payload).unwrap();
 
         console.log("result+++++++++++++++", result)
@@ -204,6 +201,8 @@ const OtpVerificationScreen = () => {
     try {
       dispatch(showLoader());
       setTimer(120);
+      await createSession()
+        .unwrap();
       const encryptedValue =
         encryptData(
           loginValue,
@@ -249,20 +248,98 @@ const OtpVerificationScreen = () => {
 
   };
 
+  const getProfileQrCode = async (endpoints: any) => {
+    try {
+      const response = await fetch(
+        `${BASE_URL_API}${endpoints}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "X-token": `Bearer ${xtoken}`,
+            "REQUEST-ID": generateGUID(),
+            "TIMESTAMP": new Date().toISOString(),
+          },
+        }
+      );
+
+      console.log("Status =>", response.status);
+
+      console.log(
+        "Content-Type =>",
+        response.headers.get("content-type")
+      );
+
+
+      const contentType = response.headers.get("content-type");
+      console.log("contentTypecontentTypecontentTypecontentType", contentType)
+
+      if (
+        contentType?.includes("image")
+      ) {
+
+        const buffer = await response.arrayBuffer();
+
+        const bytes = new Uint8Array(buffer);
+
+
+        let binary = "";
+
+        bytes.forEach((byte) => {
+          binary += String.fromCharCode(byte);
+        });
+
+
+        const base64 = `data:${contentType};base64,${btoa(binary)}`;
+
+
+        console.log(
+          "BASE64 IMAGE =>",
+          base64.substring(0, 100)
+        );
+
+
+        return base64;
+
+      }
+
+
+      const text = await response.text();
+
+      console.log(
+        "TEXT RESPONSE =>",
+        text
+      );
+
+
+      return text;
+
+
+    } catch (error) {
+
+      console.log(
+        "QR ERROR =>",
+        error
+      );
+
+      throw error;
+    }
+  };
+
   const hanldeAbhaProfile = async () => {
-   dispatch(showLoader())
+    dispatch(showLoader())
     if (!selectedAccount) {
       showToast('error', "Abha selection", 'Please selecte profile')
       return;
     }
 
     console.log("selectedAccountselectedAccountselectedAccount", selectedAccount)
-
+    await createSession()
+      .unwrap();
     const responseProfile: any =
       await getProfileAccount();
 
     const res = responseProfile?.data;
-
     const payloadRow = {
       "patientabhaid": "",
       "abhanumber": res?.ABHANumber,
@@ -312,16 +389,26 @@ const OtpVerificationScreen = () => {
       "date": res?.createdDate
     }
 
-    const resQRCode = await getQrCode();
-    console.log("resQRCoderesQRCoderesQRCode1111111", resQRCode)
-
-    const resABHACard = await getAbhaCard();
-
-    console.log("resABHACardresABHACard11111111", resABHACard)
-    if (payloadRow) {
-      payloadRow.qccode = `qrCode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
-      payloadRow.abhacard = `abhaCard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
+    try {
+      const qrResponse = await getProfileQrCode(END_POINTS.profileQrCode);
+      payloadRow.qrcode = `qrCode.jpeg; ${qrResponse}`;
+    } catch (error) {
+      console.log(
+        "QR API FAILED =>",
+        error
+      );
     }
+
+    try {
+      const qrResponse = await getProfileQrCode(END_POINTS.profileAbhaCard);
+      payloadRow.abhacard = `abhaCard.jpeg; ${qrResponse}`;
+    } catch (error) {
+      console.log(
+        "QR API FAILED =>",
+        error
+      );
+    }
+
     const payloadData = {
       token: activeUser?.token,
       page: "PatientABHAProfile",
@@ -339,7 +426,7 @@ const OtpVerificationScreen = () => {
     }
   }
   const handleVerify = async () => {
-     dispatch(showLoader())
+    dispatch(showLoader())
     console.log("handleVerifyhandleVerifyhandleVerifyhandleVerify", loginValue, loginType, otpMethod)
     if (otp.length !== 6) {
       showToast(
@@ -352,6 +439,8 @@ const OtpVerificationScreen = () => {
     if (loginType === 'ABHA Address') {
       try {
         if (otpMethod === 'Aadhaar OTP') {
+          await createSession()
+            .unwrap();
           const encryptedOtp =
             encryptData(
               otp,
@@ -384,29 +473,29 @@ const OtpVerificationScreen = () => {
               response?.message || "Verification successful"
             );
 
-              try {
-  const r1 = await fetch(
-    `${BASE_URL_API}${END_POINTS.profileQrCode}`,
-    {
-      method: "GET",
-      headers: {
-        "X-token": `Bearer ${response?.tokens?.token}`,
-        Authorization: `Bearer ${token}`,
-        "REQUEST-ID": generateGUID(),
-        TIMESTAMP: new Date().toISOString(),
-      },
-    }
-  );
+            //               try {
+            //   const r1 = await fetch(
+            //     `${BASE_URL_API}${END_POINTS.profileQrCode}`,
+            //     {
+            //       method: "GET",
+            //       headers: {
+            //         "X-token": `Bearer ${response?.tokens?.token}`,
+            //         Authorization: `Bearer ${token}`,
+            //         "REQUEST-ID": generateGUID(),
+            //         TIMESTAMP: new Date().toISOString(),
+            //       },
+            //     }
+            //   );
 
-  console.log("Status =>", r1.status);
-  console.log("OK =>", r1.ok);
+            //   console.log("Status =>", r1.status);
+            //   console.log("OK =>", r1.ok);
 
-  const body = await r1.text();
-  console.log("Body =>", body);
+            //   const body = await r1.text();
+            //   console.log("Body =>", body);
 
-} catch (error) {
-  console.log("Fetch Error =>", error);
-}
+            // } catch (error) {
+            //   console.log("Fetch Error =>", error);
+            // }
 
             const responseProfile: any = await getAbhaProfile({
               json_web_token: response?.tokens?.token,
@@ -467,21 +556,25 @@ const OtpVerificationScreen = () => {
 
             }
 
-        
-
-
-            const resQRCode = await getQrCode();
-            console.log("resQRCoderesQRCoderesQRCode2222222", resQRCode)
-
-            const resABHACard = await getAbhaCard();
-
-            console.log("resABHACardresABHACard2222222", resABHACard)
-
-            if (payloadRow) {
-              payloadRow.qrcode = `qrcode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
-              payloadRow.abhacard = `abhacard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
+            try {
+              const qrResponse = await getProfileQrCode(END_POINTS.profileQrCode);
+              payloadRow.qrcode = `qrCode.jpeg; ${qrResponse}`;
+            } catch (error) {
+              console.log(
+                "QR API FAILED =>",
+                error
+              );
             }
 
+            try {
+              const qrResponse = await getProfileQrCode(END_POINTS.profileAbhaCard);
+              payloadRow.abhacard = `abhaCard.jpeg; ${qrResponse}`;
+            } catch (error) {
+              console.log(
+                "QR API FAILED =>",
+                error
+              );
+            }
             const payloadData = {
               token: activeUser?.token,
               page: "PatientABHAProfile",
@@ -509,6 +602,8 @@ const OtpVerificationScreen = () => {
           }
 
         } else if (otpMethod === 'Mobile OTP') {
+          await createSession()
+            .unwrap();
           const encryptedOtp =
             encryptData(
               otp,
@@ -596,16 +691,24 @@ const OtpVerificationScreen = () => {
 
             }
 
-            const resQRCode = await getQrCode();
-            console.log("resQRCoderesQRCoderesQRCode3333333333", resQRCode)
+            try {
+              const qrResponse = await getProfileQrCode(END_POINTS.profileQrCode);
+              payloadRow.qrcode = `qrCode.jpeg; ${qrResponse}`;
+            } catch (error) {
+              console.log(
+                "QR API FAILED =>",
+                error
+              );
+            }
 
-            const resABHACard = await getAbhaCard();
-
-            console.log("resABHACardresABHACard3333333333", resABHACard)
-
-            if (payloadRow) {
-              payloadRow.qrcode = `qrcode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
-              payloadRow.abhacard = `abhacard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
+            try {
+              const qrResponse = await getProfileQrCode(END_POINTS.profileAbhaCard);
+              payloadRow.abhacard = `abhaCard.jpeg; ${qrResponse}`;
+            } catch (error) {
+              console.log(
+                "QR API FAILED =>",
+                error
+              );
             }
 
             const payloadData = {
@@ -640,6 +743,8 @@ const OtpVerificationScreen = () => {
 
     try {
       console.log('OTP:------------------', otp, txnId);
+      await createSession()
+        .unwrap();
       const encryptedValue =
         encryptData(
           otp,

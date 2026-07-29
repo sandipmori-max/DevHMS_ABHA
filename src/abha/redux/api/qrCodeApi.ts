@@ -42,42 +42,15 @@ export const profileQrCodeApi =
               },
             };
           }
-          const url = `${BASE_URL_API}${END_POINTS.profileQrCode}`;
-
-          const headers = {
-            'X-token': `Bearer ${xtoken}`,
-          };
-
-                      console.log(`
-            ================== CURL ==================
-
-            curl --location '${url}' \\
-            --header 'X-token: Bearer ${xtoken}'
-
-            ==========================================
-            `);
-
-          console.log('URL =>', url);
-          console.log('Method => GET');
-          console.log('Headers =>', JSON.stringify(headers, null, 2));
-
-          const result = await baseQuery({
-            url,
-            method: 'GET',
-            headers,
+          
+          return await baseQuery({
+            url: `${BASE_URL_API}${END_POINTS.profileQrCode}`,
+            method: "GET",
+              headers: {
+                "X-token":
+                  `Bearer ${xtoken}`,
+               }
           });
-
-          console.log('Response =>', JSON.stringify(result, null, 2));
-
-          return result;
-          // return await baseQuery({
-          //   url: `${BASE_URL_API}${END_POINTS.profileQrCode}`,
-          //   method: "GET",
-          //     headers: {
-          //       "X-token":
-          //         `Bearer ${xtoken}`
-          //     }
-          // });
         },
 
         async onQueryStarted(

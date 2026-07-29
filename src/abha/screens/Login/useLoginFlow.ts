@@ -14,6 +14,8 @@ import {
     TERMS_TWO,
     TERMS_FOUR,
     TERMS_FIVE,
+    BASE_URL_API,
+    generateGUID,
 } from "../../utils/helpers";
 
 import { LOGIN_TYPES, VALIDATION_METHODS } from "../../utils/constants";
@@ -70,15 +72,10 @@ import {
     useSavePageMutation,
 } from "../../redux/api/savePageApi";
 
-import {
-    useLazyProfileQrCodeQuery,
-} from "../../redux/api/qrCodeApi";
-
-import {
-    useLazyProfileAbhaCardQuery,
-} from "../../redux/api/abhaCardApi";
 import { useNavigation } from '@react-navigation/native';
 import { setTToken } from "../../redux/slices/abhaSlice";
+import { useCreateSessionMutation } from "../../redux/api/sessionApi";
+import { END_POINTS } from "../../redux/api/end_points";
 
 interface UseLoginFlowProps {
     loginType: string;
@@ -105,14 +102,25 @@ export const useLoginFlow = ({
         (state: any) => state.abhaauth.publicKey
     );
 
+     const xtoken = useSelector(
+        (state: any) => state.abha.tToken
+      );
+      const token = useSelector(
+        (state: any) => state.abhaauth.accessToken
+      );
+
     const activeUser = useSelector(
-    (state: any) => state.auth.user
-  );
-    const { 
+        (state: any) => state.auth.user
+    );
+    const {
         txnId,
     } = useSelector((state: any) => state.abha);
 
     const stepTwoRef = useRef<any>(null);
+
+    const [
+        createSession
+    ] = useCreateSessionMutation();
 
     const [requestOtp] =
         useRequestOtpMutation();
@@ -143,12 +151,6 @@ export const useLoginFlow = ({
 
     const [savePage] =
         useSavePageMutation();
-
-    const [getQrCode] =
-        useLazyProfileQrCodeQuery();
-
-    const [getAbhaCard] =
-        useLazyProfileAbhaCardQuery();
 
     const [stepOne, setStepOne] = useState({
         aadhaarNumber: "",
@@ -274,6 +276,84 @@ export const useLoginFlow = ({
         [isFromRegister]
     );
 
+    const getProfileQrCode = async (endpoints: any) => {
+        try {
+          const response = await fetch(
+            `${BASE_URL_API}${endpoints}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "X-token": `Bearer ${xtoken}`,
+                "REQUEST-ID": generateGUID(),
+                "TIMESTAMP": new Date().toISOString(),
+              },
+            }
+          );
+    
+          console.log("Status =>", response.status);
+    
+          console.log(
+            "Content-Type =>",
+            response.headers.get("content-type")
+          );
+    
+    
+          const contentType = response.headers.get("content-type");
+          console.log("contentTypecontentTypecontentTypecontentType", contentType)
+    
+          if (
+            contentType?.includes("image")
+          ) {
+    
+            const buffer = await response.arrayBuffer();
+    
+            const bytes = new Uint8Array(buffer);
+    
+    
+            let binary = "";
+    
+            bytes.forEach((byte) => {
+              binary += String.fromCharCode(byte);
+            });
+    
+    
+            const base64 = `data:${contentType};base64,${btoa(binary)}`;
+    
+    
+            console.log(
+              "BASE64 IMAGE =>",
+              base64.substring(0, 100)
+            );
+    
+    
+            return base64;
+    
+          }
+    
+    
+          const text = await response.text();
+    
+          console.log(
+            "TEXT RESPONSE =>",
+            text
+          );
+    
+    
+          return text;
+    
+    
+        } catch (error) {
+    
+          console.log(
+            "QR ERROR =>",
+            error
+          );
+    
+          throw error;
+        }
+      };
+
     const shouldShowTerms = useMemo(() => {
         return (
             isFromForgotAbhaNumber ||
@@ -334,6 +414,8 @@ export const useLoginFlow = ({
             return;
         }
 
+        await createSession()
+            .unwrap();
         const encryptedOtp = encryptData(
             stepOneDL.stepOneDLOTP,
             publicKey
@@ -363,6 +445,8 @@ export const useLoginFlow = ({
     const handleProfile = async (
         responseProfile: any,
     ) => {
+        await createSession()
+            .unwrap();
         let payloadRow = getPayloadForProfile(
             stepOne,
             stepTwo,
@@ -373,15 +457,25 @@ export const useLoginFlow = ({
             txnId
         );
 
-        const resQRCode = await getQrCode();
-        const resABHACard = await getAbhaCard();
-
-        if (payloadRow) {
-            payloadRow.qrCode = `qrCode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
-            payloadRow.abhaCard = `abhaCard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
-        }
-        console.log("resQRCode + + + + + + + + + + + + + + + +", resQRCode)
-        console.log("abhaCard + + + + + + + + + + + + + + + +", resABHACard)
+        try {
+             const qrResponse = await getProfileQrCode(END_POINTS.profileQrCode);
+             payloadRow.qrcode = `qrCode.jpeg; ${qrResponse}`;
+           } catch (error) {
+             console.log(
+               "QR API FAILED =>",
+               error
+             );
+           }
+       
+           try {
+             const qrResponse = await getProfileQrCode(END_POINTS.profileAbhaCard);
+             payloadRow.abhacard = `abhaCard.jpeg; ${qrResponse}`;
+           } catch (error) {
+             console.log(
+               "QR API FAILED =>",
+               error
+             );
+           }
         const payloadData = {
             token: activeUser?.token,
             page: "PatientABHAProfile",
@@ -443,7 +537,8 @@ export const useLoginFlow = ({
         }
 
         console.log("loginValueloginValueloginValueloginValue", loginValue)
-        
+        await createSession()
+            .unwrap();
         const encryptedValue = encryptData(
             stepOne?.aadhaarNumber,
             publicKey
@@ -494,7 +589,8 @@ export const useLoginFlow = ({
                 setShowValidationSheet(true)
                 return;
             }
-
+            await createSession()
+                .unwrap();
             const encryptedOtp = encryptData(
                 stepTwo.stepTwoOTP,
                 publicKey
@@ -516,7 +612,7 @@ export const useLoginFlow = ({
                 result?.ABHAProfile?.isNew === false || result?.ABHAProfile?.isNew === 'false'
             ) {
                 const responseProfile =
-                await getProfileAccount();
+                    await getProfileAccount();
                 await handleProfile(responseProfile);
                 return;
             }
@@ -543,7 +639,8 @@ export const useLoginFlow = ({
                 setShowValidationSheet(true)
                 return;
             }
-
+            await createSession()
+                .unwrap();
             const encryptedOtp = encryptData(
                 stepThree.stepThreeMobileOTP,
                 publicKey
@@ -583,6 +680,8 @@ export const useLoginFlow = ({
             stepThree.stepThreeEmailVarifying &&
             !stepThree.stepThreeEmailVarifyDone
         ) {
+            await createSession()
+                .unwrap();
             const response = await enrolSuggestion({
                 txnId,
             }).unwrap();
@@ -610,7 +709,8 @@ export const useLoginFlow = ({
             setShowValidationSheet(true)
             return;
         }
-
+        await createSession()
+            .unwrap();
         await enrolAbhaAddress(
             getEnrolAbhaAddressPayload(
                 txnId,
@@ -738,9 +838,7 @@ export const useLoginFlow = ({
         enrolAbhaAddress,
         getProfileAccount,
         dlEnrollmentRequestOtp,
-        savePage,
-        getQrCode,
-        getAbhaCard,
+        savePage, 
 
         // Helpers
         handleSelect,
