@@ -169,7 +169,7 @@ const CustomSplashScreen: React.FC<SplashProps> = ({ onFinish }) => {
               <Text style={styles.title}>DevHMS</Text>
     
               <Text style={styles.subtitle}>
-                Your Digital Health Identity
+               Care • Trust • Health
               </Text>
             </View>
     

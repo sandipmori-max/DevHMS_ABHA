@@ -348,19 +348,19 @@ const DetailsScreen = ({ route }: any) => {
                       />
                     </View>
                   )}
-                  <View style={{ height: 4 }} />
-                 <TouchableOpacity onPress={() => {
-                      setModalVisible(true);
-                      setImageUri(`${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/qrcode.jpeg?t=${Date.now()}`)
-                    }}>
-  <Image
-                    source={{
-                      uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/qrcode.jpeg?t=${Date.now()}`,
-                    }}
-                    style={styles.profileImage}
-                  />
+                  <View style={{ height: 8 }} />
+                  <TouchableOpacity onPress={() => {
+                    setModalVisible(true);
+                    setImageUri(`${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/qrcode.jpeg?t=${Date.now()}`)
+                  }}>
+                    <Image
+                      source={{
+                        uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/qrcode.jpeg?t=${Date.now()}`,
+                      }}
+                      style={styles.profileImage}
+                    />
                   </TouchableOpacity>
-                
+
                 </View>
 
 
@@ -370,6 +370,15 @@ const DetailsScreen = ({ route }: any) => {
                     numberOfLines={1}
                     style={[styles.profileName,]}>
                     {getValue("firstname")} {getValue("middlename")} {getValue("lastname")}
+                  </Text>
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      color: '#7eadf5',
+                      fontSize: 14
+                    }}
+                     >
+                    {getValue("localizedname")}
                   </Text>
 
                   <Text style={styles.profileLabel}>
@@ -843,12 +852,19 @@ const DetailsScreen = ({ route }: any) => {
             onClose={() => setOpen(false)}
           >
             <View style={styles.qrCard}>
-              <Image
-                source={{
-                  uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/abhacard.jpeg?t=${Date.now()}`,
-                }}
-                style={styles.qrImage}
-              />
+              <TouchableOpacity onPress={() => {
+                setOpen(false)
+                setModalVisible(true);
+                setImageUri(`${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/abhacard.jpeg?t=${Date.now()}`)
+              }}>
+                <Image
+                  source={{
+                    uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/abhacard.jpeg?t=${Date.now()}`,
+                  }}
+                  style={styles.qrImage}
+                />
+              </TouchableOpacity>
+
 
               <Text style={styles.qrInfo}>
                 The client's ABHA has been created successfully. You can now view the ABHA details and download the ABHA card.

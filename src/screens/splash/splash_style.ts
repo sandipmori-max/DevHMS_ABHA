@@ -91,12 +91,14 @@ subtitle: {
     fontWeight: "700",
     color: "#003366",
     marginTop: 20,
+    fontFamily: "Handlee-Regular",
   },
 
   subtitle: {
     marginTop: 10,
     color: "#64748B",
     fontSize: 16,
+    fontFamily: "Handlee-Regular",
   },
 
   loaderSection: {

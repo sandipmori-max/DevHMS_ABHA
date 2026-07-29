@@ -2,6 +2,40 @@
 
 // Multiple build creation with different Name + icon + package name
 // https://www.devglan.com/online-tools/rsa-encryption-decryption
+
+
+
+Calendar Training Video
+https://vimeo.com/934288015
+https://vimeo.com/934288389
+OPD Training Video
+https://vimeo.com/936908199
+https://vimeo.com/934288467
+https://vimeo.com/936908143
+https://vimeo.com/936905010
+IPD Training Video
+https://vimeo.com/936904816
+https://vimeo.com/936909213
+https://vimeo.com/936904763
+Pharmacy Training Video
+https://vimeo.com/937003651
+Laboratory Training Video
+
+https://vimeo.com/936906783
+https://vimeo.com/936906857
+https://vimeo.com/936906916
+
+Assets Training Video
+https://drive.google.com/file/d/1dfVDe29iYoJYuKVRYU39fD1KJTu5pFDd/view?usp=sharing
+Pharmacy Store 
+https://drive.google.com/file/d/1XScxAJkZz7sBRS0UOR__W-HKW9dA-g-P/view?usp=sharing
+
+HRMS Training Video
+https://drive.google.com/file/d/1mAsESi-brgs7voZlA2LtwvN1WSeOvITo/view?usp=sharing
+Tally Video
+https://drive.google.com/file/d/1w8GykSDthCeUZ26ZyJiaxILFmjHYoRM0/view?usp=drive_link
+
+
 <!-- aa = 5412 4551 2032  sandip -->
 
 <!-- 
@@ -20,6 +54,8 @@
 
 9133 6608 745277
 -->
+
+https://www.youtube.com/watch?v=X2dvWFUz0Dw&list=PLwqlnoMfDnuAf701JHZoF_6C3A9JHNYr8
 
 // 
 
