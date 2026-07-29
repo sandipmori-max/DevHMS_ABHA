@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -10,6 +10,9 @@ import {
   TouchableOpacity,
   StatusBar,
   Platform,
+  Modal,
+  Animated,
+  PanResponder,
 } from "react-native";
 import Header from "../Components/Header";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
@@ -38,7 +41,14 @@ const DetailsScreen = ({ route }: any) => {
   const baseURL = useSelector((state: any) => state.auth.user?.companyLink)
   const baseUrl = baseURL.substring(0, baseURL.lastIndexOf("/") + 1);
   const url = new URL(baseUrl).origin;
+  const [imageUri, setImageUri] = useState<string | null>(null);
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const scale = useRef(new Animated.Value(1)).current;
+  const translateX = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(0)).current;
+  const lastScale = useRef(1);
+  const lastTranslate = useRef({ x: 0, y: 0 });
   const [generateLinkToken, { isLoading }] =
     useGenerateLinkTokenMutation();
 
@@ -69,6 +79,35 @@ const DetailsScreen = ({ route }: any) => {
     fetchProfile();
   }, [route]);
 
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderMove: (evt, gesture) => {
+        if (gesture.numberActiveTouches === 1) {
+          translateX.setValue(lastTranslate.current.x + gesture.dx);
+          translateY.setValue(lastTranslate.current.y + gesture.dy);
+        } else if (gesture.numberActiveTouches === 2) {
+          const touches = evt.nativeEvent.touches;
+          const dx = touches[0].pageX - touches[1].pageX;
+          const dy = touches[0].pageY - touches[1].pageY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (!lastScale.currentDistance) lastScale.currentDistance = distance;
+          const scaleFactor = distance / lastScale.currentDistance;
+          scale.setValue(
+            Math.max(1, Math.min(3, lastScale.current * scaleFactor)),
+          );
+        }
+      },
+      onPanResponderRelease: (_, gesture) => {
+        lastTranslate.current.x += gesture.dx;
+        lastTranslate.current.y += gesture.dy;
+        lastScale.current = scale.__getValue();
+        lastScale.currentDistance = undefined;
+      },
+    }),
+  ).current;
 
   const getValue = (fieldName: any) => {
     if (abhaDetail.length === 0) {
@@ -209,6 +248,15 @@ const DetailsScreen = ({ route }: any) => {
     showToast('success', 'Copied!!')
   };
 
+  const zoomIn = () => {
+    scale.setValue(Math.min(3, scale.__getValue() + 0.2));
+    lastScale.current = scale.__getValue();
+  };
+
+  const zoomOut = () => {
+    scale.setValue(Math.max(1, scale.__getValue() - 0.2));
+    lastScale.current = scale.__getValue();
+  };
   const handleLinkAbha = async () => {
     try {
 
@@ -279,12 +327,18 @@ const DetailsScreen = ({ route }: any) => {
                 <View>
 
                   {getValue("profilephoto") ? (
-                    <Image
-                      source={{
-                        uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/profilephoto.jpeg?t=${Date.now()}`,
-                      }}
-                      style={styles.profileImage}
-                    />
+                    <TouchableOpacity onPress={() => {
+                      setModalVisible(true);
+                      setImageUri(`${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/profilephoto.jpeg?t=${Date.now()}`)
+                    }}>
+                      <Image
+                        source={{
+                          uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/profilephoto.jpeg?t=${Date.now()}`,
+                        }}
+                        style={styles.profileImage}
+                      />
+                    </TouchableOpacity>
+
                   ) : (
                     <View style={styles.profilePlaceholder}>
                       <MaterialIcons
@@ -295,12 +349,18 @@ const DetailsScreen = ({ route }: any) => {
                     </View>
                   )}
                   <View style={{ height: 4 }} />
-                  <Image
+                 <TouchableOpacity onPress={() => {
+                      setModalVisible(true);
+                      setImageUri(`${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/qrcode.jpeg?t=${Date.now()}`)
+                    }}>
+  <Image
                     source={{
                       uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/qrcode.jpeg?t=${Date.now()}`,
                     }}
                     style={styles.profileImage}
                   />
+                  </TouchableOpacity>
+                
                 </View>
 
 
@@ -855,7 +915,87 @@ const DetailsScreen = ({ route }: any) => {
           fontWeight: '600'
         }}>Link ABHA</Text>
       </TouchableOpacity>
+      {modalVisible && (
+        <Modal
+          supportedOrientations={["portrait", "landscape"]}
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            scale.setValue(1);
+            translateX.setValue(0);
+            translateY.setValue(0);
+            lastTranslate.current = { x: 0, y: 0 };
+            lastScale.current = 1;
+            setModalVisible(false);
+          }}
+        >
+          <View
+            style={[
+              styles.fullscreenModalOverlay,
 
+            ]}
+          >
+            <View
+              style={[
+                styles.fullscreenModalContent,
+                {
+                  width: "100%",
+                },
+              ]}
+            >
+
+
+              <TouchableOpacity
+                style={styles.closeBtn}
+                onPress={() => {
+                  scale.setValue(1);
+                  translateX.setValue(0);
+                  translateY.setValue(0);
+                  lastTranslate.current = { x: 0, y: 0 };
+                  lastScale.current = 1;
+                  setModalVisible(false);
+                }}
+              >
+                <MaterialIcons
+                  name="close"
+                  size={30}
+                  color={'white'}
+                />
+              </TouchableOpacity>
+
+
+
+              <Animated.View
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  transform: [{ scale }, { translateX }, { translateY }],
+                }}
+                {...panResponder.panHandlers}
+              >
+                <Image
+                  source={{
+                    uri: imageUri,
+                  }}
+                  style={styles.fullscreenImage}
+                  resizeMode="contain"
+
+                />
+              </Animated.View>
+
+              <View style={styles.zoomControls}>
+                <TouchableOpacity style={styles.zoomBtn} onPress={zoomIn}>
+                  <MaterialIcons name="zoom-in" size={28} color="#000" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.zoomBtn} onPress={zoomOut}>
+                  <MaterialIcons name="zoom-out" size={28} color="#000" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
     </SafeAreaView>
   );
 };
@@ -867,6 +1007,85 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F7FA",
 
   },
+  zoomBtn: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  zoomControls: {
+    position: "absolute",
+    bottom: 40,
+    flexDirection: "row",
+    gap: 16,
+
+    backgroundColor: "rgba(255,255,255,0.9)",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 30,
+
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  fullscreenImage: {
+    width: "100%",
+    height: "100%",
+  },
+  closeBtn: {
+    position: "absolute",
+    top: 80,
+    right: 20,
+    zIndex: 20,
+
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    justifyContent: "center",
+    alignItems: "center",
+
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 6,
+  },
+  closeBtnShare: {
+    position: "absolute",
+    top: 80,
+    right: 80,
+    zIndex: 20,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    justifyContent: "center",
+    alignItems: "center",
+
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 6,
+  },
+  fullscreenModalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.92)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fullscreenModalContent: {
+    flex: 1,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
   avatar: {
     width: 60,
     height: 60,
