@@ -63,6 +63,7 @@ import GroupFilterModal from "./components/GroupFilterModal";
 import SortingFilterModal from "./components/SortingFilterModal";
 import DeviceInfo from "react-native-device-info";
 import { ABHA_ICON } from "../../../assets";
+import { useBaseLink } from "../../../hooks/useBaseLink";
 
 const ListScreen = () => {
   const route = useRoute<RouteProp<ListRouteParams, "List">>();
@@ -166,6 +167,7 @@ const ListScreen = () => {
     // 'Driving Licence',
   ];
   const sheetAnim = useRef(new Animated.Value(400)).current;
+  const baseLink = useBaseLink();
   const optionList = bottomSheetType === 'Login' ? loginOptions : registerOptions;
   const [selectedLoginType, setSelectedLoginType] = useState();
   const panResponder = useRef(
@@ -1619,8 +1621,12 @@ const ListScreen = () => {
 
             <View style={styles.logo}>
               <Image
-                source={ABHA_ICON.ABHA_LOGO}
-                style={{ height: 60, width: 80, alignSelf: 'center' }}
+                source={{
+                  uri: `${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`,
+                }}
+                style={{
+                  top : 5,
+                  height: 60, width: 80, alignSelf: 'center' }}
                 resizeMode="contain"
               />
             </View>
@@ -1666,7 +1672,7 @@ const ListScreen = () => {
                           styles.radioOuter,
                           selected &&
                           {
-                             borderColor:  ERP_COLOR_CODE.ERP_APP_COLOR
+                            borderColor: ERP_COLOR_CODE.ERP_APP_COLOR
                           },
                         ]}
                       >
@@ -1733,8 +1739,8 @@ const ListScreen = () => {
                     style={[
                       styles.option,
                       selected === "yes" && {
-                          borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-        backgroundColor: "#f6f1ed",
+                        borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                        backgroundColor: "#f6f1ed",
                       },
                     ]}
                     onPress={() => setSelected("yes")}
@@ -1745,7 +1751,7 @@ const ListScreen = () => {
                         styles.radioOuter,
                         selected === "yes" &&
                         {
-                          borderColor : ERP_COLOR_CODE.ERP_APP_COLOR
+                          borderColor: ERP_COLOR_CODE.ERP_APP_COLOR
                         },
                       ]}
                     >
@@ -1777,9 +1783,9 @@ const ListScreen = () => {
                     style={[
                       styles.option,
                       selected === "no" && {
-                          borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-        backgroundColor: "#f6f1ed",
-                      },,
+                        borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                        backgroundColor: "#f6f1ed",
+                      }, ,
                     ]}
                     onPress={() => setSelected("no")}
                   >
@@ -1787,9 +1793,9 @@ const ListScreen = () => {
                       style={[
                         styles.radioOuter,
                         selected === "no" &&
-                       {
+                        {
                           borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-                      },,
+                        }, ,
                       ]}
                     >
                       {selected === "no" && (
@@ -1818,9 +1824,9 @@ const ListScreen = () => {
                   disabled={!selected}
                   style={[
                     styles.button,
-                     {
-                          backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-                      },
+                    {
+                      backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                    },
                     !selected && styles.disabledButton,
                   ]}
                   onPress={handleContinue}

@@ -29,6 +29,7 @@ import { useAppSelector } from "../../store/hooks";
 import { ERP_COLOR_CODE } from "../../utils/constants";
 import { useGenerateLinkTokenMutation } from "../redux/api/linkAbhaApi";
 import { useNavigation } from "@react-navigation/native";
+import { useCreateSessionMutation } from "../redux/api/sessionApi";
 
 const DetailsScreen = ({ route }: any) => {
   const { item } = route.params || {};
@@ -51,6 +52,9 @@ const DetailsScreen = ({ route }: any) => {
   const lastTranslate = useRef({ x: 0, y: 0 });
   const [generateLinkToken, { isLoading }] =
     useGenerateLinkTokenMutation();
+const [
+        createSession
+    ] = useCreateSessionMutation();
 
   const [getPage] = useGetPageMutation();
   const { accounts, user } = useAppSelector((state) => state.auth);
@@ -261,6 +265,9 @@ const DetailsScreen = ({ route }: any) => {
     try {
 
       dispatch(showLoader())
+       await createSession()
+            .unwrap();
+            
       console.log("getValue(abhanumber)", getValue("abhanumber"))
       const payload = {
         abhaNumber: Number(

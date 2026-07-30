@@ -35,9 +35,16 @@ https://drive.google.com/file/d/1mAsESi-brgs7voZlA2LtwvN1WSeOvITo/view?usp=shari
 Tally Video
 https://drive.google.com/file/d/1w8GykSDthCeUZ26ZyJiaxILFmjHYoRM0/view?usp=drive_link
 
+Hello @161529492164829  Sir,
+Pls use below details to access product:
+
+URL: https://plus.curenearme.com
+User: sanganiravrl2017@gmail.com
+Password: sangani$1
 
 <!-- aa = 5412 4551 2032  sandip -->
-
+EC_1785410493574
+eka_dcefcc7d58cb4fe0805a6697
 <!-- 
 7619 8714 0371
 2865 6926 3981

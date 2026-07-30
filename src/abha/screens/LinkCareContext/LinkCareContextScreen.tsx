@@ -17,7 +17,9 @@ import { useNavigation } from "@react-navigation/native";
 import Header from '../../Components/Header';
 import { useLinkCareContextMutation } from '../../redux/api/linkCareContextApi';
 import { showToast } from '../../utils/toast';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useCreateSessionMutation } from '../../redux/api/sessionApi';
+import { hideLoader, showLoader } from '../../redux/slices/loaderSlice';
 
 const patient = {
     name: 'Sandip Test Test',
@@ -41,9 +43,14 @@ const LinkCareContextScreen = ({ route }: any) => {
     const baseURL = useSelector((state: any) => state.auth.user?.companyLink)
     const baseUrl = baseURL.substring(0, baseURL.lastIndexOf("/") + 1);
     const url = new URL(baseUrl).origin;
+  const dispatch = useDispatch();
 
     const [linkCareContext, { isLoading }] =
         useLinkCareContextMutation();
+    const [
+            createSession
+        ] = useCreateSessionMutation();
+
     const navigation = useNavigation();
     const [selectedRecords, setSelectedRecords] = useState<string[]>([]);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -152,6 +159,7 @@ const LinkCareContextScreen = ({ route }: any) => {
             showToast('error', 'Care contexts', 'Please select one')
             return;
         }
+         dispatch(showLoader())
         const selectedItems = careContextList.filter(item =>
             selectedIds.includes(item.referenceNumber),
         );
@@ -169,13 +177,16 @@ const LinkCareContextScreen = ({ route }: any) => {
         console.log(
             JSON.stringify(payload, null, 2),
         );
-
+        await createSession()
+            .unwrap();
         const response = await linkCareContext(payload).unwrap();
 
         console.log(
             'Link CareContext Response =>',
             response,
         );
+
+         dispatch(hideLoader())
     };
 
     const formatDate = (date: string) => {

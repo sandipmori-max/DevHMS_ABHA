@@ -563,9 +563,9 @@ export const styles = StyleSheet.create({
     },
     logo: {
         backgroundColor: 'white',
-        top: -30,
+        top: -50,
         position: 'absolute',
-        height: 100, width: 100, alignSelf: 'center',
+        height: 130, width: 90, alignSelf: 'center',
         borderRadius: 12,
     },
     header: {
