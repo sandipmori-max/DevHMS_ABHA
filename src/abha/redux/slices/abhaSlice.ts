@@ -9,7 +9,8 @@ const initialState = {
   activeUser: null,
   devERPBaseUrl: "",
   abhaDrProfile: "",
-  linkToken: ""
+  linkToken: "",
+  selectedXCMID:"",
 };
 
 const abhaSlice = createSlice({
@@ -25,7 +26,13 @@ const abhaSlice = createSlice({
       state.otpTxnId =
         action.payload;
     },
-
+setSelectedXCMID: (
+      state,
+      action
+    ) => {
+      state.selectedXCMID =
+        action.payload;
+    },
      setActiveUser: (
       state,
       action
@@ -129,7 +136,8 @@ export const {
   setDevERPBaseUrl,
   setAbhaDrProfile,
   updateAuthToken,
-  setLinkToken
+  setLinkToken,
+  setSelectedXCMID
 } = abhaSlice.actions;
 
 export default abhaSlice.reducer;

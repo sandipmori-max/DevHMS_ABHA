@@ -43,13 +43,13 @@ const LinkCareContextScreen = ({ route }: any) => {
     const baseURL = useSelector((state: any) => state.auth.user?.companyLink)
     const baseUrl = baseURL.substring(0, baseURL.lastIndexOf("/") + 1);
     const url = new URL(baseUrl).origin;
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
 
     const [linkCareContext, { isLoading }] =
         useLinkCareContextMutation();
     const [
-            createSession
-        ] = useCreateSessionMutation();
+        createSession
+    ] = useCreateSessionMutation();
 
     const navigation = useNavigation();
     const [selectedRecords, setSelectedRecords] = useState<string[]>([]);
@@ -155,38 +155,44 @@ const LinkCareContextScreen = ({ route }: any) => {
 
     const onLinkCareContext = async () => {
 
-        if (!selectedIds) {
-            showToast('error', 'Care contexts', 'Please select one')
-            return;
+        try {
+            if (!selectedIds) {
+                showToast('error', 'Care contexts', 'Please select one')
+                return;
+            }
+            dispatch(showLoader())
+            const selectedItems = careContextList.filter(item =>
+                selectedIds.includes(item.referenceNumber),
+            );
+
+            const payload = buildPayload(selectedItems, {
+                abhaNumber: getValue("abhanumber"),
+                abhaAddress: getValue("preferredabhaaddress"),
+                patientId: getValue("patientabhaid"),
+            });
+
+            console.log(
+                '========== LINK CARE CONTEXT PAYLOAD =========='
+            );
+
+            console.log(
+                JSON.stringify(payload, null, 2),
+            );
+            await createSession()
+                .unwrap();
+            const response = await linkCareContext(payload).unwrap();
+
+            console.log(
+                'Link CareContext Response =>',
+                response,
+            );
+
+        } catch (error) {
+            dispatch(hideLoader())
+
+        } finally {
+             dispatch(hideLoader())
         }
-         dispatch(showLoader())
-        const selectedItems = careContextList.filter(item =>
-            selectedIds.includes(item.referenceNumber),
-        );
-
-        const payload = buildPayload(selectedItems, {
-            abhaNumber: getValue("abhanumber"),
-            abhaAddress: getValue("preferredabhaaddress"),
-            patientId: getValue("patientabhaid"),
-        });
-
-        console.log(
-            '========== LINK CARE CONTEXT PAYLOAD =========='
-        );
-
-        console.log(
-            JSON.stringify(payload, null, 2),
-        );
-        await createSession()
-            .unwrap();
-        const response = await linkCareContext(payload).unwrap();
-
-        console.log(
-            'Link CareContext Response =>',
-            response,
-        );
-
-         dispatch(hideLoader())
     };
 
     const formatDate = (date: string) => {
@@ -196,7 +202,7 @@ const LinkCareContextScreen = ({ route }: any) => {
     };
     return (
         <SafeAreaView style={[styles.container, {
-            backgroundColor :ERP_COLOR_CODE.ERP_APP_COLOR
+            backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
         }]}>
             {/* Header */}
 
@@ -205,8 +211,8 @@ const LinkCareContextScreen = ({ route }: any) => {
                 showsVerticalScrollIndicator={false}
                 bounces={false}
                 style={{
-          backgroundColor: '#F5F7FA'
-        }}
+                    backgroundColor: '#F5F7FA'
+                }}
                 contentContainerStyle={{
                     paddingBottom: 40,
                 }}>
@@ -229,7 +235,7 @@ const LinkCareContextScreen = ({ route }: any) => {
 
                     <View style={styles.topRow}>
 
-                         
+
 
                         <View style={{ flex: 1 }}>
 
@@ -543,7 +549,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom : 14
+        marginBottom: 14
     },
 
     name: {

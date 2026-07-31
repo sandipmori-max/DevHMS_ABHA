@@ -90,6 +90,7 @@ export const baseApi =
         const skipEndpoints = [
           "profileQrCode",
           "profileAbhaCard",
+          "getBridgeServices"
         ];
 
         if (skipEndpoints.includes(endpoint)) {

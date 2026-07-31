@@ -25,6 +25,7 @@ import LoginScreen from "../abha/screens/Login/LoginScreen";
 import OtpVerificationScreen from "../abha/screens/Login/OtpVerificationScreen";
 import DetailsScreen from "../abha/screens/DetailsScreen";
 import LinkCareContextScreen from "../abha/screens/LinkCareContext/LinkCareContextScreen";
+import BridgeServices from "../abha/screens/BridgeServices/BridgeServices";
 
 const Stack = createStackNavigator<any>();
 
@@ -157,6 +158,15 @@ const StackNavigator = () => {
         name="Details"
         component={DetailsScreen}
       />
+
+ <Stack.Screen
+       options={{
+          headerShown: false
+         }}
+        name="BridgeServices"
+        component={BridgeServices}
+      />
+
 
       <Stack.Screen
        options={{

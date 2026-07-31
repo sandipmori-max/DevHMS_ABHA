@@ -1,5 +1,5 @@
 import {
-    CLIENT_ID,
+  CLIENT_ID,
   getErrorMessage,
   M2_BASE_URL_API,
 } from '../../utils/helpers';
@@ -59,13 +59,13 @@ export const notifyLinkApi = baseApi.injectEndpoints({
 
         const linkToken =
           state.abha.linkToken;
-
+        const selectedXCMID = state?.abha?.selectedXCMID;
         const result: any = await baseQuery({
           url: `${M2_BASE_URL_API}${END_POINTS.notifyLinkContext}`,
           method: 'POST',
           body,
           headers: {
-            'X-HIP-ID': CLIENT_ID,
+            'X-HIP-ID': selectedXCMID,
             'X-CM-ID': 'sbx',
             'X-LINK-TOKEN': linkToken,
           },

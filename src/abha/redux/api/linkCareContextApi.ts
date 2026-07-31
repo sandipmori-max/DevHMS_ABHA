@@ -53,14 +53,14 @@ export const careContextLinkApi = baseApi.injectEndpoints({
 
         const linkToken = state?.abha?.linkToken;
 
-        console.log('X-LINK-TOKEN =>', linkToken , "ddddddfdfdfdfd", `${M2_BASE_URL_API}${END_POINTS.linkCareContext}`);
-
+ 
+        const selectedXCMID = state?.abha?.selectedXCMID;
         const result: any = await baseQuery({
           url: `${M2_BASE_URL_API_HIP}${END_POINTS.linkCareContext}`,
           method: 'POST',
           body,
           headers: {
-            'X-HIP-ID': CLIENT_ID,
+            'X-HIP-ID': selectedXCMID,
             'X-CM-ID': 'sbx',
             'X-LINK-TOKEN': linkToken,
           },

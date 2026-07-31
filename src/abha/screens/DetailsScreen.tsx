@@ -30,6 +30,7 @@ import { ERP_COLOR_CODE } from "../../utils/constants";
 import { useGenerateLinkTokenMutation } from "../redux/api/linkAbhaApi";
 import { useNavigation } from "@react-navigation/native";
 import { useCreateSessionMutation } from "../redux/api/sessionApi";
+import { useLazyGetBridgeServicesQuery } from "../redux/api/bridgeServicesApi";
 
 const DetailsScreen = ({ route }: any) => {
   const { item } = route.params || {};
@@ -45,16 +46,15 @@ const DetailsScreen = ({ route }: any) => {
   const [imageUri, setImageUri] = useState<string | null>(null);
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [bridgeServices, setBridgeServices] = useState<any>()
   const scale = useRef(new Animated.Value(1)).current;
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
   const lastScale = useRef(1);
   const lastTranslate = useRef({ x: 0, y: 0 });
-  const [generateLinkToken, { isLoading }] =
-    useGenerateLinkTokenMutation();
-const [
-        createSession
-    ] = useCreateSessionMutation();
+ 
+  const [getBridgeServices] =
+    useLazyGetBridgeServicesQuery();
 
   const [getPage] = useGetPageMutation();
   const { accounts, user } = useAppSelector((state) => state.auth);
@@ -83,6 +83,19 @@ const [
     fetchProfile();
   }, [route]);
 
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const response = await getBridgeServices().unwrap();
+        console.log(response);
+        setBridgeServices(response)
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    load();
+  }, []);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -261,52 +274,7 @@ const [
     scale.setValue(Math.max(1, scale.__getValue() - 0.2));
     lastScale.current = scale.__getValue();
   };
-  const handleLinkAbha = async () => {
-    try {
-
-      dispatch(showLoader())
-       await createSession()
-            .unwrap();
-            
-      console.log("getValue(abhanumber)", getValue("abhanumber"))
-      const payload = {
-        abhaNumber: Number(
-          String(getValue('abhanumber')).replace(/-/g, '')
-        ),
-        abhaAddress: getValue('preferredabhaaddress'),
-        name: `${getValue("firstname")} ${getValue("middlename")} ${getValue("lastname")}`,
-        gender: getValue('gender'),
-        yearOfBirth: Number(formatDate(getValue("dob")).split("/").pop()),
-      };
-
-      console.log(
-        '========== GENERATE LINK TOKEN PAYLOAD =========='
-      );
-      console.log(
-        JSON.stringify(payload, null, 2)
-      );
-
-      const response = await generateLinkToken(payload).unwrap();
-
-      console.log(
-        '========== GENERATE LINK TOKEN RESPONSE =========='
-      );
-      console.log(
-        JSON.stringify(response, null, 2)
-      );
-
-      console.log('Link Token =>', response);
-      dispatch(hideLoader())
-      navigation.navigate("LinkCareContext", {
-        abhaDetail: abhaDetail
-      })
-
-    } catch (e) {
-      dispatch(hideLoader())
-      console.log('Link ABHA Error =>', e);
-    }
-  };
-
+ 
   return (
     <SafeAreaView style={[styles.container, {
       backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
@@ -384,7 +352,7 @@ const [
                       color: '#7eadf5',
                       fontSize: 14
                     }}
-                     >
+                  >
                     {getValue("localizedname")}
                   </Text>
 
@@ -917,9 +885,14 @@ const [
           </CustomBottomSheet>
         }
       </ScrollView>
+
       <TouchableOpacity
         onPress={() => {
-          handleLinkAbha()
+          navigation.navigate("BridgeServices", {
+            bridgeServices: bridgeServices,
+            abhaDetail: abhaDetail
+          })
+          // handleLinkAbha()
         }}
         style={{
           height: 46,
@@ -936,7 +909,7 @@ const [
           color: '#fff',
           fontSize: 16,
           fontWeight: '600'
-        }}>Link ABHA</Text>
+        }}>Find Services</Text>
       </TouchableOpacity>
       {modalVisible && (
         <Modal

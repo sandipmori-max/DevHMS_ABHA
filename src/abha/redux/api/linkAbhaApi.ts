@@ -13,6 +13,11 @@ export interface GenerateLinkTokenPayload {
   yearOfBirth: number;
 }
 
+interface GenerateLinkTokenRequest {
+  payload: GenerateLinkTokenPayload;
+  bridgeId: string;
+}
+
 // ===== Response =====
 export interface GenerateLinkTokenResponse {
   token: string; // X-LINK-TOKEN
@@ -29,13 +34,16 @@ export const linkAbhaApi = baseApi.injectEndpoints({
         console.log('========== GENERATE LINK TOKEN ==========');
         console.log('Request URL =>', END_POINTS.generateLinkToken);
         console.log('Request Body =>', JSON.stringify(body, null, 2));
+        const state: any = _api.getState();
+
+        const selectedXCMID = state?.abha?.selectedXCMID;
 
         const result: any = await baseQuery({
           url: `${M2_BASE_URL_API}${END_POINTS.generateLinkToken}`,
           method: 'POST',
           body,
           headers: {
-            'X-HIP-ID': CLIENT_ID,
+            'X-HIP-ID': selectedXCMID,
             'X-CM-ID': 'sbx',
           },
         });
@@ -69,7 +77,7 @@ export const linkAbhaApi = baseApi.injectEndpoints({
           const { data } = await queryFulfilled;
 
           console.log('Generate Link Token Success =>', data);
-          
+
           dispatch(setLinkToken(data?.linkToken))
           showToast(
             'success',
