@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",  
     marginBottom: 16,
-    backgroundColor: "#faf5f5",
+    backgroundColor: "#fff",
     borderRadius: 8,
     padding: 4,
   },

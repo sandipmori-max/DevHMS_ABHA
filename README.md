@@ -40,8 +40,11 @@ Pls use below details to access product:
 
 URL: https://plus.curenearme.com
 User: sanganiravrl2017@gmail.com
+sanganivrl2017@gmail.com
 Password: sangani$1
 
+// 9016504333 - sangani 
+// https://nhpr.abdm.gov.in/nhpr/v4/login
 <!-- aa = 5412 4551 2032  sandip -->
 EC_1785410493574
 eka_dcefcc7d58cb4fe0805a6697

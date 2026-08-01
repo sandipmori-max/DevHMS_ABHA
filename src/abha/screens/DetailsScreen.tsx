@@ -44,7 +44,9 @@ const DetailsScreen = ({ route }: any) => {
   const baseUrl = baseURL.substring(0, baseURL.lastIndexOf("/") + 1);
   const url = new URL(baseUrl).origin;
   const [imageUri, setImageUri] = useState<string | null>(null);
-
+ const [
+        createSession
+    ] = useCreateSessionMutation();
   const [modalVisible, setModalVisible] = useState(false);
   const [bridgeServices, setBridgeServices] = useState<any>()
   const scale = useRef(new Animated.Value(1)).current;
@@ -86,6 +88,7 @@ const DetailsScreen = ({ route }: any) => {
   useEffect(() => {
     const load = async () => {
       try {
+        await createSession().unwrap();
         const response = await getBridgeServices().unwrap();
         console.log(response);
         setBridgeServices(response)
@@ -289,7 +292,18 @@ const DetailsScreen = ({ route }: any) => {
           backgroundColor: '#F5F7FA'
         }}
       >
-        <Header title="ABHA Details" isMenu={false} isSearch={false} isShare={true} handleShare={() => {
+        <Header 
+        addConsentForm={true}
+        handleConsentForm={
+        ()=>{
+           navigation.navigate("ConsentForm", {
+            abhaDetail: abhaDetail,
+            bridgeServices: bridgeServices
+           })
+        }
+        }
+        title="ABHA Details" isMenu={false} isSearch={false} isShare={true} handleShare={() => {
+        
           setOpen(true)
 
         }} />
@@ -909,7 +923,7 @@ const DetailsScreen = ({ route }: any) => {
           color: '#fff',
           fontSize: 16,
           fontWeight: '600'
-        }}>Find Services</Text>
+        }}>Link Services</Text>
       </TouchableOpacity>
       {modalVisible && (
         <Modal

@@ -183,7 +183,7 @@ export default function ConsentCard({
             {/* ACTIONS */}
 
 
-            {
+            {/* {
                 isRequest ?
 
                     <View style={styles.actionRow}>
@@ -256,7 +256,7 @@ export default function ConsentCard({
                     </TouchableOpacity>
 
 
-            }
+            } */}
 
 
 

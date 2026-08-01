@@ -26,6 +26,7 @@ import OtpVerificationScreen from "../abha/screens/Login/OtpVerificationScreen";
 import DetailsScreen from "../abha/screens/DetailsScreen";
 import LinkCareContextScreen from "../abha/screens/LinkCareContext/LinkCareContextScreen";
 import BridgeServices from "../abha/screens/BridgeServices/BridgeServices";
+import ConsentFormScreen from "../abha/screens/ConsentForm/ConsentFormScreen";
 
 const Stack = createStackNavigator<any>();
 
@@ -130,6 +131,7 @@ const StackNavigator = () => {
           component={StartupScreen}
           options={smoothTransition}
         />
+        
       )} */}
       <Stack.Screen
         name="Drawer"
@@ -138,40 +140,46 @@ const StackNavigator = () => {
       />
       <Stack.Screen
         name="RegistrationAbha"
-         options={{
+        options={{
           headerShown: false
-         }}
+        }}
         component={LoginScreen}
       />
       <Stack.Screen
-      options={{
+        options={{
           headerShown: false
-         }}
+        }}
         name="OtpVerification"
         component={OtpVerificationScreen}
       />
 
-       <Stack.Screen
-       options={{
+      <Stack.Screen
+        options={{
           headerShown: false
-         }}
+        }}
         name="Details"
         component={DetailsScreen}
       />
-
- <Stack.Screen
-       options={{
+      <Stack.Screen
+        options={{
           headerShown: false
-         }}
+        }}
+        name="ConsentForm"
+        component={ConsentFormScreen}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: false
+        }}
         name="BridgeServices"
         component={BridgeServices}
       />
 
 
       <Stack.Screen
-       options={{
+        options={{
           headerShown: false
-         }}
+        }}
         name="LinkCareContext"
         component={LinkCareContextScreen}
       />

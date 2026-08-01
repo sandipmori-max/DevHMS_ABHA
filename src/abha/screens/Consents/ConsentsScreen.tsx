@@ -27,9 +27,7 @@ export default function ConsentsScreen() {
                     backgroundColor: '#F5F7FA'
                 }}
             >
-                <Header title="ABHA Details" isMenu={false} isSearch={false} isShare={true} handleShare={() => {
-
-                }} />
+                <View />
                 <TopTabs
                     value={selectedTab}
                     onChange={setSelectedTab}
@@ -51,7 +49,7 @@ export default function ConsentsScreen() {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: "#F5F7FA",
+        backgroundColor: "#fff",
 
     },
 })
