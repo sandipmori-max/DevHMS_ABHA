@@ -841,18 +841,12 @@ const DetailsScreen = ({ route }: any) => {
             onClose={() => setOpen(false)}
           >
             <View style={styles.qrCard}>
-              <TouchableOpacity onPress={() => {
-                setOpen(false)
-                setModalVisible(true);
-                setImageUri(`${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/abhacard.jpeg?t=${Date.now()}`)
-              }}>
-                <Image
+             <Image
                   source={{
                     uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/abhacard.jpeg?t=${Date.now()}`,
                   }}
                   style={styles.qrImage}
                 />
-              </TouchableOpacity>
 
 
               <Text style={styles.qrInfo}>

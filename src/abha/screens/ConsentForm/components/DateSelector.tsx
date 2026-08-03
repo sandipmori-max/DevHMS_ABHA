@@ -22,7 +22,7 @@ const DateSelector = ({
   label,
   value,
   onChange,
-  disablePastDates = false
+  disablePastDates = true,
 }: Props) => {
   const [visible, setVisible] = useState(false);
   const [tempDate, setTempDate] = useState(value);

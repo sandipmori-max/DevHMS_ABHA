@@ -29,7 +29,8 @@ export const END_POINTS = {
   profileByToken: "phr/web/login/profile/abha-profile",
   generateLinkToken: 'token/generate-token',
   linkCareContext: "link/carecontext",
-  notifyLinkContext: "link/context/notify"
+  notifyLinkContext: "link/context/notify",
+  consentRequestInit: "request/init"
 }
 
 export const API_BOOL = false;

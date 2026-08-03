@@ -239,7 +239,10 @@ export const getIsFormValid = (loginType, loginValue, isFromForgotAbhaNumber, is
 };
 
 export const getErrorMessage = (error: any) => {
+  console.log("getErrorMessage error", error?.error?.data?.error?.message );
   return (
+
+    error?.error?.data?.error?.message ||
     error?.error?.data[0]?.error?.message ||
     error?.error?.data[0]?.message ||
     error?.error?.authMethods ||
@@ -315,6 +318,8 @@ export const CLIENT_SECERET = '7483803d-fd4a-43c6-8832-2d7f18407af2'
 //7483803d-fd4a-43c6-8832-2d7f18407af2
 //8a69243f-e04a-4d68-b902-eccd85c9e6fa
 export const BASE_URL_API = 'https://abhasbx.abdm.gov.in/abha/api/v3/'
+
+export const M3_BASE_URL_API_HIP = 'https://dev.abdm.gov.in/api/hiecm/consent/v3/'
 export const M2_BASE_URL_API = "https://dev.abdm.gov.in/api/hiecm/v3/"
 export const M2_BASE_URL_API_HIP = "https://dev.abdm.gov.in/api/hiecm/hip/v3/"
 
