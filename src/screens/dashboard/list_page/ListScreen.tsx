@@ -137,7 +137,6 @@ const ListScreen = () => {
   const openSheet = () => {
     setSelectedLoginType("")
     setShowLoginSheet(true);
-
     sheetProgress.setValue(0);
 
     Animated.timing(sheetProgress, {
@@ -847,6 +846,11 @@ const ListScreen = () => {
     onRefresh();
   };
 
+  const handleAbhaClicked = (item) => {
+    navigation.navigate('Details', {
+      item
+    })
+  }
 
   const handleContinue = () => {
     if (!selected) return;
@@ -1529,6 +1533,7 @@ const ListScreen = () => {
                   handleActionButtonPressed={handleActionButtonPressed}
                   isLoadingMore={isLoadingMore}
                   loadMore={loadMore}
+                  handleAbhaClicked={handleAbhaClicked}
                 />
               }
 
@@ -1625,8 +1630,9 @@ const ListScreen = () => {
                   uri: `${baseLink}fileupload/1/InvoiceByConfig/1/logo.jpg`,
                 }}
                 style={{
-                  top : 5,
-                  height: 60, width: 80, alignSelf: 'center' }}
+                  top: 5,
+                  height: 60, width: 80, alignSelf: 'center'
+                }}
                 resizeMode="contain"
               />
             </View>

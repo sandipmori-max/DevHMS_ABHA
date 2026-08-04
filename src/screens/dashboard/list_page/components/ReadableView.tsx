@@ -106,6 +106,7 @@ const ReadableView = ({
   loadMore,
   isLoadingMore,
   parsedConfig,
+  handleAbhaClicked
 }: any) => {
   const { t } = useTranslations();
   const navigation = useNavigation();
@@ -722,9 +723,8 @@ const ReadableView = ({
             parsedConfig?.title.includes('ABHA') ? <AbhaUserItem
               item={item}
               onPress={(item) => {
-                navigation.navigate('Details', {
-                  item
-                })
+                handleAbhaClicked(item)
+                
               }}
             /> : <RenderCard item={item} index={index} />
           }

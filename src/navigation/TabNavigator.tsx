@@ -25,13 +25,14 @@ const TabNavigator = () => {
     label: item?.name,
   }));
 
-  navigationItems.splice(3, 0, {
-      name: "Consent",
-      type: "C",
-      icon: "analytics",
-      label: "Consent",
-    });
+  // navigationItems.splice(3, 0, {
+  //     name: "Consent",
+  //     type: "C",
+  //     icon: "analytics",
+  //     label: "Consent",
+  //   });
 
+    
  const getComponent = (item) => {
   switch (item.name) {
     case "Home":

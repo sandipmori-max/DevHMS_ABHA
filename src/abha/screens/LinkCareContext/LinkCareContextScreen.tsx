@@ -20,6 +20,7 @@ import { showToast } from '../../utils/toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { useCreateSessionMutation } from '../../redux/api/sessionApi';
 import { hideLoader, showLoader } from '../../redux/slices/loaderSlice';
+import { getNotifyLinkPayload, useNotifyLinkMutation } from '../../redux/api/notifyLinkApi';
 
 const patient = {
     name: 'Sandip Test Test',
@@ -50,6 +51,8 @@ const LinkCareContextScreen = ({ route }: any) => {
     const [
         createSession
     ] = useCreateSessionMutation();
+    const [notifyLink,] = useNotifyLinkMutation();
+
 
     const navigation = useNavigation();
     const [selectedRecords, setSelectedRecords] = useState<string[]>([]);
@@ -187,11 +190,25 @@ const LinkCareContextScreen = ({ route }: any) => {
                 response,
             );
 
+            try {
+                const payload = getNotifyLinkPayload(
+                    'sandip@abdm',        // ABHA Address
+                    'CC-10001',           // Care Context Reference
+                    'Prescription'        // HI Type
+                );
+
+                const response = await notifyLink(payload).unwrap();
+
+                console.log('Success =>', response);
+            } catch (error) {
+                console.log('Error =>', error);
+            }
+
         } catch (error) {
             dispatch(hideLoader())
 
         } finally {
-             dispatch(hideLoader())
+            dispatch(hideLoader())
         }
     };
 
@@ -506,7 +523,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 18,
-     },
+    },
 
     headerTitle: {
         color: '#FFF',
@@ -619,7 +636,7 @@ const styles = StyleSheet.create({
 
     recordCard: {
         borderRadius: 8,
-        padding: 8, 
+        padding: 8,
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
@@ -750,7 +767,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',
-     },
+    },
 
     linkButtonText: {
         color: '#FFF',
