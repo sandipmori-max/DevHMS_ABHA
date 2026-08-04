@@ -451,7 +451,7 @@ const LinkCareContextScreen = ({ route }: any) => {
                     justifyContent: 'center',
                     alignItems: 'center',
                     position: 'absolute',
-                    bottom: 0,
+                    bottom: 10,
                     marginLeft: 14,
                     flexDirection: 'row'
                 }}
@@ -506,8 +506,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 18,
-        elevation: 5,
-    },
+     },
 
     headerTitle: {
         color: '#FFF',
@@ -620,8 +619,7 @@ const styles = StyleSheet.create({
 
     recordCard: {
         borderRadius: 8,
-        padding: 8,
-        elevation: 2,
+        padding: 8, 
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
@@ -752,8 +750,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',
-        elevation: 4,
-    },
+     },
 
     linkButtonText: {
         color: '#FFF',

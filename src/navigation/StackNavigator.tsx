@@ -63,7 +63,6 @@ const StackNavigator = () => {
 
     headerStyle: {
       backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-      elevation: 0,
       shadowOpacity: 0,
     },
     headerBackTitleVisible: false,

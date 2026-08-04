@@ -181,7 +181,7 @@ const BridgeServices = ({ route }: any) => {
                         justifyContent: 'center',
                         alignItems: 'center',
                         position: 'absolute',
-                        bottom: 0,
+                        bottom: 10,
                         marginLeft: 14
                     }}>
                     <Text style={{

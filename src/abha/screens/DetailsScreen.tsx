@@ -1034,8 +1034,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 6,
-    elevation: 8,
-  },
+   },
   fullscreenImage: {
     width: "100%",
     height: "100%",
@@ -1057,8 +1056,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    elevation: 6,
-  },
+   },
   closeBtnShare: {
     position: "absolute",
     top: 80,
@@ -1075,8 +1073,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    elevation: 6,
-  },
+   },
   fullscreenModalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.92)",

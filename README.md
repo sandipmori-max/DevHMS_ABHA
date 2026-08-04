@@ -1,3 +1,11 @@
+// 2 callback api
+// 1 notify 
+// get links data 
+// auth / view details
+// sms/notify2 -  This API will be invoked by HIP to trigger a SMS notification to the patient mobile number when health record is available to fetch.    
+
+
+
 // DevERP
 
 // Multiple build creation with different Name + icon + package name
@@ -8,7 +16,7 @@
 Calendar Training Video
 https://vimeo.com/934288015
 https://vimeo.com/934288389
-OPD Training Video
+OPD Training Video p
 https://vimeo.com/936908199
 https://vimeo.com/934288467
 https://vimeo.com/936908143

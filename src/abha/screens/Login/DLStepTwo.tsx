@@ -931,8 +931,7 @@ const styles =
       backgroundColor: "#201f1f",
       justifyContent: "center",
       alignItems: "center",
-      elevation: 4,
-    },
+     },
 
     editIcon: {
       fontSize: 10,
@@ -1070,8 +1069,7 @@ const styles =
       borderRadius: 4,
       padding: 12,
       marginBottom: 16,
-      elevation: 2,
-    },
+     },
 
     sectionTitle: {
       fontSize: 17,

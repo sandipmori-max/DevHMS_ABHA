@@ -435,14 +435,6 @@
 	[
 		{
 			"backtrace" : 4,
-			"id" : "react_codegen_RNImageResizerSpec::@781b039b46879c00d842"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_rnasyncstorage::@1596841e19ec5b9eeffe"
-		},
-		{
-			"backtrace" : 4,
 			"id" : "react_codegen_rnclipboard::@6385240493dfcaf22ab7"
 		},
 		{
@@ -464,6 +456,14 @@
 		{
 			"backtrace" : 4,
 			"id" : "react_codegen_VectorIconsFontAwesome::@f56ae3024d8db5b6b904"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNImageResizerSpec::@781b039b46879c00d842"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rnasyncstorage::@1596841e19ec5b9eeffe"
 		},
 		{
 			"backtrace" : 4,

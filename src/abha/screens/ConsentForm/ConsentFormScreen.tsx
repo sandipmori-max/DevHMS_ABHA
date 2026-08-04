@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
 
     bottom: {
         position: "absolute",
-        bottom: 0,
+        bottom: 10,
         width: "100%",
         backgroundColor: "#FFF", 
         borderColor: "#ECECEC",

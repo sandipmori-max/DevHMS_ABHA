@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
 
   activeTab: {
     backgroundColor: "#1565C0",
-    elevation: 2,
     shadowColor: "#000",
     shadowOpacity: 0.12,
 

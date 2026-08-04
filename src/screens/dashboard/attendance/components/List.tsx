@@ -452,7 +452,6 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                       style={{
                         width: Dimensions.get("window").width * 0.4,
                         borderRadius: 8,
-                        elevation: 2,
                         backgroundColor: theme === "dark" ? "black" : "white",
                         borderColor: theme === "dark" ? "white" : "black",
                       }}
@@ -1017,7 +1016,6 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                             width: Dimensions.get("window").width - 20,
                             alignSelf: "center",
                             borderRadius: 8,
-                            elevation: 2,
                             backgroundColor:
                               theme === "dark" ? "black" : "white",
                           }}

@@ -86,11 +86,11 @@ const SignaturePad: React.FC = ({
           borderStyle: "dashed",
           borderRadius: 8,
           borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-          backgroundColor: theme === "dark" ? "#000" : "#f8f9ff",
+          backgroundColor:  "#f8f9ff",
         }}
       >
         <View></View>
-        <View style={{ height: 100, width: 100,  backgroundColor: theme === "dark" ? "#000" : "#f8f9ff", }}>
+        <View style={{ height: 100, width: 100,  backgroundColor:  "#f8f9ff", }}>
           <Image
             source={{ uri: getImageUri() }}
             style={styles.imageThumb}
