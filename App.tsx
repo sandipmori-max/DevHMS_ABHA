@@ -48,6 +48,7 @@ import { toastConfig } from "./ToastConfig";
 import { getGetAuthPayload, useGetAuthMutation } from "./src/abha/redux/api/getAuth";
 import { useCreateSessionMutation } from "./src/abha/redux/api/sessionApi";
 import { hideLoader, showLoader } from "./src/abha/redux/slices/loaderSlice";
+import { useLazyGenerateKeysQuery } from "./src/abha/redux/api/generateKeys";
 
 const App = () => {
   return (
@@ -84,7 +85,8 @@ const AppContent = () => {
   const [
     createSession
   ] = useCreateSessionMutation();
-
+const [generateKeys,  ] =
+  useLazyGenerateKeysQuery();
   const { width } = useWindowDimensions();
   const isConnected = useNetworkStatus();
 
@@ -111,6 +113,14 @@ const AppContent = () => {
 
   const handleSession = async () => {
     try {
+     
+      const response1 =
+        await generateKeys()
+          .unwrap();
+      console.log(
+        "Session Response11111+++++++++++++++",
+        response1
+      );
       const response =
         await createSession()
           .unwrap();
@@ -126,11 +136,31 @@ const AppContent = () => {
     }
   };
 
+  const handleKey = async () => {
+    try {
+     
+      const response1 =
+        await generateKeys()
+          .unwrap();
+      console.log(
+        "Session Response11111+++++++++++++++",
+        response1
+      );
+      
+    } catch (err) {
+      console.log(
+        "Session Error++++--------+++++++",
+        err
+      );
+    }
+  };
+
   useEffect(() => {
     const init = async () => {
       try {
         dispatch(showLoader());
         await handleSession();
+        await handleKey()
       } catch (error) {
         console.log(error);
       } finally {
