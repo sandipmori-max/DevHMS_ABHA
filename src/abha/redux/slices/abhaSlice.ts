@@ -5,6 +5,7 @@ const initialState = {
   loginTxnId: null,
   abhaNumber: null,
   tToken: null,
+  rToken: null,
   txnId: null,
   activeUser: null,
   devERPBaseUrl: "",
@@ -101,6 +102,13 @@ setSelectedXCMID: (
       state.tToken =
         action.payload;
     },
+     setRToken: (
+      state,
+      action
+    ) => {
+      state.rToken =
+        action.payload;
+    },
 
     clearFlow: (state) => {
       Object.assign(
@@ -137,7 +145,8 @@ export const {
   setAbhaDrProfile,
   updateAuthToken,
   setLinkToken,
-  setSelectedXCMID
+  setSelectedXCMID,
+  setRToken,
 } = abhaSlice.actions;
 
 export default abhaSlice.reducer;

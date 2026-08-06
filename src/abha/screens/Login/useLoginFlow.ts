@@ -73,7 +73,7 @@ import {
 } from "../../redux/api/savePageApi";
 
 import { useNavigation } from '@react-navigation/native';
-import { setTToken } from "../../redux/slices/abhaSlice";
+import { setRToken, setTToken } from "../../redux/slices/abhaSlice";
 import { useCreateSessionMutation } from "../../redux/api/sessionApi";
 import { END_POINTS } from "../../redux/api/end_points";
 
@@ -606,6 +606,7 @@ export const useLoginFlow = ({
             console.log("resultresultresultresultresult 123 ", result)
             setAbhaResult(result);
             dispatch(setTToken(result?.tokens?.token))
+            // dispatch(setRToken(result?.refreshToken))
             showToast('info', result?.message)
             if (
                 result?.isNew === false || result?.isNew === 'false'

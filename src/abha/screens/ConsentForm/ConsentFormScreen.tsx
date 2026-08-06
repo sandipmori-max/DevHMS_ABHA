@@ -54,7 +54,7 @@ const PURPOSES = [
         label: "Healthcare Payment",
         value: {
             text: "Healthcare Payment",
-            code: "HEALTHCAREPAYMENT",
+            code: "HPAYMT",
             refUri: "deverp.com",
         },
     },
@@ -62,7 +62,15 @@ const PURPOSES = [
         label: "Disease Specific Healthcare Research",
         value: {
             text: "Disease Specific Healthcare Research",
-            code: "DISEASESPECIFICHEALTHCARERESEARCH",
+            code: "DSRCH",
+            refUri: "deverp.com",
+        },
+    },
+     {
+        label: "Self Requested",
+        value: {
+            text: "Self Requested",
+            code: "PATRQT",
             refUri: "deverp.com",
         },
     },
@@ -106,9 +114,22 @@ const HI_TYPES = [
     },
 ];
 
+// | type      | value kahan se aayegi?                             |
+// | --------- | -------------------------------------------------- |
+// | `REGNO`   | Hospital Registration Number                       |
+// | `HFR`     | HFR ID (agar registered hai)                       |
+// | `LICENSE` | Hospital License Number                            |
+// | `GSTIN`   | GST Number (agar us purpose ke liye use kiya jaye) |
+
+const requesterIdentifierTypes = [
+  { label: "REGNO", value: "REGNO" },
+  { label: "HFR", value: "HFR" },
+  { label: "LICENSE", value: "LICENSE" },
+  { label: "GSTIN", value: "GSTIN" },
+];
+
 const ConsentFormScreen = ({ route }: any) => {
     const { abhaDetail, bridgeServices } = route.params || {};
-    console.log("bridgeServices+ + + + + ++ + + + + + + + + + + + + + +", bridgeServices);
     const [purpose, setPurpose] = useState(PURPOSES[0].value);
     const dispatch = useDispatch();
     const [selectedHip, setSelectedHip] = useState<any>(null);
@@ -183,7 +204,7 @@ const ConsentFormScreen = ({ route }: any) => {
                     id: getValue("preferredabhaaddress"), // ABHA Address
                 },
                 hiu: {
-                    id: bridgeServices?.bridge?.id
+                    id: service
                 },
                 hip: null,
                 careContexts: null,
@@ -310,12 +331,12 @@ const ConsentFormScreen = ({ route }: any) => {
                         },
                     ]}
                 />
-                {/* <Dropdown
+                <Dropdown
                     label="Service"
                     data={options}
                     selected={service}
                     onChange={setSelectedService}
-                /> */}
+                />
 
                 <View style={{
                     margin: 14,

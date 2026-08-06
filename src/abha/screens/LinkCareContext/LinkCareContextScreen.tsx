@@ -22,15 +22,7 @@ import { useCreateSessionMutation } from '../../redux/api/sessionApi';
 import { hideLoader, showLoader } from '../../redux/slices/loaderSlice';
 import { getNotifyLinkPayload, useNotifyLinkMutation } from '../../redux/api/notifyLinkApi';
 
-const patient = {
-    name: 'Sandip Test Test',
-    abhaNumber: '91-7461-4088-9874',
-    abhaAddress: 'varun2001@sbx',
-    dob: '26 Jun 1999',
-    gender: 'Male',
-    patientId: 'PUID-00011',
-};
-
+ 
 interface CareContextItem {
     referenceNumber: string;
     display: string;

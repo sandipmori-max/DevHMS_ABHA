@@ -22,6 +22,8 @@ const Header = ({
   handleSearch,
   inputRef,
   addConsentForm,
+  handleFetch,
+  isFetch = false,
   isSearch = true, isMenu = true, isShare = false, handleShare, handleConsentForm }: {
     title: string, isSearch?: boolean, isMenu?: boolean,
     isShare?: boolean,
@@ -33,7 +35,9 @@ const Header = ({
     handleSearch?: any,
     inputRef?: any,
     addConsentForm?: any,
-    handleConsentForm?: any
+    handleConsentForm?: any,
+    isFetch?: any,
+    handleFetch?: any
   }) => {
   const navigation = useNavigation();
   const [open, setOpen] = useState(false);
@@ -102,7 +106,8 @@ const Header = ({
       }
 
       {
-        isShare && <View style={styles.rightContainer}>
+        isShare && 
+        <View style={styles.rightContainer}>
           {
             addConsentForm && <View>
               <TouchableOpacity
@@ -113,6 +118,22 @@ const Header = ({
                 style={styles.iconBtn}>
                 <MaterialIcons
                   name='add'
+                  size={20}
+                  color="#FFF"
+                />
+              </TouchableOpacity>
+            </View>
+          }
+          {
+            isFetch && <View>
+              <TouchableOpacity
+
+                onPress={() => {
+                  handleFetch()
+                }}
+                style={styles.iconBtn}>
+                <MaterialIcons
+                  name='refresh'
                   size={20}
                   color="#FFF"
                 />

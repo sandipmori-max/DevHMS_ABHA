@@ -29,7 +29,7 @@ import { hideLoader, showLoader } from '../../redux/slices/loaderSlice';
 import { showToast } from '../../utils/toast';
 import { getLoginVerifyUserPayload, useLoginVerifyUserMutation } from '../../redux/api/loginVerifyUserApi';
 import { useLazyProfileAccountQuery } from '../../redux/api/profileAccountApi';
-import { setTToken, setTxnId } from '../../redux/slices/abhaSlice';
+import { setRToken, setTToken, setTxnId } from '../../redux/slices/abhaSlice';
 import { useSavePageMutation } from '../../redux/api/savePageApi'; 
 import { useAbhaAddressRequestOtpMutation } from '../../redux/api/abhaAddressLoginApi';
 import { useAbhaAddressVerifyOtpMutation } from '../../redux/api/abhaAddressVerifyApi';
@@ -232,6 +232,7 @@ const OtpVerificationScreen = () => {
 
       console.log(response);
       await dispatch(setTToken(response?.token))
+      //  dispatch(setRToken(response?.refreshToken))
 
       const res =
         await getProfileAccount();
@@ -467,6 +468,7 @@ const OtpVerificationScreen = () => {
 
           if (response?.authResult === 'success') {
             dispatch(setTToken(response?.tokens.token))
+
             dispatch(setTxnId(response?.txnId))
             showToast(
               "success",
@@ -770,6 +772,7 @@ const OtpVerificationScreen = () => {
           response?.message || "Verification successful"
         );
         dispatch(setTToken(response?.token))
+        // dispatch(setRToken(response?.refreshToken))
         setShowAbhaAccount(true)
         setAbhaAccounts(response?.accounts)
         setApiAbhaRes(response)

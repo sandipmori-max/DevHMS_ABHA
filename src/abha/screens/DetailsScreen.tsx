@@ -31,6 +31,7 @@ import { useGenerateLinkTokenMutation } from "../redux/api/linkAbhaApi";
 import { useNavigation } from "@react-navigation/native";
 import { useCreateSessionMutation } from "../redux/api/sessionApi";
 import { useLazyGetBridgeServicesQuery } from "../redux/api/bridgeServicesApi";
+import AuthModal from "../AuthModal/AuthModal";
 
 const DetailsScreen = ({ route }: any) => {
   const { item } = route.params || {};
@@ -277,7 +278,47 @@ const DetailsScreen = ({ route }: any) => {
     scale.setValue(Math.max(1, scale.__getValue() - 0.2));
     lastScale.current = scale.__getValue();
   };
+   const [tapLoader, setTapLoader] = useState(false);
  
+  const [bottomSheetType, setBottomSheetType] = useState('');
+    const [showInfoModal, setShowInfoModal] = useState(false);
+    const sheetProgress = useRef(
+      new Animated.Value(0),
+    ).current;
+    const [showLoginSheet, setShowLoginSheet] = useState(false);
+    const [confirmation, setConfirmation] = useState<any>()
+    const [selected, setSelected] = useState<"yes" | "no" | null>(null);
+      const [selectedLoginType, setSelectedLoginType] = useState();
+    
+    const sheetTranslateY =
+      sheetProgress.interpolate({
+        inputRange: [0, 1],
+        outputRange: [400, 0],
+      });
+    
+      const openSheet = () => {
+      setSelected('yes') 
+      setConfirmation(true)
+      setSelectedLoginType("")
+      setBottomSheetType("Login")
+      setShowLoginSheet(true);
+      sheetProgress.setValue(0);
+  
+      Animated.timing(sheetProgress, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    };
+  
+    const closeSheet = () => {
+      setShowLoginSheet(false);
+      setConfirmation(false)
+      setSelected(null)
+      setTapLoader(false)
+    };
+  
+
   return (
     <SafeAreaView style={[styles.container, {
       backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
@@ -292,7 +333,8 @@ const DetailsScreen = ({ route }: any) => {
           backgroundColor: '#F5F7FA'
         }}
       >
-        <Header 
+      <Header 
+        isFetch={true}
         addConsentForm={true}
         handleConsentForm={
         ()=>{
@@ -302,11 +344,19 @@ const DetailsScreen = ({ route }: any) => {
            })
         }
         }
-        title="ABHA Details" isMenu={false} isSearch={false} isShare={true} handleShare={() => {
+        title="ABHA Details"
+        isMenu={false}
+        isSearch={false}
+        isShare={true}
+        handleShare={() => {
         
           setOpen(true)
 
-        }} />
+        }} 
+        handleFetch={()=>{
+          openSheet()
+        }}
+        />
         {
           loading ? <></> : <>
 
@@ -834,6 +884,27 @@ const DetailsScreen = ({ route }: any) => {
             <View style={{ height: 30 }} />
           </>
         }
+
+        {showLoginSheet && (
+                 <AuthModal
+                    selectedLoginType={selectedLoginType}
+                    setSelectedLoginType={setSelectedLoginType}
+                    showLoginSheet={showLoginSheet}
+                    setShowLoginSheet={setShowLoginSheet}
+                    confirmation={confirmation}
+                    setConfirmation={setConfirmation}
+                    selected={selected}
+                    bottomSheetType={bottomSheetType}
+                    setBottomSheetType={setBottomSheetType}
+                    setShowInfoModal={setShowInfoModal}
+                    setSelected={setSelected} 
+                    closeSheet={closeSheet}
+                    sheetTranslateY={sheetTranslateY}
+                    isForceAuth={true}
+                    lastUpdate={formatDate(getValue("cdt"))}
+                 />
+              )}
+
         {
           open && <CustomBottomSheet
             visible={open}

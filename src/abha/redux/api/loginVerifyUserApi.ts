@@ -4,7 +4,7 @@ import {
   getErrorMessage,
 } from "../../utils/helpers";
 import { showToast } from "../../utils/toast";
-import { setTToken } from "../slices/abhaSlice";
+import { setTToken, setRToken } from "../slices/abhaSlice";
 import { baseApi } from "./baseApi";
 import { API_BOOL, END_POINTS } from "./end_points";
 
@@ -115,9 +115,8 @@ export const loginVerifyUserApi =
               console.log(
                 "User Login Verified Successfully"
               );
-
               dispatch(setTToken(data.token))
-              // dispatch(setRefreshToken(data.refreshToken))
+              // dispatch(setRToken(data.refreshToken))
             }
           } catch (error: any) {
             showToast(

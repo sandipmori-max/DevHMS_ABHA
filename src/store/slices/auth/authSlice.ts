@@ -33,7 +33,7 @@ const initialState: AuthState = {
   dashboardTypeId: '',
   appDrawerMenuList: [],
   appBottomMenuList: [],
-  appColorCode: '#1565C0',
+  appColorCode: '#251d50',
   isPinVerifyLoaded: false,
   attendanceDone: false,
   locationLogs: [],
@@ -371,8 +371,8 @@ const authSlice = createSlice({
   state.error = action.payload as string;
   state.appBottomMenuList = [];
   state.appDrawerMenuList = [];
-  setERPAppColor('#1565C0');
-  state.appColorCode = '#1565C0';
+  setERPAppColor('#251d50');
+  state.appColorCode = '#251d50';
   state.attendanceSecurityLevel = '0';
 }
       })
@@ -381,8 +381,8 @@ const authSlice = createSlice({
         state.error = action.payload as string;
         state.appBottomMenuList = [];
         state.appDrawerMenuList = [];
-        setERPAppColor('#1565C0');
-        state.appColorCode = '#1565C0';
+        setERPAppColor('#251d50');
+        state.appColorCode = '#251d50';
         state.isMenuLoading = false;
         state.attendanceSecurityLevel = '0';
 
