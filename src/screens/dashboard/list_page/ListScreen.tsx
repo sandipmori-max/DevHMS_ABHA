@@ -870,8 +870,6 @@ const statusOptions = useMemo(() => {
     })
   }
 
- 
-
   if (parsedError) {
     return (
       <View
@@ -1515,12 +1513,17 @@ const statusOptions = useMemo(() => {
                         paddingHorizontal: 16, 
                         paddingVertical: 8,
                         marginRight: 8,
-                        borderRadius: 12,
+                        borderRadius: 4,
+                        flexDirection:'row',
+                        justifyContent:'center',
+                        alignContent:'center',
+                        alignItems:'center',
                         backgroundColor:
                           selectedStatus === status
                             ? ERP_COLOR_CODE.ERP_APP_COLOR
                             : "#E5E7EB",
                       }}
+                      
                     >
                       <Text
                         style={{
@@ -1528,10 +1531,17 @@ const statusOptions = useMemo(() => {
                             selectedStatus === status
                               ? "#fff"
                               : "#000",
+                            fontWeight : selectedStatus === status ? '600' : '200'
                         }}
                       >
-                        {status}
+                        {status} 
+
                       </Text>
+                      {selectedStatus === status &&
+                       <Text style={{backgroundColor: 'white', marginLeft : 8, padding: 2, borderRadius: 4}}>
+                        {filteredData?.length}
+                      </Text>}
+                      
                     </TouchableOpacity>
                   ))}
                 </ScrollView>

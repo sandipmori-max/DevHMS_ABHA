@@ -315,6 +315,8 @@ export const X_CM_ID = 'sbx'
 export const GRANT_TYPE = 'client_credentials'
 export const CLIENT_SECERET = '8a69243f-e04a-4d68-b902-eccd85c9e6fa'
 //83784be3-e94e-4d03-b0c1-d63cf46a76f4
+
+
 //7483803d-fd4a-43c6-8832-2d7f18407af2
 //8a69243f-e04a-4d68-b902-eccd85c9e6fa
 export const BASE_URL_API = 'https://abhasbx.abdm.gov.in/abha/api/v3/'
