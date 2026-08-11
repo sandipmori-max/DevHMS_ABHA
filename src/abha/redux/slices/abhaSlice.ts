@@ -5,10 +5,13 @@ const initialState = {
   loginTxnId: null,
   abhaNumber: null,
   tToken: null,
+  rToken: null,
   txnId: null,
   activeUser: null,
   devERPBaseUrl: "",
-  abhaDrProfile: ""
+  abhaDrProfile: "",
+  linkToken: "",
+  selectedXCMID:"",
 };
 
 const abhaSlice = createSlice({
@@ -24,7 +27,13 @@ const abhaSlice = createSlice({
       state.otpTxnId =
         action.payload;
     },
-
+setSelectedXCMID: (
+      state,
+      action
+    ) => {
+      state.selectedXCMID =
+        action.payload;
+    },
      setActiveUser: (
       state,
       action
@@ -32,6 +41,16 @@ const abhaSlice = createSlice({
       state.activeUser =
         action.payload;
     },
+
+     setLinkToken: (
+      state,
+      action
+    ) => {
+      console.log("linkTokenlinkTokenlinkToken", action?.payload)
+      state.linkToken =
+        action.payload;
+    },
+
      setAbhaDrProfile: (
       state,
       action
@@ -83,6 +102,13 @@ const abhaSlice = createSlice({
       state.tToken =
         action.payload;
     },
+     setRToken: (
+      state,
+      action
+    ) => {
+      state.rToken =
+        action.payload;
+    },
 
     clearFlow: (state) => {
       Object.assign(
@@ -117,7 +143,10 @@ export const {
   setActiveUser,
   setDevERPBaseUrl,
   setAbhaDrProfile,
-  updateAuthToken
+  updateAuthToken,
+  setLinkToken,
+  setSelectedXCMID,
+  setRToken,
 } = abhaSlice.actions;
 
 export default abhaSlice.reducer;

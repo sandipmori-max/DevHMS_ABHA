@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -10,6 +10,9 @@ import {
   TouchableOpacity,
   StatusBar,
   Platform,
+  Modal,
+  Animated,
+  PanResponder,
 } from "react-native";
 import Header from "../Components/Header";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
@@ -23,10 +26,17 @@ import { hideLoader, showLoader } from "../redux/slices/loaderSlice";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { showToast } from "../utils/toast";
 import { useAppSelector } from "../../store/hooks";
+import { ERP_COLOR_CODE } from "../../utils/constants";
+import { useGenerateLinkTokenMutation } from "../redux/api/linkAbhaApi";
+import { useNavigation } from "@react-navigation/native";
+import { useCreateSessionMutation } from "../redux/api/sessionApi";
+import { useLazyGetBridgeServicesQuery } from "../redux/api/bridgeServicesApi";
+import AuthModal from "../AuthModal/AuthModal";
 
 const DetailsScreen = ({ route }: any) => {
   const { item } = route.params || {};
-  console.log("itemitemitemitemitem", item)
+  const navigation = useNavigation();
+
   const [open, setOpen] = useState(false);
   const [abhaDetail, setAbhaDetail] = useState<any>([]);
   const dispatch = useDispatch();
@@ -34,10 +44,23 @@ const DetailsScreen = ({ route }: any) => {
   const baseURL = useSelector((state: any) => state.auth.user?.companyLink)
   const baseUrl = baseURL.substring(0, baseURL.lastIndexOf("/") + 1);
   const url = new URL(baseUrl).origin;
+  const [imageUri, setImageUri] = useState<string | null>(null);
+ const [
+        createSession
+    ] = useCreateSessionMutation();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [bridgeServices, setBridgeServices] = useState<any>()
+  const scale = useRef(new Animated.Value(1)).current;
+  const translateX = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(0)).current;
+  const lastScale = useRef(1);
+  const lastTranslate = useRef({ x: 0, y: 0 });
+ 
+  const [getBridgeServices] =
+    useLazyGetBridgeServicesQuery();
 
   const [getPage] = useGetPageMutation();
   const { accounts, user } = useAppSelector((state) => state.auth);
-  console.log("urlurlurlurlurlurlurlurl------ ", url)
   const fetchProfile = async () => {
     try {
       dispatch(showLoader())
@@ -47,7 +70,6 @@ const DetailsScreen = ({ route }: any) => {
         item?.id
       );
       const response = await getPage(payload);
-      console.log("response++++++++++++++++++++++", response, typeof response)
       const parsedData = JSON.parse(response?.data.d);
       const pagectl = parsedData.pagectl;
       console.log("respon+ + + + + + ++ + + se", pagectl)
@@ -64,16 +86,57 @@ const DetailsScreen = ({ route }: any) => {
     fetchProfile();
   }, [route]);
 
+  useEffect(() => {
+    const load = async () => {
+      try {
+        await createSession().unwrap();
+        const response = await getBridgeServices().unwrap();
+        console.log(response);
+        setBridgeServices(response)
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    load();
+  }, []);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderMove: (evt, gesture) => {
+        if (gesture.numberActiveTouches === 1) {
+          translateX.setValue(lastTranslate.current.x + gesture.dx);
+          translateY.setValue(lastTranslate.current.y + gesture.dy);
+        } else if (gesture.numberActiveTouches === 2) {
+          const touches = evt.nativeEvent.touches;
+          const dx = touches[0].pageX - touches[1].pageX;
+          const dy = touches[0].pageY - touches[1].pageY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (!lastScale.currentDistance) lastScale.currentDistance = distance;
+          const scaleFactor = distance / lastScale.currentDistance;
+          scale.setValue(
+            Math.max(1, Math.min(3, lastScale.current * scaleFactor)),
+          );
+        }
+      },
+      onPanResponderRelease: (_, gesture) => {
+        lastTranslate.current.x += gesture.dx;
+        lastTranslate.current.y += gesture.dy;
+        lastScale.current = scale.__getValue();
+        lastScale.currentDistance = undefined;
+      },
+    }),
+  ).current;
 
   const getValue = (fieldName: any) => {
-    console.log("abhaDetail", abhaDetail)
     if (abhaDetail.length === 0) {
       return;
     }
     const fieldMap = Object.fromEntries(
       abhaDetail.map(item => [item.field, item.text])
     );
-    console.log("statename", fieldMap)
     return fieldMap[fieldName];
   };
 
@@ -82,7 +145,6 @@ const DetailsScreen = ({ route }: any) => {
     .map((item: string) => item.trim())
     .filter(Boolean) || [];
 
-  console.log("authMethods++++++++++++++++++++++++++++++++", authMethods)
 
   const DetailItem = ({
     icon,
@@ -150,10 +212,26 @@ const DetailsScreen = ({ route }: any) => {
     }
   };
 
+  const shareImage = async (imageUrl) => {
+    try {
+      await Share.open({
+        title: 'Share ABHA Card',
+        message: 'ABHA Card',
+        url: imageUrl,
+        type: 'image/jpeg', // image/png ho to change karo
+        failOnCancel: false,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const printPdfFromUrl = async () => {
     try {
+      let uri = `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/abhacard.jpeg?t=${Date.now()}`;
+
       const pdfPath = await downloadPDF(
-        'https://pdfobject.com/pdf/sample.pdf',
+        uri
       );
 
       await RNPrint.print({
@@ -191,47 +269,155 @@ const DetailsScreen = ({ route }: any) => {
     showToast('success', 'Copied!!')
   };
 
+  const zoomIn = () => {
+    scale.setValue(Math.min(3, scale.__getValue() + 0.2));
+    lastScale.current = scale.__getValue();
+  };
+
+  const zoomOut = () => {
+    scale.setValue(Math.max(1, scale.__getValue() - 0.2));
+    lastScale.current = scale.__getValue();
+  };
+   const [tapLoader, setTapLoader] = useState(false);
+ 
+  const [bottomSheetType, setBottomSheetType] = useState('');
+    const [showInfoModal, setShowInfoModal] = useState(false);
+    const sheetProgress = useRef(
+      new Animated.Value(0),
+    ).current;
+    const [showLoginSheet, setShowLoginSheet] = useState(false);
+    const [confirmation, setConfirmation] = useState<any>()
+    const [selected, setSelected] = useState<"yes" | "no" | null>(null);
+      const [selectedLoginType, setSelectedLoginType] = useState();
+    
+    const sheetTranslateY =
+      sheetProgress.interpolate({
+        inputRange: [0, 1],
+        outputRange: [400, 0],
+      });
+    
+      const openSheet = () => {
+      setSelected('yes') 
+      setConfirmation(true)
+      setSelectedLoginType("")
+      setBottomSheetType("Login")
+      setShowLoginSheet(true);
+      sheetProgress.setValue(0);
+  
+      Animated.timing(sheetProgress, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    };
+  
+    const closeSheet = () => {
+      setShowLoginSheet(false);
+      setConfirmation(false)
+      setSelected(null)
+      setTapLoader(false)
+    };
+  
+
   return (
-    <SafeAreaView style={[styles.container]}>
+    <SafeAreaView style={[styles.container, {
+      backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
+    }]}>
+
 
       <ScrollView
         stickyHeaderIndices={[0]}
         showsVerticalScrollIndicator={false}
         bounces={false}
+        style={{
+          backgroundColor: '#F5F7FA'
+        }}
       >
-        <Header title="ABHA Details" isMenu={false} isSearch={false} isShare={true} handleShare={() => {
+      <Header 
+        isFetch={true}
+        addConsentForm={true}
+        handleConsentForm={
+        ()=>{
+           navigation.navigate("ConsentForm", {
+            abhaDetail: abhaDetail,
+            bridgeServices: bridgeServices
+           })
+        }
+        }
+        title="ABHA Details"
+        isMenu={false}
+        isSearch={false}
+        isShare={true}
+        handleShare={() => {
+        
           setOpen(true)
 
-        }} />
+        }} 
+        handleFetch={()=>{
+          openSheet()
+        }}
+        />
         {
           loading ? <></> : <>
 
             {/* Profile */}
             <View style={styles.profileCard}>
               <View style={styles.profileTop}>
-                {getValue("profilephoto") ? (
-                  <Image
-                    source={{
-                      uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/profilephoto.jpeg?t=${Date.now()}`,
-                    }}
-                    style={styles.profileImage}
-                  />
-                ) : (
-                  <View style={styles.profilePlaceholder}>
-                    <MaterialIcons
-                      name="person"
-                      size={42}
-                      color="#FFFFFF"
+                <View>
+
+                  {getValue("profilephoto") ? (
+                    <TouchableOpacity onPress={() => {
+                      setModalVisible(true);
+                      setImageUri(`${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/profilephoto.jpeg?t=${Date.now()}`)
+                    }}>
+                      <Image
+                        source={{
+                          uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/profilephoto.jpeg?t=${Date.now()}`,
+                        }}
+                        style={styles.profileImage}
+                      />
+                    </TouchableOpacity>
+
+                  ) : (
+                    <View style={styles.profilePlaceholder}>
+                      <MaterialIcons
+                        name="person"
+                        size={42}
+                        color="#FFFFFF"
+                      />
+                    </View>
+                  )}
+                  <View style={{ height: 8 }} />
+                  <TouchableOpacity onPress={() => {
+                    setModalVisible(true);
+                    setImageUri(`${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/qrcode.jpeg?t=${Date.now()}`)
+                  }}>
+                    <Image
+                      source={{
+                        uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/qrcode.jpeg?t=${Date.now()}`,
+                      }}
+                      style={styles.profileImage}
                     />
-                  </View>
-                )}
+                  </TouchableOpacity>
+
+                </View>
+
 
                 <View style={{ flex: 1, marginLeft: 16 }}>
 
-                  <Text 
-                  numberOfLines={1}
-                  style={[styles.profileName,  ]}>
-                    {getValue("firstname")} {getValue("middlename")} {getValue("lasttname")}
+                  <Text
+                    numberOfLines={1}
+                    style={[styles.profileName,]}>
+                    {getValue("firstname")} {getValue("middlename")} {getValue("lastname")}
+                  </Text>
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      color: '#7eadf5',
+                      fontSize: 14
+                    }}
+                  >
+                    {getValue("localizedname")}
                   </Text>
 
                   <Text style={styles.profileLabel}>
@@ -247,6 +433,30 @@ const DetailsScreen = ({ route }: any) => {
                     <TouchableOpacity
                       onPress={() => {
                         copyText(getValue("abhanumber"))
+                      }}
+                    >
+                      <MaterialIcons
+                        name="content-copy"
+                        size={20}
+                        color="#1565C0"
+                      />
+                    </TouchableOpacity>
+
+                  </View>
+
+                  <Text style={styles.profileLabel}>
+                    ABHA Address
+                  </Text>
+
+                  <View style={styles.numberRow}>
+
+                    <Text style={styles.abhaNumber}>
+                      {getValue("preferredabhaaddress")}
+                    </Text>
+
+                    <TouchableOpacity
+                      onPress={() => {
+                        copyText(getValue("preferredabhaaddress"))
                       }}
                     >
                       <MaterialIcons
@@ -423,7 +633,7 @@ const DetailsScreen = ({ route }: any) => {
               <DetailItem
                 icon="badge"
                 label="ABHA Address"
-                value={getValue("abhaaddress")}
+                value={getValue("preferredabhaaddress")}
               />
 
             </View>
@@ -620,7 +830,7 @@ const DetailsScreen = ({ route }: any) => {
                     </View>
 
                     <Text style={styles.dateTitle}>
-                      ABHA Creation Date
+                      Creation Date
                     </Text>
                   </View>
 
@@ -675,7 +885,25 @@ const DetailsScreen = ({ route }: any) => {
           </>
         }
 
-
+        {showLoginSheet && (
+                 <AuthModal
+                    selectedLoginType={selectedLoginType}
+                    setSelectedLoginType={setSelectedLoginType}
+                    showLoginSheet={showLoginSheet}
+                    setShowLoginSheet={setShowLoginSheet}
+                    confirmation={confirmation}
+                    setConfirmation={setConfirmation}
+                    selected={selected}
+                    bottomSheetType={bottomSheetType}
+                    setBottomSheetType={setBottomSheetType}
+                    setShowInfoModal={setShowInfoModal}
+                    setSelected={setSelected} 
+                    closeSheet={closeSheet}
+                    sheetTranslateY={sheetTranslateY}
+                    isForceAuth={true}
+                    lastUpdate={formatDate(getValue("cdt"))}
+                 />
+              )}
 
         {
           open && <CustomBottomSheet
@@ -684,11 +912,13 @@ const DetailsScreen = ({ route }: any) => {
             onClose={() => setOpen(false)}
           >
             <View style={styles.qrCard}>
-              <Image
-                source={{ uri: 'https://wordpresscmsprodstor.blob.core.windows.net/wp-cms/2022/03/2-1.webp' }}
-                style={styles.qrImage}
-                resizeMode="contain"
-              />
+             <Image
+                  source={{
+                    uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/abhacard.jpeg?t=${Date.now()}`,
+                  }}
+                  style={styles.qrImage}
+                />
+
 
               <Text style={styles.qrInfo}>
                 The client's ABHA has been created successfully. You can now view the ABHA details and download the ABHA card.
@@ -700,8 +930,8 @@ const DetailsScreen = ({ route }: any) => {
                 style={styles.shareBtn}
                 activeOpacity={0.8}
                 onPress={async () => {
-                  const pdfPath = await downloadPDF('https://pdfobject.com/pdf/sample.pdf');
-                  await sharePDF(pdfPath);
+                  let uri = `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/abhacard.jpeg?t=${Date.now()}`;
+                  await shareImage(uri)
                 }}
               >
                 <MaterialIcons
@@ -735,7 +965,112 @@ const DetailsScreen = ({ route }: any) => {
         }
       </ScrollView>
 
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate("BridgeServices", {
+            bridgeServices: bridgeServices,
+            abhaDetail: abhaDetail
+          })
+          // handleLinkAbha()
+        }}
+        style={{
+          height: 46,
+          width: '92%',
+          backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+          borderRadius: 4,
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'absolute',
+          bottom: 0,
+          marginLeft: 14
+        }}>
+        <Text style={{
+          color: '#fff',
+          fontSize: 16,
+          fontWeight: '600'
+        }}>Link Services</Text>
+      </TouchableOpacity>
+      {modalVisible && (
+        <Modal
+          supportedOrientations={["portrait", "landscape"]}
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            scale.setValue(1);
+            translateX.setValue(0);
+            translateY.setValue(0);
+            lastTranslate.current = { x: 0, y: 0 };
+            lastScale.current = 1;
+            setModalVisible(false);
+          }}
+        >
+          <View
+            style={[
+              styles.fullscreenModalOverlay,
 
+            ]}
+          >
+            <View
+              style={[
+                styles.fullscreenModalContent,
+                {
+                  width: "100%",
+                },
+              ]}
+            >
+
+
+              <TouchableOpacity
+                style={styles.closeBtn}
+                onPress={() => {
+                  scale.setValue(1);
+                  translateX.setValue(0);
+                  translateY.setValue(0);
+                  lastTranslate.current = { x: 0, y: 0 };
+                  lastScale.current = 1;
+                  setModalVisible(false);
+                }}
+              >
+                <MaterialIcons
+                  name="close"
+                  size={30}
+                  color={'white'}
+                />
+              </TouchableOpacity>
+
+
+
+              <Animated.View
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  transform: [{ scale }, { translateX }, { translateY }],
+                }}
+                {...panResponder.panHandlers}
+              >
+                <Image
+                  source={{
+                    uri: imageUri,
+                  }}
+                  style={styles.fullscreenImage}
+                  resizeMode="contain"
+
+                />
+              </Animated.View>
+
+              <View style={styles.zoomControls}>
+                <TouchableOpacity style={styles.zoomBtn} onPress={zoomIn}>
+                  <MaterialIcons name="zoom-in" size={28} color="#000" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.zoomBtn} onPress={zoomOut}>
+                  <MaterialIcons name="zoom-out" size={28} color="#000" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
     </SafeAreaView>
   );
 };
@@ -744,9 +1079,85 @@ export default DetailsScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "#F5F7FA",
+
   },
+  zoomBtn: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: ERP_COLOR_CODE.ERP_WHITE,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  zoomControls: {
+    position: "absolute",
+    bottom: 40,
+    flexDirection: "row",
+    gap: 16,
+
+    backgroundColor: "rgba(255,255,255,0.9)",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 30,
+
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+   },
+  fullscreenImage: {
+    width: "100%",
+    height: "100%",
+  },
+  closeBtn: {
+    position: "absolute",
+    top: 80,
+    right: 20,
+    zIndex: 20,
+
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    justifyContent: "center",
+    alignItems: "center",
+
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+   },
+  closeBtnShare: {
+    position: "absolute",
+    top: 80,
+    right: 80,
+    zIndex: 20,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    justifyContent: "center",
+    alignItems: "center",
+
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+   },
+  fullscreenModalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.92)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fullscreenModalContent: {
+    flex: 1,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
   avatar: {
     width: 60,
     height: 60,
@@ -951,7 +1362,7 @@ const styles = StyleSheet.create({
 
   qrImage: {
     width: Dimensions.get('screen').width - 20,
-    height: 200,
+    height: 300,
   },
 
   qrInfo: {
@@ -1163,7 +1574,7 @@ const styles = StyleSheet.create({
   },
 
   detailValue: {
-    flex: 1, 
+    flex: 1,
     color: "#212121",
     fontWeight: "600",
     marginLeft: 12,
@@ -1171,7 +1582,7 @@ const styles = StyleSheet.create({
   detailLabel: {
     marginLeft: 12,
     fontSize: 15,
-    color: "#616161", 
+    color: "#616161",
     width: '54%',
   },
   authContainer: {

@@ -1,3 +1,4 @@
+import { RootState } from "../../../store/store";
 import {
   BASE_URL_API,
   getErrorMessage,
@@ -21,6 +22,8 @@ export const abhaCardApi =
           console.log(
             "========== PROFILE ABHA CARD =========="
           );
+          const state = _api.getState() as RootState;
+          const xtoken = state.abha?.tToken;
 
           console.log(
             "Request URL =>",
@@ -43,6 +46,10 @@ export const abhaCardApi =
           return await baseQuery({
             url: `${BASE_URL_API}${END_POINTS.profileAbhaCard}`,
             method: "GET",
+            headers: {
+              "X-token":
+                `Bearer ${xtoken}`
+            }
           });
         },
 

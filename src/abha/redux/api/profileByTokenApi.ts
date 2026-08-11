@@ -84,8 +84,7 @@ export const abhaProfileApi =
                             method: "GET",
 
                             headers: {
-                                "X-token":
-                                    params.json_web_token
+                                "X-token": `Bearer ${params.json_web_token}`
                             }
                         });
                     },

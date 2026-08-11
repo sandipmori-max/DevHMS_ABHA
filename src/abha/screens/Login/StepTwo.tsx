@@ -9,6 +9,8 @@ import { hideLoader, showLoader } from '../../redux/slices/loaderSlice';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 
 const StepTwo = ({ setStepTwo, stepTwo, loginType, loginValue, publicKey, txnId }: any) => {
+
+  console.log("txnIdtxnId", txnId)
   const dispatch = useDispatch()
 
   const [enrollmentRequestOtp,] = useEnrollmentRequestOtpMutation();
@@ -38,6 +40,8 @@ const StepTwo = ({ setStepTwo, stepTwo, loginType, loginValue, publicKey, txnId 
               encryptedValue,
               txnId,
             );
+            console.log("payloadPassedpayloadPassedpayloadPassedpayloadPassedpayloadPassedpayloadPassed ------------ ", payloadPassed)
+
             const result = await enrollmentRequestOtp(payloadPassed).unwrap();
 
             console.log("handleOTPReSendCalled ------------ ", result)

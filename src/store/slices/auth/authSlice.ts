@@ -33,7 +33,7 @@ const initialState: AuthState = {
   dashboardTypeId: '',
   appDrawerMenuList: [],
   appBottomMenuList: [],
-  appColorCode: '#1565C0',
+  appColorCode: '#251d50',
   isPinVerifyLoaded: false,
   attendanceDone: false,
   locationLogs: [],
@@ -178,8 +178,8 @@ const authSlice = createSlice({
       .addCase(checkAuthStateThunk.rejected, (state, action) => {
         console.log("rejected rejected rejected rejected rejected rejected ++++++++++")
         state.isLoading = false;
-        state.user = null;
-        state.isAuthenticated = false;
+        // state.user = null;
+        // state.isAuthenticated = false;
         state.error = action?.payload as string;
       })
 
@@ -206,8 +206,8 @@ const authSlice = createSlice({
       })
       .addCase(loginUserThunk.rejected, (state, action) => {
         state.isLoading = false;
-        state.user = null;
-        state.isAuthenticated = false;
+        // state.user = null;
+        // state.isAuthenticated = false;
         state.error = action.payload as string;
       })
       .addCase(switchAccountThunk.pending, state => {
@@ -371,8 +371,8 @@ const authSlice = createSlice({
   state.error = action.payload as string;
   state.appBottomMenuList = [];
   state.appDrawerMenuList = [];
-  setERPAppColor('#1565C0');
-  state.appColorCode = '#1565C0';
+  setERPAppColor('#251d50');
+  state.appColorCode = '#251d50';
   state.attendanceSecurityLevel = '0';
 }
       })
@@ -381,8 +381,8 @@ const authSlice = createSlice({
         state.error = action.payload as string;
         state.appBottomMenuList = [];
         state.appDrawerMenuList = [];
-        setERPAppColor('#1565C0');
-        state.appColorCode = '#1565C0';
+        setERPAppColor('#251d50');
+        state.appColorCode = '#251d50';
         state.isMenuLoading = false;
         state.attendanceSecurityLevel = '0';
 

@@ -57,13 +57,13 @@ const StepOne = ({
         part3: string,
     ) => {
         const aadhaarNumber = part1 + part2 + part3;
-
+        console.log("aadhaarNumberaadhaarNumberaadhaarNumberaadhaarNumber", aadhaarNumber)
         setStepOne(prev => ({
             ...prev,
             aadhaarNumber,
         }));
     };
-
+ console.log("stepOnestepOnestepOnestepOnestepOnestepOne", stepOne)
     return (
         <>
             <View style={styles.card}>

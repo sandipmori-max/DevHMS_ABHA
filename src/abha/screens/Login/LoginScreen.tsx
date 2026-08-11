@@ -42,11 +42,12 @@ import { useAbhaAddressRequestOtpMutation } from '../../redux/api/abhaAddressLog
 import { isValidAadhaar } from '../../utils/aadhaarValidator';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
 import ABHACard from './ABHACard';
+import { useCreateSessionMutation } from '../../redux/api/sessionApi';
 
 const LoginScreen = () => {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
-  
+
   const dispatch = useDispatch()
 
   const publicKey = useSelector(
@@ -56,6 +57,7 @@ const LoginScreen = () => {
   console.log("publicKeypublicKeypublicKey", publicKey)
   const { txnId } = useSelector((state: any) => state.abha);
   const { loginType, isFromRegister = false, isFromCreate = false, isFromMobileRegister = false, isFromForgotAbhaNumber = false, isFromForgotAbhaNumberWithType = false, } = route.params ?? {};
+
 
   const [searchProfile, setSearchProfile] = useState()
   const [showSearchProfile, setShowSearchProfile] = useState(false)
@@ -81,6 +83,9 @@ const LoginScreen = () => {
   });
 
   const [requestOtp] = useRequestOtpMutation();
+  const [
+    createSession
+  ] = useCreateSessionMutation();
   const [
     searchAbhaAddress,
     {
@@ -780,9 +785,9 @@ const LoginScreen = () => {
               )}
 
               {
-                showSearchProfile &&  <ABHACard abhaData={searchProfile} />
+                showSearchProfile && <ABHACard abhaData={searchProfile} />
               }
-             
+
               {loginType === 'ABHA Address' && (
                 <View style={styles.card}>
                   <Text style={styles.cardTitle}>
@@ -862,27 +867,34 @@ const LoginScreen = () => {
                 onPress={async () => {
                   try {
 
-                    if(loginType === 'ABHA Address' && showSearchProfile && searchProfile){
-                      const encryptedValue = encryptData(searchProfile?.mobile, publicKey,);
+                    if (loginType === 'ABHA Address' && showSearchProfile && searchProfile) {
+                      await createSession()
+                        .unwrap();
+                      const encryptedValue = encryptData(searchProfile?.abhaAddress, publicKey,);
 
-                        const payload: any = getPayloadData(otpMethod, encryptedValue)
-                        console.log("payload + + + + + + getPayloadData + + + + ", payload)
-                        const result = await abhaAddressRequestOtp(payload).unwrap();
+                      const payload: any = getPayloadData(otpMethod, encryptedValue)
+                      console.log("payload + + + + + + getPayloadData + + + + ", payload)
+                      const result = await abhaAddressRequestOtp(payload).unwrap();
 
-                        console.log("result+++++++++++++++", result)
-                        showToast(
-                          "success",
-                          result?.message || "OTP sent successfully"
-                        );
-                        setTimeout(() => {
-                          navigation.replace('OtpVerification', {
-                            loginType,
-                            mobileNumber: loginValue,
-                            payload: payload,
-                            otpMethod: otpMethod
-                          });
-                        }, 1000);
-                        return;
+                      console.log("result+++++++++++++++", result)
+                      showToast(
+                        "success",
+                        result?.message || "OTP sent successfully"
+                      );
+                      setTimeout(() => {
+                        navigation.replace('OtpVerification', {
+                          loginType,
+                          mobileNumber: loginValue,
+                          loginValue: loginValue,
+                          txnId: txnId,
+                          otpMethod: otpMethod,
+                          result: result,
+                          payload: payload
+                        });
+
+
+                      }, 1000);
+                      return;
                     }
                     const errors = validateForm(
                       loginType,
@@ -891,7 +903,7 @@ const LoginScreen = () => {
                       isAgreed,
                       captchaValue,
                       captcha,
-                       otpMethod 
+                      otpMethod
                     );
 
                     if (errors.length > 0) {
@@ -918,6 +930,8 @@ const LoginScreen = () => {
                     }
                     dispatch(showLoader());
                     if (isFromRegister) {
+                      await createSession()
+                        .unwrap();
                       const encryptedValue = encryptData(loginValue, publicKey,);
                       const payloadPassed = getEnrollmentPayload(loginType, encryptedValue, txnId,);
                       const result = await enrollmentRequestOtp(payloadPassed).unwrap();
@@ -954,6 +968,8 @@ const LoginScreen = () => {
 
 
                       } else {
+                        await createSession()
+                          .unwrap();
                         console.log("publicKeypublicKeypublicKey", publicKey)
                         const encryptedValue = encryptData(loginValue, publicKey,);
                         const payloadPassed = getPayload(
@@ -989,9 +1005,9 @@ const LoginScreen = () => {
               >
                 <Text style={styles.continueText}>
                   {
-                    loginType === 'ABHA Address' && !showSearchProfile ? 'Search' :  isFromCreate ? "Next" : "Continue"
+                    loginType === 'ABHA Address' && !showSearchProfile ? 'Search' : isFromCreate ? "Next" : "Continue"
                   }
-                 
+
                 </Text>
               </TouchableOpacity>
 

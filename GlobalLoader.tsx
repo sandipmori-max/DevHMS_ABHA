@@ -42,9 +42,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 10,
-    elevation: 10,
   },
-
   text: {
     marginTop: 16,
     fontSize: 13,

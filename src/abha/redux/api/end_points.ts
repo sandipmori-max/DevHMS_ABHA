@@ -25,8 +25,12 @@ export const END_POINTS = {
   profileAbhaCard: "profile/account/abha-card",
   searchAbhaAddress: "phr/web/login/abha/search",
   abhaAddressRequestOtp: "phr/web/login/abha/request/otp",
-  abhaAddressVerifyOtp: "/phr/web/login/abha/verify",
-  profileByToken: "phr/web/login/profile/abha-profile"
+  abhaAddressVerifyOtp: "phr/web/login/abha/verify",
+  profileByToken: "phr/web/login/profile/abha-profile",
+  generateLinkToken: 'token/generate-token',
+  linkCareContext: "link/carecontext",
+  notifyLinkContext: "link/context/notify",
+  consentRequestInit: "request/init"
 }
 
 export const API_BOOL = false;

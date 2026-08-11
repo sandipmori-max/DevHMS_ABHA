@@ -29,14 +29,16 @@ import { hideLoader, showLoader } from '../../redux/slices/loaderSlice';
 import { showToast } from '../../utils/toast';
 import { getLoginVerifyUserPayload, useLoginVerifyUserMutation } from '../../redux/api/loginVerifyUserApi';
 import { useLazyProfileAccountQuery } from '../../redux/api/profileAccountApi';
-import { setActiveUser } from '../../redux/slices/abhaSlice';
-import { useSavePageMutation } from '../../redux/api/savePageApi';
-import { useLazyProfileQrCodeQuery } from '../../redux/api/qrCodeApi';
-import { useLazyProfileAbhaCardQuery } from '../../redux/api/abhaCardApi';
+import { setRToken, setTToken, setTxnId } from '../../redux/slices/abhaSlice';
+import { useSavePageMutation } from '../../redux/api/savePageApi'; 
 import { useAbhaAddressRequestOtpMutation } from '../../redux/api/abhaAddressLoginApi';
 import { useAbhaAddressVerifyOtpMutation } from '../../redux/api/abhaAddressVerifyApi';
 import { useLazyAbhaProfileQuery } from '../../redux/api/profileByTokenApi';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
+import AccountList from './AccountList';
+import { BASE_URL_API, generateGUID } from '../../utils/helpers';
+import { END_POINTS } from '../../redux/api/end_points';
+import { useCreateSessionMutation } from '../../redux/api/sessionApi';
 
 const OtpVerificationScreen = () => {
   const navigation = useNavigation<any>();
@@ -45,11 +47,6 @@ const OtpVerificationScreen = () => {
   const [savePage] =
     useSavePageMutation();
 
-  const [getQrCode] =
-    useLazyProfileQrCodeQuery();
-
-  const [getAbhaCard] =
-    useLazyProfileAbhaCardQuery();
   const [
     abhaAddressRequestOtp
   ] = useAbhaAddressRequestOtpMutation();
@@ -58,7 +55,12 @@ const OtpVerificationScreen = () => {
   const publicKey = useSelector(
     (state: any) => state.abhaauth.publicKey
   );
-
+  const xtoken = useSelector(
+    (state: any) => state.abha.tToken
+  );
+  const token = useSelector(
+    (state: any) => state.abhaauth.accessToken
+  );
   const txnId = useSelector(
     (state: any) => state.abha.txnId
   );
@@ -66,8 +68,8 @@ const OtpVerificationScreen = () => {
 
   const [loginVerify, { isLoading }] =
     useLoginVerifyMutation();
-  const [requestOtp] = useRequestOtpMutation
-    ();
+
+  const [requestOtp] = useRequestOtpMutation();
   const [
     loginVerifyUser,
   ] = useLoginVerifyUserMutation();
@@ -76,6 +78,12 @@ const OtpVerificationScreen = () => {
   const [
     getAbhaProfile,
   ] = useLazyAbhaProfileQuery();
+
+  const [abhaAccounts, setAbhaAccounts] = useState<any>();
+  const [showAbhaAccount, setShowAbhaAccount] = useState<any>();
+  const [selectedAccount, setSelectedAccount] = useState<any>(null);
+  const [apiAbhaRes, setApiAbhaRes] = useState<any>()
+
   const activeUser = useSelector(
     (state: any) => state.auth.user
   );
@@ -88,14 +96,18 @@ const OtpVerificationScreen = () => {
     otpMethod
   } = route?.params || {};
 
+  console.log("otpMethod", otpMethod)
   const [otp, setOtp] = useState('');
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(120);
   const [resendCount, setResendCount] = useState(0);
   const inputRef = useRef<TextInput>(null);
+
   const [
     verifyAbhaOtp
   ] = useAbhaAddressVerifyOtpMutation();
-
+  const [
+    createSession
+  ] = useCreateSessionMutation();
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
@@ -122,6 +134,8 @@ const OtpVerificationScreen = () => {
     setResendCount(prev => prev + 1);
     if (loginType === 'ABHA Address') {
       try {
+        await createSession()
+          .unwrap();
         const result = await abhaAddressRequestOtp(payload).unwrap();
 
         console.log("result+++++++++++++++", result)
@@ -186,7 +200,9 @@ const OtpVerificationScreen = () => {
     }
     try {
       dispatch(showLoader());
-      setTimer(60);
+      setTimer(120);
+      await createSession()
+        .unwrap();
       const encryptedValue =
         encryptData(
           loginValue,
@@ -215,6 +231,8 @@ const OtpVerificationScreen = () => {
         ).unwrap();
 
       console.log(response);
+      await dispatch(setTToken(response?.token))
+      //  dispatch(setRToken(response?.refreshToken))
 
       const res =
         await getProfileAccount();
@@ -231,7 +249,186 @@ const OtpVerificationScreen = () => {
 
   };
 
+  const getProfileQrCode = async (endpoints: any) => {
+    try {
+      const response = await fetch(
+        `${BASE_URL_API}${endpoints}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "X-token": `Bearer ${xtoken}`,
+            "REQUEST-ID": generateGUID(),
+            "TIMESTAMP": new Date().toISOString(),
+          },
+        }
+      );
+
+      console.log("Status =>", response.status);
+
+      console.log(
+        "Content-Type =>",
+        response.headers.get("content-type")
+      );
+
+
+      const contentType = response.headers.get("content-type");
+      console.log("contentTypecontentTypecontentTypecontentType", contentType)
+
+      if (
+        contentType?.includes("image")
+      ) {
+
+        const buffer = await response.arrayBuffer();
+
+        const bytes = new Uint8Array(buffer);
+
+
+        let binary = "";
+
+        bytes.forEach((byte) => {
+          binary += String.fromCharCode(byte);
+        });
+
+
+        const base64 = `data:${contentType};base64,${btoa(binary)}`;
+
+
+        console.log(
+          "BASE64 IMAGE =>",
+          base64.substring(0, 100)
+        );
+
+
+        return base64;
+
+      }
+
+
+      const text = await response.text();
+
+      console.log(
+        "TEXT RESPONSE =>",
+        text
+      );
+
+
+      return text;
+
+
+    } catch (error) {
+
+      console.log(
+        "QR ERROR =>",
+        error
+      );
+
+      throw error;
+    }
+  };
+
+  const hanldeAbhaProfile = async () => {
+    dispatch(showLoader())
+    if (!selectedAccount) {
+      showToast('error', "Abha selection", 'Please selecte profile')
+      return;
+    }
+
+    console.log("selectedAccountselectedAccountselectedAccount", selectedAccount)
+    await createSession()
+      .unwrap();
+    const responseProfile: any =
+      await getProfileAccount();
+
+    const res = responseProfile?.data;
+    const payloadRow = {
+      "patientabhaid": "",
+      "abhanumber": res?.ABHANumber,
+      "abhaname": res?.abhaName || res?.name,
+      "aadharnumber": res?.aadharNumber,
+      "firstname": res?.firstName,
+      "middlename": res?.middleName,
+      "lastname": res?.lastName,
+      "fullname": res?.name,
+      "dob": `${res?.yearOfBirth}-${res?.monthOfBirth}-${res?.dayOfBirth}`,
+      "yearofbirth": res?.yearOfBirth,
+      "monthofbirth": res?.monthOfBirth,
+      "dayofbirth": res?.dayOfBirth,
+      "gender": res?.gender,
+      "mobileno": res?.mobile,
+      "address": res?.address,
+      "statename": res?.stateName,
+      "statecode": res?.stateCode,
+      "districtname": res?.districtName,
+      "districtcode": res?.districtCode,
+      "subdistrictname": res?.subdistrictName,
+      "pincode": res?.pincode,
+      "preferredabhaaddress": res?.preferredAbhaAddress,
+      "photo": res?.photo,
+      "profilephoto": `profilephoto.jpeg;data:image/jpeg;base64,${res?.profilePhoto}`,
+      "kycphoto": `kycphoto.jpeg;data:image/jpeg;base64,${res?.kycPhoto}`,
+      "localizedname": res?.localizedDetails?.name,
+      "localizedgender": res?.localizedDetails?.gender,
+      "localizedtownname": res?.localizedDetails?.townName,
+      "localizeddistrictname": res?.localizedDetails?.districtName,
+      "localizedvillagename": res?.localizedDetails?.villageName,
+      "localizedstatename": res?.localizedDetails?.stateName,
+      "phraddress": res?.phraddress,
+      "authmethods": res?.authMethods?.join(","),
+      "tags": res?.tags,
+      "localizedlabels": res?.localizedDetails?.localizedLabels,
+      "registrationsource": "",
+      "profilestatus": res?.profileStatus,
+      "abhatype": res?.abhatype,
+      "abhastatus": res?.status,
+      "verificationtype": res?.verificationType,
+      "verificationstatus": res?.verificationStatus,
+      "iskycverified": res?.kycVerified,
+      "isnew": res?.isNew,
+      "cdt": new Date(),
+      "createddate": res?.createdDate,
+      "date": res?.createdDate
+    }
+
+    try {
+      const qrResponse = await getProfileQrCode(END_POINTS.profileQrCode);
+      payloadRow.qrcode = `qrCode.jpeg; ${qrResponse}`;
+    } catch (error) {
+      console.log(
+        "QR API FAILED =>",
+        error
+      );
+    }
+
+    try {
+      const qrResponse = await getProfileQrCode(END_POINTS.profileAbhaCard);
+      payloadRow.abhacard = `abhaCard.jpeg; ${qrResponse}`;
+    } catch (error) {
+      console.log(
+        "QR API FAILED =>",
+        error
+      );
+    }
+
+    const payloadData = {
+      token: activeUser?.token,
+      page: "PatientABHAProfile",
+      data: JSON.stringify(payloadRow),
+    };
+    const resAbha = await savePage(payloadData).unwrap();
+    console.log("resAbha1", resAbha)
+    if (resAbha?.success !== '0' || resAbha?.success !== 0) {
+      showToast(
+        "success",
+        resAbha?.message
+      );
+      dispatch(hideLoader())
+      navigation.goBack();
+    }
+  }
   const handleVerify = async () => {
+    dispatch(showLoader())
+    console.log("handleVerifyhandleVerifyhandleVerifyhandleVerify", loginValue, loginType, otpMethod)
     if (otp.length !== 6) {
       showToast(
         "error",
@@ -242,11 +439,12 @@ const OtpVerificationScreen = () => {
 
     if (loginType === 'ABHA Address') {
       try {
-
         if (otpMethod === 'Aadhaar OTP') {
+          await createSession()
+            .unwrap();
           const encryptedOtp =
             encryptData(
-              loginValue,
+              otp,
               publicKey,
             );
           const response = await verifyAbhaOtp({
@@ -269,15 +467,43 @@ const OtpVerificationScreen = () => {
           console.log("responseresponseresponseresponseresponse", response)
 
           if (response?.authResult === 'success') {
+            dispatch(setTToken(response?.tokens.token))
+
+            dispatch(setTxnId(response?.txnId))
             showToast(
               "success",
               response?.message || "Verification successful"
             );
 
-            const responseProfile: any =
-              await getAbhaProfile({
-                json_web_token: response?.tokens?.token,
-              }).unwrap();
+            //               try {
+            //   const r1 = await fetch(
+            //     `${BASE_URL_API}${END_POINTS.profileQrCode}`,
+            //     {
+            //       method: "GET",
+            //       headers: {
+            //         "X-token": `Bearer ${response?.tokens?.token}`,
+            //         Authorization: `Bearer ${token}`,
+            //         "REQUEST-ID": generateGUID(),
+            //         TIMESTAMP: new Date().toISOString(),
+            //       },
+            //     }
+            //   );
+
+            //   console.log("Status =>", r1.status);
+            //   console.log("OK =>", r1.ok);
+
+            //   const body = await r1.text();
+            //   console.log("Body =>", body);
+
+            // } catch (error) {
+            //   console.log("Fetch Error =>", error);
+            // }
+
+            const responseProfile: any = await getAbhaProfile({
+              json_web_token: response?.tokens?.token,
+            }).unwrap();
+
+
 
             const res = responseProfile;
 
@@ -307,7 +533,7 @@ const OtpVerificationScreen = () => {
               "preferredabhaaddress": res?.preferredAbhaAddress,
               "photo": res?.photo,
               "profilephoto": `profilephoto.jpeg;data:image/jpeg;base64,${res?.profilePhoto}`,
-              "kycphoto": `kycphoto.jpeg;data:image/jpeg;base64,${res?.kycphoto}`,
+              "kycphoto": `kycphoto.jpeg;data:image/jpeg;base64,${res?.kycPhoto}`,
               "localizedname": res?.localizedDetails?.name,
               "localizedgender": res?.localizedDetails?.gender,
               "localizedtownname": res?.localizedDetails?.townName,
@@ -325,19 +551,32 @@ const OtpVerificationScreen = () => {
               "verificationtype": res?.verificationType,
               "verificationstatus": res?.verificationStatus,
               "iskycverified": res?.kycVerified,
-              "isnew": "false",
-              "cdt": new Date()
+              "isnew": res?.isNew,
+              "cdt": new Date(),
+              "createddate": res?.createdDate,
+              "date": res?.createdDate
 
             }
 
-            const resQRCode = await getQrCode();
-            const resABHACard = await getAbhaCard();
-
-            if (payloadRow) {
-              payloadRow.qrcode = `qrcode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
-              payloadRow.abhacard = `abhacard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
+            try {
+              const qrResponse = await getProfileQrCode(END_POINTS.profileQrCode);
+              payloadRow.qrcode = `qrCode.jpeg; ${qrResponse}`;
+            } catch (error) {
+              console.log(
+                "QR API FAILED =>",
+                error
+              );
             }
 
+            try {
+              const qrResponse = await getProfileQrCode(END_POINTS.profileAbhaCard);
+              payloadRow.abhacard = `abhaCard.jpeg; ${qrResponse}`;
+            } catch (error) {
+              console.log(
+                "QR API FAILED =>",
+                error
+              );
+            }
             const payloadData = {
               token: activeUser?.token,
               page: "PatientABHAProfile",
@@ -348,7 +587,7 @@ const OtpVerificationScreen = () => {
 
 
             const resAbha = await savePage(payloadData).unwrap();
-              console.log("resAbha13", resAbha)
+            console.log("resAbha13", resAbha)
             if (resAbha?.success !== '0' || resAbha?.success !== 0) {
               showToast(
                 "success",
@@ -365,9 +604,11 @@ const OtpVerificationScreen = () => {
           }
 
         } else if (otpMethod === 'Mobile OTP') {
+          await createSession()
+            .unwrap();
           const encryptedOtp =
             encryptData(
-              loginValue,
+              otp,
               publicKey,
             );
           const response = await verifyAbhaOtp({
@@ -392,6 +633,8 @@ const OtpVerificationScreen = () => {
               "success",
               response?.message || "Verification successful"
             );
+            dispatch(setTToken(response?.tokens.token))
+            dispatch(setTxnId(response?.txnId))
 
             const responseProfile: any =
               await getAbhaProfile({
@@ -425,7 +668,7 @@ const OtpVerificationScreen = () => {
               "preferredabhaaddress": res?.preferredAbhaAddress,
               "photo": res?.photo,
               "profilephoto": `profilephoto.jpeg;data:image/jpeg;base64,${res?.profilePhoto}`,
-              "kycphoto": `kycphoto.jpeg;data:image/jpeg;base64,${res?.kycphoto}`,
+              "kycphoto": `kycphoto.jpeg;data:image/jpeg;base64,${res?.kycPhoto}`,
               "localizedname": res?.localizedDetails?.name,
               "localizedgender": res?.localizedDetails?.gender,
               "localizedtownname": res?.localizedDetails?.townName,
@@ -443,17 +686,31 @@ const OtpVerificationScreen = () => {
               "verificationtype": res?.verificationType,
               "verificationstatus": res?.verificationStatus,
               "iskycverified": res?.kycVerified,
-              "isnew": "false",
-              "cdt": new Date()
+              "isnew": res?.isNew,
+              "cdt": new Date(),
+              "createddate": res?.createdDate,
+              "date": res?.createdDate
 
             }
 
-            const resQRCode = await getQrCode();
-            const resABHACard = await getAbhaCard();
+            try {
+              const qrResponse = await getProfileQrCode(END_POINTS.profileQrCode);
+              payloadRow.qrcode = `qrCode.jpeg; ${qrResponse}`;
+            } catch (error) {
+              console.log(
+                "QR API FAILED =>",
+                error
+              );
+            }
 
-            if (payloadRow) {
-              payloadRow.qrcode = `qrcode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
-              payloadRow.abhacard = `abhacard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
+            try {
+              const qrResponse = await getProfileQrCode(END_POINTS.profileAbhaCard);
+              payloadRow.abhacard = `abhaCard.jpeg; ${qrResponse}`;
+            } catch (error) {
+              console.log(
+                "QR API FAILED =>",
+                error
+              );
             }
 
             const payloadData = {
@@ -462,7 +719,7 @@ const OtpVerificationScreen = () => {
               data: JSON.stringify(payloadRow),
             };
             const resAbha = await savePage(payloadData).unwrap();
-              console.log("resAbha12", resAbha)
+            console.log("resAbha12", resAbha)
             if (resAbha?.success !== '0' || resAbha?.success !== 0) {
               showToast(
                 "success",
@@ -487,8 +744,9 @@ const OtpVerificationScreen = () => {
     }
 
     try {
-      dispatch(showLoader());
       console.log('OTP:------------------', otp, txnId);
+      await createSession()
+        .unwrap();
       const encryptedValue =
         encryptData(
           otp,
@@ -513,98 +771,12 @@ const OtpVerificationScreen = () => {
           "success",
           response?.message || "Verification successful"
         );
-
-        const payload =
-          getLoginVerifyUserPayload(
-            response?.accounts[0]?.ABHANumber,
-            response?.txnId
-          );
-
-        const response1 =
-          await loginVerifyUser(
-            payload
-          ).unwrap();
-
-        console.log('response1+++++++++++++', response1);
-
-        const responseProfile: any =
-          await getProfileAccount();
-
-        const res = responseProfile?.data;
-
-        const payloadRow = {
-          "patientabhaid": "",
-          "abhanumber": res?.ABHANumber,
-          "abhaname": res?.abhaName || res?.name,
-          "aadharnumber": res?.aadharNumber,
-          "firstname": res?.firstName,
-          "middlename": res?.middleName,
-          "lastname": res?.lastName,
-          "fullname": res?.name,
-          "dob": `${res?.yearOfBirth}-${res?.monthOfBirth}-${res?.dayOfBirth}`,
-          "yearofbirth": res?.yearOfBirth,
-          "monthofbirth": res?.monthOfBirth,
-          "dayofbirth": res?.dayOfBirth,
-          "gender": res?.gender,
-          "mobileno": res?.mobile,
-          "address": res?.address,
-          "statename": res?.stateName,
-          "statecode": res?.stateCode,
-          "districtname": res?.districtName,
-          "districtcode": res?.districtCode,
-          "subdistrictname": res?.subdistrictName,
-          "pincode": res?.pincode,
-          "preferredabhaaddress": res?.preferredAbhaAddress,
-          "photo": res?.photo,
-          "profilephoto": `profilephoto.jpeg;data:image/jpeg;base64,${res?.profilePhoto}`,
-          "kycphoto": `kycphoto.jpeg;data:image/jpeg;base64,${res?.kycphoto}`,
-          "localizedname": res?.localizedDetails?.name,
-          "localizedgender": res?.localizedDetails?.gender,
-          "localizedtownname": res?.localizedDetails?.townName,
-          "localizeddistrictname": res?.localizedDetails?.districtName,
-          "localizedvillagename": res?.localizedDetails?.villageName,
-          "localizedstatename": res?.localizedDetails?.stateName,
-          "phraddress": res?.phraddress,
-          "authmethods": res?.authMethods?.join(","),
-          "tags": res?.tags,
-          "localizedlabels": res?.localizedDetails?.localizedLabels,
-          "registrationsource": "",
-          "profilestatus": res?.profileStatus,
-          "abhatype": res?.abhatype,
-          "abhastatus": res?.status,
-          "verificationtype": res?.verificationType,
-          "verificationstatus": res?.verificationStatus,
-          "iskycverified": res?.kycVerified,
-          "isnew": "false",
-          "cdt": new Date()
-
-        }
-
-
-        console.log("payloadData", payloadData)
-
-        const resQRCode = await getQrCode();
-        const resABHACard = await getAbhaCard();
-
-        if (payloadRow) {
-          payloadRow.qccode = `qrCode.jpeg;data:image/jpeg;base64,${resQRCode?.data?.qrCode}`;
-          payloadRow.abhacard = `abhaCard.jpeg;data:image/jpeg;base64,${resABHACard?.data?.card}`;
-        }
-        const payloadData = {
-          token: activeUser?.token,
-          page: "PatientABHAProfile",
-          data: JSON.stringify(payloadRow),
-        };
-        const resAbha = await savePage(payloadData).unwrap();
-        console.log("resAbha1", resAbha)
-        if (resAbha?.success !== '0' || resAbha?.success !== 0) {
-          showToast(
-            "success",
-            resAbha?.message
-          );
-          navigation.goBack();
-        }
-
+        dispatch(setTToken(response?.token))
+        // dispatch(setRToken(response?.refreshToken))
+        setShowAbhaAccount(true)
+        setAbhaAccounts(response?.accounts)
+        setApiAbhaRes(response)
+        return;
 
       } else {
         showToast(
@@ -625,6 +797,7 @@ const OtpVerificationScreen = () => {
     }
 
   };
+
   const blinkAnim =
     useRef(
       new Animated.Value(1),
@@ -719,7 +892,10 @@ const OtpVerificationScreen = () => {
           </TouchableOpacity>
 
           <Text style={styles.headerTitle}>
-            OTP Verification
+            {
+              showAbhaAccount ? 'Profile selection' : 'OTP Verification'
+            }
+
           </Text>
 
           <View
@@ -727,148 +903,154 @@ const OtpVerificationScreen = () => {
           />
         </View>
 
-        <View
-        
-        >
-          {/* Illustration */}
+        {
+          showAbhaAccount ? <>
+            <AccountList
+              accounts={abhaAccounts}
+              setSelectedAccount={setSelectedAccount}
+              selectedAccount={selectedAccount}
+            />
 
-          
+          </> : <View>
+            {/* Illustration */}
 
-          {/* Title */}
+            {/* Title */}
 
-          <Text style={styles.title}>
-            Verify Your Identity
-          </Text>
-
-          <Text
-            style={styles.subtitle}
-          >
-            {result?.message || 'Please enter the OTP sent to your registered mobile number.'}
-          </Text>
-
-          {/* Hidden Input */}
-
-          <TextInput
-            ref={inputRef}
-            value={otp}
-            onChangeText={
-              handleChangeOtp
-            }
-            keyboardType="number-pad"
-            maxLength={6}
-            autoFocus
-            caretHidden
-             placeholderTextColor="#999999"
-            contextMenuHidden={
-              false
-            }
-            style={
-              styles.hiddenInput
-            }
-          />
-
-          {/* OTP Boxes */}
-
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() =>
-              inputRef.current?.focus()
-            }
-          >
-            <View
-              style={
-                styles.otpContainer
-              }
-            >
-              {[0, 1, 2, 3, 4, 5].map(
-                index => {
-                  const isActive =
-                    otp.length ===
-                    index;
-
-                  return (
-                    <View
-                      key={index}
-                      style={[
-                        styles.otpBox,
-                        isActive && {
-                          borderColor:
-                            '#1565C0',
-                        },
-                      ]}
-                    >
-                      {otp[index] ? (
-                        <Text
-                          style={
-                            styles.otpText
-                          }
-                        >
-                          {
-                            otp[
-                            index
-                            ]
-                          }
-                        </Text>
-                      ) : isActive &&
-                        otp.length <
-                        6 ? (
-                        <Animated.View
-                          style={[
-                            styles.cursor,
-                            {
-                              opacity:
-                                blinkAnim,
-                            },
-                          ]}
-                        />
-                      ) : null}
-                    </View>
-                  );
-                },
-              )}
-            </View>
-          </TouchableOpacity>
-
-          {/* Timer */}
-
-          <View
-            style={
-              styles.timerContainer
-            }
-          >
-            <Text
-              style={
-                styles.timerText
-              }
-            >
-              Resend in:{' '}
-              {timer}s
+            <Text style={styles.title}>
+              Verify Your Identity
             </Text>
 
-            <TouchableOpacity
-              disabled={
-                timer > 0 ||
-                resendCount >= 2
+            <Text
+              style={styles.subtitle}
+            >
+              {result?.message || 'Please enter the OTP sent to your registered mobile number.'}
+            </Text>
+
+            {/* Hidden Input */}
+
+            <TextInput
+              ref={inputRef}
+              value={otp}
+              onChangeText={
+                handleChangeOtp
               }
-              onPress={
-                handleResend
+              keyboardType="number-pad"
+              maxLength={6}
+              autoFocus
+              caretHidden
+              placeholderTextColor="#999999"
+              contextMenuHidden={
+                false
+              }
+              style={
+                styles.hiddenInput
+              }
+            />
+
+            {/* OTP Boxes */}
+
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={() =>
+                inputRef.current?.focus()
+              }
+            >
+              <View
+                style={
+                  styles.otpContainer
+                }
+              >
+                {[0, 1, 2, 3, 4, 5].map(
+                  index => {
+                    const isActive =
+                      otp.length ===
+                      index;
+
+                    return (
+                      <View
+                        key={index}
+                        style={[
+                          styles.otpBox,
+                          isActive && {
+                            borderColor:
+                              '#1565C0',
+                          },
+                        ]}
+                      >
+                        {otp[index] ? (
+                          <Text
+                            style={
+                              styles.otpText
+                            }
+                          >
+                            {
+                              otp[
+                              index
+                              ]
+                            }
+                          </Text>
+                        ) : isActive &&
+                          otp.length <
+                          6 ? (
+                          <Animated.View
+                            style={[
+                              styles.cursor,
+                              {
+                                opacity:
+                                  blinkAnim,
+                              },
+                            ]}
+                          />
+                        ) : null}
+                      </View>
+                    );
+                  },
+                )}
+              </View>
+            </TouchableOpacity>
+
+            {/* Timer */}
+
+            <View
+              style={
+                styles.timerContainer
               }
             >
               <Text
-                style={[
-                  styles.resendText,
-                  (timer > 0 || resendCount >= 2) && {
-                    opacity: 0.4,
-                  }
-                ]}
+                style={
+                  styles.timerText
+                }
               >
-                {resendCount >= 2
-                  ? 'Resend limit reached'
-                  : 'Resend OTP'}
+                Resend in:{' '}
+                {timer}s
               </Text>
-            </TouchableOpacity>
+
+              <TouchableOpacity
+                disabled={
+                  timer > 0 ||
+                  resendCount >= 2
+                }
+                onPress={
+                  handleResend
+                }
+              >
+                <Text
+                  style={[
+                    styles.resendText,
+                    (timer > 0 || resendCount >= 2) && {
+                      opacity: 0.4,
+                    }
+                  ]}
+                >
+                  {resendCount >= 2
+                    ? 'Resend limit reached'
+                    : 'Resend OTP'}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        }
+
 
         {/* Bottom Button */}
 
@@ -882,7 +1064,13 @@ const OtpVerificationScreen = () => {
               otp.length !== 6
             }
             onPress={
-              handleVerify
+              () => {
+                if (showAbhaAccount) {
+                  hanldeAbhaProfile()
+                } else {
+                  handleVerify()
+                }
+              }
             }
             style={[
               styles.verifyBtn,
@@ -899,7 +1087,10 @@ const OtpVerificationScreen = () => {
                 styles.verifyText
               }
             >
-              Verify OTP
+              {
+                showAbhaAccount ? 'Continue' : 'Verify OTP'
+              }
+
             </Text>
           </TouchableOpacity>
         </View>
@@ -1057,7 +1248,7 @@ const styles =
       color: '#1565C0',
     },
 
-    bottomBar: { 
+    bottomBar: {
       bottom: 0,
       left: 0,
       right: 0,

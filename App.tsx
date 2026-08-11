@@ -48,6 +48,7 @@ import { toastConfig } from "./ToastConfig";
 import { getGetAuthPayload, useGetAuthMutation } from "./src/abha/redux/api/getAuth";
 import { useCreateSessionMutation } from "./src/abha/redux/api/sessionApi";
 import { hideLoader, showLoader } from "./src/abha/redux/slices/loaderSlice";
+// import { useLazyGenerateKeysQuery } from "./src/abha/redux/api/generateKeys";
 
 const App = () => {
   return (
@@ -85,6 +86,9 @@ const AppContent = () => {
     createSession
   ] = useCreateSessionMutation();
 
+// const [generateKeys,  ] =
+//   useLazyGenerateKeysQuery();
+
   const { width } = useWindowDimensions();
   const isConnected = useNetworkStatus();
 
@@ -111,6 +115,14 @@ const AppContent = () => {
 
   const handleSession = async () => {
     try {
+     
+      const response1 =
+        await generateKeys()
+          .unwrap();
+      console.log(
+        "Session Response11111+++++++++++++++",
+        response1
+      );
       const response =
         await createSession()
           .unwrap();
@@ -126,11 +138,31 @@ const AppContent = () => {
     }
   };
 
+  // const handleKey = async () => {
+  //   try {
+     
+  //     const response1 =
+  //       await generateKeys()
+  //         .unwrap();
+  //     console.log(
+  //       "Session Response11111+++++++++++++++",
+  //       response1
+  //     );
+      
+  //   } catch (err) {
+  //     console.log(
+  //       "Session Error++++--------+++++++",
+  //       err
+  //     );
+  //   }
+  // };
+
   useEffect(() => {
     const init = async () => {
       try {
         dispatch(showLoader());
         await handleSession();
+        // await handleKey()
       } catch (error) {
         console.log(error);
       } finally {
@@ -311,22 +343,6 @@ const AppContent = () => {
     fetchAuth();
   }, [appId, deviceName]);
 
-   
-
-  // 🔥 Loader
-  // if (isLoading) {
-  //   return (
-  //     <View style={{ flex: 1 }}>
-  //       <FullViewLoader />
-  //     </View>
-  //   );
-  // }
-
-  // 🔥 Terms
-  // if (!accepted && !isTv) {
-  //   return <TermsAndConsent onAccept={handleAccept} />;
-  // }
-
   return (
     <>
       <StatusBar backgroundColor={statusBarColor} barStyle={barStyle} />
@@ -420,207 +436,7 @@ const styles = StyleSheet.create({
   },
 });
 
+
+
 export default App;
 
-
-// import React from 'react';
-// import {
-//   View,
-//   Text,
-//   TouchableOpacity,
-//   StyleSheet,
-//   Alert,
-//   Linking,
-// } from 'react-native';
-
-// import Share from 'react-native-share';
-// import RNFS from 'react-native-fs';
-
-// const App = () => {
-//   // Share text to specific WhatsApp number
-//   const shareTextToWhatsApp = async () => {
-//     try {
-//       const phone = '918154877969';
-//       const text = encodeURIComponent(
-//         'Hello Sandip,\n\nThis is test message.',
-//       );
-
-//       await Linking.openURL(
-//         `https://wa.me/${phone}?text=${text}`,
-//       );
-//     } catch (e: any) {
-//       Alert.alert('Error', e?.message || JSON.stringify(e));
-//     }
-//   };
-
-//   // Download PDF
-//   const downloadPdf = async () => {
-//     const pdfUrl = 'https://pdfobject.com/pdf/sample.pdf';
-
-//     const localFile =
-//       `${RNFS.CachesDirectoryPath}/sample.pdf`;
-
-//     try {
-//       if (await RNFS.exists(localFile)) {
-//         await RNFS.unlink(localFile);
-//       }
-
-//       const result = await RNFS.downloadFile({
-//         fromUrl: pdfUrl,
-//         toFile: localFile,
-//       }).promise;
-
-//       if (result.statusCode !== 200) {
-//         throw new Error(
-//           `Download failed : ${result.statusCode}`,
-//         );
-//       }
-
-//       const exists = await RNFS.exists(localFile);
-
-//       if (!exists) {
-//         throw new Error('PDF not found');
-//       }
-
-//       return localFile;
-//     } catch (e) {
-//       throw e;
-//     }
-//   };
-
-//   // Native Share Dialog
-//   const openShareDialog = async () => {
-//     try {
-//       await Share.open({
-//         message: 'Hello from React Native',
-//         failOnCancel: false,
-//       });
-//     } catch (e: any) {
-//       Alert.alert(
-//         'Share Error',
-//         e?.message || JSON.stringify(e),
-//       );
-//     }
-//   };
-
-//   // PDF Share Dialog
-//   const sharePdf = async () => {
-//     try {
-//       const file = await downloadPdf();
-
-//       await Share.open({
-//         title: 'Share PDF',
-//         url: `file://${file}`,
-//         type: 'application/pdf',
-//         filename: 'sample.pdf',
-//         failOnCancel: false,
-//       });
-
-//       Alert.alert('Success');
-//     } catch (e: any) {
-//       console.log(e);
-
-//       Alert.alert(
-//         'PDF Error',
-//         JSON.stringify(
-//           {
-//             code: e?.code,
-//             message: e?.message,
-//             error: e,
-//           },
-//           null,
-//           2,
-//         ),
-//       );
-//     }
-//   };
-
-//   // WhatsApp PDF
-//   const sharePdfOnWhatsApp = async () => {
-//     try {
-//       const file = await downloadPdf();
-
-//       await Share.shareSingle({
-//         social: Share.Social.WHATSAPP,
-//         url: `file://${file}`,
-//         type: 'application/pdf',
-//         filename: 'sample.pdf',
-//         failOnCancel: false,
-//       });
-
-//       Alert.alert('WhatsApp Opened');
-//     } catch (e: any) {
-//       console.log(e);
-
-//       Alert.alert(
-//         'WhatsApp Error',
-//         JSON.stringify(
-//           {
-//             code: e?.code,
-//             message: e?.message,
-//             error: e,
-//           },
-//           null,
-//           2,
-//         ),
-//       );
-//     }
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <TouchableOpacity
-//         style={styles.button}
-//         onPress={shareTextToWhatsApp}>
-//         <Text style={styles.text}>
-//           Share Text
-//         </Text>
-//       </TouchableOpacity>
-
-//       <TouchableOpacity
-//         style={styles.button}
-//         onPress={sharePdf}>
-//         <Text style={styles.text}>
-//           Share PDF
-//         </Text>
-//       </TouchableOpacity>
-
-//       <TouchableOpacity
-//         style={styles.button}
-//         onPress={openShareDialog}>
-//         <Text style={styles.text}>
-//           Share Dialog
-//         </Text>
-//       </TouchableOpacity>
-
-//       <TouchableOpacity
-//         style={styles.button}
-//         onPress={sharePdfOnWhatsApp}>
-//         <Text style={styles.text}>
-//           WhatsApp PDF
-//         </Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-
-// export default App;
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     padding: 20,
-//   },
-//   button: {
-//     backgroundColor: '#0066cc',
-//     padding: 16,
-//     borderRadius: 8,
-//     marginBottom: 15,
-//     alignItems: 'center',
-//   },
-//   text: {
-//     color: '#fff',
-//     fontWeight: 'bold',
-//   },
-// });

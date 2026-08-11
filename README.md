@@ -1,20 +1,81 @@
+// 2 callback api
+// 1 notify 
+// get links data 
+// auth / view details
+// sms/notify2 -  This API will be invoked by HIP to trigger a SMS notification to the patient mobile number when health record is available to fetch.    
+
+
+
 // DevERP
 
 // Multiple build creation with different Name + icon + package name
+// https://www.devglan.com/online-tools/rsa-encryption-decryption
 
+
+
+Calendar Training Video
+https://vimeo.com/934288015
+https://vimeo.com/934288389
+OPD Training Video p
+https://vimeo.com/936908199
+https://vimeo.com/934288467
+https://vimeo.com/936908143
+https://vimeo.com/936905010
+IPD Training Video
+https://vimeo.com/936904816
+https://vimeo.com/936909213
+https://vimeo.com/936904763
+Pharmacy Training Video
+https://vimeo.com/937003651
+Laboratory Training Video
+
+https://vimeo.com/936906783
+https://vimeo.com/936906857
+https://vimeo.com/936906916
+
+Assets Training Video
+https://drive.google.com/file/d/1dfVDe29iYoJYuKVRYU39fD1KJTu5pFDd/view?usp=sharing
+Pharmacy Store 
+https://drive.google.com/file/d/1XScxAJkZz7sBRS0UOR__W-HKW9dA-g-P/view?usp=sharing
+
+HRMS Training Video
+https://drive.google.com/file/d/1mAsESi-brgs7voZlA2LtwvN1WSeOvITo/view?usp=sharing
+Tally Video
+https://drive.google.com/file/d/1w8GykSDthCeUZ26ZyJiaxILFmjHYoRM0/view?usp=drive_link
+
+Hello @161529492164829  Sir,
+Pls use below details to access product:
+
+URL: https://plus.curenearme.com
+User: sanganiravrl2017@gmail.com
+sanganivrl2017@gmail.com
+Password: sangani$1
+
+// 9016504333 - sangani 
+// https://nhpr.abdm.gov.in/nhpr/v4/login
 <!-- aa = 5412 4551 2032  sandip -->
-
+EC_1785410493574
+eka_dcefcc7d58cb4fe0805a6697
 <!-- 
 7619 8714 0371
 2865 6926 3981
 8991 3736 2188
 
 7586 2080 9449 - manish 
+9664 91 2488
 
-91336608745277
+6589 4748 3174 - krunal bhai
+8849 03 9153
+
+2871 5745 7506 - sir
+99040 83255
+
+9133 6608 745277
 -->
 
-// 
+https://www.youtube.com/watch?v=X2dvWFUz0Dw&list=PLwqlnoMfDnuAf701JHZoF_6C3A9JHNYr8
+
+// DevERP@405
 
 // --- android build ----
 // ./gradlew --stop

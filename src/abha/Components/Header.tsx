@@ -21,23 +21,30 @@ const Header = ({
   title,
   handleSearch,
   inputRef,
-  isSearch = true, isMenu = true, isShare = false, handleShare }: {
+  addConsentForm,
+  handleFetch,
+  isFetch = false,
+  isSearch = true, isMenu = true, isShare = false, handleShare, handleConsentForm }: {
     title: string, isSearch?: boolean, isMenu?: boolean,
     isShare?: boolean,
-    handleShare: any,
+    handleShare?: any,
     setSearch?: any,
     setSearchActive?: any,
     search?: any
     seachActive?: any,
     handleSearch?: any,
-    inputRef?: any
+    inputRef?: any,
+    addConsentForm?: any,
+    handleConsentForm?: any,
+    isFetch?: any,
+    handleFetch?: any
   }) => {
   const navigation = useNavigation();
   const [open, setOpen] = useState(false);
 
   return (
     <View style={[styles.header, {
-      backgroundColor : ERP_COLOR_CODE.ERP_APP_COLOR
+      backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR
     }]}>
       {/* Left Menu */}
       {
@@ -75,7 +82,7 @@ const Header = ({
             onChangeText={(e) => {
               setSearch(e)
             }}
-             placeholderTextColor="#999999"
+            placeholderTextColor="#999999"
             style={styles.searchInput}
           />
         </> : <Text style={{ color: '#FFF', fontSize: 18, fontWeight: '700' }}>{title}</Text>
@@ -97,8 +104,42 @@ const Header = ({
         </View>
 
       }
+
       {
-        isShare && <View style={styles.rightContainer}>
+        isShare && 
+        <View style={styles.rightContainer}>
+          {
+            addConsentForm && <View>
+              <TouchableOpacity
+
+                onPress={() => {
+                  handleConsentForm()
+                }}
+                style={styles.iconBtn}>
+                <MaterialIcons
+                  name='add'
+                  size={20}
+                  color="#FFF"
+                />
+              </TouchableOpacity>
+            </View>
+          }
+          {
+            isFetch && <View>
+              <TouchableOpacity
+
+                onPress={() => {
+                  handleFetch()
+                }}
+                style={styles.iconBtn}>
+                <MaterialIcons
+                  name='refresh'
+                  size={20}
+                  color="#FFF"
+                />
+              </TouchableOpacity>
+            </View>
+          }
           <TouchableOpacity
 
             onPress={() => {
@@ -112,6 +153,7 @@ const Header = ({
               color="#FFF"
             />
           </TouchableOpacity>
+
         </View>
       }
 

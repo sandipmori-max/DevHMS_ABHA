@@ -97,8 +97,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    elevation: 10, // Android shadow
-  },
+   },
 
   dragHandle: {
     width: 50,
