@@ -25,7 +25,7 @@ const Input = ({
   }, [value]);
   const [isInputEdit, setIsInputEdit] = useState(false);
   const [maxLengthError, setMaxLengthError] = useState("");
- 
+
   return (
     <View style={{ marginBottom: Platform.OS === 'android' ? 6 : 8 }}>
       <LableInfo isFromChild={isFromChild}
@@ -103,46 +103,47 @@ const Input = ({
           }
           value={value.toString()}
           onChangeText={(text) => {
+            console.log("text", text)
 
-  // Only numbers allowed for NUMERIC type
-  if (item?.ctltype === "NUMERIC") {
-     // Check invalid characters
-    const hasInvalidChar = /[^0-9]/.test(text);
+            // Only numbers allowed for NUMERIC type
+            if (item?.ctltype === "NUMERIC") {
+              // Check invalid characters
+              const hasInvalidChar = /[^0-9]/.test(text);
 
-    // Remove non-numeric chars
-    const numericText = text.replace(/[^0-9]/g, "");
+              // Remove non-numeric chars
+              const numericText = text.replace(/[^0-9]/g, "");
 
-    setValue(numericText);
+              setValue(numericText);
 
-    // Invalid character error
-    if (hasInvalidChar) {
-      setMaxLengthError("Only numbers are allowed");
-    }
-    // Max length error
-    else if ( item?.size > 0 && numericText.length >= item?.size) {
-      setMaxLengthError(
-        `Maximum ${item?.size} digits allowed`
-      );
-    }
-    // Clear error
-    else {
-      setMaxLengthError("");
-    }
+              // Invalid character error
+              if (hasInvalidChar) {
+                setMaxLengthError("Only numbers are allowed");
+              }
+              // Max length error
+              else if (item?.size > 0 && numericText.length >= item?.size) {
+                setMaxLengthError(
+                  `Maximum ${item?.size} digits allowed`
+                );
+              }
+              // Clear error
+              else {
+                setMaxLengthError("");
+              }
 
-    return;
-  }
+              return;
+            }
 
-  // Normal text input
-  setValue(text);
+            // Normal text input
+            setValue(text);
 
-  if (item?.size > 0 && text.length >= item?.size) {
-    setMaxLengthError(
-      `Maximum ${item?.size} characters allowed`
-    );
-  } else {
-    setMaxLengthError("");
-  }
-}}
+            if (item?.size > 0 && text.length >= item?.size) {
+              setMaxLengthError(
+                `Maximum ${item?.size} characters allowed`
+              );
+            } else {
+              setMaxLengthError("");
+            }
+          }}
           placeholder={`Enter ${item?.fieldtitle}`}
           onFocus={(e) => {
             setIsInputEdit(true);
@@ -158,21 +159,21 @@ const Input = ({
           }
         />
         {
-          !isFromNew &&   <ShortAction item={item} value={value} />
+          !isFromNew && <ShortAction item={item} value={value} />
         }
-      
+
       </View>
       {errors[item.field] && <InputError error={errors[item?.field]} />}
 
-       {!!maxLengthError && (
+      {!!maxLengthError && (
         <Text
           style={{
             color: ERP_COLOR_CODE.ERP_ERROR,
             fontSize: 12,
-            marginTop: 4, 
+            marginTop: 4,
           }}
         >
-         - {maxLengthError}
+          - {maxLengthError}
         </Text>
       )}
     </View>

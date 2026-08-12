@@ -1,0 +1,5072 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Who We Are | DevERP Solutions Private Limited
+    </title>
+
+    <meta name="description"
+          content="Know Who we are DevERP Solutions Private Limited">
+
+    <link rel="icon"
+          href="CMSassets/images/fevicon/logo.png"
+          type="image/png">
+
+    <!-- =========================================================
+         FONTS
+    ========================================================== -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+          rel="stylesheet">
+
+
+    <!-- =========================================================
+         ICONS
+    ========================================================== -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+
+    <style>
+
+        /* =========================================================
+           ROOT
+        ========================================================== */
+
+        :root {
+
+            --blue: #1769e0;
+            --blue-dark: #0b4bb3;
+            --blue-light: #edf5ff;
+
+            --navy: #07152d;
+            --navy-2: #0b1d3a;
+
+            --text: #334155;
+            --muted: #718096;
+
+            --white: #ffffff;
+            --surface: #f7f9fc;
+            --border: #e7edf5;
+
+            --green: #16a34a;
+
+            --radius: 18px;
+            --radius-lg: 28px;
+
+            --shadow:
+                0 20px 60px rgba(10, 35, 80, .10);
+
+            --container: 1180px;
+        }
+
+
+        /* =========================================================
+           RESET
+        ========================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+
+            font-family: "DM Sans", sans-serif;
+
+            color: var(--text);
+
+            background: var(--white);
+
+            line-height: 1.7;
+
+            overflow-x: hidden;
+        }
+
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+
+        button,
+        input,
+        textarea {
+            font-family: inherit;
+        }
+
+
+        .container {
+
+            width: min(
+                var(--container),
+                calc(100% - 40px)
+            );
+
+            margin: auto;
+        }
+
+
+        /* =========================================================
+           TOP MINI BAR
+        ========================================================== */
+
+        .top-bar {
+
+            height: 40px;
+
+            background: #061126;
+
+            color: #aebbd0;
+
+            font-size: 12px;
+        }
+
+
+        .top-bar-inner {
+
+            height: 100%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+        }
+
+
+        .top-info {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 25px;
+        }
+
+
+        .top-info span {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+        }
+
+
+        .top-info i {
+
+            color: #6da9ff;
+        }
+
+
+        .top-social {
+
+            display: flex;
+
+            gap: 7px;
+        }
+
+
+        .top-social a {
+
+            width: 25px;
+
+            height: 25px;
+
+            border-radius: 50%;
+
+            display: grid;
+
+            place-items: center;
+
+            transition: .2s;
+        }
+
+
+        .top-social a:hover {
+
+            color: white;
+
+            background: var(--blue);
+        }
+
+
+        /* =========================================================
+           HEADER
+        ========================================================== */
+
+        .header {
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 1000;
+
+            background: rgba(255,255,255,.94);
+
+            backdrop-filter: blur(18px);
+
+            border-bottom: 1px solid rgba(226,232,240,.75);
+        }
+
+
+        .nav {
+
+            min-height: 82px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 35px;
+        }
+
+
+        .logo img {
+
+            width: 145px;
+        }
+
+
+        .nav-menu {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 3px;
+        }
+
+
+        .nav-item {
+
+            position: relative;
+        }
+
+
+        .nav-link {
+
+            height: 82px;
+
+            padding: 0 13px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            color: #334155;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            transition: .2s;
+        }
+
+
+        .nav-link:hover,
+        .nav-link.active {
+
+            color: var(--blue);
+        }
+
+
+        .nav-link i {
+
+            font-size: 9px;
+        }
+
+
+        /* =========================================================
+           DROPDOWN
+        ========================================================== */
+
+        .dropdown {
+
+            position: absolute;
+
+            left: 0;
+
+            top: 74px;
+
+            width: 290px;
+
+            padding: 9px;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 20px 50px rgba(7,21,45,.13);
+
+            opacity: 0;
+
+            visibility: hidden;
+
+            transform: translateY(10px);
+
+            transition: .22s;
+        }
+
+
+        .nav-item:hover .dropdown {
+
+            opacity: 1;
+
+            visibility: visible;
+
+            transform: translateY(0);
+        }
+
+
+        .dropdown a {
+
+            display: block;
+
+            padding: 9px 12px;
+
+            border-radius: 8px;
+
+            color: #475569;
+
+            font-size: 12px;
+
+            transition: .2s;
+        }
+
+
+        .dropdown a:hover {
+
+            color: var(--blue);
+
+            background: var(--blue-light);
+        }
+
+
+        .header-action {
+
+            display: flex;
+        }
+
+
+        .primary-btn {
+
+            border: 0;
+
+            cursor: pointer;
+
+            padding: 12px 19px;
+
+            border-radius: 9px;
+
+            color: white;
+
+            background: var(--blue);
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 9px;
+
+            transition: .25s;
+        }
+
+
+        .primary-btn:hover {
+
+            background: var(--blue-dark);
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 10px 25px rgba(23,105,224,.22);
+        }
+
+
+        .menu-button {
+
+            display: none;
+
+            width: 42px;
+
+            height: 42px;
+
+            border: 1px solid var(--border);
+
+            border-radius: 10px;
+
+            background: white;
+
+            cursor: pointer;
+
+            color: var(--navy);
+
+            font-size: 18px;
+        }
+
+
+        /* =========================================================
+           HERO
+        ========================================================== */
+
+        .hero {
+
+            position: relative;
+
+            min-height: 590px;
+
+            overflow: hidden;
+
+            background:
+                radial-gradient(
+                    circle at 75% 25%,
+                    rgba(58,137,255,.30),
+                    transparent 35%
+                ),
+                linear-gradient(
+                    120deg,
+                    #06152f 0%,
+                    #0a2b61 55%,
+                    #0e55b8 100%
+                );
+        }
+
+
+        .hero-grid {
+
+            position: relative;
+
+            min-height: 590px;
+
+            display: grid;
+
+            grid-template-columns: 1.05fr .95fr;
+
+            align-items: center;
+
+            gap: 60px;
+        }
+
+
+        /* Decorative shapes */
+
+        .hero::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 600px;
+
+            height: 600px;
+
+            border: 1px solid rgba(255,255,255,.08);
+
+            border-radius: 50%;
+
+            right: -230px;
+
+            top: -230px;
+        }
+
+
+        .hero::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 450px;
+
+            height: 450px;
+
+            border: 1px solid rgba(255,255,255,.05);
+
+            border-radius: 50%;
+
+            left: -280px;
+
+            bottom: -280px;
+        }
+
+
+        .hero-content {
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        .eyebrow {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            padding: 7px 12px;
+
+            border: 1px solid rgba(255,255,255,.16);
+
+            border-radius: 50px;
+
+            color: #a9ccff;
+
+            background: rgba(255,255,255,.06);
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            letter-spacing: 1.1px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 23px;
+        }
+
+
+        .eyebrow-dot {
+
+            width: 7px;
+
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #65a7ff;
+
+            box-shadow:
+                0 0 0 5px rgba(101,167,255,.12);
+        }
+
+
+        .hero h1 {
+
+            font-family: "Manrope", sans-serif;
+
+            color: white;
+
+            font-size: clamp(
+                48px,
+                6vw,
+                75px
+            );
+
+            line-height: 1.04;
+
+            letter-spacing: -2.8px;
+
+            font-weight: 800;
+
+            max-width: 700px;
+
+            margin-bottom: 23px;
+        }
+
+
+        .hero h1 span {
+
+            color: #65a7ff;
+        }
+
+
+        .hero-description {
+
+            max-width: 570px;
+
+            color: #bfd0e8;
+
+            font-size: 16px;
+
+            line-height: 1.8;
+
+            margin-bottom: 30px;
+        }
+
+
+        .hero-buttons {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+
+        .hero-btn {
+
+            padding: 13px 19px;
+
+            border-radius: 9px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            transition: .25s;
+        }
+
+
+        .hero-btn.primary {
+
+            color: var(--navy);
+
+            background: white;
+        }
+
+
+        .hero-btn.primary:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 12px 30px rgba(0,0,0,.18);
+        }
+
+
+        .hero-btn.secondary {
+
+            color: white;
+
+            border: 1px solid rgba(255,255,255,.2);
+
+            background: rgba(255,255,255,.06);
+        }
+
+
+        .hero-btn.secondary:hover {
+
+            background: rgba(255,255,255,.12);
+        }
+
+
+        /* =========================================================
+           HERO VISUAL
+        ========================================================== */
+
+        .hero-visual {
+
+            position: relative;
+
+            min-height: 430px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+        }
+
+
+        .visual-main {
+
+            position: relative;
+
+            z-index: 2;
+
+            width: 365px;
+
+            height: 400px;
+
+            padding: 10px;
+
+            border-radius: 28px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.22),
+                    rgba(255,255,255,.04)
+                );
+
+            border: 1px solid rgba(255,255,255,.15);
+
+            box-shadow:
+                0 30px 70px rgba(0,0,0,.25);
+        }
+
+
+        .visual-image {
+
+            width: 100%;
+
+            height: 100%;
+
+            overflow: hidden;
+
+            border-radius: 21px;
+
+            position: relative;
+        }
+
+
+        .visual-image img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+        }
+
+
+        .visual-overlay {
+
+            position: absolute;
+
+            inset: 0;
+
+            background:
+                linear-gradient(
+                    to top,
+                    rgba(5,20,45,.75),
+                    transparent 55%
+                );
+        }
+
+
+        .visual-caption {
+
+            position: absolute;
+
+            left: 25px;
+
+            bottom: 23px;
+
+            color: white;
+        }
+
+
+        .visual-caption small {
+
+            color: #a9ccff;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+        }
+
+
+        .visual-caption h3 {
+
+            font-family: "Manrope", sans-serif;
+
+            font-size: 22px;
+
+            margin-top: 4px;
+        }
+
+
+        /* Floating card */
+
+        .floating-card {
+
+            position: absolute;
+
+            z-index: 4;
+
+            background: white;
+
+            border-radius: 14px;
+
+            padding: 15px;
+
+            box-shadow:
+                0 20px 45px rgba(0,0,0,.20);
+
+            animation: floatCard 4s ease-in-out infinite;
+        }
+
+
+        @keyframes floatCard {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+
+        .floating-card.experience {
+
+            left: 0;
+
+            bottom: 55px;
+
+            min-width: 160px;
+        }
+
+
+        .floating-card.stats {
+
+            right: -15px;
+
+            top: 55px;
+
+            min-width: 155px;
+        }
+
+
+        .floating-top {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+
+            font-weight: 600;
+        }
+
+
+        .floating-icon {
+
+            width: 31px;
+
+            height: 31px;
+
+            display: grid;
+
+            place-items: center;
+
+            border-radius: 9px;
+
+            background: var(--blue-light);
+
+            color: var(--blue);
+        }
+
+
+        .floating-number {
+
+            color: var(--navy);
+
+            font-family: "Manrope", sans-serif;
+
+            font-size: 27px;
+
+            line-height: 1;
+
+            font-weight: 800;
+
+            margin-top: 9px;
+        }
+
+
+        .floating-number span {
+
+            color: var(--blue);
+        }
+
+
+        /* =========================================================
+           TRUST STRIP
+        ========================================================== */
+
+        .trust-strip {
+
+            position: relative;
+
+            z-index: 5;
+
+            margin-top: -1px;
+
+            background: white;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+
+        .trust-grid {
+
+            min-height: 105px;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4,1fr);
+
+            align-items: center;
+        }
+
+
+        .trust-item {
+
+            min-height: 65px;
+
+            padding: 10px 25px;
+
+            border-right: 1px solid var(--border);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 12px;
+        }
+
+
+        .trust-item:last-child {
+
+            border-right: 0;
+        }
+
+
+        .trust-icon {
+
+            width: 42px;
+
+            height: 42px;
+
+            border-radius: 11px;
+
+            background: var(--blue-light);
+
+            color: var(--blue);
+
+            display: grid;
+
+            place-items: center;
+        }
+
+
+        .trust-item strong {
+
+            display: block;
+
+            color: var(--navy);
+
+            font-family: "Manrope", sans-serif;
+
+            font-size: 19px;
+
+            line-height: 1.1;
+        }
+
+
+        .trust-item span {
+
+            color: var(--muted);
+
+            font-size: 11px;
+        }
+
+
+        /* =========================================================
+           ABOUT
+        ========================================================== */
+
+        .section {
+
+            padding: 105px 0;
+        }
+
+
+        .about {
+
+            background: white;
+        }
+
+
+        .about-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                .85fr 1.15fr;
+
+            gap: 90px;
+
+            align-items: center;
+        }
+
+
+        .about-visual {
+
+            position: relative;
+
+            padding: 20px 30px 30px 0;
+        }
+
+
+        .about-image {
+
+            position: relative;
+
+            overflow: hidden;
+
+            border-radius: 25px;
+
+            box-shadow: var(--shadow);
+        }
+
+
+        .about-image img {
+
+            width: 100%;
+
+            height: 560px;
+
+            object-fit: cover;
+        }
+
+
+        .about-image::after {
+
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    transparent 55%,
+                    rgba(6,21,47,.55)
+                );
+        }
+
+
+        .about-badge {
+
+            position: absolute;
+
+            z-index: 3;
+
+            left: -15px;
+
+            bottom: 0;
+
+            padding: 20px 22px;
+
+            min-width: 205px;
+
+            background: var(--blue);
+
+            border-radius: 16px;
+
+            color: white;
+
+            box-shadow:
+                0 18px 40px rgba(23,105,224,.25);
+        }
+
+
+        .about-badge strong {
+
+            display: block;
+
+            font-family: "Manrope", sans-serif;
+
+            font-size: 36px;
+
+            line-height: 1;
+        }
+
+
+        .about-badge span {
+
+            display: block;
+
+            margin-top: 6px;
+
+            color: #dceaff;
+
+            font-size: 12px;
+        }
+
+
+        .section-tag {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            color: var(--blue);
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            letter-spacing: 1.2px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 15px;
+        }
+
+
+        .section-tag::before {
+
+            content: "";
+
+            width: 25px;
+
+            height: 2px;
+
+            background: var(--blue);
+        }
+
+
+        .section-heading {
+
+            font-family: "Manrope", sans-serif;
+
+            color: var(--navy);
+
+            font-size: clamp(
+                32px,
+                4vw,
+                48px
+            );
+
+            line-height: 1.14;
+
+            letter-spacing: -1.5px;
+
+            font-weight: 800;
+
+            margin-bottom: 22px;
+        }
+
+
+        .section-heading span {
+
+            color: var(--blue);
+        }
+
+
+        .about-copy {
+
+            color: var(--muted);
+
+            font-size: 15px;
+
+            line-height: 1.85;
+
+            margin-bottom: 17px;
+        }
+
+
+        .about-copy strong {
+
+            color: var(--navy);
+        }
+
+
+        .about-points {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2,1fr);
+
+            gap: 13px;
+
+            margin: 27px 0;
+        }
+
+
+        .about-point {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            color: #42536b;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        .about-point i {
+
+            width: 21px;
+
+            height: 21px;
+
+            display: grid;
+
+            place-items: center;
+
+            border-radius: 50%;
+
+            color: var(--blue);
+
+            background: var(--blue-light);
+
+            font-size: 9px;
+        }
+
+
+        /* =========================================================
+           VALUES
+        ========================================================== */
+
+        .values {
+
+            background: var(--surface);
+        }
+
+
+        .section-head {
+
+            max-width: 650px;
+
+            margin-bottom: 55px;
+        }
+
+
+        .section-head.center {
+
+            margin-left: auto;
+
+            margin-right: auto;
+
+            text-align: center;
+        }
+
+
+        .section-subtitle {
+
+            color: var(--muted);
+
+            font-size: 15px;
+
+            line-height: 1.8;
+        }
+
+
+        .values-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4,1fr);
+
+            gap: 18px;
+        }
+
+
+        .value-card {
+
+            position: relative;
+
+            min-height: 285px;
+
+            padding: 30px 26px;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 20px;
+
+            transition: .3s;
+
+            overflow: hidden;
+        }
+
+
+        .value-card::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 100px;
+
+            height: 100px;
+
+            border-radius: 50%;
+
+            right: -50px;
+
+            bottom: -50px;
+
+            background: var(--blue-light);
+
+            transition: .3s;
+        }
+
+
+        .value-card:hover {
+
+            transform: translateY(-8px);
+
+            border-color: #c9ddfb;
+
+            box-shadow:
+                0 20px 50px rgba(15,50,100,.08);
+        }
+
+
+        .value-card:hover::after {
+
+            transform: scale(1.7);
+        }
+
+
+        .value-number {
+
+            position: absolute;
+
+            top: 25px;
+
+            right: 25px;
+
+            color: #e8eef7;
+
+            font-family: "Manrope", sans-serif;
+
+            font-size: 28px;
+
+            font-weight: 800;
+        }
+
+
+        .value-icon {
+
+            width: 50px;
+
+            height: 50px;
+
+            border-radius: 14px;
+
+            background: var(--blue-light);
+
+            color: var(--blue);
+
+            display: grid;
+
+            place-items: center;
+
+            font-size: 18px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .value-card h3 {
+
+            position: relative;
+
+            z-index: 2;
+
+            color: var(--navy);
+
+            font-family: "Manrope", sans-serif;
+
+            font-size: 18px;
+
+            margin-bottom: 9px;
+        }
+
+
+        .value-card p {
+
+            position: relative;
+
+            z-index: 2;
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            line-height: 1.75;
+        }
+
+
+        /* =========================================================
+           BUSINESS SOLUTIONS STRIP
+        ========================================================== */
+
+        .solutions {
+
+            padding: 90px 0;
+
+            background: white;
+        }
+
+
+        .solutions-layout {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 60px;
+
+            align-items: center;
+        }
+
+
+        .solutions-list {
+
+            margin-top: 30px;
+        }
+
+
+        .solution-row {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            padding: 17px 0;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+
+        .solution-row:last-child {
+
+            border-bottom: 0;
+        }
+
+
+        .solution-icon {
+
+            width: 45px;
+
+            height: 45px;
+
+            flex: 0 0 45px;
+
+            border-radius: 12px;
+
+            background: var(--blue-light);
+
+            color: var(--blue);
+
+            display: grid;
+
+            place-items: center;
+        }
+
+
+        .solution-row h4 {
+
+            color: var(--navy);
+
+            font-family: "Manrope", sans-serif;
+
+            font-size: 14px;
+        }
+
+
+        .solution-row p {
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+            margin-top: 2px;
+        }
+
+
+        .solutions-card {
+
+            position: relative;
+
+            min-height: 400px;
+
+            padding: 40px;
+
+            border-radius: 25px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #f1f6ff,
+                    #ffffff
+                );
+
+            border: 1px solid var(--border);
+
+            overflow: hidden;
+        }
+
+
+        .solutions-card::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 300px;
+
+            height: 300px;
+
+            border-radius: 50%;
+
+            background: #dceaff;
+
+            right: -130px;
+
+            top: -130px;
+        }
+
+
+        .solutions-card-content {
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        .solutions-card h3 {
+
+            color: var(--navy);
+
+            font-family: "Manrope", sans-serif;
+
+            font-size: 27px;
+
+            max-width: 330px;
+
+            line-height: 1.25;
+
+            margin-bottom: 13px;
+        }
+
+
+        .solutions-card p {
+
+            color: var(--muted);
+
+            max-width: 400px;
+
+            font-size: 13px;
+
+            line-height: 1.8;
+        }
+
+
+        .mini-dashboard {
+
+            position: absolute;
+
+            z-index: 2;
+
+            left: 40px;
+
+            right: 40px;
+
+            bottom: 35px;
+
+            padding: 16px;
+
+            border-radius: 15px;
+
+            background: white;
+
+            box-shadow:
+                0 18px 45px rgba(23,65,120,.10);
+
+            border: 1px solid #e9eff7;
+        }
+
+
+        .dashboard-top {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-bottom: 13px;
+        }
+
+
+        .dashboard-line {
+
+            width: 100%;
+
+            height: 8px;
+
+            border-radius: 20px;
+
+            background: #edf2f8;
+
+            overflow: hidden;
+
+            margin-bottom: 9px;
+        }
+
+
+        .dashboard-line span {
+
+            display: block;
+
+            height: 100%;
+
+            width: 72%;
+
+            background: var(--blue);
+
+            border-radius: inherit;
+        }
+
+
+        .dashboard-line:nth-child(2) span {
+
+            width: 54%;
+        }
+
+
+        .dashboard-line:nth-child(3) span {
+
+            width: 84%;
+        }
+
+
+        /* =========================================================
+           CTA
+        ========================================================== */
+
+        .cta-section {
+
+            padding: 0 0 105px;
+
+            background: white;
+        }
+
+
+        .cta {
+
+            position: relative;
+
+            overflow: hidden;
+
+            border-radius: 27px;
+
+            padding: 60px 65px;
+
+            background:
+                linear-gradient(
+                    110deg,
+                    #071832,
+                    #0b4da9
+                );
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 40px;
+        }
+
+
+        .cta::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 430px;
+
+            height: 430px;
+
+            border: 1px solid rgba(255,255,255,.08);
+
+            border-radius: 50%;
+
+            right: -130px;
+
+            top: -240px;
+        }
+
+
+        .cta-content {
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        .cta-label {
+
+            color: #72aaff;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.1px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .cta h2 {
+
+            color: white;
+
+            font-family: "Manrope", sans-serif;
+
+            font-size: clamp(
+                28px,
+                4vw,
+                42px
+            );
+
+            line-height: 1.2;
+
+            max-width: 650px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .cta p {
+
+            color: #b9cbe3;
+
+            font-size: 14px;
+        }
+
+
+        .cta-btn {
+
+            position: relative;
+
+            z-index: 2;
+
+            flex: 0 0 auto;
+
+            color: var(--navy);
+
+            background: white;
+
+            padding: 14px 21px;
+
+            border-radius: 10px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            transition: .25s;
+        }
+
+
+        .cta-btn:hover {
+
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 15px 30px rgba(0,0,0,.2);
+        }
+
+
+        /* =========================================================
+           FOOTER
+        ========================================================== */
+
+        .footer {
+
+            background: #061126;
+
+            color: #8fa1bb;
+        }
+
+
+        .footer-main {
+
+            padding: 75px 0 55px;
+        }
+
+
+        .footer-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                1.2fr .7fr .7fr 1.2fr;
+
+            gap: 45px;
+        }
+
+
+        .footer-title {
+
+            color: white;
+
+            font-family: "Manrope", sans-serif;
+
+            font-size: 15px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .footer-company {
+
+            padding-right: 35px;
+        }
+
+
+        .footer-company img {
+
+            width: 145px;
+
+            margin-bottom: 20px;
+
+            filter: brightness(0) invert(1);
+        }
+
+
+        .footer-company p {
+
+            color: #8496b0;
+
+            font-size: 12px;
+
+            line-height: 1.9;
+
+            margin-bottom: 18px;
+        }
+
+
+        .footer-social {
+
+            display: flex;
+
+            gap: 8px;
+        }
+
+
+        .footer-social a {
+
+            width: 35px;
+
+            height: 35px;
+
+            border-radius: 9px;
+
+            border: 1px solid #233453;
+
+            display: grid;
+
+            place-items: center;
+
+            font-size: 12px;
+
+            transition: .2s;
+        }
+
+
+        .footer-social a:hover {
+
+            color: white;
+
+            background: var(--blue);
+
+            border-color: var(--blue);
+        }
+
+
+        .footer-links li {
+
+            margin-bottom: 10px;
+        }
+
+
+        .footer-links a {
+
+            color: #8496b0;
+
+            font-size: 12px;
+
+            transition: .2s;
+        }
+
+
+        .footer-links a:hover {
+
+            color: white;
+
+            padding-left: 3px;
+        }
+
+
+        .footer-contact {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 14px;
+        }
+
+
+        .contact-row {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 10px;
+
+            font-size: 12px;
+
+            line-height: 1.65;
+        }
+
+
+        .contact-row i {
+
+            width: 17px;
+
+            color: #69a8ff;
+
+            margin-top: 4px;
+        }
+
+
+        .contact-row strong {
+
+            color: #dce7f6;
+        }
+
+
+        .contact-row a:hover {
+
+            color: white;
+        }
+
+
+        .newsletter {
+
+            margin-top: 20px;
+        }
+
+
+        .newsletter-form {
+
+            display: flex;
+
+            background: white;
+
+            border-radius: 8px;
+
+            overflow: hidden;
+
+            margin-top: 9px;
+        }
+
+
+        .newsletter-form input {
+
+            width: 100%;
+
+            border: 0;
+
+            outline: 0;
+
+            padding: 11px;
+
+            font-size: 12px;
+        }
+
+
+        .newsletter-form button {
+
+            width: 45px;
+
+            flex: 0 0 45px;
+
+            border: 0;
+
+            color: white;
+
+            background: var(--blue);
+
+            cursor: pointer;
+        }
+
+
+        .footer-bottom {
+
+            border-top: 1px solid #192846;
+
+            padding: 20px 0;
+        }
+
+
+        .footer-bottom-inner {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            color: #70839f;
+
+            font-size: 11px;
+        }
+
+
+        .footer-bottom a {
+
+            color: #9db0c9;
+        }
+
+
+        /* =========================================================
+           MODAL
+        ========================================================== */
+
+        .modal-overlay {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 5000;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+
+            background: rgba(3,12,28,.68);
+
+            backdrop-filter: blur(6px);
+        }
+
+
+        .modal-overlay.active {
+
+            display: flex;
+        }
+
+
+        .modal {
+
+            width: min(700px,100%);
+
+            max-height: 90vh;
+
+            overflow-y: auto;
+
+            background: white;
+
+            border-radius: 20px;
+
+            box-shadow:
+                0 30px 80px rgba(0,0,0,.25);
+
+            animation:
+                modalIn .25s ease;
+        }
+
+
+        @keyframes modalIn {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(20px)
+                    scale(.97);
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+        }
+
+
+        .modal-header {
+
+            padding: 23px 28px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+
+        .modal-header h2 {
+
+            color: var(--navy);
+
+            font-family: "Manrope", sans-serif;
+
+            font-size: 20px;
+        }
+
+
+        .close-modal {
+
+            width: 35px;
+
+            height: 35px;
+
+            border: 0;
+
+            border-radius: 50%;
+
+            background: #f1f5f9;
+
+            color: #475569;
+
+            cursor: pointer;
+        }
+
+
+        .modal-body {
+
+            padding: 28px;
+        }
+
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 17px;
+        }
+
+
+        .form-group.full {
+
+            grid-column: 1/-1;
+        }
+
+
+        .form-group label {
+
+            display: block;
+
+            color: var(--navy);
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            margin-bottom: 6px;
+        }
+
+
+        .form-control {
+
+            width: 100%;
+
+            padding: 11px 13px;
+
+            border: 1px solid var(--border);
+
+            border-radius: 9px;
+
+            outline: 0;
+
+            color: var(--navy);
+
+            font-size: 13px;
+
+            transition: .2s;
+        }
+
+
+        .form-control:focus {
+
+            border-color: var(--blue);
+
+            box-shadow:
+                0 0 0 3px rgba(23,105,224,.08);
+        }
+
+
+        textarea.form-control {
+
+            min-height: 110px;
+
+            resize: vertical;
+        }
+
+
+        .modal-footer {
+
+            padding: 0 28px 28px;
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 9px;
+        }
+
+
+        .secondary-btn {
+
+            border: 1px solid var(--border);
+
+            background: white;
+
+            color: #475569;
+
+            padding: 11px 17px;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+
+        /* =========================================================
+           BACK TO TOP
+        ========================================================== */
+
+        .back-top {
+
+            position: fixed;
+
+            right: 22px;
+
+            bottom: 22px;
+
+            width: 42px;
+
+            height: 42px;
+
+            border: 0;
+
+            border-radius: 10px;
+
+            color: white;
+
+            background: var(--blue);
+
+            cursor: pointer;
+
+            z-index: 800;
+
+            opacity: 0;
+
+            visibility: hidden;
+
+            transition: .25s;
+
+            box-shadow:
+                0 10px 25px rgba(23,105,224,.25);
+        }
+
+
+        .back-top.show {
+
+            opacity: 1;
+
+            visibility: visible;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================== */
+
+        @media(max-width:1100px) {
+
+            .nav-link {
+
+                padding-left: 8px;
+
+                padding-right: 8px;
+
+                font-size: 12px;
+            }
+
+
+            .header-action {
+
+                display: none;
+            }
+
+
+            .hero-grid {
+
+                gap: 30px;
+            }
+
+
+            .values-grid {
+
+                grid-template-columns:
+                    repeat(2,1fr);
+            }
+
+
+            .footer-grid {
+
+                grid-template-columns:
+                    1.2fr 1fr 1fr;
+            }
+
+
+            .footer-contact {
+
+                grid-column: 1/-1;
+            }
+
+        }
+
+
+        @media(max-width:850px) {
+
+            .top-bar {
+
+                display: none;
+            }
+
+
+            .nav {
+
+                min-height: 70px;
+            }
+
+
+            .menu-button {
+
+                display: grid;
+
+                place-items: center;
+            }
+
+
+            .nav-menu {
+
+                position: absolute;
+
+                left: 0;
+
+                right: 0;
+
+                top: 70px;
+
+                padding: 12px 20px 22px;
+
+                background: white;
+
+                border-bottom: 1px solid var(--border);
+
+                box-shadow:
+                    0 20px 35px rgba(10,30,60,.10);
+
+                display: none;
+
+                flex-direction: column;
+
+                align-items: stretch;
+            }
+
+
+            .nav-menu.active {
+
+                display: flex;
+            }
+
+
+            .nav-link {
+
+                height: auto;
+
+                padding: 12px 8px;
+
+                justify-content: space-between;
+            }
+
+
+            .dropdown {
+
+                position: static;
+
+                width: 100%;
+
+                display: none;
+
+                opacity: 1;
+
+                visibility: visible;
+
+                transform: none;
+
+                box-shadow: none;
+
+                border: 0;
+
+                padding: 0 0 5px 15px;
+            }
+
+
+            .nav-item.open .dropdown {
+
+                display: block;
+            }
+
+
+            .hero {
+
+                min-height: auto;
+            }
+
+
+            .hero-grid {
+
+                min-height: auto;
+
+                grid-template-columns: 1fr;
+
+                padding-top: 75px;
+
+                padding-bottom: 85px;
+            }
+
+
+            .hero-visual {
+
+                min-height: 400px;
+            }
+
+
+            .trust-grid {
+
+                grid-template-columns:
+                    repeat(2,1fr);
+
+                padding: 15px 0;
+            }
+
+
+            .trust-item {
+
+                border-bottom: 1px solid var(--border);
+            }
+
+
+            .about-grid,
+            .solutions-layout {
+
+                grid-template-columns: 1fr;
+
+                gap: 55px;
+            }
+
+
+            .about-visual {
+
+                max-width: 600px;
+
+                margin: auto;
+
+                width: 100%;
+            }
+
+
+            .footer-grid {
+
+                grid-template-columns:
+                    1fr 1fr;
+            }
+
+        }
+
+
+        @media(max-width:600px) {
+
+            .container {
+
+                width:
+                    calc(100% - 30px);
+            }
+
+
+            .hero h1 {
+
+                font-size: 47px;
+
+                letter-spacing: -2px;
+            }
+
+
+            .hero-buttons {
+
+                flex-direction: column;
+
+                align-items: stretch;
+            }
+
+
+            .hero-btn {
+
+                justify-content: center;
+            }
+
+
+            .hero-visual {
+
+                min-height: 350px;
+            }
+
+
+            .visual-main {
+
+                width: 290px;
+
+                height: 330px;
+            }
+
+
+            .floating-card.experience {
+
+                left: -2px;
+
+                bottom: 30px;
+            }
+
+
+            .floating-card.stats {
+
+                right: -3px;
+
+                top: 30px;
+            }
+
+
+            .trust-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .trust-item {
+
+                border-right: 0;
+
+                border-bottom: 1px solid var(--border);
+
+                justify-content: flex-start;
+
+                padding-left: 15px;
+            }
+
+
+            .trust-item:last-child {
+
+                border-bottom: 0;
+            }
+
+
+            .section {
+
+                padding: 75px 0;
+            }
+
+
+            .about-image img {
+
+                height: 400px;
+            }
+
+
+            .about-points {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .values-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .solutions-card {
+
+                padding: 30px;
+
+                min-height: 390px;
+            }
+
+
+            .mini-dashboard {
+
+                left: 25px;
+
+                right: 25px;
+            }
+
+
+            .cta {
+
+                padding: 40px 28px;
+
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+
+            .cta-btn {
+
+                width: 100%;
+
+                justify-content: center;
+            }
+
+
+            .footer-grid {
+
+                grid-template-columns: 1fr;
+
+                gap: 38px;
+            }
+
+
+            .footer-company {
+
+                padding-right: 0;
+            }
+
+
+            .footer-bottom-inner {
+
+                flex-direction: column;
+
+                text-align: center;
+            }
+
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .form-group.full {
+
+                grid-column: auto;
+            }
+
+
+            .modal-body {
+
+                padding: 22px;
+            }
+
+
+            .modal-header {
+
+                padding: 20px 22px;
+            }
+
+
+            .modal-footer {
+
+                padding: 0 22px 22px;
+
+                flex-direction: column;
+            }
+
+
+            .modal-footer button {
+
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     TOP BAR
+========================================================== -->
+
+<div class="top-bar">
+
+    <div class="container top-bar-inner">
+
+        <div class="top-info">
+
+            <span>
+                <i class="fa-solid fa-location-dot"></i>
+                Bodakdev, Ahmedabad
+            </span>
+
+            <span>
+                <i class="fa-solid fa-envelope"></i>
+                suresh@deverp.com
+            </span>
+
+            <span>
+                <i class="fa-solid fa-phone"></i>
+                +91 79 3531 2554
+            </span>
+
+        </div>
+
+
+        <div class="top-social">
+
+            <a href="https://www.facebook.com/Deverp-Solutions-Pvt-Ltd-102329981645556/"
+               target="_blank">
+
+                <i class="fa-brands fa-facebook-f"></i>
+
+            </a>
+
+            <a href="https://twitter.com/DevERP5"
+               target="_blank">
+
+                <i class="fa-brands fa-x-twitter"></i>
+
+            </a>
+
+            <a href="https://www.linkedin.com/in/deverp-solutions-pvt-ltd-company-286598181"
+               target="_blank">
+
+                <i class="fa-brands fa-linkedin-in"></i>
+
+            </a>
+
+            <a href="https://www.instagram.com/deverp001/?hl=en"
+               target="_blank">
+
+                <i class="fa-brands fa-instagram"></i>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     HEADER
+========================================================== -->
+
+<header class="header">
+
+    <div class="container nav">
+
+
+        <a href="index.aspx?q=home"
+           class="logo">
+
+            <img src="CMSassets/images/logos/logo.png"
+                 alt="DevERP">
+
+        </a>
+
+
+        <button class="menu-button"
+                id="menuButton">
+
+            <i class="fa-solid fa-bars"></i>
+
+        </button>
+
+
+        <nav class="nav-menu"
+             id="navMenu">
+
+
+            <div class="nav-item">
+
+                <a href="index.aspx?q=home"
+                   class="nav-link">
+
+                    Home
+
+                </a>
+
+            </div>
+
+
+            <div class="nav-item">
+
+                <a href="index.aspx?q=product_list"
+                   class="nav-link">
+
+                    Products
+
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                </a>
+
+
+                <div class="dropdown">
+
+                    <a href="index.aspx?q=ready_mix_concrete_erp">
+                        Ready Mix Concrete ERP
+                    </a>
+
+                    <a href="index.aspx?q=real_estate_erp">
+                        Real Estate ERP
+                    </a>
+
+                    <a href="index.aspx?q=engraving_erp">
+                        Engraving ERP
+                    </a>
+
+                    <a href="index.aspx?q=flexo_printing_erp">
+                        Flexo Printing ERP
+                    </a>
+
+                    <a href="index.aspx?q=light_weight_block_erp">
+                        Light Weight Block (AAC) ERP
+                    </a>
+
+                    <a href="index.aspx?q=pulse/rice_mill_erp">
+                        Pulse/Rice Mill ERP
+                    </a>
+
+                    <a href="index.aspx?q=school_management_erp">
+                        School Management ERP
+                    </a>
+
+                    <a href="index.aspx?q=printing_packaging_erp">
+                        Printing &amp; Packaging ERP
+                    </a>
+
+                    <a href="index.aspx?q=automobiles_and_work_shop_management_erp">
+                        Automobiles And Work Shop Management ERP
+                    </a>
+
+                    <a href="index.aspx?q=transportation_erp">
+                        Transportation ERP
+                    </a>
+
+                    <a href="index.aspx?q=machine_manufacturing_erp">
+                        Machine Manufacturing ERP
+                    </a>
+
+                    <a href="index.aspx?q=pharmaceutical_production_and_management_erp">
+                        Pharmaceutical Production And Management ERP
+                    </a>
+
+                    <a href="index.aspx?q=crm_erp">
+                        CRM ERP
+                    </a>
+
+                    <a href="index.aspx?q=book_depot_shop_management_erp">
+                        Book Depot / Shop Management ERP
+                    </a>
+
+                    <a href="index.aspx?q=trading_erp">
+                        Trading ERP
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="nav-item">
+
+                <a href="index.aspx?q=service_list"
+                   class="nav-link">
+
+                    Services
+
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                </a>
+
+
+                <div class="dropdown">
+
+                    <a href="index.aspx?q=mis(bi_reporting)">
+                        MIS (BI &amp; Reporting)
+                    </a>
+
+                    <a href="index.aspx?q=data_export">
+                        Data Export
+                    </a>
+
+                    <a href="index.aspx?q=mobile_app_development">
+                        Mobile App Development
+                    </a>
+
+                    <a href="index.aspx?q=cloud_backUp">
+                        Cloud Back Up Services
+                    </a>
+
+                    <a href="index.aspx?q=sms_services">
+                        SMS Services
+                    </a>
+
+                    <a href="index.aspx?q=email_server">
+                        Email Server
+                    </a>
+
+                    <a href="index.aspx?q=domain_registration">
+                        Domain Registration
+                    </a>
+
+                    <a href="index.aspx?q=website_hosting">
+                        Website Hosting
+                    </a>
+
+                    <a href="index.aspx?q=web_development">
+                        Web Development
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="nav-item">
+
+                <a href="index.aspx?q=aboutus"
+                   class="nav-link active">
+
+                    About Us
+
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                </a>
+
+
+                <div class="dropdown">
+
+                    <a href="index.aspx?q=who-we-are">
+                        Who we are
+                    </a>
+
+                    <a href="index.aspx?q=knowledgecenter_deverp">
+                        Knowledge Center DevERP
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="nav-item">
+
+                <a href="index.aspx?q=clients"
+                   class="nav-link">
+
+                    Clients
+
+                </a>
+
+            </div>
+
+
+            <div class="nav-item">
+
+                <a href="index.aspx?q=career"
+                   class="nav-link">
+
+                    Career
+
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                </a>
+
+
+                <div class="dropdown">
+
+                    <a href="index.aspx?q=life_deverp">
+                        LIFE @ DevERP
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="nav-item">
+
+                <a href="index.aspx?q=blog"
+                   class="nav-link">
+
+                    Blog
+
+                </a>
+
+            </div>
+
+
+            <div class="nav-item">
+
+                <a href="index.aspx?q=contact_us"
+                   class="nav-link">
+
+                    Contact Us
+
+                </a>
+
+            </div>
+
+
+        </nav>
+
+
+        <div class="header-action">
+
+            <button class="primary-btn"
+                    id="scheduleBtn">
+
+                <i class="fa-regular fa-calendar"></i>
+
+                Schedule Appointment
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     HERO
+========================================================== -->
+
+<section class="hero">
+
+    <div class="container hero-grid">
+
+
+        <div class="hero-content">
+
+
+            <div class="eyebrow">
+
+                <span class="eyebrow-dot"></span>
+
+                DevERP Solutions Private Limited
+
+            </div>
+
+
+            <h1>
+
+                We build technology
+                <span>around your business.</span>
+
+            </h1>
+
+
+            <p class="hero-description">
+
+                We help businesses simplify operations,
+                improve efficiency and grow with
+                reliable ERP, web and mobile technology
+                solutions.
+
+            </p>
+
+
+            <div class="hero-buttons">
+
+                <a href="#about"
+                   class="hero-btn primary">
+
+                    Discover DevERP
+
+                    <i class="fa-solid fa-arrow-down"></i>
+
+                </a>
+
+
+                <a href="index.aspx?q=contact_us"
+                   class="hero-btn secondary">
+
+                    Talk to our team
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="hero-visual">
+
+
+            <div class="visual-main">
+
+                <div class="visual-image">
+
+                    <img
+                        src="CMSassets/images/it_service/adult-composition-corporate-attire-959816.jpg"
+                        alt="DevERP Team">
+
+                    <div class="visual-overlay"></div>
+
+
+                    <div class="visual-caption">
+
+                        <small>
+                            Since 2010
+                        </small>
+
+                        <h3>
+                            Business. Technology. Growth.
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- EXPERIENCE -->
+
+            <div class="floating-card experience">
+
+                <div class="floating-top">
+
+                    <div class="floating-icon">
+
+                        <i class="fa-solid fa-calendar-check"></i>
+
+                    </div>
+
+                    Experience
+
+                </div>
+
+                <div class="floating-number">
+
+                    16<span>+</span>
+
+                </div>
+
+            </div>
+
+
+            <!-- CLIENT -->
+
+            <div class="floating-card stats">
+
+                <div class="floating-top">
+
+                    <div class="floating-icon">
+
+                        <i class="fa-solid fa-chart-line"></i>
+
+                    </div>
+
+                    Focus
+
+                </div>
+
+                <div class="floating-number">
+
+                    ERP
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     TRUST / STATS
+========================================================== -->
+
+<section class="trust-strip">
+
+    <div class="container trust-grid">
+
+
+        <div class="trust-item">
+
+            <div class="trust-icon">
+
+                <i class="fa-solid fa-calendar-days"></i>
+
+            </div>
+
+            <div>
+
+                <strong>16+</strong>
+
+                <span>
+                    Years Experience
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="trust-item">
+
+            <div class="trust-icon">
+
+                <i class="fa-solid fa-layer-group"></i>
+
+            </div>
+
+            <div>
+
+                <strong>ERP</strong>
+
+                <span>
+                    Business Solutions
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="trust-item">
+
+            <div class="trust-icon">
+
+                <i class="fa-solid fa-code"></i>
+
+            </div>
+
+            <div>
+
+                <strong>360°</strong>
+
+                <span>
+                    Technology Services
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="trust-item">
+
+            <div class="trust-icon">
+
+                <i class="fa-solid fa-globe"></i>
+
+            </div>
+
+            <div>
+
+                <strong>India + UAE</strong>
+
+                <span>
+                    Business Presence
+                </span>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     ABOUT
+========================================================== -->
+
+<section class="section about"
+         id="about">
+
+    <div class="container about-grid">
+
+
+        <!-- IMAGE -->
+
+        <div class="about-visual">
+
+            <div class="about-image">
+
+                <img
+                    src="CMSassets/images/it_service/adult-composition-corporate-attire-959816.jpg"
+                    alt="DevERP Solutions">
+
+            </div>
+
+
+            <div class="about-badge">
+
+                <strong>16+</strong>
+
+                <span>
+                    Years of building
+                    business technology
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- CONTENT -->
+
+        <div>
+
+
+            <div class="section-tag">
+                Who We Are
+            </div>
+
+
+            <h2 class="section-heading">
+
+                WE WIN WHEN
+                <span>YOU WIN.</span>
+
+            </h2>
+
+
+            <p class="about-copy">
+
+                <strong>
+                    DevERP Solutions Private Limited
+                </strong>
+                is a custom software development firm
+                located in Ahmedabad, India. We have been
+                providing, implementing, and customizing
+                our ERP software for various businesses
+                in the last <strong>16 years.</strong>
+
+            </p>
+
+
+            <p class="about-copy">
+
+                We also offer custom software programming
+                services such as
+                <strong>
+                    ERP Solutions, Web and Mobile Application
+                    Development,
+                </strong>
+                Cloud Solutions, Website Hosting &
+                Designing, Technology Consulting,
+                Quality Assurance and much more.
+
+            </p>
+
+
+            <p class="about-copy">
+
+                We develop software solutions using
+                Microsoft Technologies. .NET and advanced
+                technologies such as data connectors,
+                security, cultural and date management
+                objects help us build robust solutions.
+
+            </p>
+
+
+            <p class="about-copy">
+
+                Our highly qualified and experienced team
+                of software professionals brings varied
+                domain knowledge and expertise to provide
+                cutting-edge solutions within a timeline.
+
+            </p>
+
+
+            <div class="about-points">
+
+
+                <div class="about-point">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    Custom ERP Solutions
+
+                </div>
+
+
+                <div class="about-point">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    Web Applications
+
+                </div>
+
+
+                <div class="about-point">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    Mobile Applications
+
+                </div>
+
+
+                <div class="about-point">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    Technology Consulting
+
+                </div>
+
+
+                <div class="about-point">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    Cloud Solutions
+
+                </div>
+
+
+                <div class="about-point">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    Quality Assurance
+
+                </div>
+
+
+            </div>
+
+
+            <a href="index.aspx?q=contact_us"
+               class="primary-btn">
+
+                Work With Us
+
+                <i class="fa-solid fa-arrow-right"></i>
+
+            </a>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     VALUES
+========================================================== -->
+
+<section class="section values">
+
+    <div class="container">
+
+
+        <div class="section-head center">
+
+            <div class="section-tag">
+                What Drives Us
+            </div>
+
+            <h2 class="section-heading">
+
+                Our actions are
+                <span>driven by values.</span>
+
+            </h2>
+
+            <p class="section-subtitle">
+
+                We believe great technology is built
+                through trust, responsibility and a
+                continuous commitment to excellence.
+
+            </p>
+
+        </div>
+
+
+        <div class="values-grid">
+
+
+            <div class="value-card">
+
+                <div class="value-number">
+                    01
+                </div>
+
+                <div class="value-icon">
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+                </div>
+
+                <h3>
+                    Integrity
+                </h3>
+
+                <p>
+
+                    We believe in honest communication,
+                    responsible decisions and building
+                    long-term relationships on trust.
+
+                </p>
+
+            </div>
+
+
+            <div class="value-card">
+
+                <div class="value-number">
+                    02
+                </div>
+
+                <div class="value-icon">
+
+                    <i class="fa-solid fa-handshake"></i>
+
+                </div>
+
+                <h3>
+                    Commitment
+                </h3>
+
+                <p>
+
+                    We stay committed to our clients,
+                    projects and the outcomes that matter
+                    to their businesses.
+
+                </p>
+
+            </div>
+
+
+            <div class="value-card">
+
+                <div class="value-number">
+                    03
+                </div>
+
+                <div class="value-icon">
+
+                    <i class="fa-solid fa-award"></i>
+
+                </div>
+
+                <h3>
+                    Excellence
+                </h3>
+
+                <p>
+
+                    We continuously work towards delivering
+                    reliable, scalable and high-quality
+                    enterprise solutions.
+
+                </p>
+
+            </div>
+
+
+            <div class="value-card">
+
+                <div class="value-number">
+                    04
+                </div>
+
+                <div class="value-icon">
+
+                    <i class="fa-solid fa-eye"></i>
+
+                </div>
+
+                <h3>
+                    Transparency
+                </h3>
+
+                <p>
+
+                    We keep communication and processes
+                    clear so our clients always know
+                    where their projects stand.
+
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SOLUTIONS
+========================================================== -->
+
+<section class="solutions">
+
+    <div class="container solutions-layout">
+
+
+        <div>
+
+
+            <div class="section-tag">
+                What We Do
+            </div>
+
+
+            <h2 class="section-heading">
+
+                Technology designed
+                <span>around real business.</span>
+
+            </h2>
+
+
+            <p class="section-subtitle">
+
+                From enterprise ERP to mobile applications,
+                we combine domain understanding with
+                technology expertise to create practical
+                business solutions.
+
+            </p>
+
+
+            <div class="solutions-list">
+
+
+                <div class="solution-row">
+
+                    <div class="solution-icon">
+
+                        <i class="fa-solid fa-cubes"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h4>
+                            Enterprise ERP Solutions
+                        </h4>
+
+                        <p>
+                            Streamline operations and
+                            connect business processes.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="solution-row">
+
+                    <div class="solution-icon">
+
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h4>
+                            Web &amp; Mobile Applications
+                        </h4>
+
+                        <p>
+                            Modern applications built
+                            around your workflows.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="solution-row">
+
+                    <div class="solution-icon">
+
+                        <i class="fa-solid fa-cloud"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h4>
+                            Cloud &amp; Hosting
+                        </h4>
+
+                        <p>
+                            Reliable infrastructure and
+                            cloud-focused services.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="solution-row">
+
+                    <div class="solution-icon">
+
+                        <i class="fa-solid fa-chart-column"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h4>
+                            MIS, BI &amp; Reporting
+                        </h4>
+
+                        <p>
+                            Turn operational information
+                            into useful business insights.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+        <div class="solutions-card">
+
+
+            <div class="solutions-card-content">
+
+                <div class="section-tag">
+                    Business First
+                </div>
+
+                <h3>
+
+                    Your software should
+                    fit your business —
+                    not the other way around.
+
+                </h3>
+
+                <p>
+
+                    We focus on understanding your
+                    business processes before building
+                    technology around them.
+
+                </p>
+
+            </div>
+
+
+            <div class="mini-dashboard">
+
+
+                <div class="dashboard-top">
+
+                    <strong style="
+                        color:#07152d;
+                        font-size:12px;
+                    ">
+                        Business Operations
+                    </strong>
+
+                    <span style="
+                        color:#16a34a;
+                        font-size:11px;
+                        font-weight:700;
+                    ">
+                        Optimized
+                    </span>
+
+                </div>
+
+
+                <div class="dashboard-line">
+                    <span></span>
+                </div>
+
+                <div class="dashboard-line">
+                    <span></span>
+                </div>
+
+                <div class="dashboard-line">
+                    <span></span>
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     CTA
+========================================================== -->
+
+<section class="cta-section">
+
+    <div class="container">
+
+        <div class="cta">
+
+
+            <div class="cta-content">
+
+                <div class="cta-label">
+                    Let's Work Together
+                </div>
+
+                <h2>
+
+                    Have a business challenge?
+                    Let's turn it into a solution.
+
+                </h2>
+
+                <p>
+
+                    Get answers and advice from
+                    the DevERP team.
+
+                </p>
+
+            </div>
+
+
+            <button class="cta-btn"
+                    id="ctaScheduleBtn">
+
+                Schedule Appointment
+
+                <i class="fa-solid fa-arrow-right"></i>
+
+            </button>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================== -->
+
+<footer class="footer">
+
+
+    <div class="footer-main">
+
+        <div class="container footer-grid">
+
+
+            <!-- COMPANY -->
+
+            <div class="footer-company">
+
+                <img
+                    src="CMSassets/images/logos/logo.png"
+                    alt="DevERP">
+
+
+                <p>
+
+                    DevERP Solutions Private Limited
+                    is a custom software development firm
+                    located in Ahmedabad, India.
+
+                </p>
+
+
+                <p>
+
+                    We take pride in delivering customized
+                    and next-generation enterprise solutions
+                    based on your business needs.
+
+                </p>
+
+
+                <div class="footer-social">
+
+                    <a href="https://www.facebook.com/Deverp-Solutions-Pvt-Ltd-102329981645556/"
+                       target="_blank">
+
+                        <i class="fa-brands fa-facebook-f"></i>
+
+                    </a>
+
+                    <a href="https://twitter.com/DevERP5"
+                       target="_blank">
+
+                        <i class="fa-brands fa-x-twitter"></i>
+
+                    </a>
+
+                    <a href="https://www.linkedin.com/in/deverp-solutions-pvt-ltd-company-286598181"
+                       target="_blank">
+
+                        <i class="fa-brands fa-linkedin-in"></i>
+
+                    </a>
+
+                    <a href="https://www.instagram.com/deverp001/?hl=en"
+                       target="_blank">
+
+                        <i class="fa-brands fa-instagram"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- PRODUCTS -->
+
+            <div>
+
+                <div class="footer-title">
+                    Products
+                </div>
+
+
+                <ul class="footer-links">
+
+                    <li>
+                        <a href="index.aspx?q=ready_mix_concrete_erp">
+                            Ready Mix Concrete ERP
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=real_estate_erp">
+                            Real Estate ERP
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=engraving_erp">
+                            Engraving ERP
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=flexo_printing_erp">
+                            Flexo Printing ERP
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=light_weight_block_erp">
+                            Light Weight Block ERP
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=school_management_erp">
+                            School Management ERP
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=printing_packaging_erp">
+                            Printing &amp; Packaging ERP
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=crm_erp">
+                            CRM ERP
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=trading_erp">
+                            Trading ERP
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <!-- SERVICES -->
+
+            <div>
+
+                <div class="footer-title">
+                    Services
+                </div>
+
+
+                <ul class="footer-links">
+
+                    <li>
+                        <a href="index.aspx?q=mis(bi_reporting)">
+                            MIS (BI &amp; Reporting)
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=data_export">
+                            Data Export
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=mobile_app_development">
+                            Mobile App Development
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=cloud_backUp">
+                            Cloud Back Up
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=sms_services">
+                            SMS Services
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=email_server">
+                            Email Server
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=domain_registration">
+                            Domain Registration
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=website_hosting">
+                            Website Hosting
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=web_development">
+                            Web Development
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <!-- CONTACT -->
+
+            <div class="footer-contact">
+
+                <div class="footer-title">
+                    Contact Us
+                </div>
+
+
+                <div class="contact-row">
+
+                    <i class="fa-solid fa-location-dot"></i>
+
+                    <div>
+
+                        <strong>INDIA</strong>
+
+                        <br>
+
+                        405, 407B Primate Complex,
+                        Opp. Gormoh Hotel,
+                        Nr. Judges Bunglow Cross Road,
+                        Bodakdev, Ahmedabad-380054,
+                        Gujarat, India.
+
+                    </div>
+
+                </div>
+
+
+                <div class="contact-row">
+
+                    <i class="fa-solid fa-envelope"></i>
+
+                    <div>
+
+                        <a href="mailto:admin@deverp.com">
+                            admin@deverp.com
+                        </a>
+
+                        <br>
+
+                        <a href="mailto:support@deverp.com">
+                            support@deverp.com
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="contact-row">
+
+                    <i class="fa-solid fa-phone"></i>
+
+                    <div>
+
+                        <strong>Support</strong>
+
+                        <br>
+
+                        <a href="tel:+917935312554">
+                            079 3531 2554
+                        </a>
+
+                        <br>
+
+                        <a href="tel:+919327940159">
+                            +91 93279 40159
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="contact-row">
+
+                    <i class="fa-solid fa-phone"></i>
+
+                    <div>
+
+                        <strong>Sales</strong>
+
+                        <br>
+
+                        <a href="mailto:mkt@deverp.com">
+                            mkt@deverp.com
+                        </a>
+
+                        <br>
+
+                        <a href="tel:+918818812554">
+                            +91 88188 12554
+                        </a>
+
+                        <br>
+
+                        <a href="tel:+919904083255">
+                            +91 99040 83255
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="contact-row">
+
+                    <i class="fa-solid fa-location-dot"></i>
+
+                    <div>
+
+                        <strong>UAE</strong>
+
+                        <br>
+
+                        FDCW1699, Compass Building,
+                        Al Sahada Road,
+                        Al Hamara Industrial zone-FZ,
+                        Ras Al Khaimah,
+                        United Arab Emirates.
+
+                    </div>
+
+                </div>
+
+
+                <div class="contact-row">
+
+                    <i class="fa-solid fa-envelope"></i>
+
+                    <div>
+
+                        <strong>UAE Sales</strong>
+
+                        <br>
+
+                        <a href="mailto:sales@deverp.com">
+                            sales@deverp.com
+                        </a>
+
+                        <br>
+
+                        <a href="tel:+971561612075">
+                            +971 56 161 2075
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="newsletter">
+
+                    <div class="footer-title"
+                         style="font-size:13px;margin-bottom:0;">
+
+                        Stay Connected
+
+                    </div>
+
+
+                    <div class="newsletter-form">
+
+                        <input
+                            type="email"
+                            id="newsletterEmail"
+                            placeholder="Your email address">
+
+
+                        <button id="newsletterBtn">
+
+                            <i class="fa-solid fa-paper-plane"></i>
+
+                        </button>
+
+                    </div>
+
+
+                    <div id="newsletterMessage"
+                         style="
+                            font-size:11px;
+                            margin-top:6px;
+                         ">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        <div class="container footer-bottom-inner">
+
+            <div>
+
+                © <span id="year"></span>
+                DevERP Solutions Private Limited -
+                All Rights Reserved
+
+            </div>
+
+
+            <a href="index.aspx?q=deverp_privacy_policy">
+
+                Privacy Policy
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+</footer>
+
+
+<!-- =========================================================
+     APPOINTMENT MODAL
+========================================================== -->
+
+<div class="modal-overlay"
+     id="appointmentModal">
+
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <h2>
+                Schedule Appointment
+            </h2>
+
+
+            <button class="close-modal"
+                    id="closeModal">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <form id="appointmentForm">
+
+
+            <div class="modal-body">
+
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label>
+                            First Name *
+                        </label>
+
+                        <input
+                            class="form-control"
+                            type="text"
+                            id="firstName"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Last Name *
+                        </label>
+
+                        <input
+                            class="form-control"
+                            type="text"
+                            id="lastName"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Email *
+                        </label>
+
+                        <input
+                            class="form-control"
+                            type="email"
+                            id="email"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Phone Number *
+                        </label>
+
+                        <input
+                            class="form-control"
+                            type="tel"
+                            id="phone"
+                            maxlength="10"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label>
+                            Business Name *
+                        </label>
+
+                        <input
+                            class="form-control"
+                            type="text"
+                            id="businessName"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label>
+                            Subject *
+                        </label>
+
+                        <input
+                            class="form-control"
+                            type="text"
+                            id="subject"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label>
+                            Description
+                        </label>
+
+                        <textarea
+                            class="form-control"
+                            id="description"></textarea>
+
+                    </div>
+
+
+                </div>
+
+
+                <div id="formMessage"
+                     style="
+                        margin-top:12px;
+                        font-size:12px;
+                     ">
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="secondary-btn"
+                        id="cancelModal">
+
+                    Cancel
+
+                </button>
+
+
+                <button type="submit"
+                        class="primary-btn">
+
+                    Submit Now
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     BACK TOP
+========================================================== -->
+
+<button class="back-top"
+        id="backTop">
+
+    <i class="fa-solid fa-arrow-up"></i>
+
+</button>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================== -->
+
+<script>
+
+
+/* =========================================================
+   YEAR
+========================================================= */
+
+document.getElementById("year").textContent =
+    new Date().getFullYear();
+
+
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+const menuButton =
+    document.getElementById("menuButton");
+
+const navMenu =
+    document.getElementById("navMenu");
+
+
+menuButton.addEventListener(
+    "click",
+    function () {
+
+        navMenu.classList.toggle("active");
+
+        const icon =
+            menuButton.querySelector("i");
+
+        if (
+            navMenu.classList.contains("active")
+        ) {
+
+            icon.classList.remove("fa-bars");
+
+            icon.classList.add("fa-xmark");
+
+        } else {
+
+            icon.classList.remove("fa-xmark");
+
+            icon.classList.add("fa-bars");
+
+        }
+
+    }
+);
+
+
+
+/* =========================================================
+   MOBILE DROPDOWNS
+========================================================= */
+
+document
+    .querySelectorAll(".nav-item")
+    .forEach(function (item) {
+
+        const link =
+            item.querySelector(":scope > .nav-link");
+
+        const dropdown =
+            item.querySelector(":scope > .dropdown");
+
+
+        if (!dropdown) {
+            return;
+        }
+
+
+        link.addEventListener(
+            "click",
+            function (event) {
+
+                if (window.innerWidth <= 850) {
+
+                    event.preventDefault();
+
+                    item.classList.toggle("open");
+
+                }
+
+            }
+        );
+
+    });
+
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+const appointmentModal =
+    document.getElementById("appointmentModal");
+
+const scheduleBtn =
+    document.getElementById("scheduleBtn");
+
+const ctaScheduleBtn =
+    document.getElementById("ctaScheduleBtn");
+
+const closeModal =
+    document.getElementById("closeModal");
+
+const cancelModal =
+    document.getElementById("cancelModal");
+
+
+function openAppointment() {
+
+    appointmentModal.classList.add("active");
+
+    document.body.style.overflow = "hidden";
+
+}
+
+
+function closeAppointment() {
+
+    appointmentModal.classList.remove("active");
+
+    document.body.style.overflow = "";
+
+}
+
+
+scheduleBtn.addEventListener(
+    "click",
+    openAppointment
+);
+
+
+ctaScheduleBtn.addEventListener(
+    "click",
+    openAppointment
+);
+
+
+closeModal.addEventListener(
+    "click",
+    closeAppointment
+);
+
+
+cancelModal.addEventListener(
+    "click",
+    closeAppointment
+);
+
+
+appointmentModal.addEventListener(
+    "click",
+    function (event) {
+
+        if (
+            event.target === appointmentModal
+        ) {
+
+            closeAppointment();
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (event.key === "Escape") {
+
+            closeAppointment();
+
+        }
+
+    }
+);
+
+
+
+/* =========================================================
+   APPOINTMENT FORM
+========================================================= */
+
+const appointmentForm =
+    document.getElementById("appointmentForm");
+
+const formMessage =
+    document.getElementById("formMessage");
+
+
+appointmentForm.addEventListener(
+    "submit",
+    function (event) {
+
+        event.preventDefault();
+
+
+        const phone =
+            document
+                .getElementById("phone")
+                .value
+                .trim();
+
+
+        if (
+            !/^[0-9]{10}$/.test(phone)
+        ) {
+
+            formMessage.style.color =
+                "#dc2626";
+
+            formMessage.textContent =
+                "Please enter a valid 10 digit phone number.";
+
+            return;
+
+        }
+
+
+        /*
+           CONNECT YOUR EXISTING ASP.NET
+           FORM/API SUBMISSION HERE.
+
+           Example payload:
+
+           {
+               firstName,
+               lastName,
+               email,
+               phone,
+               businessName,
+               subject,
+               description
+           }
+        */
+
+
+        formMessage.style.color =
+            "#16a34a";
+
+        formMessage.textContent =
+            "Thank you! We will contact you shortly.";
+
+
+        appointmentForm.reset();
+
+
+        setTimeout(
+            function () {
+
+                closeAppointment();
+
+                formMessage.textContent = "";
+
+            },
+            1800
+        );
+
+    }
+);
+
+
+
+/* =========================================================
+   NEWSLETTER
+========================================================= */
+
+const newsletterBtn =
+    document.getElementById("newsletterBtn");
+
+const newsletterEmail =
+    document.getElementById("newsletterEmail");
+
+const newsletterMessage =
+    document.getElementById("newsletterMessage");
+
+
+newsletterBtn.addEventListener(
+    "click",
+    function () {
+
+        const email =
+            newsletterEmail.value.trim();
+
+
+        if (!email) {
+
+            newsletterMessage.style.color =
+                "#f87171";
+
+            newsletterMessage.textContent =
+                "Please enter your email.";
+
+            return;
+
+        }
+
+
+        if (
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+        ) {
+
+            newsletterMessage.style.color =
+                "#f87171";
+
+            newsletterMessage.textContent =
+                "Please enter a valid email.";
+
+            return;
+
+        }
+
+
+        newsletterMessage.style.color =
+            "#4ade80";
+
+        newsletterMessage.textContent =
+            "Thank you for subscribing!";
+
+
+        newsletterEmail.value = "";
+
+    }
+);
+
+
+
+/* =========================================================
+   BACK TO TOP
+========================================================= */
+
+const backTop =
+    document.getElementById("backTop");
+
+
+window.addEventListener(
+    "scroll",
+    function () {
+
+        if (window.scrollY > 450) {
+
+            backTop.classList.add("show");
+
+        } else {
+
+            backTop.classList.remove("show");
+
+        }
+
+    }
+);
+
+
+backTop.addEventListener(
+    "click",
+    function () {
+
+        window.scrollTo({
+
+            top: 0,
+
+            behavior: "smooth"
+
+        });
+
+    }
+);
+
+
+
+/* =========================================================
+   MOBILE MENU CLOSE
+========================================================= */
+
+document
+    .querySelectorAll(".nav-menu a")
+    .forEach(function (link) {
+
+        link.addEventListener(
+            "click",
+            function () {
+
+                if (window.innerWidth <= 850) {
+
+                    const parent =
+                        link.closest(".nav-item");
+
+                    const dropdown =
+                        parent &&
+                        parent.querySelector(
+                            ":scope > .dropdown"
+                        );
+
+
+                    if (!dropdown) {
+
+                        navMenu.classList.remove(
+                            "active"
+                        );
+
+
+                        const icon =
+                            menuButton.querySelector("i");
+
+
+                        icon.classList.remove(
+                            "fa-xmark"
+                        );
+
+                        icon.classList.add(
+                            "fa-bars"
+                        );
+
+                    }
+
+                }
+
+            }
+        );
+
+    });
+
+
+</script>
+
+
+</body>
+
+</html>

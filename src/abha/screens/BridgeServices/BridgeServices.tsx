@@ -59,10 +59,7 @@ const BridgeServices = ({ route }: any) => {
                 gender: getValue('gender'),
                 yearOfBirth: Number(formatDate(getValue("dob")).split("/").pop()),
             };
-
-            console.log(
-                '========== GENERATE LINK TOKEN PAYLOAD =========='
-            );
+         
             console.log(
                 JSON.stringify(payload, null, 2)
             );
@@ -75,8 +72,10 @@ const BridgeServices = ({ route }: any) => {
             console.log(
                 JSON.stringify(response, null, 2)
             );
-
+        
             console.log('Link Token =>', response);
+
+            
             dispatch(hideLoader())
             navigation.navigate("LinkCareContext", {
                 abhaDetail: abhaDetail

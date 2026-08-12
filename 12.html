@@ -1,0 +1,2850 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Products | DevERP Solutions</title>
+
+    <meta name="description"
+          content="Industry specific ERP solutions by DevERP Solutions">
+
+    <link rel="icon"
+          href="CMSassets/images/fevicon/logo.png">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Google Font -->
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    color: #182230;
+    background: #f7f9fc;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button,
+input {
+    font-family: inherit;
+}
+
+.container {
+    width: min(1180px, calc(100% - 40px));
+    margin: auto;
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.topbar {
+    height: 38px;
+    background: #111827;
+    color: #aeb8c6;
+    font-size: 12px;
+}
+
+.topbar-inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.top-left {
+    display: flex;
+    gap: 22px;
+}
+
+.top-left span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.top-left i {
+    color: #5b9cff;
+}
+
+.top-right {
+    display: flex;
+    gap: 7px;
+}
+
+.top-right a {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    background: rgba(255,255,255,.07);
+    transition: .2s;
+}
+
+.top-right a:hover {
+    background: #2563eb;
+    color: white;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+    height: 76px;
+    background: white;
+    border-bottom: 1px solid #e9edf3;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo img {
+    width: 145px;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.nav a {
+    padding: 10px 13px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #4b5563;
+    text-transform: uppercase;
+    transition: .2s;
+}
+
+.nav a:hover,
+.nav a.active {
+    color: #2563eb;
+    background: #eff6ff;
+}
+
+.header-btn {
+    margin-left: 15px;
+    padding: 11px 17px;
+    border-radius: 7px;
+    background: #2563eb;
+    color: white !important;
+    box-shadow: 0 8px 20px rgba(37,99,235,.20);
+}
+
+.header-btn:hover {
+    background: #1d4ed8 !important;
+    color: white !important;
+}
+
+.mobile-btn {
+    display: none;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 8px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 20px;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero {
+    position: relative;
+    overflow: hidden;
+    background: #0f172a;
+    color: white;
+}
+
+.hero:before {
+    content: "";
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.06);
+    right: -220px;
+    top: -330px;
+}
+
+.hero:after {
+    content: "";
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    border: 1px solid rgba(59,130,246,.12);
+    left: -180px;
+    bottom: -220px;
+}
+
+.hero-inner {
+    position: relative;
+    z-index: 2;
+    min-height: 450px;
+    display: flex;
+    align-items: center;
+}
+
+.hero-content {
+    width: 65%;
+}
+
+.hero-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    background: rgba(59,130,246,.13);
+    border: 1px solid rgba(96,165,250,.20);
+    border-radius: 30px;
+    color: #7db1ff;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 22px;
+}
+
+.hero h1 {
+    font-size: clamp(42px, 5vw, 68px);
+    line-height: 1.05;
+    letter-spacing: -2.5px;
+    margin-bottom: 22px;
+}
+
+.hero h1 span {
+    display: block;
+    color: #60a5fa;
+}
+
+.hero-description {
+    max-width: 630px;
+    color: #9aa8ba;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.hero-stats {
+    margin-top: 35px;
+    display: flex;
+    gap: 35px;
+}
+
+.stat strong {
+    display: block;
+    font-size: 25px;
+    color: white;
+}
+
+.stat span {
+    color: #7d8ba0;
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   PRODUCTS AREA
+========================================================= */
+
+.products-area {
+    padding: 80px 0;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 35px;
+}
+
+.section-title small {
+    display: block;
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+}
+
+.section-title h2 {
+    font-size: 34px;
+    letter-spacing: -1px;
+}
+
+.section-title p {
+    margin-top: 7px;
+    color: #7b8797;
+    font-size: 14px;
+}
+
+.search-box {
+    width: 270px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #e1e7ef;
+    background: white;
+    border-radius: 9px;
+    padding: 0 13px;
+    box-shadow: 0 4px 15px rgba(15,23,42,.03);
+}
+
+.search-box i {
+    color: #9aa5b4;
+    margin-right: 8px;
+}
+
+.search-box input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   PRODUCT LAYOUT
+========================================================= */
+
+.product-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 30px;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+    align-self: start;
+    position: sticky;
+    top: 105px;
+}
+
+.sidebar-card {
+    background: white;
+    border: 1px solid #e5eaf1;
+    border-radius: 13px;
+    padding: 9px;
+    box-shadow: 0 5px 25px rgba(15,23,42,.04);
+}
+
+.sidebar-title {
+    padding: 12px 12px 9px;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: #9aa4b2;
+    letter-spacing: 1px;
+}
+
+.filter-btn {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    padding: 11px 12px;
+    border-radius: 7px;
+    color: #657080;
+    font-size: 12px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.filter-btn:hover {
+    background: #f5f8fc;
+    color: #2563eb;
+}
+
+.filter-btn.active {
+    background: #eff6ff;
+    color: #2563eb;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   PRODUCT GRID
+========================================================= */
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+
+/* =========================================================
+   PRODUCT CARD
+========================================================= */
+
+.product-card {
+    position: relative;
+    overflow: hidden;
+    background: white;
+    border: 1px solid #e4e9f0;
+    border-radius: 14px;
+    transition: .3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-6px);
+    border-color: #cbdcfb;
+    box-shadow: 0 18px 45px rgba(15,23,42,.09);
+}
+
+.product-image {
+    height: 190px;
+    overflow: hidden;
+    position: relative;
+    background: #edf2f7;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: .45s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.07);
+}
+
+.product-number {
+    position: absolute;
+    top: 13px;
+    left: 13px;
+    width: 33px;
+    height: 33px;
+    border-radius: 7px;
+    background: rgba(255,255,255,.94);
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 800;
+    box-shadow: 0 5px 15px rgba(0,0,0,.10);
+}
+
+.product-content {
+    padding: 21px;
+}
+
+.product-category {
+    color: #2563eb;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 800;
+}
+
+.product-title {
+    margin-top: 7px;
+    font-size: 18px;
+    line-height: 1.35;
+    color: #172033;
+    font-weight: 750;
+}
+
+.product-description {
+    margin-top: 10px;
+    color: #768294;
+    font-size: 12px;
+    line-height: 1.7;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-footer {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #edf0f4;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.product-link {
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.product-link i {
+    margin-left: 5px;
+    transition: .2s;
+}
+
+.product-card:hover .product-link i {
+    transform: translateX(4px);
+}
+
+.product-tag {
+    font-size: 10px;
+    color: #a0a9b6;
+}
+
+
+/* =========================================================
+   NO RESULT
+========================================================= */
+
+.no-result {
+    display: none;
+    grid-column: 1 / -1;
+    padding: 70px 20px;
+    background: white;
+    border: 1px solid #e5eaf1;
+    border-radius: 14px;
+    text-align: center;
+}
+
+.no-result i {
+    font-size: 35px;
+    color: #cbd5e1;
+    margin-bottom: 12px;
+}
+
+.no-result h3 {
+    font-size: 18px;
+}
+
+.no-result p {
+    color: #8a94a3;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   CTA
+========================================================= */
+
+.cta {
+    padding: 80px 0;
+    background: white;
+}
+
+.cta-inner {
+    min-height: 250px;
+    padding: 50px;
+    border-radius: 18px;
+    background: linear-gradient(120deg,#1d4ed8,#2563eb);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.cta-inner:after {
+    content: "";
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 50%;
+    right: -150px;
+    top: -170px;
+}
+
+.cta-content {
+    position: relative;
+    z-index: 2;
+}
+
+.cta-content small {
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: .7;
+}
+
+.cta-content h2 {
+    font-size: 32px;
+    margin: 8px 0;
+}
+
+.cta-content p {
+    color: rgba(255,255,255,.75);
+    font-size: 13px;
+}
+
+.cta-button {
+    position: relative;
+    z-index: 2;
+    background: white;
+    color: #2563eb;
+    padding: 13px 20px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer {
+    background: #101827;
+    color: #8491a3;
+    padding-top: 65px;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 50px;
+}
+
+.footer h3 {
+    color: white;
+    font-size: 17px;
+    margin-bottom: 18px;
+}
+
+.footer p,
+.footer li,
+.footer a {
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.footer-about p {
+    max-width: 430px;
+}
+
+.footer-links {
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: 7px;
+}
+
+.footer-links a {
+    color: #8491a3;
+    transition: .2s;
+}
+
+.footer-links a:hover {
+    color: white;
+}
+
+.contact-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 13px;
+}
+
+.contact-item i {
+    color: #60a5fa;
+    width: 15px;
+    margin-top: 4px;
+}
+
+.footer-social {
+    display: flex;
+    gap: 7px;
+    margin-top: 18px;
+}
+
+.footer-social a {
+    width: 31px;
+    height: 31px;
+    background: rgba(255,255,255,.06);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-social a:hover {
+    background: #2563eb;
+    color: white;
+}
+
+.footer-bottom {
+    margin-top: 50px;
+    padding: 20px 0;
+    border-top: 1px solid rgba(255,255,255,.07);
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    background: rgba(15,23,42,.68);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.modal {
+    width: min(520px,100%);
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 30px 90px rgba(0,0,0,.25);
+    animation: modalIn .25s ease;
+}
+
+@keyframes modalIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+}
+
+.modal-header {
+    padding: 22px 25px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #edf0f4;
+}
+
+.modal-header h3 {
+    font-size: 20px;
+}
+
+.modal-close {
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 6px;
+    background: #f1f4f8;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.form-group {
+    margin-bottom: 13px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #536070;
+}
+
+.form-control {
+    width: 100%;
+    height: 43px;
+    border: 1px solid #dfe5ed;
+    border-radius: 7px;
+    outline: 0;
+    padding: 0 12px;
+    font-size: 12px;
+}
+
+textarea.form-control {
+    height: 90px;
+    padding-top: 10px;
+    resize: vertical;
+}
+
+.form-control:focus {
+    border-color: #2563eb;
+}
+
+.modal-submit {
+    width: 100%;
+    height: 44px;
+    border: 0;
+    border-radius: 7px;
+    background: #2563eb;
+    color: white;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:1050px) {
+
+    .nav {
+        display: none;
+    }
+
+    .mobile-btn {
+        display: block;
+    }
+
+    .header.mobile-open .nav {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        top: 76px;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 15px 20px 20px;
+        border-bottom: 1px solid #e5eaf1;
+        box-shadow: 0 15px 30px rgba(0,0,0,.08);
+    }
+
+    .header.mobile-open .nav a {
+        display: block;
+    }
+
+    .header.mobile-open .header-btn {
+        margin-left: 0;
+        text-align: center;
+    }
+
+    .product-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: static;
+    }
+
+    .sidebar-card {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        padding: 10px;
+    }
+
+    .sidebar-title {
+        width: 100%;
+    }
+
+    .filter-btn {
+        width: auto;
+    }
+
+}
+
+
+@media(max-width:750px) {
+
+    .topbar {
+        display: none;
+    }
+
+    .container {
+        width: min(100% - 28px,1180px);
+    }
+
+    .hero-inner {
+        min-height: 400px;
+    }
+
+    .hero-content {
+        width: 100%;
+    }
+
+    .hero h1 {
+        font-size: 42px;
+    }
+
+    .hero-stats {
+        gap: 20px;
+    }
+
+    .section-header {
+        display: block;
+    }
+
+    .search-box {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cta-inner {
+        padding: 35px 25px;
+        display: block;
+    }
+
+    .cta-button {
+        display: inline-block;
+        margin-top: 22px;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 35px;
+    }
+
+    .footer-bottom {
+        display: block;
+    }
+
+    .footer-bottom div + div {
+        margin-top: 8px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     TOP BAR
+========================================================= -->
+
+<div class="topbar">
+
+    <div class="container topbar-inner">
+
+        <div class="top-left">
+
+            <span>
+                <i class="fa fa-phone"></i>
+                +91 79 3531 2554
+            </span>
+
+            <span>
+                <i class="fa fa-envelope"></i>
+                suresh@deverp.com
+            </span>
+
+        </div>
+
+
+        <div class="top-right">
+
+            <a href="https://www.facebook.com/Deverp-Solutions-Pvt-Ltd-102329981645556/"
+               target="_blank">
+                <i class="fa fa-facebook"></i>
+            </a>
+
+            <a href="https://twitter.com/DevERP5"
+               target="_blank">
+                <i class="fa fa-twitter"></i>
+            </a>
+
+            <a href="https://www.linkedin.com/in/deverp-solutions-pvt-ltd-company-286598181"
+               target="_blank">
+                <i class="fa fa-linkedin"></i>
+            </a>
+
+            <a href="https://www.instagram.com/deverp001/?hl=en"
+               target="_blank">
+                <i class="fa fa-instagram"></i>
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header class="header"
+        id="header">
+
+    <div class="container header-inner">
+
+        <a href="index.aspx?q=home"
+           class="logo">
+
+            <img src="CMSassets/images/logos/logo.png"
+                 alt="DevERP Solutions">
+
+        </a>
+
+
+        <nav class="nav">
+
+            <a href="index.aspx?q=home">
+                Home
+            </a>
+
+            <a href="index.aspx?q=product_list"
+               class="active">
+                Products
+            </a>
+
+            <a href="index.aspx?q=service_list">
+                Services
+            </a>
+
+            <a href="index.aspx?q=aboutus">
+                About Us
+            </a>
+
+            <a href="index.aspx?q=clients">
+                Clients
+            </a>
+
+            <a href="index.aspx?q=career">
+                Career
+            </a>
+
+            <a href="index.aspx?q=blog">
+                Blog
+            </a>
+
+            <a href="index.aspx?q=contact_us">
+                Contact
+            </a>
+
+            <a href="javascript:void(0)"
+               class="header-btn"
+               onclick="openModal()">
+
+                <i class="fa fa-calendar"></i>
+                Appointment
+
+            </a>
+
+        </nav>
+
+
+        <button class="mobile-btn"
+                onclick="toggleMobileMenu()">
+
+            <i class="fa fa-bars"></i>
+
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     HERO
+========================================================= -->
+
+<section class="hero">
+
+    <div class="container hero-inner">
+
+        <div class="hero-content">
+
+            <div class="hero-label">
+
+                <i class="fa fa-cubes"></i>
+
+                ENTERPRISE ERP SOLUTIONS
+
+            </div>
+
+
+            <h1>
+
+                ERP Built For
+                <span>Your Industry.</span>
+
+            </h1>
+
+
+            <p class="hero-description">
+
+                Discover powerful, industry-specific ERP solutions
+                designed to simplify operations, improve visibility
+                and help your business grow faster.
+
+            </p>
+
+
+            <div class="hero-stats">
+
+                <div class="stat">
+
+                    <strong>15+</strong>
+
+                    <span>
+                        ERP Products
+                    </span>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <strong>10+</strong>
+
+                    <span>
+                        Industries
+                    </span>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <strong>360°</strong>
+
+                    <span>
+                        Business Management
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     PRODUCTS
+========================================================= -->
+
+<section class="products-area">
+
+    <div class="container">
+
+
+        <div class="section-header">
+
+            <div class="section-title">
+
+                <small>
+                    DEV.ERP PRODUCTS
+                </small>
+
+                <h2>
+                    Explore Our Solutions
+                </h2>
+
+                <p>
+                    Choose the ERP solution that fits your business.
+                </p>
+
+            </div>
+
+
+            <div class="search-box">
+
+                <i class="fa fa-search"></i>
+
+                <input type="text"
+                       id="productSearch"
+                       placeholder="Search ERP products...">
+
+            </div>
+
+        </div>
+
+
+        <div class="product-layout">
+
+
+            <!-- SIDEBAR -->
+
+            <aside class="sidebar">
+
+                <div class="sidebar-card">
+
+                    <div class="sidebar-title">
+                        Categories
+                    </div>
+
+                    <button class="filter-btn active"
+                            data-filter="all">
+                        All Products
+                    </button>
+
+                    <button class="filter-btn"
+                            data-filter="manufacturing">
+                        Manufacturing
+                    </button>
+
+                    <button class="filter-btn"
+                            data-filter="construction">
+                        Construction
+                    </button>
+
+                    <button class="filter-btn"
+                            data-filter="printing">
+                        Printing
+                    </button>
+
+                    <button class="filter-btn"
+                            data-filter="education">
+                        Education
+                    </button>
+
+                    <button class="filter-btn"
+                            data-filter="logistics">
+                        Logistics
+                    </button>
+
+                    <button class="filter-btn"
+                            data-filter="business">
+                        Business
+                    </button>
+
+                    <button class="filter-btn"
+                            data-filter="retail">
+                        Retail
+                    </button>
+
+                    <button class="filter-btn"
+                            data-filter="trading">
+                        Trading
+                    </button>
+
+                </div>
+
+            </aside>
+
+
+            <!-- PRODUCT GRID -->
+
+            <div class="product-grid"
+                 id="productGrid">
+
+
+                <!-- 01 -->
+
+                <a class="product-card"
+                   data-category="manufacturing"
+                   href="index.aspx?q=ready_mix_concrete_erp">
+
+                    <div class="product-image">
+
+                        <img src="https://deverp.com/CMSassets/images/it_service/RMC.jpg"
+                             alt="Ready Mix Concrete ERP">
+
+                        <span class="product-number">
+                            01
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-content">
+
+                        <span class="product-category">
+                            Manufacturing ERP
+                        </span>
+
+                        <h3 class="product-title">
+                            Ready Mix Concrete ERP
+                        </h3>
+
+                        <p class="product-description">
+                            An Integrated Information System designed
+                            for Ready Mix Concrete Industry. If you are
+                            a high-value RMC Manufacturer and look
+                            forward to achieving optimum quality,
+                            reducing cost while ensuring customer
+                            satisfaction, then ideal choice must be
+                            Suffixtrie.
+                        </p>
+
+
+                        <div class="product-footer">
+
+                            <span class="product-link">
+                                Explore Solution
+                                <i class="fa fa-arrow-right"></i>
+                            </span>
+
+                            <span class="product-tag">
+                                RMC
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- 02 -->
+
+                <a class="product-card"
+                   data-category="construction"
+                   href="index.aspx?q=real_estate_erp">
+
+                    <div class="product-image">
+
+                        <img src="https://deverp.com/CMSassets/images/Product/REAL-ESTATE.png"
+                             alt="Real Estate ERP">
+
+                        <span class="product-number">
+                            02
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-content">
+
+                        <span class="product-category">
+                            Real Estate
+                        </span>
+
+                        <h3 class="product-title">
+                            Real Estate ERP
+                        </h3>
+
+                        <p class="product-description">
+                            Real estate being one of the most booming
+                            industries across the nation holds a good
+                            amount of competency thereby. Increasing
+                            population and improved standards of living
+                            are two key reasons.
+                        </p>
+
+
+                        <div class="product-footer">
+
+                            <span class="product-link">
+                                Explore Solution
+                                <i class="fa fa-arrow-right"></i>
+                            </span>
+
+                            <span class="product-tag">
+                                REAL ESTATE
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- 03 -->
+
+                <a class="product-card"
+                   data-category="printing"
+                   href="index.aspx?q=engraving_erp">
+
+                    <div class="product-image">
+
+                        <img src="https://deverp.com/CMSassets/images/Product/Engraving.jpg"
+                             alt="Engraving ERP">
+
+                        <span class="product-number">
+                            03
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-content">
+
+                        <span class="product-category">
+                            Printing Industry
+                        </span>
+
+                        <h3 class="product-title">
+                            Engraving ERP
+                        </h3>
+
+                        <p class="product-description">
+                            The rotogravure printing process is the most
+                            popular printing process used in flexible
+                            packaging manufacturing because of its
+                            ability to print on thin film such as
+                            polyester, OPP, nylon and PE.
+                        </p>
+
+
+                        <div class="product-footer">
+
+                            <span class="product-link">
+                                Explore Solution
+                                <i class="fa fa-arrow-right"></i>
+                            </span>
+
+                            <span class="product-tag">
+                                PRINTING
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- 04 -->
+
+                <a class="product-card"
+                   data-category="printing"
+                   href="index.aspx?q=flexo_printing_erp">
+
+                    <div class="product-image">
+
+                        <img src="https://deverp.com/CMSassets/images/Product/Flexo.jpg"
+                             alt="Flexo Printing ERP">
+
+                        <span class="product-number">
+                            04
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-content">
+
+                        <span class="product-category">
+                            Printing Industry
+                        </span>
+
+                        <h3 class="product-title">
+                            Flexo Printing ERP
+                        </h3>
+
+                        <p class="product-description">
+                            A specialized ERP solution for flexible
+                            packaging and printing businesses to
+                            manage production, processes and
+                            operational requirements.
+                        </p>
+
+
+                        <div class="product-footer">
+
+                            <span class="product-link">
+                                Explore Solution
+                                <i class="fa fa-arrow-right"></i>
+                            </span>
+
+                            <span class="product-tag">
+                                FLEXO
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- 05 -->
+
+                <a class="product-card"
+                   data-category="construction"
+                   href="index.aspx?q=light_weight_block_erp">
+
+                    <div class="product-image">
+
+                        <img src="https://deverp.com/CMSassets/images/Product/LIGHT_WEIGHT.jpg"
+                             alt="Light Weight Block ERP">
+
+                        <span class="product-number">
+                            05
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-content">
+
+                        <span class="product-category">
+                            Construction ERP
+                        </span>
+
+                        <h3 class="product-title">
+                            Light Weight Block (AAC) ERP
+                        </h3>
+
+                        <p class="product-description">
+                            Enterprise software designed for
+                            lightweight block and AAC manufacturing
+                            operations with integrated business
+                            management capabilities.
+                        </p>
+
+
+                        <div class="product-footer">
+
+                            <span class="product-link">
+                                Explore Solution
+                                <i class="fa fa-arrow-right"></i>
+                            </span>
+
+                            <span class="product-tag">
+                                AAC
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- 06 -->
+
+                <a class="product-card"
+                   data-category="manufacturing"
+                   href="index.aspx?q=pulse/rice_mill_erp">
+
+                    <div class="product-image">
+
+                        <img src="https://deverp.com/CMSassets/images/Product/RICE-MILL.jpg"
+                             alt="Pulse Rice Mill ERP">
+
+                        <span class="product-number">
+                            06
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-content">
+
+                        <span class="product-category">
+                            Food Processing
+                        </span>
+
+                        <h3 class="product-title">
+                            Pulse / Rice Mill ERP
+                        </h3>
+
+                        <p class="product-description">
+                            ERP solution designed to manage rice mill
+                            and pulse processing operations, production
+                            activities and business management.
+                        </p>
+
+
+                        <div class="product-footer">
+
+                            <span class="product-link">
+                                Explore Solution
+                                <i class="fa fa-arrow-right"></i>
+                            </span>
+
+                            <span class="product-tag">
+                                MILL
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- 07 -->
+
+                <a class="product-card"
+                   data-category="education"
+                   href="index.aspx?q=school_management_erp">
+
+                    <div class="product-image">
+
+                        <img src="https://deverp.com/CMSassets/images/Product/SCHOOL-MANAGEMENT.jpg"
+                             alt="School Management ERP">
+
+                        <span class="product-number">
+                            07
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-content">
+
+                        <span class="product-category">
+                            Education ERP
+                        </span>
+
+                        <h3 class="product-title">
+                            School Management ERP
+                        </h3>
+
+                        <p class="product-description">
+                            Integrated school management solution
+                            designed to simplify institutional
+                            operations and manage educational
+                            activities.
+                        </p>
+
+
+                        <div class="product-footer">
+
+                            <span class="product-link">
+                                Explore Solution
+                                <i class="fa fa-arrow-right"></i>
+                            </span>
+
+                            <span class="product-tag">
+                                SCHOOL
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- 08 -->
+
+                <a class="product-card"
+                   data-category="printing"
+                   href="index.aspx?q=printing_packaging_erp">
+
+                    <div class="product-image">
+
+                        <img src="https://deverp.com/CMSassets/images/Product/PRINTING.jpg"
+                             alt="Printing Packaging ERP">
+
+                        <span class="product-number">
+                            08
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-content">
+
+                        <span class="product-category">
+                            Packaging ERP
+                        </span>
+
+                        <h3 class="product-title">
+                            Printing & Packaging ERP
+                        </h3>
+
+                        <p class="product-description">
+                            Integrated ERP for printing and packaging
+                            businesses to manage production,
+                            operations and business processes.
+                        </p>
+
+
+                        <div class="product-footer">
+
+                            <span class="product-link">
+                                Explore Solution
+                                <i class="fa fa-arrow-right"></i>
+                            </span>
+
+                            <span class="product-tag">
+                                PACKAGING
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- 09 -->
+
+                <a class="product-card"
+                   data-category="business"
+                   href="index.aspx?q=automobiles_and_work_shop_management_erp">
+
+                    <div class="product-image">
+
+                        <img src="https://deverp.com/CMSassets/images/Product/AUTOMOBILE.jpg"
+                             alt="Automobile Workshop ERP">
+
+                        <span class="product-number">
+                            09
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-content">
+
+                        <span class="product-category">
+                            Automobile ERP
+                        </span>
+
+                        <h3 class="product-title">
+                            Automobiles & Workshop Management ERP
+                        </h3>
+
+                        <p class="product-description">
+                            Business management software for
+                            automobile businesses and workshops to
+                            manage their day-to-day operations.
+                        </p>
+
+
+                        <div class="product-footer">
+
+                            <span class="product-link">
+                                Explore Solution
+                                <i class="fa fa-arrow-right"></i>
+                            </span>
+
+                            <span class="product-tag">
+                                AUTOMOBILE
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- 10 -->
+
+                <a class="product-card"
+                   data-category="logistics"
+                   href="index.aspx?q=transportation_erp">
+
+                    <div class="product-image">
+
+                        <img src="https://deverp.com/CMSassets/images/Product/FLEET.jpg"
+                             alt="Transportation ERP">
+
+                        <span class="product-number">
+                            10
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-content">
+
+                        <span class="product-category">
+                            Logistics ERP
+                        </span>
+
+                        <h3 class="product-title">
+                            Transportation ERP
+                        </h3>
+
+                        <p class="product-description">
+                            Enterprise solution for transportation
+                            businesses and fleet operations with
+                            integrated management capabilities.
+                        </p>
+
+
+                        <div class="product-footer">
+
+                            <span class="product-link">
+                                Explore Solution
+                                <i class="fa fa-arrow-right"></i>
+                            </span>
+
+                            <span class="product-tag">
+                                FLEET
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- 11 -->
+
+                <a class="product-card"
+                   data-category="manufacturing"
+                   href="index.aspx?q=machine_manufacturing_erp">
+
+                    <div class="product-image">
+
+                        <img src="https://deverp.com/CMSassets/images/Product/MANUFACTURING.jpg"
+                             alt="Machine Manufacturing ERP">
+
+                        <span class="product-number">
+                            11
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-content">
+
+                        <span class="product-category">
+                            Manufacturing ERP
+                        </span>
+
+                        <h3 class="product-title">
+                            Machine Manufacturing ERP
+                        </h3>
+
+                        <p class="product-description">
+                            ERP solution designed to support machine
+                            manufacturing businesses and their
+                            production management requirements.
+                        </p>
+
+
+                        <div class="product-footer">
+
+                            <span class="product-link">
+                                Explore Solution
+                                <i class="fa fa-arrow-right"></i>
+                            </span>
+
+                            <span class="product-tag">
+                                MANUFACTURING
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- 12 -->
+
+                <a class="product-card"
+                   data-category="business"
+                   href="index.aspx?q=pharmaceutical_production_and_management_erp">
+
+                    <div class="product-image">
+
+                        <img src="https://deverp.com/CMSassets/images/Product/PHARMA.jpg"
+                             alt="Pharmaceutical ERP">
+
+                        <span class="product-number">
+                            12
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-content">
+
+                        <span class="product-category">
+                            Pharmaceutical ERP
+                        </span>
+
+                        <h3 class="product-title">
+                            Pharmaceutical Production & Management ERP
+                        </h3>
+
+                        <p class="product-description">
+                            Integrated production and management
+                            solution for pharmaceutical businesses
+                            and their operational requirements.
+                        </p>
+
+
+                        <div class="product-footer">
+
+                            <span class="product-link">
+                                Explore Solution
+                                <i class="fa fa-arrow-right"></i>
+                            </span>
+
+                            <span class="product-tag">
+                                PHARMA
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- 13 -->
+
+                <a class="product-card"
+                   data-category="business"
+                   href="index.aspx?q=crm_erp">
+
+                    <div class="product-image">
+
+                        <img src="https://deverp.com/CMSassets/images/Product/CRM.png"
+                             alt="CRM ERP">
+
+                        <span class="product-number">
+                            13
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-content">
+
+                        <span class="product-category">
+                            Business Management
+                        </span>
+
+                        <h3 class="product-title">
+                            CRM ERP
+                        </h3>
+
+                        <p class="product-description">
+                            Customer relationship and business
+                            management solution for managing
+                            customers, sales and business processes.
+                        </p>
+
+
+                        <div class="product-footer">
+
+                            <span class="product-link">
+                                Explore Solution
+                                <i class="fa fa-arrow-right"></i>
+                            </span>
+
+                            <span class="product-tag">
+                                CRM
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- 14 -->
+
+                <a class="product-card"
+                   data-category="retail"
+                   href="index.aspx?q=book_depot _shop_management_erp">
+
+                    <div class="product-image">
+
+                        <img src="https://deverp.com/CMSassets/images/Product/BOOK-DEPOT.jpg"
+                             alt="Book Depot Shop Management ERP">
+
+                        <span class="product-number">
+                            14
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-content">
+
+                        <span class="product-category">
+                            Retail ERP
+                        </span>
+
+                        <h3 class="product-title">
+                            Book Depot / Shop Management ERP
+                        </h3>
+
+                        <p class="product-description">
+                            Business management solution for book
+                            depots and retail shops to manage their
+                            operations and business activities.
+                        </p>
+
+
+                        <div class="product-footer">
+
+                            <span class="product-link">
+                                Explore Solution
+                                <i class="fa fa-arrow-right"></i>
+                            </span>
+
+                            <span class="product-tag">
+                                RETAIL
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- 15 -->
+
+                <a class="product-card"
+                   data-category="trading"
+                   href="index.aspx?q=trading_erp">
+
+                    <div class="product-image">
+
+                        <img src="https://deverp.com/CMSassets/images/Product/TRADING.jpg"
+                             alt="Trading ERP">
+
+                        <span class="product-number">
+                            15
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-content">
+
+                        <span class="product-category">
+                            Trading ERP
+                        </span>
+
+                        <h3 class="product-title">
+                            Trading ERP
+                        </h3>
+
+                        <p class="product-description">
+                            ERP solution designed for trading
+                            businesses to manage their business
+                            operations and processes.
+                        </p>
+
+
+                        <div class="product-footer">
+
+                            <span class="product-link">
+                                Explore Solution
+                                <i class="fa fa-arrow-right"></i>
+                            </span>
+
+                            <span class="product-tag">
+                                TRADING
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- NO RESULT -->
+
+                <div class="no-result"
+                     id="noResult">
+
+                    <i class="fa fa-search"></i>
+
+                    <h3>
+                        No products found
+                    </h3>
+
+                    <p>
+                        Try searching with another product name.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     CTA
+========================================================= -->
+
+<section class="cta">
+
+    <div class="container">
+
+        <div class="cta-inner">
+
+            <div class="cta-content">
+
+                <small>
+                    NEED A CUSTOM SOLUTION?
+                </small>
+
+                <h2>
+                    Let's build your ERP together.
+                </h2>
+
+                <p>
+                    Talk to our team about your business
+                    requirements and get the right solution.
+                </p>
+
+            </div>
+
+
+            <a href="javascript:void(0)"
+               class="cta-button"
+               onclick="openModal()">
+
+                Schedule Appointment
+                <i class="fa fa-arrow-right"></i>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer class="footer">
+
+    <div class="container">
+
+        <div class="footer-grid">
+
+
+            <!-- ABOUT -->
+
+            <div>
+
+                <h3>
+                    DevERP Solutions
+                </h3>
+
+                <div class="footer-about">
+
+                    <p>
+                        DevERP Solutions Private Limited is a custom
+                        software development firm located in Ahmedabad,
+                        India. We offer custom software programming
+                        services, offshore software development and
+                        technology consulting.
+                    </p>
+
+                </div>
+
+
+                <div class="footer-social">
+
+                    <a href="https://www.facebook.com/Deverp-Solutions-Pvt-Ltd-102329981645556/"
+                       target="_blank">
+
+                        <i class="fa fa-facebook"></i>
+
+                    </a>
+
+                    <a href="https://twitter.com/DevERP5"
+                       target="_blank">
+
+                        <i class="fa fa-twitter"></i>
+
+                    </a>
+
+                    <a href="https://www.linkedin.com/in/deverp-solutions-pvt-ltd-company-286598181"
+                       target="_blank">
+
+                        <i class="fa fa-linkedin"></i>
+
+                    </a>
+
+                    <a href="https://www.instagram.com/deverp001/?hl=en"
+                       target="_blank">
+
+                        <i class="fa fa-instagram"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- PRODUCTS -->
+
+            <div>
+
+                <h3>
+                    Products
+                </h3>
+
+                <ul class="footer-links">
+
+                    <li>
+                        <a href="index.aspx?q=ready_mix_concrete_erp">
+                            Ready Mix Concrete ERP
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=real_estate_erp">
+                            Real Estate ERP
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=engraving_erp">
+                            Engraving ERP
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=flexo_printing_erp">
+                            Flexo Printing ERP
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=light_weight_block_erp">
+                            Light Weight Block ERP
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=school_management_erp">
+                            School Management ERP
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=transportation_erp">
+                            Transportation ERP
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.aspx?q=crm_erp">
+                            CRM ERP
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <!-- CONTACT -->
+
+            <div>
+
+                <h3>
+                    Contact Us
+                </h3>
+
+
+                <div class="contact-item">
+
+                    <i class="fa fa-map-marker"></i>
+
+                    <span>
+                        405, 407B Primate Complex,
+                        Opp. Gormoh Hotel,
+                        Nr. Judges Bunglow Cross Road,
+                        Bodakdev, Ahmedabad-380054,
+                        Gujarat, India.
+                    </span>
+
+                </div>
+
+
+                <div class="contact-item">
+
+                    <i class="fa fa-envelope"></i>
+
+                    <a href="mailto:admin@deverp.com">
+                        admin@deverp.com
+                    </a>
+
+                </div>
+
+
+                <div class="contact-item">
+
+                    <i class="fa fa-phone"></i>
+
+                    <span>
+                        Support:
+                        <a href="mailto:support@deverp.com">
+                            support@deverp.com
+                        </a>
+                        <br>
+                        079 3531 2554
+                        <br>
+                        +91 93279 40159
+                    </span>
+
+                </div>
+
+
+                <div class="contact-item">
+
+                    <i class="fa fa-globe"></i>
+
+                    <span>
+
+                        <strong style="color:white">
+                            UAE
+                        </strong>
+
+                        <br>
+
+                        FDCW1699, Compass Building,
+                        Al Sahada Road,
+                        Al Hamara Industrial zone-FZ,
+                        Ras Al Khaimah,
+                        United Arab Emirates.
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            <div>
+
+                © <span id="year"></span>
+                DevERP Solutions Private Limited -
+                All Rights Reserved
+
+            </div>
+
+
+            <div>
+
+                <a href="index.aspx?q=deverp_privacy_policy">
+
+                    Privacy Policy
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<!-- =========================================================
+     APPOINTMENT MODAL
+========================================================= -->
+
+<div class="modal-overlay"
+     id="appointmentModal">
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <h3>
+                Schedule Appointment
+            </h3>
+
+            <button class="modal-close"
+                    onclick="closeModal()">
+
+                <i class="fa fa-times"></i>
+
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        First Name
+                    </label>
+
+                    <input type="text"
+                           id="firstName"
+                           class="form-control"
+                           placeholder="First Name">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Last Name
+                    </label>
+
+                    <input type="text"
+                           id="lastName"
+                           class="form-control"
+                           placeholder="Last Name">
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        Email
+                    </label>
+
+                    <input type="email"
+                           id="email"
+                           class="form-control"
+                           placeholder="Email">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Phone
+                    </label>
+
+                    <input type="tel"
+                           id="phone"
+                           class="form-control"
+                           placeholder="Phone">
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Business Name
+                </label>
+
+                <input type="text"
+                       id="business"
+                       class="form-control"
+                       placeholder="Business Name">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Subject
+                </label>
+
+                <input type="text"
+                       id="subject"
+                       class="form-control"
+                       placeholder="Subject">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Description
+                </label>
+
+                <textarea id="description"
+                          class="form-control"
+                          placeholder="Tell us about your requirement"></textarea>
+
+            </div>
+
+
+            <button class="modal-submit"
+                    onclick="submitAppointment()">
+
+                SUBMIT NOW
+
+            </button>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   YEAR
+========================================================= */
+
+document.getElementById("year").innerText =
+    new Date().getFullYear();
+
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+function toggleMobileMenu() {
+
+    document
+        .getElementById("header")
+        .classList.toggle("mobile-open");
+
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+function openModal() {
+
+    document
+        .getElementById("appointmentModal")
+        .classList.add("show");
+
+    document.body.style.overflow = "hidden";
+
+}
+
+
+function closeModal() {
+
+    document
+        .getElementById("appointmentModal")
+        .classList.remove("show");
+
+    document.body.style.overflow = "";
+
+}
+
+
+document
+    .getElementById("appointmentModal")
+    .addEventListener("click", function(e) {
+
+        if (e.target === this) {
+
+            closeModal();
+
+        }
+
+    });
+
+
+document.addEventListener("keydown", function(e) {
+
+    if (e.key === "Escape") {
+
+        closeModal();
+
+    }
+
+});
+
+
+/* =========================================================
+   APPOINTMENT
+========================================================= */
+
+function submitAppointment() {
+
+    const firstName =
+        document.getElementById("firstName").value.trim();
+
+    const lastName =
+        document.getElementById("lastName").value.trim();
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const phone =
+        document.getElementById("phone").value.trim();
+
+    if (!firstName ||
+        !lastName ||
+        !email ||
+        !phone) {
+
+        alert(
+            "Please fill all required fields."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Existing backend/API submission can be
+       connected here.
+
+       Example:
+
+       $.ajax({
+           url: "YOUR_API_URL",
+           type: "POST",
+           data: {...}
+       });
+    */
+
+
+    alert(
+        "Thank you! Your appointment request has been submitted."
+    );
+
+    closeModal();
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+const searchInput =
+    document.getElementById("productSearch");
+
+const productCards =
+    document.querySelectorAll(".product-card");
+
+const noResult =
+    document.getElementById("noResult");
+
+
+searchInput.addEventListener("input", function() {
+
+    const search =
+        this.value
+            .toLowerCase()
+            .trim();
+
+    let visible = 0;
+
+
+    productCards.forEach(function(card) {
+
+        const text =
+            card.innerText.toLowerCase();
+
+
+        if (text.includes(search)) {
+
+            card.style.display = "";
+
+            visible++;
+
+        } else {
+
+            card.style.display = "none";
+
+        }
+
+    });
+
+
+    noResult.style.display =
+        visible === 0
+            ? "block"
+            : "none";
+
+});
+
+
+/* =========================================================
+   CATEGORY FILTER
+========================================================= */
+
+const filterButtons =
+    document.querySelectorAll(".filter-btn");
+
+
+filterButtons.forEach(function(button) {
+
+    button.addEventListener("click", function() {
+
+
+        filterButtons.forEach(function(btn) {
+
+            btn.classList.remove("active");
+
+        });
+
+
+        this.classList.add("active");
+
+
+        const filter =
+            this.dataset.filter;
+
+
+        let visible = 0;
+
+
+        productCards.forEach(function(card) {
+
+            const category =
+                card.dataset.category;
+
+
+            if (
+                filter === "all" ||
+                category === filter
+            ) {
+
+                card.style.display = "";
+
+                visible++;
+
+            } else {
+
+                card.style.display = "none";
+
+            }
+
+        });
+
+
+        noResult.style.display =
+            visible === 0
+                ? "block"
+                : "none";
+
+
+        /* reset search */
+
+        searchInput.value = "";
+
+    });
+
+});
+
+
+/* =========================================================
+   CLOSE MOBILE MENU ON CLICK
+========================================================= */
+
+document
+    .querySelectorAll(".nav a")
+    .forEach(function(link) {
+
+        link.addEventListener("click", function() {
+
+            document
+                .getElementById("header")
+                .classList.remove("mobile-open");
+
+        });
+
+    });
+
+</script>
+
+
+</body>
+</html>

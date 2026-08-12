@@ -4115,6 +4115,8 @@ Endpoint:
 
 POST https://payroll.deverp.net/devws/msp_api.aspx/getMenu
 
+https://agropac.deverp.net/fileupload/1/GuestEntriesMst/100000034/d_photourl.jpeg
+https://agropac.deverp.net/fileupload/1/GuestEntriesMst/100000034/d_photourl.jpeg
 
 Request Body:
 

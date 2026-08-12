@@ -573,14 +573,13 @@ export const clearAllTempFiles = async () => {
     for (const file of files) {
       try {
         await RNFS.unlink(file.path);
-      } catch (err) {}
+      } catch (err) {
+        // ignore individual file failure
+      }
     }
-    FastImage.clearMemoryCache();
-    FastImage.clearDiskCache();
-    if (Platform.OS === "android") {
-      // WebView.clearCache(true);
-    }
-  } catch (err) {}
+  } catch (err) {
+    // ignore temp cleanup failure
+  }
 };
 
 export const getShadowProps = (
