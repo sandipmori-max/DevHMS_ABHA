@@ -32,6 +32,11 @@ import { useNavigation } from "@react-navigation/native";
 import { useCreateSessionMutation } from "../redux/api/sessionApi";
 import { useLazyGetBridgeServicesQuery } from "../redux/api/bridgeServicesApi";
 import AuthModal from "../AuthModal/AuthModal";
+import PatientTopTabs from "./PatientDetails/PatientTopTabs";
+import VisitsEncounters from "./PatientDetails/VisitsEncounters";
+import CareContexts from "./PatientDetails/CareContexts";
+import Documents from "./PatientDetails/Documents";
+import ABDMStatus from "./PatientDetails/ABDMStatus";
 
 const DetailsScreen = ({ route }: any) => {
   const { item } = route.params || {};
@@ -45,9 +50,9 @@ const DetailsScreen = ({ route }: any) => {
   const baseUrl = baseURL.substring(0, baseURL.lastIndexOf("/") + 1);
   const url = new URL(baseUrl).origin;
   const [imageUri, setImageUri] = useState<string | null>(null);
- const [
-        createSession
-    ] = useCreateSessionMutation();
+  const [
+    createSession
+  ] = useCreateSessionMutation();
   const [modalVisible, setModalVisible] = useState(false);
   const [bridgeServices, setBridgeServices] = useState<any>()
   const scale = useRef(new Animated.Value(1)).current;
@@ -55,7 +60,8 @@ const DetailsScreen = ({ route }: any) => {
   const translateY = useRef(new Animated.Value(0)).current;
   const lastScale = useRef(1);
   const lastTranslate = useRef({ x: 0, y: 0 });
- 
+  const [activeTab, setActiveTab] =
+    useState<any>('overview');
   const [getBridgeServices] =
     useLazyGetBridgeServicesQuery();
 
@@ -184,6 +190,643 @@ const DetailsScreen = ({ route }: any) => {
     </View>
   );
 
+
+  const renderButton = () => {
+    switch (activeTab) {
+      case 'overview':
+
+        return <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("BridgeServices", {
+              bridgeServices: bridgeServices,
+              abhaDetail: abhaDetail
+            })
+            // handleLinkAbha()
+          }}
+          style={{
+            height: 46,
+            width: '92%',
+            backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+            borderRadius: 4,
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'absolute',
+            bottom: 0,
+            marginLeft: 14
+          }}>
+          <Text style={{
+            color: '#fff',
+            fontSize: 16,
+            fontWeight: '600'
+          }}>Link Services</Text>
+        </TouchableOpacity>;
+
+
+
+      default:
+        return <></>;
+    }
+  }
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return <>
+          {/* Profile */}
+          <View style={[styles.profileCard, {
+            marginBottom: 10
+          }]}>
+            <View style={styles.profileTop}>
+              <View>
+
+                {getValue("profilephoto") ? (
+                  <TouchableOpacity onPress={() => {
+                    setModalVisible(true);
+                    setImageUri(`${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/profilephoto.jpeg?t=${Date.now()}`)
+                  }}>
+                    <Image
+                      source={{
+                        uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/profilephoto.jpeg?t=${Date.now()}`,
+                      }}
+                      style={styles.profileImage}
+                    />
+                  </TouchableOpacity>
+
+                ) : (
+                  <View style={styles.profilePlaceholder}>
+                    <MaterialIcons
+                      name="person"
+                      size={42}
+                      color="#FFFFFF"
+                    />
+                  </View>
+                )}
+                <View style={{ height: 8 }} />
+                <TouchableOpacity onPress={() => {
+                  setModalVisible(true);
+                  setImageUri(`${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/qrcode.jpeg?t=${Date.now()}`)
+                }}>
+                  <Image
+                    source={{
+                      uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/qrcode.jpeg?t=${Date.now()}`,
+                    }}
+                    style={styles.profileImage}
+                  />
+                </TouchableOpacity>
+
+              </View>
+
+
+              <View style={{ flex: 1, marginLeft: 16 }}>
+
+                <Text
+                  numberOfLines={1}
+                  style={[styles.profileName,]}>
+                  {getValue("firstname")} {getValue("middlename")} {getValue("lastname")}
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    color: '#7eadf5',
+                    fontSize: 14
+                  }}
+                >
+                  {getValue("localizedname")}
+                </Text>
+
+                <Text style={styles.profileLabel}>
+                  ABHA ID
+                </Text>
+
+                <View style={styles.numberRow}>
+
+                  <Text style={styles.abhaNumber}>
+                    {getValue("abhanumber")}
+                  </Text>
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      copyText(getValue("abhanumber"))
+                    }}
+                  >
+                    <MaterialIcons
+                      name="content-copy"
+                      size={20}
+                      color="#1565C0"
+                    />
+                  </TouchableOpacity>
+
+                </View>
+
+                <Text style={styles.profileLabel}>
+                  ABHA Address
+                </Text>
+
+                <View style={styles.numberRow}>
+
+                  <Text style={styles.abhaNumber}>
+                    {getValue("preferredabhaaddress")}
+                  </Text>
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      copyText(getValue("preferredabhaaddress"))
+                    }}
+                  >
+                    <MaterialIcons
+                      name="content-copy"
+                      size={20}
+                      color="#1565C0"
+                    />
+                  </TouchableOpacity>
+
+                </View>
+
+                <Text style={styles.profileLabel}>
+                  Aadhaar Number
+                </Text>
+
+                <View style={styles.numberRow}>
+
+                  <Text style={styles.abhaNumber}>
+                    {maskAadhaar(getValue("aadharnumber"), showAadhaar)}
+                  </Text>
+
+                  <TouchableOpacity onPress={() => setShowAadhaar(prev => !prev)}>
+                    <MaterialIcons
+                      name={showAadhaar ? "visibility-off" : "visibility"}
+                      size={20}
+                      color="#1565C0"
+                    />
+                  </TouchableOpacity>
+
+                </View>
+              </View>
+            </View>
+            <View style={styles.statusContainer}>
+
+              {/* KYC */}
+              <View
+                style={[
+                  styles.statusChip,
+                  {
+                    backgroundColor: "#E8F5E9",
+                  },
+                ]}>
+
+                <MaterialIcons
+                  name="verified"
+                  color="#2E7D32"
+                  size={14}
+                />
+
+                <Text
+                  style={[
+                    styles.statusText,
+                    {
+                      color: "#2E7D32",
+                    },
+                  ]}>
+                  {getValue("verificationstatus") === "VERIFIED"
+                    ? "KYC Verified"
+                    : "KYC Pending"}
+                </Text>
+
+              </View>
+
+              {/* Mobile */}
+
+              {<View
+                style={[
+                  styles.statusChip,
+                  {
+                    backgroundColor: "#E3F2FD",
+                  },
+                ]}>
+
+                <MaterialIcons
+                  name="phone-android"
+                  color="#1565C0"
+                  size={14}
+                />
+
+                <Text
+                  style={[
+                    styles.statusText,
+                    {
+                      color: "#1565C0",
+                    },
+                  ]}>
+                  {
+                    getValue("communicationmobile") ? 'Verified' : 'Not Verified'
+                  }
+
+                </Text>
+
+              </View>}
+
+
+              {/* Email */}
+
+              <View
+                style={[
+                  styles.statusChip,
+                  {
+                    backgroundColor: "#FFF3E0",
+                  },
+                ]}>
+
+                <MaterialIcons
+                  name="email"
+                  color="#EF6C00"
+                  size={14}
+                />
+
+                <Text
+                  style={[
+                    styles.statusText,
+                    {
+                      color: "#EF6C00",
+                    },
+                  ]}>
+                  {getValue("communicationemail")
+                    ? "Verified"
+                    : "Not Verified"}
+                </Text>
+
+              </View>
+
+            </View>
+          </View>
+          {/* Personal Information */}
+          <View style={styles.sectionCard}>
+
+            <View style={styles.sectionHeader}>
+
+              <View style={styles.iconCircle}>
+
+                <MaterialIcons
+                  name="person"
+                  size={18}
+                  color="#1565C0"
+                />
+
+              </View>
+
+              <Text style={styles.sectionTitle}>
+                Personal Information
+              </Text>
+
+            </View>
+
+            <DetailItem
+              icon="calendar-month"
+              label="Date of Birth"
+              value={formatDate(getValue("dob"))}
+            />
+
+            <DetailItem
+              icon="wc"
+              label="Gender"
+              value={
+                getValue("gender") === "M"
+                  ? "Male"
+                  : getValue("gender") === "F"
+                    ? "Female"
+                    : getValue("gender")
+              }
+            />
+
+            <DetailItem
+              icon="bloodtype"
+              label="Blood Group"
+              value={getValue("bloodgroup")}
+            />
+
+            <DetailItem
+              icon="badge"
+              label="ABHA Address"
+              value={getValue("preferredabhaaddress")}
+            />
+
+          </View>
+
+          {/* Contact information */}
+          <View style={styles.sectionCard}>
+
+            <View style={styles.sectionHeader}>
+
+              <View style={styles.iconCircle}>
+                <MaterialIcons
+                  name="contact-phone"
+                  size={18}
+                  color="#1565C0"
+                />
+              </View>
+
+              <Text style={styles.sectionTitle}>
+                Contact Information
+              </Text>
+
+            </View>
+
+            <DetailItem
+              icon="phone"
+              label="Mobile Number"
+              value={getValue("mobileno")}
+            />
+
+
+
+            {getValue("communicationmobile") ? (
+              <DetailItem
+                icon="call"
+                label="Communication mobile"
+                value={getValue("communicationmobile")}
+              />
+            ) : null}
+            {getValue("communicationemail") ? (
+              <DetailItem
+                icon="email"
+                label="Email Address"
+                value={getValue("communicationemail")}
+              />
+            ) : null}
+
+          </View>
+
+          {/* Address */}
+          <View style={styles.sectionCard}>
+
+            <View style={styles.sectionHeader}>
+
+              <View style={styles.iconCircle}>
+                <MaterialIcons
+                  name="location-on"
+                  size={18}
+                  color="#1565C0"
+                />
+              </View>
+
+              <Text style={styles.sectionTitle}>
+                Address
+              </Text>
+
+            </View>
+
+            <DetailItem
+              icon="home"
+              label="Address"
+              value={getValue("address")}
+            />
+
+            <DetailItem
+              icon="location-city"
+              label="District"
+              value={getValue("districtname")}
+            />
+
+            <DetailItem
+              icon="map"
+              label="State"
+              value={getValue("statename")}
+            />
+
+          </View>
+          {/* Verification */}
+          <View style={styles.sectionCard}>
+
+            <View style={styles.sectionHeader}>
+
+              <View style={styles.iconCircle}>
+                <MaterialIcons
+                  name="verified"
+                  color="#1565C0"
+                  size={18}
+                />
+              </View>
+
+              <Text style={styles.sectionTitle}>
+                Verification
+              </Text>
+
+            </View>
+
+            <DetailItem
+              icon="verified-user"
+              label="KYC Status"
+              value={getValue("verificationstatus") ? getValue("verificationstatus") : 'Not verifed'}
+              color={getValue("verificationstatus") ? 'green' : 'red'}
+            />
+
+            <DetailItem
+              icon="badge"
+              label="Profile Status"
+              value={getValue("profilestatus")}
+            />
+
+            <DetailItem
+              icon="calendar-month"
+              label="Created On"
+              value={formatDate(getValue("cdt"))}
+            />
+
+          </View>
+
+          {/* Authentication */}
+          <View style={styles.sectionCard}>
+
+            <View style={styles.sectionHeader}>
+
+              <View style={styles.iconCircle}>
+                <MaterialIcons
+                  name="security"
+                  size={18}
+                  color="#1565C0"
+                />
+              </View>
+
+              <Text style={styles.sectionTitle}>
+                Authentication Methods
+              </Text>
+
+            </View>
+
+            <View style={styles.authContainer}>
+
+              {authMethods.length > 0 ? (
+
+                authMethods.map((item: string, index: number) => (
+
+                  <View
+                    key={index}
+                    style={styles.authChip}>
+
+                    <MaterialIcons
+                      name="verified-user"
+                      color="#1565C0"
+                    />
+
+                    <Text style={styles.authText}>
+                      {item}
+                    </Text>
+
+                  </View>
+
+                ))
+
+              ) : (
+
+                <Text style={{ color: "#999" }}>
+                  No Authentication Methods
+                </Text>
+
+              )}
+
+            </View>
+
+          </View>
+
+          <View style={styles.sectionCard}>
+
+            <View style={styles.dateContainer}>
+
+              <View style={styles.dateItem}>
+
+                <View style={styles.dateHeader}>
+                  <View style={styles.iconCircleSmall}>
+                    <MaterialIcons
+                      name="calendar-month"
+                      size={18}
+                      color="#1565C0"
+                    />
+                  </View>
+
+                  <Text style={styles.dateTitle}>
+                    Creation Date
+                  </Text>
+                </View>
+
+                <Text style={styles.dateValue}>
+                  {formatDate(getValue("cdt"))}
+                </Text>
+
+              </View>
+
+              <View style={styles.dateDivider} />
+
+              <View style={styles.dateItem}>
+
+                <View style={styles.dateHeader}>
+                  <View style={styles.iconCircleSmall}>
+                    <MaterialIcons
+                      name="verified-user"
+                      size={20}
+                      color="#1565C0"
+                    />
+                  </View>
+
+                  <Text style={styles.dateTitle}>
+                    Last Updated
+                  </Text>
+                </View>
+
+                <Text style={styles.dateValue}>
+                  {formatDate(getValue("udt"))}
+                </Text>
+
+              </View>
+
+            </View>
+
+          </View>
+
+          <View style={styles.infoCard}>
+
+            <MaterialIcons
+              name="info-outline"
+              size={28}
+              color="#1565C0"
+            />
+
+            <Text style={styles.infoText}>
+              Your ABHA number uniquely identifies you in the Ayushman Bharat Digital Mission (ABDM) ecosystem.
+            </Text>
+
+          </View>
+          <View style={{ height: 30 }} />
+        </>;
+
+      case 'visits':
+        return <VisitsEncounters />;
+
+      case 'careContexts':
+        return <CareContexts
+          onCreateCareContext={() => {
+            // navigation.navigate('CreateCareContext', {
+            //   patientId: patient.id,
+            // });
+          }}
+          onContextPress={context => {
+            // navigation.navigate('CareContextDetails', {
+            //   careContextId: context.referenceId,
+            // });
+          }}
+          onLinkPress={context => {
+            // navigation.navigate('LinkCareContext', {
+            //   careContextId: context.referenceId,
+            // });
+          }}
+        />;
+
+      case 'documents':
+        return <Documents
+          onAddDocument={() => {
+            // navigation.navigate('AddDocument', {
+            //   patientId: patient.id,
+            // });
+          }}
+
+          onDocumentPress={document => {
+            // navigation.navigate('DocumentDetails', {
+            //   documentId: document.id,
+            // });
+          }}
+
+          onViewDocument={document => {
+            // navigation.navigate('DocumentViewer', {
+            //   documentId: document.id,
+            // });
+          }}
+
+          onShareDocument={document => {
+            // navigation.navigate('ShareDocumentABDM', {
+            //   documentId: document.id,
+            //   careContextId: document.careContextId,
+            // });
+          }}
+        />;
+
+      case 'abdmStatus':
+        return <ABDMStatus
+          patientName="Rahul Shah"
+          patientId="P10021"
+          abhaAddress="rahul@abdm"
+          lastSync="14 Aug 2026, 10:32 AM"
+          referenceId="abdm-cc-2026-001-8f3a2c"
+          onRefresh={async () => {
+            // Call your ABDM status API here
+            // await fetchABDMStatus();
+          }}
+          onCopyReference={() => {
+            // Copy reference ID
+          }}
+        />;
+
+      default:
+        return null;
+    }
+  };
+
   const downloadPDF = async (url) => {
     const filePath = `${RNFS.DocumentDirectoryPath}/sample.pdf`;
 
@@ -278,46 +921,46 @@ const DetailsScreen = ({ route }: any) => {
     scale.setValue(Math.max(1, scale.__getValue() - 0.2));
     lastScale.current = scale.__getValue();
   };
-   const [tapLoader, setTapLoader] = useState(false);
- 
+  const [tapLoader, setTapLoader] = useState(false);
+
   const [bottomSheetType, setBottomSheetType] = useState('');
-    const [showInfoModal, setShowInfoModal] = useState(false);
-    const sheetProgress = useRef(
-      new Animated.Value(0),
-    ).current;
-    const [showLoginSheet, setShowLoginSheet] = useState(false);
-    const [confirmation, setConfirmation] = useState<any>()
-    const [selected, setSelected] = useState<"yes" | "no" | null>(null);
-      const [selectedLoginType, setSelectedLoginType] = useState();
-    
-    const sheetTranslateY =
-      sheetProgress.interpolate({
-        inputRange: [0, 1],
-        outputRange: [400, 0],
-      });
-    
-      const openSheet = () => {
-      setSelected('yes') 
-      setConfirmation(true)
-      setSelectedLoginType("")
-      setBottomSheetType("Login")
-      setShowLoginSheet(true);
-      sheetProgress.setValue(0);
-  
-      Animated.timing(sheetProgress, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    };
-  
-    const closeSheet = () => {
-      setShowLoginSheet(false);
-      setConfirmation(false)
-      setSelected(null)
-      setTapLoader(false)
-    };
-  
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const sheetProgress = useRef(
+    new Animated.Value(0),
+  ).current;
+  const [showLoginSheet, setShowLoginSheet] = useState(false);
+  const [confirmation, setConfirmation] = useState<any>()
+  const [selected, setSelected] = useState<"yes" | "no" | null>(null);
+  const [selectedLoginType, setSelectedLoginType] = useState();
+
+  const sheetTranslateY =
+    sheetProgress.interpolate({
+      inputRange: [0, 1],
+      outputRange: [400, 0],
+    });
+
+  const openSheet = () => {
+    setSelected('yes')
+    setConfirmation(true)
+    setSelectedLoginType("")
+    setBottomSheetType("Login")
+    setShowLoginSheet(true);
+    sheetProgress.setValue(0);
+
+    Animated.timing(sheetProgress, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const closeSheet = () => {
+    setShowLoginSheet(false);
+    setConfirmation(false)
+    setSelected(null)
+    setTapLoader(false)
+  };
+
 
   return (
     <SafeAreaView style={[styles.container, {
@@ -333,577 +976,63 @@ const DetailsScreen = ({ route }: any) => {
           backgroundColor: '#F5F7FA'
         }}
       >
-      <Header 
-        isFetch={true}
-        addConsentForm={true}
-        handleConsentForm={
-        ()=>{
-           navigation.navigate("ConsentForm", {
-            abhaDetail: abhaDetail,
-            bridgeServices: bridgeServices
-           })
-        }
-        }
-        title="ABHA Details"
-        isMenu={false}
-        isSearch={false}
-        isShare={true}
-        handleShare={() => {
-        
-          setOpen(true)
+        <>
+          <Header
+            isFetch={true}
+            addConsentForm={true}
+            handleConsentForm={
+              () => {
+                navigation.navigate("ConsentForm", {
+                  abhaDetail: abhaDetail,
+                  bridgeServices: bridgeServices
+                })
+              }
+            }
+            title="ABHA Details"
+            isMenu={false}
+            isSearch={false}
+            isShare={true}
+            handleShare={() => {
 
-        }} 
-        handleFetch={()=>{
-          openSheet()
-        }}
-        />
+              setOpen(true)
+
+            }}
+            handleFetch={() => {
+              openSheet()
+            }}
+          />
+          <PatientTopTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
+        </>
         {
           loading ? <></> : <>
-
-            {/* Profile */}
-            <View style={styles.profileCard}>
-              <View style={styles.profileTop}>
-                <View>
-
-                  {getValue("profilephoto") ? (
-                    <TouchableOpacity onPress={() => {
-                      setModalVisible(true);
-                      setImageUri(`${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/profilephoto.jpeg?t=${Date.now()}`)
-                    }}>
-                      <Image
-                        source={{
-                          uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/profilephoto.jpeg?t=${Date.now()}`,
-                        }}
-                        style={styles.profileImage}
-                      />
-                    </TouchableOpacity>
-
-                  ) : (
-                    <View style={styles.profilePlaceholder}>
-                      <MaterialIcons
-                        name="person"
-                        size={42}
-                        color="#FFFFFF"
-                      />
-                    </View>
-                  )}
-                  <View style={{ height: 8 }} />
-                  <TouchableOpacity onPress={() => {
-                    setModalVisible(true);
-                    setImageUri(`${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/qrcode.jpeg?t=${Date.now()}`)
-                  }}>
-                    <Image
-                      source={{
-                        uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/qrcode.jpeg?t=${Date.now()}`,
-                      }}
-                      style={styles.profileImage}
-                    />
-                  </TouchableOpacity>
-
-                </View>
-
-
-                <View style={{ flex: 1, marginLeft: 16 }}>
-
-                  <Text
-                    numberOfLines={1}
-                    style={[styles.profileName,]}>
-                    {getValue("firstname")} {getValue("middlename")} {getValue("lastname")}
-                  </Text>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      color: '#7eadf5',
-                      fontSize: 14
-                    }}
-                  >
-                    {getValue("localizedname")}
-                  </Text>
-
-                  <Text style={styles.profileLabel}>
-                    ABHA ID
-                  </Text>
-
-                  <View style={styles.numberRow}>
-
-                    <Text style={styles.abhaNumber}>
-                      {getValue("abhanumber")}
-                    </Text>
-
-                    <TouchableOpacity
-                      onPress={() => {
-                        copyText(getValue("abhanumber"))
-                      }}
-                    >
-                      <MaterialIcons
-                        name="content-copy"
-                        size={20}
-                        color="#1565C0"
-                      />
-                    </TouchableOpacity>
-
-                  </View>
-
-                  <Text style={styles.profileLabel}>
-                    ABHA Address
-                  </Text>
-
-                  <View style={styles.numberRow}>
-
-                    <Text style={styles.abhaNumber}>
-                      {getValue("preferredabhaaddress")}
-                    </Text>
-
-                    <TouchableOpacity
-                      onPress={() => {
-                        copyText(getValue("preferredabhaaddress"))
-                      }}
-                    >
-                      <MaterialIcons
-                        name="content-copy"
-                        size={20}
-                        color="#1565C0"
-                      />
-                    </TouchableOpacity>
-
-                  </View>
-
-                  <Text style={styles.profileLabel}>
-                    Aadhaar Number
-                  </Text>
-
-                  <View style={styles.numberRow}>
-
-                    <Text style={styles.abhaNumber}>
-                      {maskAadhaar(getValue("aadharnumber"), showAadhaar)}
-                    </Text>
-
-                    <TouchableOpacity onPress={() => setShowAadhaar(prev => !prev)}>
-                      <MaterialIcons
-                        name={showAadhaar ? "visibility-off" : "visibility"}
-                        size={20}
-                        color="#1565C0"
-                      />
-                    </TouchableOpacity>
-
-                  </View>
-                </View>
-              </View>
-              <View style={styles.statusContainer}>
-
-                {/* KYC */}
-                <View
-                  style={[
-                    styles.statusChip,
-                    {
-                      backgroundColor: "#E8F5E9",
-                    },
-                  ]}>
-
-                  <MaterialIcons
-                    name="verified"
-                    color="#2E7D32"
-                    size={14}
-                  />
-
-                  <Text
-                    style={[
-                      styles.statusText,
-                      {
-                        color: "#2E7D32",
-                      },
-                    ]}>
-                    {getValue("verificationstatus") === "VERIFIED"
-                      ? "KYC Verified"
-                      : "KYC Pending"}
-                  </Text>
-
-                </View>
-
-                {/* Mobile */}
-
-                {<View
-                  style={[
-                    styles.statusChip,
-                    {
-                      backgroundColor: "#E3F2FD",
-                    },
-                  ]}>
-
-                  <MaterialIcons
-                    name="phone-android"
-                    color="#1565C0"
-                    size={14}
-                  />
-
-                  <Text
-                    style={[
-                      styles.statusText,
-                      {
-                        color: "#1565C0",
-                      },
-                    ]}>
-                    {
-                      getValue("communicationmobile") ? 'Verified' : 'Not Verified'
-                    }
-
-                  </Text>
-
-                </View>}
-
-
-                {/* Email */}
-
-                <View
-                  style={[
-                    styles.statusChip,
-                    {
-                      backgroundColor: "#FFF3E0",
-                    },
-                  ]}>
-
-                  <MaterialIcons
-                    name="email"
-                    color="#EF6C00"
-                    size={14}
-                  />
-
-                  <Text
-                    style={[
-                      styles.statusText,
-                      {
-                        color: "#EF6C00",
-                      },
-                    ]}>
-                    {getValue("communicationemail")
-                      ? "Verified"
-                      : "Not Verified"}
-                  </Text>
-
-                </View>
-
-              </View>
+            <View style={{ flex: 1 }}>
+              {renderContent()}
             </View>
-
-            {/* Personal Information */}
-            <View style={styles.sectionCard}>
-
-              <View style={styles.sectionHeader}>
-
-                <View style={styles.iconCircle}>
-
-                  <MaterialIcons
-                    name="person"
-                    size={18}
-                    color="#1565C0"
-                  />
-
-                </View>
-
-                <Text style={styles.sectionTitle}>
-                  Personal Information
-                </Text>
-
-              </View>
-
-              <DetailItem
-                icon="calendar-month"
-                label="Date of Birth"
-                value={formatDate(getValue("dob"))}
-              />
-
-              <DetailItem
-                icon="wc"
-                label="Gender"
-                value={
-                  getValue("gender") === "M"
-                    ? "Male"
-                    : getValue("gender") === "F"
-                      ? "Female"
-                      : getValue("gender")
-                }
-              />
-
-              <DetailItem
-                icon="bloodtype"
-                label="Blood Group"
-                value={getValue("bloodgroup")}
-              />
-
-              <DetailItem
-                icon="badge"
-                label="ABHA Address"
-                value={getValue("preferredabhaaddress")}
-              />
-
-            </View>
-
-            {/* Contact information */}
-            <View style={styles.sectionCard}>
-
-              <View style={styles.sectionHeader}>
-
-                <View style={styles.iconCircle}>
-                  <MaterialIcons
-                    name="contact-phone"
-                    size={18}
-                    color="#1565C0"
-                  />
-                </View>
-
-                <Text style={styles.sectionTitle}>
-                  Contact Information
-                </Text>
-
-              </View>
-
-              <DetailItem
-                icon="phone"
-                label="Mobile Number"
-                value={getValue("mobileno")}
-              />
-
-
-
-              {getValue("communicationmobile") ? (
-                <DetailItem
-                  icon="call"
-                  label="Communication mobile"
-                  value={getValue("communicationmobile")}
-                />
-              ) : null}
-              {getValue("communicationemail") ? (
-                <DetailItem
-                  icon="email"
-                  label="Email Address"
-                  value={getValue("communicationemail")}
-                />
-              ) : null}
-
-            </View>
-
-            {/* Address */}
-            <View style={styles.sectionCard}>
-
-              <View style={styles.sectionHeader}>
-
-                <View style={styles.iconCircle}>
-                  <MaterialIcons
-                    name="location-on"
-                    size={18}
-                    color="#1565C0"
-                  />
-                </View>
-
-                <Text style={styles.sectionTitle}>
-                  Address
-                </Text>
-
-              </View>
-
-              <DetailItem
-                icon="home"
-                label="Address"
-                value={getValue("address")}
-              />
-
-              <DetailItem
-                icon="location-city"
-                label="District"
-                value={getValue("districtname")}
-              />
-
-              <DetailItem
-                icon="map"
-                label="State"
-                value={getValue("statename")}
-              />
-
-            </View>
-            {/* Verification */}
-            <View style={styles.sectionCard}>
-
-              <View style={styles.sectionHeader}>
-
-                <View style={styles.iconCircle}>
-                  <MaterialIcons
-                    name="verified"
-                    color="#1565C0"
-                    size={18}
-                  />
-                </View>
-
-                <Text style={styles.sectionTitle}>
-                  Verification
-                </Text>
-
-              </View>
-
-              <DetailItem
-                icon="verified-user"
-                label="KYC Status"
-                value={getValue("verificationstatus") ? getValue("verificationstatus") : 'Not verifed'}
-                color={getValue("verificationstatus") ? 'green' : 'red'}
-              />
-
-              <DetailItem
-                icon="badge"
-                label="Profile Status"
-                value={getValue("profilestatus")}
-              />
-
-              <DetailItem
-                icon="calendar-month"
-                label="Created On"
-                value={formatDate(getValue("cdt"))}
-              />
-
-            </View>
-
-            {/* Authentication */}
-            <View style={styles.sectionCard}>
-
-              <View style={styles.sectionHeader}>
-
-                <View style={styles.iconCircle}>
-                  <MaterialIcons
-                    name="security"
-                    size={18}
-                    color="#1565C0"
-                  />
-                </View>
-
-                <Text style={styles.sectionTitle}>
-                  Authentication Methods
-                </Text>
-
-              </View>
-
-              <View style={styles.authContainer}>
-
-                {authMethods.length > 0 ? (
-
-                  authMethods.map((item: string, index: number) => (
-
-                    <View
-                      key={index}
-                      style={styles.authChip}>
-
-                      <MaterialIcons
-                        name="verified-user"
-                        color="#1565C0"
-                      />
-
-                      <Text style={styles.authText}>
-                        {item}
-                      </Text>
-
-                    </View>
-
-                  ))
-
-                ) : (
-
-                  <Text style={{ color: "#999" }}>
-                    No Authentication Methods
-                  </Text>
-
-                )}
-
-              </View>
-
-            </View>
-
-            <View style={styles.sectionCard}>
-
-              <View style={styles.dateContainer}>
-
-                <View style={styles.dateItem}>
-
-                  <View style={styles.dateHeader}>
-                    <View style={styles.iconCircleSmall}>
-                      <MaterialIcons
-                        name="calendar-month"
-                        size={18}
-                        color="#1565C0"
-                      />
-                    </View>
-
-                    <Text style={styles.dateTitle}>
-                      Creation Date
-                    </Text>
-                  </View>
-
-                  <Text style={styles.dateValue}>
-                    {formatDate(getValue("cdt"))}
-                  </Text>
-
-                </View>
-
-                <View style={styles.dateDivider} />
-
-                <View style={styles.dateItem}>
-
-                  <View style={styles.dateHeader}>
-                    <View style={styles.iconCircleSmall}>
-                      <MaterialIcons
-                        name="verified-user"
-                        size={20}
-                        color="#1565C0"
-                      />
-                    </View>
-
-                    <Text style={styles.dateTitle}>
-                      Last Updated
-                    </Text>
-                  </View>
-
-                  <Text style={styles.dateValue}>
-                    {formatDate(getValue("udt"))}
-                  </Text>
-
-                </View>
-
-              </View>
-
-            </View>
-
-            <View style={styles.infoCard}>
-
-              <MaterialIcons
-                name="info-outline"
-                size={28}
-                color="#1565C0"
-              />
-
-              <Text style={styles.infoText}>
-                Your ABHA number uniquely identifies you in the Ayushman Bharat Digital Mission (ABDM) ecosystem.
-              </Text>
-
-            </View>
-            <View style={{ height: 30 }} />
           </>
         }
 
         {showLoginSheet && (
-                 <AuthModal
-                    selectedLoginType={selectedLoginType}
-                    setSelectedLoginType={setSelectedLoginType}
-                    showLoginSheet={showLoginSheet}
-                    setShowLoginSheet={setShowLoginSheet}
-                    confirmation={confirmation}
-                    setConfirmation={setConfirmation}
-                    selected={selected}
-                    bottomSheetType={bottomSheetType}
-                    setBottomSheetType={setBottomSheetType}
-                    setShowInfoModal={setShowInfoModal}
-                    setSelected={setSelected} 
-                    closeSheet={closeSheet}
-                    sheetTranslateY={sheetTranslateY}
-                    isForceAuth={true}
-                    lastUpdate={formatDate(getValue("cdt"))}
-                 />
-              )}
+          <AuthModal
+            selectedLoginType={selectedLoginType}
+            setSelectedLoginType={setSelectedLoginType}
+            showLoginSheet={showLoginSheet}
+            setShowLoginSheet={setShowLoginSheet}
+            confirmation={confirmation}
+            setConfirmation={setConfirmation}
+            selected={selected}
+            bottomSheetType={bottomSheetType}
+            setBottomSheetType={setBottomSheetType}
+            setShowInfoModal={setShowInfoModal}
+            setSelected={setSelected}
+            closeSheet={closeSheet}
+            sheetTranslateY={sheetTranslateY}
+            isForceAuth={true}
+            lastUpdate={formatDate(getValue("cdt"))}
+          />
+        )}
 
         {
           open && <CustomBottomSheet
@@ -912,12 +1041,12 @@ const DetailsScreen = ({ route }: any) => {
             onClose={() => setOpen(false)}
           >
             <View style={styles.qrCard}>
-             <Image
-                  source={{
-                    uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/abhacard.jpeg?t=${Date.now()}`,
-                  }}
-                  style={styles.qrImage}
-                />
+              <Image
+                source={{
+                  uri: `${Platform.OS === 'ios' ? url : url.replace("https://", "http://")}/fileupload/1/PatientABHAProfile/${item?.id}/abhacard.jpeg?t=${Date.now()}`,
+                }}
+                style={styles.qrImage}
+              />
 
 
               <Text style={styles.qrInfo}>
@@ -965,31 +1094,10 @@ const DetailsScreen = ({ route }: any) => {
         }
       </ScrollView>
 
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate("BridgeServices", {
-            bridgeServices: bridgeServices,
-            abhaDetail: abhaDetail
-          })
-          // handleLinkAbha()
-        }}
-        style={{
-          height: 46,
-          width: '92%',
-          backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-          borderRadius: 4,
-          justifyContent: 'center',
-          alignItems: 'center',
-          position: 'absolute',
-          bottom: 0,
-          marginLeft: 14
-        }}>
-        <Text style={{
-          color: '#fff',
-          fontSize: 16,
-          fontWeight: '600'
-        }}>Link Services</Text>
-      </TouchableOpacity>
+      {
+        renderButton()
+      }
+
       {modalVisible && (
         <Modal
           supportedOrientations={["portrait", "landscape"]}
@@ -1105,7 +1213,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 6,
-   },
+  },
   fullscreenImage: {
     width: "100%",
     height: "100%",
@@ -1127,7 +1235,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-   },
+  },
   closeBtnShare: {
     position: "absolute",
     top: 80,
@@ -1144,7 +1252,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-   },
+  },
   fullscreenModalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.92)",

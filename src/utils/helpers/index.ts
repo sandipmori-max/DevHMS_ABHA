@@ -14,7 +14,6 @@ import { ERP_COLOR_CODE } from "../constants";
 import messaging from "@react-native-firebase/messaging";
 import Share from 'react-native-share';
 
-
 export const formatDateMonthDateYear = (dateString: string) => {
   return new Date(dateString).toLocaleDateString("en-US", {
     year: "numeric",
@@ -618,11 +617,11 @@ export const handlePhonePress = async (phoneNumber: string) => {
   Linking.openURL(url);
 };
 
-
 export const handleEmailPress = async (emailAddress: string) => {
   const url = `mailto:${emailAddress}`;
   Linking.openURL(url);
 };
+
 export const handleLocationPress = (location: string) => {
   if (!location) return;
 
