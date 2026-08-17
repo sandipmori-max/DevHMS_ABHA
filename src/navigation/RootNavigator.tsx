@@ -281,26 +281,58 @@ const RootNavigator = () => {
     return () => sub.remove();
   }, [isAuthenticated, reLoading, attendanceDone]);
 
+useEffect(() => {
+  if (!isAuthenticated) return;
 
-  useEffect(() => {
-    if (!isAuthenticated) return;
-    locationServiceIntervalRef.current = setInterval(() => {
-      if (attendanceDone) {
+  const checkAttendance = async () => {
+    if (!attendanceDone) {
+      dispatch(updateAttendanceState(false));
+      return;
+    }
+
+    try {
+      const res = await dispatch(getLastPunchInThunk()).unwrap();
+
+      if (res?.success === 1 || res?.success === "1") {
         dispatch(updateAttendanceState(true));
+
+        await checkLocation();
         checkLocationServiceOnly();
       } else {
         dispatch(updateAttendanceState(false));
-      }
-    }, 1000);
 
-    return () => {
-      // Cleanup on logout / unmount
-      if (locationServiceIntervalRef.current) {
-        clearInterval(locationServiceIntervalRef.current);
-        locationServiceIntervalRef.current = null;
+        setAlertVisible(false);
+        setOpenSettings(false);
+        setBackgroundDeniedModal(false);
+
+        // User actually punched out
+        NativeModules.LocationModule.clearUserTokens?.();
+        NativeModules.LocationModule.stopService();
       }
-    };
-  }, [isAuthenticated, reLoading, attendanceDone]);
+    } catch (error) {
+      // Network/API error:
+      // DON'T stop location service
+      console.log("Punch status error", error);
+
+      checkLocationServiceOnly();
+    }
+  };
+
+  // Initial check immediately
+  checkAttendance();
+
+  // Check every 1 minute
+  locationServiceIntervalRef.current = setInterval(() => {
+    checkAttendance();
+  }, 60 * 1000);
+
+  return () => {
+    if (locationServiceIntervalRef.current) {
+      clearInterval(locationServiceIntervalRef.current);
+      locationServiceIntervalRef.current = null;
+    }
+  };
+}, [isAuthenticated, reLoading, attendanceDone]);
 
   // ------------------------- Language -------------------------
   useEffect(() => {
@@ -384,30 +416,47 @@ const RootNavigator = () => {
     }
   };
 
-  // ------------------------- Focus -------------------------
+ // ------------------------- Focus -------------------------
   useEffect(() => {
-    if (isAuthenticated) {
-      setERPAppColor(appColorCode)
-      // Optional: cancel timeout if component unmounts
-      const timer = setTimeout(() => {
-        if (attendanceDone) {
+    if (!isAuthenticated) return;
+
+    setERPAppColor(appColorCode);
+
+    const checkPunchStatus = async () => {
+      try {
+        const res = await dispatch(getLastPunchInThunk()).unwrap();
+        if (res?.success === 1 || res?.success === "1") {
           dispatch(updateAttendanceState(true));
-          checkLocation();
+          await checkLocation();
         } else {
+
           dispatch(updateAttendanceState(false));
           setAlertVisible(false);
           setOpenSettings(false);
           setBackgroundDeniedModal(false);
-          NativeModules.LocationModule.setUserTokens([]);
+          // clear tokens and stop service only when user is actually punched out
+          NativeModules.LocationModule.clearUserTokens?.();
           NativeModules.LocationModule.stopService();
         }
 
-      }, 2500);
-      // Cleanup to avoid memory leaks
-      return () => clearTimeout(timer);
-    }
-  }, [isAuthenticated, reLoading, attendanceDone]);
+      } catch (error) {
+        NativeModules.LocationModule.clearUserTokens?.();
+        NativeModules.LocationModule.stopService();
+        // ❌ IMPORTANT:
+        // network error par service stop mat karo
+        console.log("Punch status error", error);
+      }
+    };
 
+    // run immediately
+    checkPunchStatus();
+
+    // then repeat every 30 sec (3 sec bahut aggressive hai)
+    const interval = setInterval(checkPunchStatus, 30000);
+
+    return () => clearInterval(interval);
+
+  }, [isAuthenticated, appColorCode, attendanceDone, reLoading]);
   // ------------------------- Render -------------------------
   if (isLoading || forceLoader) return <FullViewLoader />;
 

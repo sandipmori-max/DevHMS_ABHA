@@ -306,15 +306,15 @@ const authSlice = createSlice({
 
           state.menu = menus.map((menu: any, index: number) => ({
             id: `menu_${index}`,
-            name: menu?.Name || '',
-            url: menu?.Link || '',
-            icon: menu?.Image || '',
-            children: menu?.Datas || [],
-            module: menu?.Module || '',
-            materialIcon: menu?.MaterialIcon || '',
-            moduleMaterialIcon: menu?.ModuleMaterialIcon || '',
-            title: menu?.Title || '',
-            isReport: menu?.IsReport,
+            name: `${menu?.Name}` || '',
+            url: `${menu?.Link}` || '',
+            icon: `${menu?.Image}` || '',
+            children: `${menu?.Datas}` || [],
+            module:  `${menu?.Module}` || '',
+            materialIcon: `${menu?.MaterialIcon}` || '',
+            moduleMaterialIcon: `${menu?.ModuleMaterialIcon}` || '',
+            title: `${menu?.Title}` || '',
+            isReport: `${menu?.IsReport}`,
           }));
           state.error = null;
           // state.isMenuLoading = false;
