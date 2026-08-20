@@ -51,7 +51,7 @@ const RemarksView = ({ remarks }) => {
           fontSize: 13,
           lineHeight: 18,
         }}
-        text={remarks.replace(" ", "").replace("\n", "")}
+        text={typeof remarks === 'string' ?  remarks?.replace(" ", "").replace("\n", "") : remarks}
       />
 
       {/* Expand Button */}
