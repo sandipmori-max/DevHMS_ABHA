@@ -168,7 +168,29 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
   const [locationEnabled, setLocationEnabled] = useState<boolean | null>(null);
   const [modalClose, setModalClose] = useState(false);
   const [isSettingVisible, setIsSettingVisible] = useState(false);
-  const [myScript, setMyScript] = useState();
+  const [myScript, setMyScript] = useState(
+    [
+    {
+        "logic": "AND",
+        "rules": [
+            {
+                "type": "formula",
+                "formulaType": "dateDiff",
+                "fieldName": "totalday",
+                "fromField": "leavedatefrom",
+                "toField": "leavedateto",
+                "inclusive": true,
+                "triggerFields": [
+                    "leavedatefrom",
+                    "leavedateto"
+                ]
+            }
+        ]
+    },
+]
+
+
+  );
   const [backgroundDeniedModal, setBackgroundDeniedModal] = useState(false);
   const isCheckingPermission = useRef(false);
   const locationSyncInterval = useRef(null);

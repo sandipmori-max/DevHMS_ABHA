@@ -187,11 +187,13 @@ const ReadableView = ({
     const status = item?.status;
     const date = item?.date;
     const remarks = item?.remarks;
+    
     const address = item?.address;
     const amount = item?.amount;
     const btnKeys = Object.keys(item).filter((key) => key.startsWith("btn_"));
-    const baseUrl =
-      item?.image;
+    const baseUrl = Platform.OS === "android"
+                                        ? item.image?.replace("https://", "http://")
+                                        : item.image + `?t=${Date.now()}`
     const authUser = item?.authuser;
     const qty = item?.qty;
 
@@ -257,7 +259,7 @@ const ReadableView = ({
     const card = (
       <>
         <View
-          style={{
+          style={[{
             backgroundColor:
               theme === "dark"
                 ? "black"
@@ -277,7 +279,12 @@ const ReadableView = ({
                 : ERP_COLOR_CODE.ERP_999,
             width: isIpad ? isLandscape ? '32%' : '48%' : isLandscape ? "48%" : "96%",
             overflow: "hidden",
-          }}
+          },
+          item?.color && 
+          {
+            backgroundColor : item?.color
+          }
+        ]}
         >
           {/* main touchable */}
           <TouchableOpacity
@@ -478,7 +485,7 @@ const ReadableView = ({
                   }}
                 >
                   <View style={{ width: amount ? "70%" : "100%" }}>
-                    {!!remarks && <RemarksView remarks={remarks} />}
+                    {!!remarks && <RemarksView color={item?.color} remarks={remarks} />}
                   </View>
                   <View style={{ width: "30%", alignItems: "flex-end" }}>
                     {!qty && !!amount && (

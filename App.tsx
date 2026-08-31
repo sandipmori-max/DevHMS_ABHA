@@ -116,20 +116,20 @@ const AppContent = () => {
   const handleSession = async () => {
     try {
      
-      const response1 =
-        await generateKeys()
-          .unwrap();
-      console.log(
-        "Session Response11111+++++++++++++++",
-        response1
-      );
+      // const response1 =
+      //   await generateKeys()
+      //     .unwrap();
+      // console.log(
+      //   "Session Response11111+++++++++++++++",
+      //   response1
+      // );
       const response =
         await createSession()
           .unwrap();
-      console.log(
-        "Session Response+++++++++++++++",
-        response
-      );
+      // console.log(
+      //   "Session Response+++++++++++++++",
+      //   response
+      // );
     } catch (err) {
       console.log(
         "Session Error+++++++++++",
@@ -216,10 +216,6 @@ const AppContent = () => {
         await notifee?.getInitialNotification();
 
       if (initialNotification) {
-        console.log(
-          'APP OPENED FROM KILLED NOTIFICATION',
-          initialNotification?.notification?.data,
-        );
 
         const screen =
           initialNotification?.notification?.data?.screen;
@@ -240,10 +236,7 @@ const AppContent = () => {
     // Foreground FCM
     const unsubscribeForeground = onMessageListener(
       async remoteMessage => {
-        console.log(
-          'FCM Foreground',
-          JSON.stringify(remoteMessage, null, 2),
-        );
+       
 
         await notifee.displayNotification({
           title: remoteMessage.notification?.title,
@@ -334,7 +327,6 @@ const AppContent = () => {
           getGetAuthPayload(appId, deviceName)
         ).unwrap();
 
-        console.log("Auth + + + + + + + + + + + + + + + + + +  Response =>", response);
       } catch (error) {
         console.log("Auth Error =>", error);
       }

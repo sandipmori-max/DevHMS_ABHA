@@ -29,7 +29,6 @@ const ABHA_LOGO = require(`${ABHA_BASE_URL_ICONS}/abha.png`);
 const DevHospital = require(`${ERP_BASE_URL_ICONS}/DevHospital.png`);
 
 
-
 export const ERP_ICON = {
   APP_LOGO,
   DEV_APP_LOGO,
@@ -53,10 +52,11 @@ export const ERP_GIF = {
   DataManagement,
   RemoteMonitoring,
   BACK_IMG,
-  LOCATION
+  LOCATION,
+
 };
 
 export const ABHA_ICON = {
   ABHA_LOGO,
-  NO_DATA
+  NO_DATA,
  };

@@ -4,47 +4,77 @@
 // auth / view details
 // sms/notify2 -  This API will be invoked by HIP to trigger a SMS notification to the patient mobile number when health record is available to fetch.    
 
-
-
 // DevERP
-
+// 2 + 1 + 1.5 + 1
 // Multiple build creation with different Name + icon + package name
 // https://www.devglan.com/online-tools/rsa-encryption-decryption
-
-
-
+https://www.youtube.com/watch?v=zMV8hsVuMH4
+Called get links - api after user login or create 
+{    
+    "patient": {    
+        "id": "user_1992@sbx",    
+        "links": [    
+            {    
+                "hip": {    
+                    "id": "TestClinicHIP",    
+                    "name": "TestClinicHIP",    
+                    "type": "HIP"                    },    
+                    "referenceNumber": "user_1992@sbx",    
+                    "display": "User Record",    
+                    "hiType": "HealthDocumentRecord",    
+                    "careContexts": [    
+                          {    
+                              "referenceNumber": "e707c945-3672-4b85-8525-4c7e620ef301",    
+                              "display": "Visited on 08-Feb-2024 09:00:00 Visit Type as Out Patient"    
+                          }    
+                    ],    
+                    "dateCreated": "2024-07-18T11:49:15.736Z"    
+            }    
+        ]    
+    }    
+}
+https://vimeo.com/1146565464
 Calendar Training Video
+
 https://vimeo.com/934288015
 https://vimeo.com/934288389
+
 OPD Training Video p
 https://vimeo.com/936908199
 https://vimeo.com/934288467
 https://vimeo.com/936908143
 https://vimeo.com/936905010
+
 IPD Training Video
 https://vimeo.com/936904816
 https://vimeo.com/936909213
 https://vimeo.com/936904763
+
 Pharmacy Training Video
 https://vimeo.com/937003651
-Laboratory Training Video
 
+Laboratory Training Video
 https://vimeo.com/936906783
 https://vimeo.com/936906857
 https://vimeo.com/936906916
 
 Assets Training Video
 https://drive.google.com/file/d/1dfVDe29iYoJYuKVRYU39fD1KJTu5pFDd/view?usp=sharing
+
 Pharmacy Store 
 https://drive.google.com/file/d/1XScxAJkZz7sBRS0UOR__W-HKW9dA-g-P/view?usp=sharing
 
 HRMS Training Video
 https://drive.google.com/file/d/1mAsESi-brgs7voZlA2LtwvN1WSeOvITo/view?usp=sharing
+
 Tally Video
 https://drive.google.com/file/d/1w8GykSDthCeUZ26ZyJiaxILFmjHYoRM0/view?usp=drive_link
 
 Hello @161529492164829  Sir,
 Pls use below details to access product:
+
+https://github.com/ohcnetwork/care/tree/ccn_final
+https://github.com/ohcnetwork/care/tree/ccn_final?tab=readme-ov-file
 
 URL: https://plus.curenearme.com
 User: sanganiravrl2017@gmail.com
@@ -90,6 +120,18 @@ https://www.youtube.com/watch?v=X2dvWFUz0Dw&list=PLwqlnoMfDnuAf701JHZoF_6C3A9JHN
 
 Payroll Mobile App – API Documentation
 
+
+{
+    "d": "{\"success\":1,\"name\":\"KESAR INFRA\",\"link\":\"https://kesarinfra.deverp.net/devws\"}"
+}
+
+{
+    "d": "{\"success\":1,\"name\":\"DevERP SOLUTIONS PVT. LTD.\",\"link\":\"https://support.deverp.net/devws/\"}"
+}
+
+{
+    "d": "{\"success\":1,\"name\":\"DevERP DEMO\",\"link\":\"https://kosolpayroll.deverp.net/devws/\"}"
+}
 d1ea2ea6-591c-4eba-9128-02b0e243614a
 373b67afa904484cad3dd86e2c085176
 

@@ -244,7 +244,7 @@ apiClient.interceptors.response.use(
 
       console.error("API Error Response: + + + + + + +", `${error}`);
       return Promise.reject({
-        message: error?.response?.data?.message  || "API error occurred -----  " + `${error?.response?.config?.url?.split("/").filter(Boolean).pop()}`,
+        message: error?.response?.data?.message  || "Configuration missing / " + `${error?.response?.config?.url?.split("/").filter(Boolean).pop()}`,
         statusCode: error?.response?.status,
         data: error?.response?.data,
       });

@@ -93,7 +93,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(false);
   const [listData, setListData] = useState<any[]>([]);
-  console.log("listData---------------- ",listData)
+  console.log("listData---------------- ", listData)
   const [parsedError, setParsedError] = useState<any>();
   const [showModal, setShowModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -512,7 +512,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                       }}
                     >
                       <FlatList
-                                        bounces={false}
+                        bounces={false}
 
                         data={timelineData}
                         keyExtractor={(item, index) => index.toString()}
@@ -924,7 +924,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
         <>
           {listData.length > 0 ? (
             <FlatList
-                              bounces={false}
+              bounces={false}
 
               data={["calendar"]}
               keyExtractor={(item, index) => index.toString()}
@@ -1138,7 +1138,7 @@ const List = ({ selectedMonth, showFilter, fromDate, toDate }: any) => {
                       }}
                     >
                       <FlatList
-                                        bounces={false}
+                        bounces={false}
 
                         data={timelineData}
                         keyExtractor={(item, index) => index.toString()}

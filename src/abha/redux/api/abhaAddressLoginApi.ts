@@ -43,34 +43,6 @@ export const abhaAddressLoginApi =
             baseQuery
           ) {
 
-
-            console.log(
-              "========== ABHA ADDRESS REQUEST OTP =========="
-            );
-
-
-            console.log(
-              "Request URL =>",
-              END_POINTS.abhaAddressRequestOtp
-            );
-
-
-            console.log(
-              "Request Method => POST"
-            );
-
-
-            console.log(
-              "Request Body =>",
-              JSON.stringify(
-                body,
-                null,
-                2
-              )
-            );
-
-
-
             // MOCK RESPONSE
 
             if(
