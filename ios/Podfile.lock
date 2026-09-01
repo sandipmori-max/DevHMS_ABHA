@@ -2062,6 +2062,36 @@ PODS:
     - Yoga
   - react-native-orientation-locker (1.7.0):
     - React-Core
+  - react-native-photo-manipulator (1.9.2):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - WCPhotoManipulator (~> 2.6.0)
+    - Yoga
   - react-native-print (0.11.0):
     - React-Core
   - react-native-render-html (6.3.4):
@@ -3272,6 +3302,7 @@ PODS:
     - GoogleMLKit/FaceDetection (= 8.0.0)
     - React-Core
     - VisionCamera
+  - WCPhotoManipulator (2.6.0)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -3329,6 +3360,7 @@ DEPENDENCIES:
   - react-native-maps (from `../node_modules/react-native-maps`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-orientation-locker (from `../node_modules/react-native-orientation-locker`)
+  - react-native-photo-manipulator (from `../node_modules/react-native-photo-manipulator`)
   - react-native-print (from `../node_modules/react-native-print`)
   - react-native-render-html (from `../node_modules/react-native-render-html`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -3421,6 +3453,7 @@ SPEC REPOS:
     - SDWebImage
     - SDWebImageWebPCoder
     - SocketRocket
+    - WCPhotoManipulator
 
 EXTERNAL SOURCES:
   boost:
@@ -3528,6 +3561,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-orientation-locker:
     :path: "../node_modules/react-native-orientation-locker"
+  react-native-photo-manipulator:
+    :path: "../node_modules/react-native-photo-manipulator"
   react-native-print:
     :path: "../node_modules/react-native-print"
   react-native-render-html:
@@ -3727,6 +3762,7 @@ SPEC CHECKSUMS:
   react-native-maps: 3793b1682de6d6c5d8e225dc877eb435b5090e80
   react-native-netinfo: 75f720ddf3f559f152ef7a232ce09b3b70490ea9
   react-native-orientation-locker: cc6f357b289a2e0dd2210fea0c52cb8e0727fdaa
+  react-native-photo-manipulator: 92fd2feec313f042e32f6396fa9fe7c297ff3652
   react-native-print: 692e8782bc89872ea01738c6759631388e77358c
   react-native-render-html: 5afc4751f1a98621b3009432ef84c47019dcb2bd
   react-native-safe-area-context: 4d0e2b71ea67207cb56d00c5a592f542a0591ec8
@@ -3789,8 +3825,9 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   VisionCamera: 0044a94f7489f19e19d5938e97dfc36f4784af3c
   VisionCameraFaceDetector: 61099ebc25018dc214428e16aed28f7cb58b9ae2
+  WCPhotoManipulator: 804988e16a6fe941cddff942b2acf887110de5d6
   Yoga: ce248fb32065c9b00451491b06607f1c25b2f1ed
 
-PODFILE CHECKSUM: 8b2dba892783f5a076cf34d159780859bed941c4
+PODFILE CHECKSUM: 91d9c36fcd4741dc4f218dae7dcfbbe3e566b70e
 
 COCOAPODS: 1.16.2

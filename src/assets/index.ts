@@ -18,6 +18,8 @@ const NO_INTERNET = require(`${ERP_BASE_URL_GIF}/not_internet.png`);
 const NO_DATA = require(`${ERP_BASE_URL_GIF}/no_data.png`);
 const SUCCESS = require(`${ERP_BASE_URL_GIF}/success.gif`);
 const BACK_IMG = require(`${ERP_BASE_URL_GIF}/back5.jpg`);
+const BACK_IMG1 = require(`${ERP_BASE_URL_GIF}/back6.png`);
+
 
 const Analytics = require(`${ERP_BASE_URL_GIF}/Analytics.gif`);
 const Dashboards = require(`${ERP_BASE_URL_GIF}/Dashboards.gif`);
@@ -53,6 +55,7 @@ export const ERP_GIF = {
   RemoteMonitoring,
   BACK_IMG,
   LOCATION,
+  BACK_IMG1
 
 };
 
