@@ -36,7 +36,7 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>deverp.com</key>
+			<key>devhms.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>

@@ -4,6 +4,10 @@
 // auth / view details
 // sms/notify2 -  This API will be invoked by HIP to trigger a SMS notification to the patient mobile number when health record is available to fetch.    
 
+Varun2001@sbx
+
+Pass - Varun@007
+
 // DevERP
  
 // 2 + 1 + 1.5 + 1
