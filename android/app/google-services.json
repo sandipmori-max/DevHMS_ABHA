@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "944238529141",
-    "project_id": "devhms-main",
-    "storage_bucket": "devhms-main.firebasestorage.app"
+    "project_number": "432113768852",
+    "project_id": "devhms-af191",
+    "storage_bucket": "devhms-af191.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:944238529141:android:12a6f618e39c784910463c",
+        "mobilesdk_app_id": "1:432113768852:android:fcbce9a4f01d8059edd781",
         "android_client_info": {
           "package_name": "com.devhms"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBGDItQguYZy-Cz4iEvLahkZPrhqQimsok"
+          "current_key": "AIzaSyASIKGWqsRZIvnCS405VDlFSbY8vgV5hYk"
         }
       ],
       "services": {
