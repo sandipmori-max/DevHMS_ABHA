@@ -323,20 +323,11 @@ export const getERPMenuThunk = createAsyncThunk(
         return response;
       }
 
-      return rejectWithValue("Invalid menu response format");
+      return rejectWithValue("Please check your network and try again. You can tap Refresh or close and reopen the app");
     } catch (error: any) {
-      // if (error?.message === 'Invalid Token') {
-      //   return rejectWithValue("Please check your network and try again. You can tap Refresh or close and reopen the app");
-      // } else {
-      //   return rejectWithValue(error?.message || "Failed to get ERP menu");
-      // }
-       if(error?.message === 'Invalid Token'){
+      if (error?.message === 'Invalid Token') {
         return rejectWithValue("Please check your network and try again. You can tap Refresh or close and reopen the app");
-      } else if(error?.message === 'Token Expire'){
-       return rejectWithValue(
-          "Your session has expired. Please log in again to continue."
-        );
-      } else{
+      } else {
         return rejectWithValue(error?.message || "Failed to get ERP menu");
       }
 
@@ -359,7 +350,7 @@ export const getERPAppConfigMenuThunk = createAsyncThunk(
       return rejectWithValue('Invalid menu response format');
     } catch (error: any) {
       console.log("response---error---------------=======================", error)
-       if(error?.message === 'Invalid Token'){
+      if(error?.message === 'Invalid Token'){
         return rejectWithValue("Please check your network and try again. You can tap Refresh or close and reopen the app");
       } else if(error?.message === 'Token Expire'){
        return rejectWithValue(
@@ -392,7 +383,7 @@ export const getERPDashboardThunk = createAsyncThunk(
       return dashboard;
     } catch (error: any) {
       console.log("dashboard-----------error----------", error);
-       if(error?.message === 'Invalid Token'){
+      if(error?.message === 'Invalid Token'){
         return rejectWithValue("Please check your network and try again. You can tap Refresh or close and reopen the app");
       } else if(error?.message === 'Token Expire'){
        return rejectWithValue(
@@ -415,7 +406,7 @@ export const getERPPageThunk = createAsyncThunk<
     const pageData = await DevERPService.getPage(page, id);
     return pageData;
   } catch (error: any) {
-     if(error?.message === 'Invalid Token'){
+    if(error?.message === 'Invalid Token'){
         return rejectWithValue("Please check your network and try again. You can tap Refresh or close and reopen the app");
       } else if(error?.message === 'Token Expire'){
        return rejectWithValue(

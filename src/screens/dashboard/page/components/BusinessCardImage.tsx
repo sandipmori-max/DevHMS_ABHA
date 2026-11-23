@@ -62,7 +62,7 @@ const BusinessCardView = ({
   const navigation = useNavigation();
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [base64, setBase64] = useState(false);
+  const [base64, setBase64] = useState("");
   const [cacheBuster, setCacheBuster] = useState(Date.now());
   const [showPicker, setShowPicker] = useState(false);
   const { t } = useTranslations();
@@ -156,11 +156,10 @@ const BusinessCardView = ({
 
     setTimeout(async () => {
       navigation.navigate("FaceCameraScreen", {
-        onCapture: async (photoPath) => {
+        onCapture: async (photoPath: string) => {
           setTimeout(async () => {
             try {
               console.log("========== CAMERA START ==========");
-
 
               if (!photoPath) {
                 console.log("Photo Path Missing");
@@ -174,7 +173,6 @@ const BusinessCardView = ({
 
               console.log("Original Photo:", originalUri);
 
-              let finalUri = originalUri;
               let finalBase64 = "";
 
               // ⚡ STEP 1: COMPRESS IMAGE
@@ -221,13 +219,11 @@ const BusinessCardView = ({
                 "MB",
               );
 
-              finalUri = resizedImage.uri;
-
               setCacheBuster(Date.now());
               setBase64(
                 `${item?.field}.jpeg;data:image/jpeg;base64,${finalBase64}`
               );
-              setImageUri(finalUri);
+              setImageUri(originalUri);
               // setImageExists(true);
               // setImageUri(finalUri);
               // setCacheBuster(Date.now());
@@ -257,6 +253,7 @@ const BusinessCardView = ({
         isFromDashboard: false,
         isBackActive: true,
         isFromAttendance: false,
+        isBusinessCardCapture: true,
       });
 
     }, 400);
@@ -304,15 +301,30 @@ const BusinessCardView = ({
       setLoading(true);
       try {
         const result = await TextRecognition.recognize(imageUri);
-        const joined = result.blocks.map((b) => b.text).join("\n");
-        const parsed = parseCard(joined);
-        setValue(parsed);
-      } catch (err) {
+        const recognizedText =
+          result.text?.trim() ||
+          result.blocks.map((block) => block.text).join("\n");
+
+        if (!recognizedText.trim()) {
+          Alert.alert(
+            "No text found",
+            "Could not read text from this image. Try capturing the card again in good lighting.",
+          );
+          return;
+        }
+
+        parseCard(recognizedText);
+      } catch (error) {
+        console.error("Business card OCR failed:", error);
+        Alert.alert(
+          "OCR failed",
+          "Could not read text from this image. Please try again.",
+        );
       } finally {
         setLoading(false);
       }
     })();
-  }, [imageUri]);
+  }, [imageUri, base64]);
 
   const parseCard = (text: string): any => {
     // Normalize text

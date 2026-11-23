@@ -5,7 +5,8 @@ import {
   Dimensions,
   FlatList,
   ScrollView,
-  Image
+  Image,
+  Alert
 } from "react-native";
 
 import React, {
@@ -15,7 +16,7 @@ import React, {
 
 import { useNavigation } from "@react-navigation/native";
 
-import { formatHeaderTitle } from "../../../../utils/helpers";
+import { downloadFile, formatHeaderTitle } from "../../../../utils/helpers";
 import NoData from "../../../../components/no_data/NoData";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import MemoizedFooterView from "./MemoizedFooterView";
@@ -231,10 +232,10 @@ const TableView = ({
   const TableHeader = () => {
     return (
       <View
-        style={{
+        style={[{
           flexDirection: "row",
-          backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-        }}
+          backgroundColor: theme === "dark" ? "black" : ERP_COLOR_CODE.ERP_APP_COLOR,
+        }]}
       >
         {allKeys.map((key, idx) => {
           const config = getHeaderConfig(key);
@@ -332,7 +333,7 @@ const TableView = ({
 
         <Text
           style={{
-            color: "black", 
+            color: "black",
           }}
         >
           {count}  {isCollapsed ? "▼" : "▲"}
@@ -539,8 +540,24 @@ const TableView = ({
                       maxWidth: screenWidth / 4,
                       alignItems: "center",
                     }}
-                    onPress={() => {
+                    onPress={async () => {
                       if (authUser) return;
+                      if (key === "btn_download") {
+                        const response = await downloadFile({
+                          url: item[key],
+                          onProgress: percentage => {
+                            console.log('Download Progress:', percentage);
+                          },
+                        });
+
+                        if (response.success) {
+                          console.log('File Path:', response.path);
+                          console.log('File Name:', response.fileName);
+                          Alert.alert('Download Complete');
+                        }
+                        return;
+
+                      }
                       handleActionButtonPressed(
                         actionValue,
                         label,
@@ -587,7 +604,7 @@ const TableView = ({
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "#fff",
+          backgroundColor: theme === "dark" ? "black" : 'white',
         }}
       >
         <NoData isShowTop={false} />
@@ -619,7 +636,6 @@ const TableView = ({
           <FlatList
             data={groupedData}
             bounces={false}
-
             keyExtractor={(
               item: any,
               index,

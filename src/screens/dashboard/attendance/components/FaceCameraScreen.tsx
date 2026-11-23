@@ -32,10 +32,16 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
   let ATTENDANCE_LEVEL = attendanceSecurityLevel
     ? parseInt(attendanceSecurityLevel)
     : 0;
-  const { onCapture, isFromDashboard, isBackActive, isFromAttendance } = route.params;
+  const {
+    onCapture,
+    isFromDashboard,
+    isBackActive,
+    isFromAttendance,
+    isBusinessCardCapture,
+  } = route.params;
   const camera = useRef(null);
   const [cameraPosition, setCameraPosition] = useState<"front" | "back">(
-    "front",
+    isBusinessCardCapture ? "back" : "front",
   );
   const device = useCameraDevice(cameraPosition); const baseLink = useBaseLink();
   const [alertVisible, setAlertVisible] = useState(false);
@@ -225,17 +231,25 @@ const FaceCameraScreen = ({ navigation, route }: any) => {
   const takePhoto = async () => {
     try {
       const photo = await camera?.current?.takePhoto({
-        qualityPrioritization: "speed",
+        qualityPrioritization: isBusinessCardCapture ? "quality" : "speed",
         flash: "off",
         enableAutoRedEyeReduction: true,
         skipMetadata: false,
         enableShutterSound: user?.company_code?.toLowerCase()?.includes("oeuvre01") ? false : true,
-        quality: 0.3,
-        width: 640,
-        height: 480,
+        ...(!isBusinessCardCapture && {
+          quality: 0.3,
+          width: 640,
+          height: 480,
+        }),
       });
 
       const photoPath = photo?.path;
+      if (isBusinessCardCapture) {
+        onCapture(photoPath);
+        navigation.goBack();
+        return;
+      }
+
       let compressedImage;
       try {
         compressedImage = await ImageResizer.createResizedImage(

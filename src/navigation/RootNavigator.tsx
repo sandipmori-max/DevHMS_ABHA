@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   PermissionsAndroid,
   Platform,
@@ -129,8 +129,7 @@ const RootNavigator = () => {
 
     const enabled = await DeviceInfo.isLocationEnabled();
 
-    console.log("Location Service Enabled:", enabled);
-    // GPS OFF → show modal once & stop features
+     // GPS OFF → show modal once & stop features
     if (!enabled && !gpsModalShownRef.current) {
       setAlertConfig({
         title: t("test3"),
@@ -358,8 +357,8 @@ useEffect(() => {
           .map((u) => {
             if (user?.id.toString() === u?.user?.id.toString()) {
               return {
-                token: u.user.token,
-                link: u.user.companyLink.replace(/^https:\/\//i, "http://"),
+                token: u?.user?.token,
+                link: u?.user?.companyLink.replace(/^https:\/\//i, "http://"),
               };
             }
             return null;
@@ -416,6 +415,26 @@ useEffect(() => {
     }
   };
 
+    useEffect(() => {
+    if (!isAuthenticated) return;
+    locationServiceIntervalRef.current = setInterval(() => {
+      if (attendanceDone) {
+        dispatch(updateAttendanceState(true));
+        checkLocationServiceOnly();
+      } else {
+        dispatch(updateAttendanceState(false));
+      }
+    }, 1000);
+
+    return () => {
+      // Cleanup on logout / unmount
+      if (locationServiceIntervalRef.current) {
+        clearInterval(locationServiceIntervalRef.current);
+        locationServiceIntervalRef.current = null;
+      }
+    };
+  }, [isAuthenticated, reLoading, attendanceDone]);
+
  // ------------------------- Focus -------------------------
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -471,7 +490,6 @@ useEffect(() => {
         forceLoader ? <>
           <FullViewLoader />
         </> : <>
-
           {isAuthenticated ? <StackNavigator /> : <AuthNavigator />}
           {isAuthenticated && (
             <CustomAlert

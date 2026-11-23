@@ -257,7 +257,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
       } else if (androidVersion >= 10 && Platform.OS !== 'ios') {
         currentFcmToken = fcmToken || (await getMessaging().getToken())
       } else {
-        currentFcmToken = '';
+        currentFcmToken = fcmToken || (await getMessaging().getToken()) || '';
       }
 
       const loginResult = await loginWithERP(() =>
@@ -280,10 +280,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
         await validateCompanyCode(() =>
           DevERPService.validateCompanyCode(user?.company_code),
         );
-        const currentFcmToken =
-          Platform.OS === "ios"
-            ? ""
-            : fcmToken || (await getMessaging().getToken());
+        const currentFcmToken = (await getMessaging().getToken());
         const loginResult = await loginWithERP(() =>
           DevERPService.loginToERP({
             user: user?.username,
@@ -522,8 +519,13 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                   >
                     <Formik
                       initialValues={{
-                        company_code: user?.company_code?.toLowerCase()?.includes("oeuvre01") ? 'oeuvre01' : "",
-                        user: "",
+                        company_code: user?.company_code?.toLowerCase()?.includes("gayatrirubtech")
+                          ? 'gayatrirubtech'
+                          : user?.company_code?.toLowerCase()?.includes("oeuvre01")
+                            ? 'oeuvre01'
+                            : user?.company_code?.toLowerCase()?.includes("hcspl2024")
+                              ? 'hcspl2024'
+                              : "", user: "",
                         password: "",
                       }}
                       validationSchema={erpAddAccountValidationSchema(t)}
@@ -542,7 +544,11 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                           <>
                             {/* Company Code Input */}
                             {
-                              !user?.company_code?.toLowerCase()?.includes("oeuvre01") && <View style={styles.inputContainer}>
+                              (
+                                !user?.company_code?.toLowerCase()?.includes("gayatrirubtech") &&
+                                !user?.company_code?.toLowerCase()?.includes("oeuvre01") &&
+                                !user?.company_code?.toLowerCase()?.includes("hcspl2024")
+                              ) && <View style={styles.inputContainer}>
                                 <Text
                                   style={[
                                     styles.inputLabel,
@@ -938,8 +944,13 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
 
                           <Formik
                             initialValues={{
-                              company_code: user?.company_code?.toLowerCase()?.includes("oeuvre01") ? 'oeuvre01' : "",
-                              user: "",
+                              company_code: user?.company_code?.toLowerCase()?.includes("gayatrirubtech")
+                                ? 'gayatrirubtech'
+                                : user?.company_code?.toLowerCase()?.includes("oeuvre01")
+                                  ? 'oeuvre01'
+                                  : user?.company_code?.toLowerCase()?.includes("hcspl2024")
+                                    ? 'hcspl2024'
+                                    : "", user: "",
                               password: "",
                             }}
                             validationSchema={erpAddAccountValidationSchema(
@@ -961,7 +972,11 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
                                 <>
                                   {/* Company Code Input */}
                                   {
-                                    !user?.company_code?.toLowerCase()?.includes("oeuvre01") && <View style={styles.inputContainer}>
+                                    (
+                                      !user?.company_code?.toLowerCase()?.includes("gayatrirubtech") &&
+                                      !user?.company_code?.toLowerCase()?.includes("oeuvre01") &&
+                                      !user?.company_code?.toLowerCase()?.includes("hcspl2024")
+                                    ) && <View style={styles.inputContainer}>
                                       <Text
                                         style={[
                                           styles.inputLabel,
@@ -1338,10 +1353,7 @@ const AddAccountScreen: React.FC<AddAccountScreenProps> = ({
               DevERPService.validateCompanyCode(user?.company_code),
             );
 
-            const currentFcmToken =
-              Platform.OS === "ios"
-                ? ""
-                : fcmToken || (await getMessaging().getToken());
+            const currentFcmToken =  fcmToken || (await getMessaging().getToken());
 
             const loginResult = await loginWithERP(() =>
               DevERPService.loginToERP({

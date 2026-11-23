@@ -11,7 +11,8 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
     height: Dimensions.get('screen').height,
     padding: 16,
-    flex: 1,  
+    flex: 1, 
+    justifyContent: 'center',
   },
   helperText: {
     fontSize: 12,
@@ -19,10 +20,12 @@ export const styles = StyleSheet.create({
     marginTop: 4,
     marginLeft: 2,
   },
-  logo: {  
-    height: 140,
+  logo: {
+    marginTop: 4,
+    width: 100,
+    height: 100,
     alignSelf: 'center',
-    marginBottom: 4,
+    marginBottom: 25,
     borderRadius: 20,
   },
   title: {
@@ -67,7 +70,7 @@ export const styles = StyleSheet.create({
   },
   loginButton: {
     backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
-    padding:  10,
+    padding:  14,
     borderRadius: 8,
     marginBottom: 20, 
     marginTop: 8,

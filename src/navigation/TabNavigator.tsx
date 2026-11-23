@@ -8,8 +8,7 @@ import { useAppSelector } from "../store/hooks";
 import AnimatedTabIcon from "../components/tab_icon/AnimatedTabIcon";
 import { Platform } from "react-native";
 import useTranslations from "../hooks/useTranslations";
-import ConsentsScreen from "../abha/screens/Consents/ConsentsScreen";
- 
+
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
@@ -25,26 +24,12 @@ const TabNavigator = () => {
     label: item?.name,
   }));
 
-  // navigationItems.splice(3, 0, {
-  //     name: "Consent",
-  //     type: "C",
-  //     icon: "analytics",
-  //     label: "Consent",
-  //   });
+  const getComponent = (item) => {
+    if (item.name === "Home") return HomeScreen;
+    if (item.name === "Profile") return ProfileTab;
+    return null;
+  };
 
-    
- const getComponent = (item) => {
-  switch (item.name) {
-    case "Home":
-      return HomeScreen;
-    case "Profile":
-      return ProfileTab;
-    case "Consent":
-      return ConsentsScreen;
-    default:
-      return null;
-  }
-};
   const tabConfig = [
     {
       name: t("navigation.home"),

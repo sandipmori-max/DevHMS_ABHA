@@ -1,8 +1,10 @@
 const ERP_BASE_URL_ICONS = './icons';
 const ERP_BASE_URL_GIF = './gif';
-const ABHA_BASE_URL_ICONS = './icons';
+const ERP_SOUND = './sounds';
 
 const APP_LOGO = require(`${ERP_BASE_URL_ICONS}/logo.png`);
+const BEEP = require(`${ERP_SOUND}/beep.mp3`);
+
 
 const PROFILE1 = require(`${ERP_BASE_URL_ICONS}/uuser.png`);
 const BACK = require(`${ERP_BASE_URL_ICONS}/back.png`);
@@ -27,8 +29,8 @@ const DataManagement = require(`${ERP_BASE_URL_GIF}/DataManagement.gif`);
 const money = require(`${ERP_BASE_URL_GIF}/money.gif`);
 const RemoteMonitoring = require(`${ERP_BASE_URL_GIF}/RemoteMonitoring.gif`);
 const DEV_APP_LOGO = require(`${ERP_BASE_URL_ICONS}/dev_logo.png`);
-const ABHA_LOGO = require(`${ABHA_BASE_URL_ICONS}/abha.png`);
-const DevHospital = require(`${ERP_BASE_URL_ICONS}/DevHospital.png`);
+ 
+ 
 
 
 export const ERP_ICON = {
@@ -39,8 +41,7 @@ export const ERP_ICON = {
   ALERT,
   EXITS,
   PROFILE1,
-  VALIDATON,
-  DevHospital
+  VALIDATON, 
  };
 
 export const ERP_GIF = {
@@ -59,7 +60,7 @@ export const ERP_GIF = {
 
 };
 
-export const ABHA_ICON = {
-  ABHA_LOGO,
-  NO_DATA,
+export const ERP_SOUNDS = {
+   BEEP,
  };
+

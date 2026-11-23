@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   Alert,
   Platform,
   useWindowDimensions,
@@ -13,8 +12,7 @@ import { pick, types } from "@react-native-documents/picker";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
 import RNFS from "react-native-fs";
-import { Linking } from "react-native";
-import useTranslations from "../../../../hooks/useTranslations";
+ import useTranslations from "../../../../hooks/useTranslations";
 import { useAppSelector } from "../../../../store/hooks";
 import InputError from "../../../../components/error/InputError";
 import LableInfo from "./LableInfo";
@@ -112,6 +110,7 @@ const FilePickerRow = ({
   };
   const removeFile = (index: number) => {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    handleAttachment('', item.field);
   };
 
   const updateFile = async (index: number) => {
@@ -170,7 +169,7 @@ const FilePickerRow = ({
         }
 
         ]} onPress={openFilePicker}>
-          <MaterialIcons name="cloud-upload" size={36} color={theme === "dark" ? "#fff" : ERP_COLOR_CODE.ERP_APP_COLOR} />
+          <MaterialIcons name="cloud-upload" size={36} color={theme === "dark" ? "#fff" : "gray"} />
           <Text style={styles.uploadSub}>Tap to browse files</Text>
         </TouchableOpacity>
       )}
@@ -213,12 +212,12 @@ const FilePickerRow = ({
         </>
       )}
       {/* Add More */}
-
     </View>
   );
 };
 
 export default FilePickerRow;
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",

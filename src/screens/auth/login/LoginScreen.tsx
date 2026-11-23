@@ -22,14 +22,15 @@ import useTranslations from "../../../hooks/useTranslations";
 import { styles } from "./login_style";
 import LoginHeader from "./components/LoginHeader";
 import LoginForm from "./components/LoginForm";
+import LoginWithPhone from "./components/LoginWithPhone";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ERP_COLOR_CODE } from "../../../utils/constants";
 import { setReloadApp } from "../../../store/slices/reloadApp/reloadAppSlice";
 import { ERP_GIF } from "../../../assets";
 import { updateAppMenuList } from "../../../store/slices/auth/authSlice";
 import { requestAndroidPermission, requestNotificationPermission } from "../../../utils/helpers";
-import messaging from "@react-native-firebase/messaging";
-
+import MaterialIcons from "@react-native-vector-icons/material-icons";
+ 
 const LoginScreen = ({ navigation, route }: any) => {
   const { t } = useTranslations();
   const dispatch = useAppDispatch();
@@ -37,6 +38,7 @@ const LoginScreen = ({ navigation, route }: any) => {
   const isLandscape = width > height;
 
   const isAddingAccount = route?.params?.isAddingAccount || false;
+  const [loginMode, setLoginMode] = useState<"phone" | "password">("phone");
   const { isLoading } = useAppSelector((state) => state.auth);
   const theme = useAppSelector((state) => state?.theme.mode);
 
@@ -72,25 +74,25 @@ const LoginScreen = ({ navigation, route }: any) => {
   }, []);
 
 
-const setupNotification = async () => {
-  try {
-    let granted = false;
+  const setupNotification = async () => {
+    try {
+      let granted = false;
 
-    if (Platform.OS === "android") {
-      granted = await requestAndroidPermission();
-    } else {
-      granted = await requestNotificationPermission();
+      if (Platform.OS === "android") {
+        granted = await requestAndroidPermission();
+      } else {
+        granted = await requestNotificationPermission();
+      }
+
+      // if (!granted) {
+      //   console.log("Permission not granted");
+      //   return;
+      // }
+
+    } catch (error) {
+      console.log(error);
     }
-
-    // if (!granted) {
-    //   console.log("Permission not granted");
-    //   return;
-    // }
-
-  } catch (error) {
-    console.log(error);
-  }
-};
+  };
 
   const handlePersistAfterLogin = async (
     company_code: string,
@@ -146,6 +148,35 @@ const setupNotification = async () => {
     }).start();
   };
 
+  const renderLoginForm = () => (
+    <>
+
+
+<View
+  style={{
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+    marginBottom: 20,
+  }}>
+  
+</View>
+
+     <View style={{
+      height : 350
+     }}>
+       <LoginForm
+          deviceId={deviceId}
+          isAddingAccount={isAddingAccount}
+          isLoading={isLoading}
+          onLoginSuccess={handlePersistAfterLogin}
+          showAlert={showAlert}
+        />
+     </View>
+    </>
+  );
+
   return (
 
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -154,7 +185,7 @@ const setupNotification = async () => {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ImageBackground
-          // source={theme === "dark" ? "" : ERP_GIF.BACK_IMG}
+          source={theme === "dark" ? "" : ERP_GIF.BACK_IMG}
           style={{
             height: Dimensions.get("screen").height,
             width: Dimensions.get("screen").width,
@@ -163,7 +194,7 @@ const setupNotification = async () => {
         >
           <FlatList
             data={[""]}
-                              bounces={false}
+            bounces={false}
 
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
@@ -190,7 +221,7 @@ const setupNotification = async () => {
                           alignContent: "center",
                           alignItems: "center",
                           justifyContent: "center",
-                         
+
 
                         }}
                       >
@@ -213,26 +244,14 @@ const setupNotification = async () => {
                             right: 10,
                           }}
                         >
-                          <LoginForm
-                            deviceId={deviceId}
-                            isAddingAccount={isAddingAccount}
-                            isLoading={isLoading}
-                            onLoginSuccess={handlePersistAfterLogin}
-                            showAlert={showAlert}
-                          />
+                          {renderLoginForm()}
                         </View>
                       </View>
                     </>
                   ) : (
                     <View  >
                       <LoginHeader isAddingAccount={isAddingAccount} t={t} />
-                      <LoginForm
-                        deviceId={deviceId}
-                        isAddingAccount={isAddingAccount}
-                        isLoading={isLoading}
-                        onLoginSuccess={handlePersistAfterLogin}
-                        showAlert={showAlert}
-                      />
+                      {renderLoginForm()}
                       {isAddingAccount && (
                         <Animated.View
                           style={{

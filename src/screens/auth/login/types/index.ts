@@ -6,7 +6,8 @@ export interface LoginFormProps {
     company_code: string,
     password: string,
     user_credentials: { user: string; name?: string },
-    response: any
+    response: any,
+    companyData: any,
   ) => Promise<void>;
   showAlert: (config: {
     title: string;

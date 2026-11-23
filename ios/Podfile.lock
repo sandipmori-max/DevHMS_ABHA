@@ -62,28 +62,28 @@ PODS:
     - GoogleToolboxForMac/Defines (= 4.2.1)
   - "GoogleToolboxForMac/NSData+zlib (4.2.1)":
     - GoogleToolboxForMac/Defines (= 4.2.1)
-  - GoogleUtilities/AppDelegateSwizzler (8.1.3):
+  - GoogleUtilities/AppDelegateSwizzler (8.1.4):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Environment (8.1.3):
+  - GoogleUtilities/Environment (8.1.4):
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Logger (8.1.3):
+  - GoogleUtilities/Logger (8.1.4):
     - GoogleUtilities/Environment
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Network (8.1.3):
+  - GoogleUtilities/Network (8.1.4):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Privacy
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (8.1.3)":
+  - "GoogleUtilities/NSData+zlib (8.1.4)":
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Privacy (8.1.3)
-  - GoogleUtilities/Reachability (8.1.3):
+  - GoogleUtilities/Privacy (8.1.4)
+  - GoogleUtilities/Reachability (8.1.4):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - GoogleUtilities/UserDefaults (8.1.3):
+  - GoogleUtilities/UserDefaults (8.1.4):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
   - GTMSessionFetcher/Core (3.5.0)
@@ -1820,7 +1820,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-document-picker (12.0.2):
+  - react-native-document-picker (12.1.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -1909,7 +1909,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-image-picker (8.2.1):
+  - react-native-image-picker (8.3.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2092,11 +2092,9 @@ PODS:
     - SocketRocket
     - WCPhotoManipulator (~> 2.6.0)
     - Yoga
-  - react-native-print (0.11.0):
-    - React-Core
   - react-native-render-html (6.3.4):
     - React-Core
-  - react-native-safe-area-context (5.10.0):
+  - react-native-safe-area-context (5.11.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2115,8 +2113,8 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - react-native-safe-area-context/common (= 5.10.0)
-    - react-native-safe-area-context/fabric (= 5.10.0)
+    - react-native-safe-area-context/common (= 5.11.1)
+    - react-native-safe-area-context/fabric (= 5.11.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2127,7 +2125,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/common (5.10.0):
+  - react-native-safe-area-context/common (5.11.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2156,7 +2154,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/fabric (5.10.0):
+  - react-native-safe-area-context/fabric (5.11.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2188,7 +2186,7 @@ PODS:
     - Yoga
   - react-native-sqlite-storage (6.0.1):
     - React-Core
-  - react-native-vector-icons-fontawesome (13.1.4)
+  - react-native-vector-icons-fontawesome (13.1.5)
   - react-native-vector-icons-material-icons (12.5.0)
   - react-native-version-check (3.5.0):
     - React-Core
@@ -2753,7 +2751,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNCClipboard (1.16.3):
+  - RNCClipboard (1.17.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2813,10 +2811,11 @@ PODS:
     - Yoga
   - RNDeviceInfo (14.1.1):
     - React-Core
-  - RNFastImage (8.6.33):
+  - RNFastImage (8.31.2):
     - React-Core
-    - SDWebImage (~> 5.11.1)
-    - SDWebImageWebPCoder (~> 0.8.4)
+    - SDWebImage (< 6.0, >= 5.11.1)
+    - SDWebImagePhotosPlugin (< 2.0, >= 1.2.0)
+    - SDWebImageWebPCoder (< 1.0, >= 0.8.4)
   - RNFBApp (23.8.8):
     - boost
     - DoubleConversion
@@ -2881,7 +2880,7 @@ PODS:
     - Yoga
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.33.0):
+  - RNGestureHandler (2.33.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2923,7 +2922,7 @@ PODS:
     - RNNotifee/NotifeeCore (= 9.1.8)
   - RNNotifee/NotifeeCore (9.1.8):
     - React-Core
-  - RNPermissions (5.6.2):
+  - RNPermissions (5.6.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -3191,7 +3190,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNSVG (15.15.5):
+  - RNSound (0.13.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3218,10 +3217,39 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.15.5)
     - SocketRocket
     - Yoga
-  - RNSVG/common (15.15.5):
+  - RNSVG (15.16.1):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNSVG/common (= 15.16.1)
+    - SocketRocket
+    - Yoga
+  - RNSVG/common (15.16.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3279,12 +3307,14 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - SDWebImage (5.11.1):
-    - SDWebImage/Core (= 5.11.1)
-  - SDWebImage/Core (5.11.1)
-  - SDWebImageWebPCoder (0.8.5):
-    - libwebp (~> 1.0)
+  - SDWebImage (5.21.7):
+    - SDWebImage/Core (= 5.21.7)
+  - SDWebImage/Core (5.21.7)
+  - SDWebImagePhotosPlugin (1.2.1):
     - SDWebImage/Core (~> 5.10)
+  - SDWebImageWebPCoder (0.15.0):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.1)
   - VisionCamera (4.7.3):
     - VisionCamera/Core (= 4.7.3)
@@ -3361,7 +3391,6 @@ DEPENDENCIES:
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-orientation-locker (from `../node_modules/react-native-orientation-locker`)
   - react-native-photo-manipulator (from `../node_modules/react-native-photo-manipulator`)
-  - react-native-print (from `../node_modules/react-native-print`)
   - react-native-render-html (from `../node_modules/react-native-render-html`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-sqlite-storage (from `../node_modules/react-native-sqlite-storage`)
@@ -3416,6 +3445,7 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNShare (from `../node_modules/react-native-share`)
+  - RNSound (from `../node_modules/react-native-sound`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - SocketRocket (~> 0.7.1)
@@ -3451,6 +3481,7 @@ SPEC REPOS:
     - PromisesObjC
     - React-Codegen
     - SDWebImage
+    - SDWebImagePhotosPlugin
     - SDWebImageWebPCoder
     - SocketRocket
     - WCPhotoManipulator
@@ -3563,8 +3594,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-orientation-locker"
   react-native-photo-manipulator:
     :path: "../node_modules/react-native-photo-manipulator"
-  react-native-print:
-    :path: "../node_modules/react-native-print"
   react-native-render-html:
     :path: "../node_modules/react-native-render-html"
   react-native-safe-area-context:
@@ -3673,6 +3702,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNShare:
     :path: "../node_modules/react-native-share"
+  RNSound:
+    :path: "../node_modules/react-native-sound"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   RNVectorIcons:
@@ -3701,7 +3732,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: a24e58982ab3ba2f64d79613e027fe7f57e88539
   GoogleMLKit: ddd51d7dff36ff28defa69afedd9cdce684fd857
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
-  GoogleUtilities: 4e0c2ad9fa0d0d18b5c4df8bf57b461cba35b0bb
+  GoogleUtilities: db34c1c11c6f2eccb6fab2340cb8ceb1451299dc
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   hermes-engine: bbc1152da7d2d40f9e59c28acc6576fcf5d28e2a
   libwebp: af5937a13536ef73f3784d69cc342b98961acf33
@@ -3752,22 +3783,21 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 8f620d1794c6b59a8c3862c3ae820a2e9e6c9bb0
   React-microtasksnativemodule: dcf5321c9a41659a6718df8a5f202af1577c6825
   react-native-config: e06e1a6e266f6a10a165d43454559d509011887c
-  react-native-document-picker: ea92447706a89285976daeda8a11d9302a8cba0a
+  react-native-document-picker: a09c6b95383d6b56546fd628d36ce09fa971ed93
   react-native-geolocation: b7f68b8c04e36ee669c630dbc48dd42cf93a0a41
   react-native-geolocation-service: 32b2c2a3b91e70ce2a8d0c684801aaeb0a07e0ec
   react-native-hole-view: 2c8b987bf0827ec700669fd660e138d0f2044d40
-  react-native-image-picker: 9bceb747cd6cde22a3416ffdc819d11b5b11f156
+  react-native-image-picker: 65451e9505e0baf31411cea37949efa892fe75c2
   react-native-image-resizer: bc50c33e359ac9a5702b912320d4d1175c5d4294
   react-native-in-app-review: 1516ba69d60d58053b7eb3aaaf8d2a5a74af8b57
   react-native-maps: 3793b1682de6d6c5d8e225dc877eb435b5090e80
   react-native-netinfo: 75f720ddf3f559f152ef7a232ce09b3b70490ea9
   react-native-orientation-locker: cc6f357b289a2e0dd2210fea0c52cb8e0727fdaa
   react-native-photo-manipulator: 92fd2feec313f042e32f6396fa9fe7c297ff3652
-  react-native-print: 692e8782bc89872ea01738c6759631388e77358c
   react-native-render-html: 5afc4751f1a98621b3009432ef84c47019dcb2bd
-  react-native-safe-area-context: c1f91e1c230b24af6150613ae8dc2d78afcecf25
+  react-native-safe-area-context: c5836dd2ed26c54fb72d6e50ec476406419a3f88
   react-native-sqlite-storage: 0c84826214baaa498796c7e46a5ccc9a82e114ed
-  react-native-vector-icons-fontawesome: b19a84b13d42875ae4e70c2aa0c5db81672378b8
+  react-native-vector-icons-fontawesome: c293d5990f222b3e2bb655aa8ab059481a6282e5
   react-native-vector-icons-material-icons: 8717ed6d0adafdea7a20475dababba112992a372
   react-native-version-check: 842a3b0e7221798cbe8c6abaf24aab3ed0b485ce
   react-native-webview: 12e78565569a5a2f519fc1c4efa8dd322a60f8e2
@@ -3804,30 +3834,32 @@ SPEC CHECKSUMS:
   ReactCodegen: 4928682e20747464165effacc170019a18da953c
   ReactCommon: ec1cdf708729338070f8c4ad746768a782fd9eb1
   RNCAsyncStorage: f30b3a83064e28b0fc46f1fbd3834589ed64c7b9
-  RNCClipboard: 8e5237c79dafacea5b7adf4c3ab39a4236b5ef7e
+  RNCClipboard: 9030356f7e4eaf36e27d0d686c1e20f70e9dcf08
   RNDateTimePicker: f60443f1e9d3ac63db9048870d872f8db99a8619
   RNDeviceInfo: bcce8752b5043a623fe3c26789679b473f705d3c
-  RNFastImage: eabcf188d768ee0001f5782bfbee89b63adbf8fb
+  RNFastImage: 4bbf05dbc6c7d3b67f228da909421dc3ddfd3cd3
   RNFBApp: dd459605dade60ba81833945bc26efa1c44ac1bc
   RNFBMessaging: bb9afc19988f131f84370b4345ba15aa6cb558c1
   RNFS: 89de7d7f4c0f6bafa05343c578f61118c8282ed8
-  RNGestureHandler: 7c24ee853bfec700062f04ad7f0957ba2eecb52b
+  RNGestureHandler: 14bc1a88bed63b4692ae31b97c5a4cac1aa2164b
   RNMLKitTextRecognition: 2d7c3481b9dabc72f7e31c67025c28b2c8d653b0
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
-  RNPermissions: 0876915e6f346b3ceb84346e0cee1555c18ce8e1
+  RNPermissions: 23c3f18bdec45e43ebe7bfdfbb3bdf45d173c1e4
   RNReanimated: efeb14f6e1ccdc2f2288ccdceaeaa3821e7cbc94
   RNScreens: 6a2d1ff4d263d29d3d3db9f3c19aad2f99fdd162
   RNShare: f7b9bb520c96df188c886293511309c4fa2ebfd6
-  RNSVG: ce8672dee470e1af3fbdaf1351d36d15e89b3d92
+  RNSound: 4e171fa3fcfdd9f06600b50aa21599f304e3d348
+  RNSVG: 52eee092b53d6e5c14d1c99af9b899809c939c73
   RNVectorIcons: 0567525e0a344458329daa09068cf9e8090ec791
-  SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
-  SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
+  SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
+  SDWebImagePhotosPlugin: aaf5bc35fd49b66876de58c33eeb6e38b50920e5
+  SDWebImageWebPCoder: 0e06e365080397465cc73a7a9b472d8a3bd0f377
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   VisionCamera: 0044a94f7489f19e19d5938e97dfc36f4784af3c
   VisionCameraFaceDetector: 61099ebc25018dc214428e16aed28f7cb58b9ae2
   WCPhotoManipulator: 804988e16a6fe941cddff942b2acf887110de5d6
   Yoga: ce248fb32065c9b00451491b06607f1c25b2f1ed
 
-PODFILE CHECKSUM: 5f3f9f41b3c517630a6f565e66c9fcea0cf79e93
+PODFILE CHECKSUM: 7f0b0f12ebd191e7123b16de1ef0f9b498d11e85
 
 COCOAPODS: 1.16.2

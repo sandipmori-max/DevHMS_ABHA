@@ -52,6 +52,7 @@ import TranslatedText from "../home/TranslatedText";
 import { styles } from "./style";
 import { formatDateForAPI } from "../../../../utils/helpers";
 import DeviceInfo from "react-native-device-info";
+import AuthModal from "../../../../abha/AuthModal/AuthModal";
 const accentColors = [
   "#dbe0f5ff",
   "#c8f3edff",
@@ -181,6 +182,47 @@ const MenuTab = ({
       "white",
     );
   };
+
+
+      const [bottomSheetType, setBottomSheetType] = useState('');
+    const [showInfoModal, setShowInfoModal] = useState(false);
+     const [tapLoader, setTapLoader] = useState(false);
+   
+    const [showLoginSheet, setShowLoginSheet] = useState(false);
+    const [confirmation, setConfirmation] = useState<any>()
+    const [selected, setSelected] = useState<"yes" | "no" | null>(null);
+  
+    const sheetProgress = useRef(
+      new Animated.Value(0),
+    ).current;
+  
+    const [selectedLoginType, setSelectedLoginType] = useState();
+    const sheetTranslateY =
+      sheetProgress.interpolate({
+        inputRange: [0, 1],
+        outputRange: [400, 0],
+      });
+  
+    const openSheet = () => {
+      setSelectedLoginType("")
+      setShowLoginSheet(true);
+      sheetProgress.setValue(0);
+  
+      Animated.timing(sheetProgress, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    };
+   
+    const closeSheet = () => {
+      setShowLoginSheet(false);
+      setConfirmation(false)
+      setSelected(null)
+      setTapLoader(false)
+    };
+
+
 
   // Search effect
   useEffect(() => {
@@ -660,14 +702,14 @@ const MenuTab = ({
             style={{
               marginLeft: isHorizontal ? 16 : 0,
               marginTop: isHorizontal ? 0 : 4,
-             }}
+            }}
           >
             <TranslatedText
               numberOfLines={2}
               text={item.name}
               style={[
-                 
-                 
+
+
                 theme === "dark" && { color: "white" },
               ]}
             ></TranslatedText>
@@ -678,9 +720,6 @@ const MenuTab = ({
                 style={[
                   list.length > 8 ? styles.subtitleV2 : styles.subtitle,
                   theme === "dark" && { color: "white" },
-                  !isHorizontal && {
-                    textAlign: "center",
-                  },
                 ]}
               ></TranslatedText>
             )}
@@ -693,7 +732,8 @@ const MenuTab = ({
           <TouchableOpacity
             onPress={async () => {
 
-              console.log("item", item)
+              try {
+                console.log("item", item)
               let raw = null;
               try {
                 raw = await dispatch(
@@ -711,6 +751,9 @@ const MenuTab = ({
                 return;
               }
               if (parsedConfig?.newentry === 1 || parsedConfig?.newentry === "1") {
+                 if (parsedConfig?.title.includes('ABHA')) {
+                  openSheet();
+                } else {
                 navigation.navigate("Page", {
                   item,
                   title: item?.name,
@@ -719,7 +762,13 @@ const MenuTab = ({
                   pageTitle: item?.name,
                   isFromBusinessCard: false,
                   isFromProfile: false,
-                });
+                }); 
+              }
+              }else {
+                showToast('New entry page not config...', ERP_COLOR_CODE.ERP_ERROR, 'white')
+              }
+              } catch (error) {
+                
               }
             }}
             style={{
@@ -917,6 +966,25 @@ const MenuTab = ({
         </>
       )}
 
+
+{showLoginSheet && (
+        <AuthModal
+          selectedLoginType={selectedLoginType}
+          setSelectedLoginType={setSelectedLoginType}
+          showLoginSheet={showLoginSheet}
+          setShowLoginSheet={setShowLoginSheet}
+          confirmation={confirmation}
+          setConfirmation={setConfirmation}
+          selected={selected}
+          bottomSheetType={bottomSheetType}
+          setBottomSheetType={setBottomSheetType}
+          setShowInfoModal={setShowInfoModal}
+          setSelected={setSelected}
+          closeSheet={closeSheet}
+          sheetTranslateY={sheetTranslateY}
+        />
+      )}
+      
       <Toast
         visible={toast.visible}
         message={toast.message}

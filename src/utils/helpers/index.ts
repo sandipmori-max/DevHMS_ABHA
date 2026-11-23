@@ -9,10 +9,10 @@ import {
   Platform,
 } from "react-native";
 import RNFS from "react-native-fs";
-import FastImage from "react-native-fast-image";
 import { ERP_COLOR_CODE } from "../constants";
 import messaging from "@react-native-firebase/messaging";
 import Share from 'react-native-share';
+
 
 export const formatDateMonthDateYear = (dateString: string) => {
   return new Date(dateString).toLocaleDateString("en-US", {
@@ -529,7 +529,7 @@ export const normalizeDate = (dateStr: string) => {
     Nov: "11",
     Dec: "12",
   };
-  return `${year}-${monthMap[monthStr]}-${day.padStart(2, "0")}`;
+  return `${year}-${monthMap[monthStr]}-${day?.padStart(2, "0")}`;
 };
 
 export const getWorkedHours = (punchIn: string, punchOut: string): number => {
@@ -563,7 +563,6 @@ export const getWorkedHours2 = (punchIn: string, punchOut: string) => {
 
   return `${hours - 1}:${mins.toString().padStart(2, "0")} hr`;
 };
-
 export const clearAllTempFiles = async () => {
   try {
     const tempDir = RNFS.TemporaryDirectoryPath;
@@ -617,11 +616,11 @@ export const handlePhonePress = async (phoneNumber: string) => {
   Linking.openURL(url);
 };
 
+
 export const handleEmailPress = async (emailAddress: string) => {
   const url = `mailto:${emailAddress}`;
   Linking.openURL(url);
 };
-
 export const handleLocationPress = (location: string) => {
   if (!location) return;
 
@@ -1057,6 +1056,57 @@ export const applyActionsToControls = (controls, actions) => {
 };
 
 const collectFailedMessages = (
+  condition,
+  values,
+  messages = []
+) => {
+  if (!condition) return messages;
+
+  // Group-level validation
+  if (condition.type === "groupValidation") {
+    const isValid = evaluateRules(condition, values);
+
+    if (!isValid && condition.message) {
+      messages.push({
+        field: condition.field || condition.rules?.[0]?.left,
+        message: condition.message,
+      });
+    }
+
+    return messages;
+  }
+
+  // Existing nested rule handling
+  if (
+    condition.logic &&
+    Array.isArray(condition.rules)
+  ) {
+    condition.rules.forEach((rule) => {
+      collectFailedMessages(rule, values, messages);
+    });
+
+    return messages;
+  }
+
+  // Existing individual field validation
+  const result = evaluateCondition(condition, values);
+
+  const isValid =
+    typeof result === "object"
+      ? result.isValid
+      : result;
+
+  if (!isValid && condition.message) {
+    messages.push({
+      field: condition.left,
+      message: condition.message,
+    });
+  }
+
+  return messages;
+};
+
+const collectFailedMessagesv2 = (
   condition,
   values,
   messages = []
@@ -1602,5 +1652,132 @@ export const downloadAndShare = async (
     console.log('Message:', e?.message);
     console.log('Stack:', e?.stack);
     console.log('===========================');
+  }
+};
+
+
+
+
+ 
+export interface DownloadFileParams {
+  url: string;
+  fileName?: string;
+  headers?: Record<string, string>;
+  onProgress?: (progress: number) => void;
+}
+
+export interface DownloadFileResponse {
+  success: boolean;
+  path: string | null;
+  fileName: string | null;
+  statusCode?: number;
+  error?: string;
+}
+
+const getFileNameFromUrlv2 = (url: string) => {
+  try {
+    const cleanUrl = url.split('?')[0].split('#')[0];
+    const name = cleanUrl.substring(cleanUrl.lastIndexOf('/') + 1);
+
+    return decodeURIComponent(name) || 'download';
+  } catch {
+    return 'download';
+  }
+};
+
+const getFileNameFromHeaders = (headers: any) => {
+  const disposition =
+    headers?.['content-disposition'] ||
+    headers?.['Content-Disposition'];
+
+  if (!disposition) return null;
+
+  const utf8Match = disposition.match(
+    /filename\*=UTF-8''([^;]+)/i,
+  );
+
+  if (utf8Match?.[1]) {
+    try {
+      return decodeURIComponent(utf8Match[1]);
+    } catch {}
+  }
+
+  const match = disposition.match(/filename="?([^";]+)"?/i);
+
+  return match?.[1] || null;
+};
+
+const sanitizeFileName = (name: string) => {
+  return name
+    .replace(/[<>:"/\\|?*\x00-\x1F]/g, '_')
+    .trim() || 'download';
+};
+
+export const downloadFile = async ({
+  url,
+  fileName,
+  headers = {},
+  onProgress,
+}: DownloadFileParams): Promise<DownloadFileResponse> => {
+  try {
+    if (!url) {
+      throw new Error('Download URL is required');
+    }
+
+    const downloadId = Date.now();
+
+    const destination =
+      `${RNFS.DocumentDirectoryPath}/` +
+      sanitizeFileName(fileName || getFileNameFromUrlv2(url));
+
+    const task = RNFS.downloadFile({
+      fromUrl: url,
+      toFile: destination,
+      headers,
+
+      progressDivider: 5,
+
+      progress: data => {
+        if (data.contentLength > 0) {
+          const percentage = Math.round(
+            (data.bytesWritten / data.contentLength) * 100,
+          );
+
+          onProgress?.(percentage);
+        }
+      },
+    });
+
+    const response = await task.promise;
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      await RNFS.unlink(destination).catch(() => {});
+
+      throw new Error(
+        `Download failed. Status: ${response.statusCode}`,
+      );
+    }
+
+    const exists = await RNFS.exists(destination);
+
+    if (!exists) {
+      throw new Error('Downloaded file not found');
+    }
+
+    return {
+      success: true,
+      path: destination,
+      fileName: destination.split('/').pop() || null,
+      statusCode: response.statusCode,
+    };
+  } catch (error: any) {
+    console.log('Download Error:', error);
+
+    return {
+      success: false,
+      path: null,
+      fileName: null,
+      error: error?.message || 'Download failed',
+    };
   }
 };

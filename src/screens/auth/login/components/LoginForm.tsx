@@ -3,7 +3,7 @@ import { View, Text, Animated, Platform } from 'react-native';
 import { Formik } from 'formik';
 import { getMessaging } from '@react-native-firebase/messaging';
 
-import { styles } from '../login_style';
+ import { styles } from '../login_style';
 import { useApi } from '../../../../hooks/useApi';
 import { DevERPService } from '../../../../services/api';
 import { LoginFormProps } from '../types';
@@ -22,17 +22,15 @@ const LoginForm: React.FC<LoginFormProps> = ({
   onLoginSuccess,
   showAlert,
 }) => {
-  
   const { t } = useTranslations();
   const { token: fcmToken } = useFcmToken();
 
-  const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isApiLoading, setIsApiLoading] = useState(false)
-  
-  const isIpad =
+
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+ const isIpad =
    ( Platform.OS === "ios" && Platform.isPad) || DeviceInfo.isTablet() || Platform.isTV;
-  
-   const {
+  const {
     execute: validateCompanyCode,
     loading: validationLoading,
     error: validationError,
@@ -89,10 +87,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
   };
 
  const handleLoginSubmit = async (values: typeof initialFormValues) => {
-    if(isApiLoading){
+   if(isApiLoading){
       return;
     }
-    console.log("isApiLoadingisApiLoadingisApiLoadingisApiLoadingisApiLoading", isApiLoading)
     setIsApiLoading(true)
     try {
       const companyValidation = await validateCompanyCode(() =>
@@ -228,8 +225,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
                     ? t('auth.signingIn')
                     : t('auth.signIn')
                 }
-                isApiLoading={isApiLoading}
                 isLoading={isLoading}
+                 isApiLoading={isApiLoading}
                 onPress={handleSubmit as any}
                 color={
                   isLoading || validationLoading || erpLoginLoading
@@ -243,6 +240,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 isIpad && {
                   paddingVertical: 18,
                 }
+              
               ]}
                 textStyle={styles.loginButtonText}
               />

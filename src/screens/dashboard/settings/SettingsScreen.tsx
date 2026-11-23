@@ -961,7 +961,7 @@ const SettingsScreen = () => {
                 dispatch(resetDropdownState());
                 dispatch(resetSyncLocationState());
                 dispatch(resetAttendanceState());
-                setERPAppColor('#1565C0');
+                setERPAppColor('#251d50');
                 dispatch(logoutUserThunk());
               }
             }

@@ -95,6 +95,10 @@ const ERPTextInput: React.FC<ERPTextInputProps> = ({
                 ? "closed-caption-off"
                 : field === "user"
                 ? "person"
+                : field === "phone"
+                ? "phone"
+                : field === "otp"
+                ? "dialpad"
                 : "password"
             }
             size={20}

@@ -21,13 +21,13 @@ import MaterialIcons from "@react-native-vector-icons/material-icons";
 import LocationTrackScreen from "../screens/dashboard/tabs/home/LocationTrack";
 import FaceCameraScreen from "../screens/dashboard/attendance/components/FaceCameraScreen";
 import PrivacyPolicyScreen from "../screens/dashboard/privacy/PrivacyPolicyScreen";
+// import TextScannerScreen from "../screens/dashboard/page/components/TextScannerScreen";
 import LoginScreen from "../abha/screens/Login/LoginScreen";
 import OtpVerificationScreen from "../abha/screens/Login/OtpVerificationScreen";
 import DetailsScreen from "../abha/screens/DetailsScreen";
 import LinkCareContextScreen from "../abha/screens/LinkCareContext/LinkCareContextScreen";
 import BridgeServices from "../abha/screens/BridgeServices/BridgeServices";
 import ConsentFormScreen from "../abha/screens/ConsentForm/ConsentFormScreen";
-
 const Stack = createStackNavigator<any>();
 
 const StackNavigator = () => {
@@ -63,11 +63,12 @@ const StackNavigator = () => {
 
     headerStyle: {
       backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+      elevation: 0,
       shadowOpacity: 0,
     },
     headerBackTitleVisible: false,
     headerLeftContainerStyle: {
-      paddingLeft: Platform.OS === 'ios' ? 10 : 6,
+      paddingLeft: Platform.OS === 'ios'  ? 10 : 6,
       marginLeft: 0,
     },
 
@@ -96,7 +97,7 @@ const StackNavigator = () => {
     cardStyleInterpolator:
       CardStyleInterpolators.forHorizontalIOS,
 
-    gestureEnabled: Platform.OS === 'ios' ? true : false,
+     gestureEnabled: Platform.OS === 'ios' ? true : false,
     gestureDirection: "horizontal",
 
     transitionSpec: {
@@ -124,20 +125,19 @@ const StackNavigator = () => {
         headerStyle: {},
       }}
     >
-      {/* {isPinLoaded === true && (
+      {isPinLoaded === true && (
         <Stack.Screen
           name="Startup"
           component={StartupScreen}
           options={smoothTransition}
         />
-        
-      )} */}
+      )}
       <Stack.Screen
         name="Drawer"
         component={DrawerNavigator}
         options={smoothTransition}
       />
-      <Stack.Screen
+       <Stack.Screen
         name="RegistrationAbha"
         options={{
           headerShown: false
@@ -260,6 +260,13 @@ const StackNavigator = () => {
         component={DisplayScreen}
         options={screenOptions}
       /> */}
+      {/* <Stack.Screen
+  name="TextScannerScreen"
+  component={TextScannerScreen}
+  options={{
+    headerShown: false,
+  }}
+/> */}
     </Stack.Navigator>
   );
 };

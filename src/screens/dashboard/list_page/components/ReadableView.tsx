@@ -12,10 +12,11 @@ import {
   UIManager,
   Platform,
   useWindowDimensions,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Linking } from 'react-native';
-import { formatDateList } from "../../../../utils/helpers";
+import { downloadFile, formatDateList } from "../../../../utils/helpers";
 import { styles } from "../list_page_style";
 import NoData from "../../../../components/no_data/NoData";
 import { ERP_COLOR_CODE } from "../../../../utils/constants";
@@ -187,13 +188,14 @@ const ReadableView = ({
     const status = item?.status;
     const date = item?.date;
     const remarks = item?.remarks;
-    
+
     const address = item?.address;
+    console.log("address", address)
     const amount = item?.amount;
     const btnKeys = Object.keys(item).filter((key) => key.startsWith("btn_"));
     const baseUrl = Platform.OS === "android"
-                                        ? item.image?.replace("https://", "http://")
-                                        : item.image + `?t=${Date.now()}`
+      ? item.image?.replace("https://", "http://")
+      : item.image + `?t=${Date.now()}`
     const authUser = item?.authuser;
     const qty = item?.qty;
 
@@ -280,11 +282,11 @@ const ReadableView = ({
             width: isIpad ? isLandscape ? '32%' : '48%' : isLandscape ? "48%" : "96%",
             overflow: "hidden",
           },
-          item?.color && 
+          item?.color &&
           {
-            backgroundColor : item?.color
+            backgroundColor: item?.color
           }
-        ]}
+          ]}
         >
           {/* main touchable */}
           <TouchableOpacity
@@ -529,7 +531,7 @@ const ReadableView = ({
                         color: theme === "dark" ? "white" : "black",
                       }}
                     >
-                      {address.replace(/\\n/g, "\n")}
+                      {typeof address === 'string' ? address?.replace(/\\n/g, "\n") : address}
                     </Text>
                   </View>
                 )}
@@ -634,7 +636,14 @@ const ReadableView = ({
               >
                 {btnKeys?.map((key, idx) => {
                   const actionValue = item[key];
+                  console.log("actionValue", actionValue, key, item[key]);
+                  const [left, result] = actionValue.split("/");
+
                   const { label, color } = getButtonMeta(key);
+                  const formattedTitle = key === "btn_download" ? label : left
+                    .replace(/App$/, "")
+                    .replace(/([a-z])([A-Z])/g, "$1 $2")
+                    .replace(/_/g, " ");
 
                   return (
                     <TouchableOpacity
@@ -648,8 +657,23 @@ const ReadableView = ({
                         maxWidth: screenWidth / 4,
                         alignItems: "center",
                       }}
-                      onPress={() => {
+                      onPress={async () => {
                         if (authUser) return;
+                        if (key === "btn_download") {
+                          const response = await downloadFile({
+                            url: item[key],
+                            onProgress: percentage => {
+                              console.log('Download Progress:', percentage);
+                            },
+                          });
+
+                          if (response.success) {
+                            console.log('File Path:', response.path);
+                            console.log('File Name:', response.fileName);
+                            Alert.alert('Download Complete');
+                          }
+                          return;
+                        }
                         handleActionButtonPressed(
                           actionValue,
                           label,
@@ -666,7 +690,7 @@ const ReadableView = ({
                           fontSize: 12,
                         }}
                       >
-                        {label}
+                        {formattedTitle ? formattedTitle : label}
                       </Text>
                     </TouchableOpacity>
                   );
@@ -724,7 +748,7 @@ const ReadableView = ({
         keyExtractor={(_, index) => index.toString()}
         data={listData}
         keyboardShouldPersistTaps="handled"
-        renderItem={({ item, index }) => (<>
+         renderItem={({ item, index }) => (<>
 
           {
             parsedConfig?.title.includes('ABHA') ? <AbhaUserItem

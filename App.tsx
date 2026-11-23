@@ -71,13 +71,13 @@ const AppContent = () => {
   const appTranslateY = useRef(new Animated.Value(120)).current;
   const dispatch = useDispatch();
   const proReduxData = useSelector(
-    (state: any) => state.abha.activeUser
+    (state: any) => state?.abha?.activeUser
   );
   const appId = useSelector(
-    (state: any) => state.auth.appId
+    (state: any) => state?.auth?.appId
   );
   const deviceName = useSelector(
-    (state: any) => state.auth.deviceName
+    (state: any) => state?.auth?.deviceName
   );
   const [getAuth] = useGetAuthMutation();
   const [ready, setReady] = useState(false);

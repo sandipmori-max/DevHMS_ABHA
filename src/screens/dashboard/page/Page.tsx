@@ -72,7 +72,7 @@ import TranslatedText from "../tabs/home/TranslatedText";
 import { setReloadApp } from "../../../store/slices/reloadApp/reloadAppSlice";
 import { updateAppMenuList } from "../../../store/slices/auth/authSlice";
 import DocScan from "./components/DocScan";
-import DisabledDateTime from "./components/DisabledDateTime";
+import DevBusinessCardView from "./components/DevERPCardReader";
 
 type PageRouteParams = { PageScreen: { item: any } };
 
@@ -168,29 +168,10 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
   const [locationEnabled, setLocationEnabled] = useState<boolean | null>(null);
   const [modalClose, setModalClose] = useState(false);
   const [isSettingVisible, setIsSettingVisible] = useState(false);
-  const [myScript, setMyScript] = useState(
-    [
-    {
-        "logic": "AND",
-        "rules": [
-            {
-                "type": "formula",
-                "formulaType": "dateDiff",
-                "fieldName": "totalday",
-                "fromField": "leavedatefrom",
-                "toField": "leavedateto",
-                "inclusive": true,
-                "triggerFields": [
-                    "leavedatefrom",
-                    "leavedateto"
-                ]
-            }
-        ]
-    },
-]
+  const [myScript, setMyScript] = useState();
 
+  console.log("controlscontrolscontrolscontrols", controls)
 
-  );
   const [backgroundDeniedModal, setBackgroundDeniedModal] = useState(false);
   const isCheckingPermission = useRef(false);
   const locationSyncInterval = useRef(null);
@@ -608,6 +589,21 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
       ),
       headerRight: () => (
         <>
+        {
+          user?.company_code.toLocaleLowerCase() === 'deverp' &&  <ERPIcon
+              name="refresh"
+              isLoading={actionLoader}
+              onPress={() => {
+                setControls([]);
+                setFormValues(null);
+                setButtonSave(true);
+                setActionLoader(true);
+                fetchPageData();
+                setErrors({});
+                setErrorsList([]);
+              }}
+            />
+        }
           {!error && !isFromNew && (
             <ERPIcon
               name="refresh"
@@ -702,7 +698,7 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
         return merged;
       });
     } catch (e: any) {
-      setError(JSON.stringify(e?.data) || "Failed to load page");
+      setError(JSON.stringify(e) || JSON.stringify(e?.data) || "Failed to load page");
     } finally {
       setLoadingPageId(null);
       setTimeout(() => {
@@ -776,7 +772,6 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
     }) => {
       const setValue = (val, source) => {
 
-        console.log("valvalvalvalvalvalvalvalvalvalval", val, source)
         if (myScript && source && source === "isFromDropdown") {
           const raw = myScript.find((obj) =>
             obj.rules?.some(
@@ -801,15 +796,11 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
               rule.formulaType === "componentHideVisible"
           );
 
-          console.log("isComponentHideVisibleisComponentHideVisibleisComponentHideVisible", isComponentHideVisible)
-
           if (isComponentHideVisible) {
             const updatedValues = {
               ...formValues,
               [item.field]: val,
             };
-
-            console.log("updatedValuesupdatedValuesupdatedValues", updatedValues)
 
             setFormValues(updatedValues);
 
@@ -818,8 +809,6 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
               updatedValues,
               item.field
             );
-
-            console.log("resultresultresult", result)
 
             if (result.actions?.length) {
               const updatedControls = applyActionsToControls(
@@ -963,6 +952,8 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
 
       let content = null;
 
+      // 
+
       //BoolInput
       if (item?.ctltype === "BOOL") {
         const rawVal = formValues[item?.field] ?? item?.text;
@@ -977,7 +968,8 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
             }}
           />
         );
-      } else if (item?.ctltype === "IMAGE" && item?.field?.startsWith("doc_scan_")) {
+      }
+      else if (item?.ctltype === "IMAGE" && item?.field?.startsWith("doc_scan_")) {
         content = (
           <DocScan
             item={item}
@@ -993,6 +985,18 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
             errors={errors}
           />
         );
+      }
+
+
+      else if (item?.ctltype === "IMAGE" && item?.field?.startsWith("invoice_reader_")) {
+        content = <BusinessCardView
+          baseLink={baseLink}
+          infoData={infoData}
+          setValue={setValue}
+          controls={controls}
+          item={item}
+          isFromInvoiceReader={true}
+        />
       }
       //----PENDING----CustomMultiPicker
       else if (item?.field === "---") {
@@ -1071,6 +1075,17 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
           />
         );
       }
+
+      else if (item?.field?.startsWith("qr_scan")) {
+        content = <ScanScreen errors={errors} isFromChild={isFromChild} item={item} onValueChange={setValue} />;
+      }
+      //BarCodeScan
+      else if (
+        item?.field?.startsWith("barcode_scan")
+      ) {
+        content = <BarCodeScan errors={errors} isFromChild={isFromChild} item={item} onValueChange={setValue} />;
+      }
+
       //Media - BusinessCardView
       else if (
         item?.ctltype === "FILE" ||
@@ -1080,13 +1095,30 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
         content = (
           <>
             {isFromBusinessCard ? (
-              <BusinessCardView
-                baseLink={baseLink}
-                infoData={infoData}
-                setValue={setValue}
-                controls={controls}
-                item={item}
-              />
+              <>
+                {
+                  user?.company_code.toLocaleLowerCase() === 'deverp' ? <>
+                    <DevBusinessCardView
+                      baseLink={baseLink}
+                      infoData={infoData}
+                      setValue={setValue}
+                      controls={controls}
+                      item={item}
+                      setFormValues={setFormValues}
+                      isFromInvoiceReader={true}
+                    /> </> :
+                    <BusinessCardView
+                      baseLink={baseLink}
+                      infoData={infoData}
+                      setValue={setValue}
+                      controls={controls}
+                      item={item}
+                      setFormValues={setFormValues}
+                      isFromInvoiceReader={false}
+                    />
+                }
+              </>
+
             ) : (
               <Media
                 isValidate={isValidate}
@@ -1096,6 +1128,7 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
                 isFromNew={isFromNew}
                 handleAttachment={handleAttachment}
                 errors={errors}
+                isTextScan={true}
               />
             )}
           </>
@@ -1174,6 +1207,8 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
           />
         );
       }
+
+
       //Input
       else {
         content = (
@@ -1195,6 +1230,8 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
           />
         );
       }
+
+
       //content
       return (
         <>

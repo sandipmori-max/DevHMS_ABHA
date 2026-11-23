@@ -232,6 +232,7 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginBottom: 10,
+    elevation: 1,
   },
 
   recordAvatar: {
