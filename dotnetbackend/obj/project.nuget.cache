@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "dgSpecHash": "UT0lJRGfCo8=",
+  "success": true,
+  "projectFilePath": "/Users/deverp/Desktop/Sandip_Mori/DevHMS_ABHA/dotnetbackend/DevHms.Abdm.CallbackApi.csproj",
+  "expectedPackageFiles": [
+    "/Users/deverp/.nuget/packages/microsoft.netcore.app.ref/8.0.30/microsoft.netcore.app.ref.8.0.30.nupkg.sha512",
+    "/Users/deverp/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.30/microsoft.aspnetcore.app.ref.8.0.30.nupkg.sha512",
+    "/Users/deverp/.nuget/packages/microsoft.netcore.app.host.osx-arm64/8.0.30/microsoft.netcore.app.host.osx-arm64.8.0.30.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "message": "Error occurred while getting package vulnerability data: Access to the path '/Users/deverp/.local/share' is denied.",
+      "projectPath": "/Users/deverp/Desktop/Sandip_Mori/DevHMS_ABHA/dotnetbackend/DevHms.Abdm.CallbackApi.csproj",
+      "warningLevel": 1,
+      "filePath": "/Users/deverp/Desktop/Sandip_Mori/DevHMS_ABHA/dotnetbackend/DevHms.Abdm.CallbackApi.csproj",
+      "targetGraphs": []
+    }
+  ]
+}

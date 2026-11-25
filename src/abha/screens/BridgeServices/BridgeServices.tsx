@@ -7,13 +7,19 @@ import { useGenerateLinkTokenMutation } from '../../redux/api/linkAbhaApi'
 import { useCreateSessionMutation } from '../../redux/api/sessionApi'
 import { useDispatch } from 'react-redux'
 import { hideLoader, showLoader } from '../../redux/slices/loaderSlice'
-import { setSelectedXCMID } from '../../redux/slices/abhaSlice'
+import { setLinkToken, setSelectedXCMID } from '../../redux/slices/abhaSlice'
 import { showToast } from '../../utils/toast'
-import { useNavigation } from "@react-navigation/native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import NoData from '../../../components/no_data/NoData'
 
+type BridgeServicesNavigation = {
+    LinkCareContext: {
+        abhaDetail: Array<{ field: string; text: string }>;
+    };
+};
+
 const BridgeServices = ({ route }: any) => {
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProp<BridgeServicesNavigation>>();
 
     const { bridgeServices, abhaDetail } = route.params || {};
     const [selectedBridge, setSelectedBridge] = useState<any>(null);
@@ -24,14 +30,23 @@ const BridgeServices = ({ route }: any) => {
         createSession
     ] = useCreateSessionMutation();
 
-    const getValue = (fieldName: any) => {
-        if (abhaDetail.length === 0) {
-            return;
+    const normalizeFieldName = (fieldName: string) =>
+        fieldName.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+
+    const getValue = (fieldName: string) => {
+        if (!Array.isArray(abhaDetail)) {
+            return "";
         }
-        const fieldMap = Object.fromEntries(
-            abhaDetail.map(item => [item.field, item.text])
+
+        const normalizedFieldName = normalizeFieldName(fieldName);
+        const field = abhaDetail.find(
+            item =>
+                typeof item?.field === "string" &&
+                normalizeFieldName(item.field) === normalizedFieldName,
         );
-        return fieldMap[fieldName];
+        return field?.text === undefined || field?.text === null
+            ? ""
+            : String(field.text).trim();
     };
     const formatDate = (date: string) => {
         if (!date) return "-";
@@ -45,45 +60,73 @@ const BridgeServices = ({ route }: any) => {
                 showToast('error', "Please select service first")
                 return;
             }
-            dispatch(showLoader())
-            await createSession()
-                .unwrap();
 
-            console.log("getValue(abhanumber)", getValue("abhanumber"))
+            const abhaAddress =
+                getValue("preferredabhaaddress") || getValue("abhaaddress");
+            if (!abhaAddress) {
+                console.warn("[ABHA M2] ABHA address missing from profile", {
+                    profileFields: Array.isArray(abhaDetail)
+                        ? abhaDetail
+                            .map(item => item?.field)
+                            .filter((field): field is string => typeof field === "string")
+                        : [],
+                });
+                showToast(
+                    "error",
+                    "ABHA address unavailable",
+                    "Reload the ABHA profile and try again.",
+                );
+                return;
+            }
+
+            const genderValue = getValue("gender").toLowerCase();
+            const genderCodes: Record<string, "M" | "F" | "O"> = {
+                m: "M",
+                male: "M",
+                f: "F",
+                female: "F",
+                o: "O",
+                other: "O",
+            };
+            const gender = genderCodes[genderValue];
+            if (!gender) {
+                showToast(
+                    "error",
+                    "Patient gender unavailable",
+                    "Reload the ABHA profile and try again.",
+                );
+                return;
+            }
+
+            dispatch(showLoader())
+            dispatch(setLinkToken(""))
+            await createSession().unwrap();
+
             const payload = {
                 abhaNumber: Number(
                     String(getValue('abhanumber')).replace(/-/g, '')
                 ),
-                abhaAddress: getValue('preferredabhaaddress'),
+                abhaAddress,
                 name: `${getValue("firstname")} ${getValue("middlename")} ${getValue("lastname")}`,
-                gender: getValue('gender'),
+                gender,
                 yearOfBirth: Number(formatDate(getValue("dob")).split("/").pop()),
             };
-         
-            console.log(
-                JSON.stringify(payload, null, 2)
-            );
-
             const response = await generateLinkToken(payload).unwrap();
-
-            console.log(
-                '========== GENERATE LINK TOKEN RESPONSE =========='
-            );
-            console.log(
-                JSON.stringify(response, null, 2)
-            );
-        
-            console.log('Link Token =>', response);
-
-            
+            console.log("[ABHA M2] Token retrieval completed", {
+                hasLinkToken: Boolean(response.linkToken),
+                hasExpiry: Boolean(response.expiresAt),
+            });
+            dispatch(setLinkToken(response.linkToken));
             dispatch(hideLoader())
             navigation.navigate("LinkCareContext", {
                 abhaDetail: abhaDetail
             })
 
-        } catch (e) {
+        } catch (error) {
+            console.error("[ABHA M2] Token retrieval failed", {
+                name: error instanceof Error ? error.name : "UnknownError",
+            });
             dispatch(hideLoader())
-            console.log('Link ABHA Error =>', e);
         }
     };
 
@@ -95,7 +138,26 @@ const BridgeServices = ({ route }: any) => {
             <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => {
-                    dispatch(setSelectedXCMID(item?.id))
+                    const selectedHipId =
+                        item?.serviceId ??
+                        item?.facilityId ??
+                        item?.hipId ??
+                        item?.id;
+                    const hipId =
+                        selectedHipId === undefined || selectedHipId === null
+                            ? ""
+                            : String(selectedHipId).trim();
+
+                    if (!hipId) {
+                        showToast(
+                            'error',
+                            'HIP service ID unavailable',
+                            'Select a service that has an ABDM HIP service ID before generating a token.',
+                        )
+                        return;
+                    }
+
+                    dispatch(setSelectedXCMID(hipId))
                     setSelectedBridge(item)
                 }}
                 style={[styles.card, isSelected && {

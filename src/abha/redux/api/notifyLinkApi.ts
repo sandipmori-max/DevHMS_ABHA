@@ -41,20 +41,6 @@ export const notifyLinkApi = baseApi.injectEndpoints({
       NotifyLinkPayload
     >({
       async queryFn(body, api, _extraOptions, baseQuery) {
-        console.log(
-          '========== LINK CONTEXT NOTIFY =========='
-        );
-
-        console.log(
-          'Request URL =>',
-          END_POINTS.notifyLinkContext,
-        );
-
-        console.log(
-          'Request Body =>',
-          JSON.stringify(body, null, 2),
-        );
-
         const state: any = api.getState();
 
         const linkToken =
@@ -71,11 +57,6 @@ export const notifyLinkApi = baseApi.injectEndpoints({
           },
         });
 
-        console.log(
-          'Notify Result =>',
-          JSON.stringify(result, null, 2),
-        );
-
         if (result.error) {
           return {
             error: result.error as any,
@@ -88,25 +69,11 @@ export const notifyLinkApi = baseApi.injectEndpoints({
       },
 
       async onQueryStarted(
-        arg,
+        _arg,
         { queryFulfilled },
       ) {
-        console.log(
-          '========== LINK CONTEXT NOTIFY STARTED =========='
-        );
-
-        console.log(
-          JSON.stringify(arg, null, 2),
-        );
-
         try {
-          const { data } =
-            await queryFulfilled;
-
-          console.log(
-            'Notify Success =>',
-            data,
-          );
+          await queryFulfilled;
 
           showToast(
             'success',
@@ -114,12 +81,6 @@ export const notifyLinkApi = baseApi.injectEndpoints({
             'Link notification sent successfully.',
           );
         } catch (error: any) {
-          console.log(
-            '========== NOTIFY ERROR =========='
-          );
-
-          console.log(error);
-
           showToast(
             'error',
             'Notification Failed',

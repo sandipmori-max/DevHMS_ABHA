@@ -3,8 +3,9 @@ import { baseApi } from "./baseApi";
 import {
     setCertificate
 } from "../slices/authSlice";
-import { BASE_URL_API, X_CM_ID } from "../../utils/helpers";
+import { BASE_URL_API, getErrorMessage, X_CM_ID } from "../../utils/helpers";
 import { END_POINTS } from "./end_points";
+import { showToast } from "../../utils/toast";
 
 
 export const certificateApi =
@@ -40,7 +41,6 @@ export const certificateApi =
                                 data
                             } =
                                 await queryFulfilled;
-                            console.log("data public key 0--0-0-0-0-0-0---0-0-0-0--0", data)
                             dispatch(
                                 setCertificate(data)
 
@@ -48,11 +48,11 @@ export const certificateApi =
 
                         }
                         catch (error) {
-
-                            console.log(
-                                error
+                            showToast(
+                                "error",
+                                "ABDM certificate failed",
+                                getErrorMessage(error)
                             );
-
                         }
 
 

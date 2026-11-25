@@ -1,97 +1,383 @@
-import { CLIENT_ID, getErrorMessage, M2_BASE_URL_API } from '../../utils/helpers';
-import { showToast } from '../../utils/toast';
-import { setLinkToken } from '../slices/abhaSlice';
-import { baseApi } from './baseApi';
-import { END_POINTS } from './end_points';
+import {
+  generateGUID,
+  getErrorMessage,
+  M2_BASE_URL_API,
+  M2_CALLBACK_API_BASE_URL,
+} from "../../utils/helpers";
+import { showToast } from "../../utils/toast";
+import { baseApi } from "./baseApi";
+import { END_POINTS } from "./end_points";
 
-// ===== Request Payload =====
 export interface GenerateLinkTokenPayload {
   abhaNumber: number;
   abhaAddress: string;
   name: string;
-  gender: 'M' | 'F' | 'O';
+  gender: "M" | "F" | "O";
   yearOfBirth: number;
 }
 
-interface GenerateLinkTokenRequest {
-  payload: GenerateLinkTokenPayload;
-  bridgeId: string;
+export interface GenerateLinkTokenResponse {
+  linkToken: string;
+  transactionId: string;
+  expiresAt: string;
 }
 
-// ===== Response =====
-export interface GenerateLinkTokenResponse {
-  token: string; // X-LINK-TOKEN
-  transactionId: string;
+interface CreatedTokenRequest {
+  requestId?: string;
+  message?: string;
 }
+
+interface PolledTokenRequest {
+  status?: "pending" | "ready";
+  linkToken?: string;
+  expiresAt?: string;
+  message?: string;
+}
+
+interface CallbackApiError {
+  message?: string;
+}
+
+const TOKEN_REQUEST_PATH = "/mobile/abdm/link-token-requests";
+const TOKEN_POLL_PATH = `${TOKEN_REQUEST_PATH}/poll`;
+const TOKEN_CANCEL_PATH = `${TOKEN_REQUEST_PATH}/cancel`;
+const TOKEN_POLL_TIMEOUT_MS = 60_000;
+const TOKEN_POLL_INTERVAL_MS = 1_000;
+
+const readJsonResponse = async <T>(
+  response: Response,
+): Promise<T | null> => {
+  const text = await response.text();
+  if (!text) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error("The callback server returned an invalid response.");
+  }
+};
+
+const getCallbackPath = (url: string) => {
+  try {
+    return new URL(url).pathname;
+  } catch {
+    return url.split("?")[0];
+  }
+};
+
+const postCallbackApi = async <T>(
+  url: string,
+  body: object,
+  signal?: AbortSignal,
+  logRequest = true,
+) => {
+  const path = getCallbackPath(url);
+  if (logRequest) {
+    console.log("[ABHA callback] Request POST", path);
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      signal,
+    });
+  } catch (error) {
+    if (logRequest) {
+      console.error("[ABHA callback] Network failure", path, {
+        name: error instanceof Error ? error.name : "UnknownError",
+      });
+    }
+    throw error;
+  }
+
+  if (logRequest) {
+    console.log("[ABHA callback] Response", path, {
+      status: response.status,
+      ok: response.ok,
+    });
+  }
+
+  return {
+    response,
+    data: await readJsonResponse<T>(response),
+  };
+};
+
+const getCallbackErrorMessage = (
+  data: CallbackApiError | null,
+  status: number,
+) =>
+  data?.message?.trim() ||
+  `The callback server returned HTTP ${status}.`;
+
+const getLinkRequestErrorMessage = (error: unknown) => {
+  if (error && typeof error === "object" && "error" in error) {
+    const queryError = error.error;
+    if (typeof queryError === "string") {
+      return queryError;
+    }
+
+    if (
+      queryError &&
+      typeof queryError === "object" &&
+      "error" in queryError &&
+      typeof queryError.error === "string"
+    ) {
+      return queryError.error;
+    }
+  }
+
+  return getErrorMessage(error);
+};
+
+const cancelTokenRequest = async (
+  callbackApiBaseUrl: string,
+  requestId: string,
+): Promise<string | undefined> => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 3_000);
+
+  try {
+    const { response, data } = await postCallbackApi<CallbackApiError>(
+      `${callbackApiBaseUrl}${TOKEN_CANCEL_PATH}`,
+      { requestId },
+      controller.signal,
+    );
+
+    if (response.ok || response.status === 404) {
+      return undefined;
+    }
+
+    return `${getCallbackErrorMessage(data, response.status)} The pending request will expire automatically.`;
+  } catch {
+    return "The server could not confirm cancellation; the pending request will expire automatically.";
+  } finally {
+    clearTimeout(timeout);
+  }
+};
+
+const waitForNextPoll = (signal: AbortSignal) =>
+  new Promise<void>((resolve, reject) => {
+    if (signal.aborted) {
+      reject(new Error("Token request was cancelled."));
+      return;
+    }
+
+    const onAbort = () => {
+      clearTimeout(timer);
+      signal.removeEventListener("abort", onAbort);
+      reject(new Error("Token request was cancelled."));
+    };
+
+    const timer = setTimeout(() => {
+      signal.removeEventListener("abort", onAbort);
+      resolve();
+    }, TOKEN_POLL_INTERVAL_MS);
+
+    signal.addEventListener("abort", onAbort, { once: true });
+  });
 
 export const linkAbhaApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     generateLinkToken: builder.mutation<
-      any,
+      GenerateLinkTokenResponse,
       GenerateLinkTokenPayload
     >({
-      async queryFn(body, _api, _extraOptions, baseQuery) {
-        console.log('========== GENERATE LINK TOKEN ==========');
-        console.log('Request URL =>', END_POINTS.generateLinkToken);
-        console.log('Request Body =>', JSON.stringify(body, null, 2));
-        const state: any = _api.getState();
-
-        const selectedXCMID = state?.abha?.selectedXCMID;
-
-        const result: any = await baseQuery({
-          url: `${M2_BASE_URL_API}${END_POINTS.generateLinkToken}`,
-          method: 'POST',
-          body,
-          headers: {
-            'X-HIP-ID': selectedXCMID,
-            'X-CM-ID': 'sbx',
-          },
-        });
-        
-        console.log(
-          'Generate Link Token Result =>',
-          JSON.stringify(result, null, 2),
-        );
-
-        if (result.error) {
-          return { error: result.error as any };
+      async queryFn(body, api, _extraOptions, baseQuery) {
+        if (!M2_CALLBACK_API_BASE_URL) {
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error:
+                "Configure ABDM_CALLBACK_API_BASE_URL with a URL reachable by the mobile app. Use a public HTTPS URL for live ABDM callbacks.",
+            },
+          };
         }
 
-        // ABDM response mapping
-        return {
-          data: {
-            abhaAddress: "91110785511806@sbx",
-            linkToken: "eyJhbGciOiJSUzUxMiJ9.eyJoaXBJZCI6Ik1TVEFSLTAwMDAxIiwiYWJoYU51bWJlciI6OTE0NjQwNjA1MjI3NzYsInRyYW5zYWN0aW9uSWQiOiJjZjAyYmEwMC04M2Y4LTRlNTQtODJjMy0yNWE4NTVkMmM5OWMiLCJhYmhhQWRkcmVzcyI6InNoYW5rYXJsYWxtaXN0cmkxOEBzYngiLCJzdWIiOiJzaGFua2FybGFsbWlzdHJpMThAc2J4IiwiaWF0IjoxNzg1NTY4NDE0LCJleHAiOjE4MDEzMzY0MTR9.O07SAE7mClE1-f0H0j6GqxW5AdeWRArRJEkzmBiyfVr87ySzgB6IJ739P9cM1F3ssI883ZrzK6JsbD6304iqaVHG6YAz8ldP3VYCX7RMISO-fv83_gAbvRj5xT4174fg3cWzfMFX4RVJE9vzDUA_luI2xLQqHp8-fCTvbzyJ9_qGDuMSHmvj91rE2uTwr8IwjXNtQkpNesbbCoJPS1j73yjWb0L2EH4qIqhEp5_FrW2D8IvZdSsP4FQgIJ9GxD8wEis_ZHabRazyk2lAZS3ibg9JPDFXHD5aq7qJbGo4YRTedEiBv8NuEv5NDjtLwrM8S1pmRh9BaA9tHNjqrswECA",
-            response: {
-              requestId: "e8277dc0-5f42-4579-b9a3-ac1b6352ca8c"
-            }
-          },
-        };
-      },
+        if (!body.abhaAddress?.trim()) {
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error: "ABHA address is required to receive the token callback.",
+            },
+          };
+        }
 
-      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-        console.log('========== GENERATE LINK TOKEN STARTED ==========');
-        console.log('Payload =>', JSON.stringify(arg, null, 2));
+        const state = api.getState() as {
+          abha?: { selectedXCMID?: string };
+        };
+        const hipId = state.abha?.selectedXCMID;
+        if (!hipId) {
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error: "Select a HIP service before generating a link token.",
+            },
+          };
+        }
+
+        let mobileRequestId: string | undefined;
+        const abdmRequestId = generateGUID();
+        console.log("[ABHA M2] Link-token flow started");
 
         try {
-          const { data } = await queryFulfilled;
-
-          console.log('Generate Link Token Success =>', data);
-
-          dispatch(setLinkToken(data?.linkToken))
-          showToast(
-            'success',
-            'Link Request Initiated',
-            'Patient approval request has been sent to ABHA app',
+          const createdRequest = await postCallbackApi<CreatedTokenRequest>(
+            `${M2_CALLBACK_API_BASE_URL}${TOKEN_REQUEST_PATH}`,
+            {
+              abhaAddress: body.abhaAddress.trim(),
+              abdmRequestId,
+            },
+            api.signal,
           );
-        } catch (error: any) {
-          console.log('========== GENERATE LINK TOKEN ERROR ==========');
-          console.log(error);
 
+          if (
+            createdRequest.response.status !== 201 ||
+            !createdRequest.data?.requestId
+          ) {
+            throw new Error(
+              getCallbackErrorMessage(
+                createdRequest.data,
+                createdRequest.response.status,
+              ),
+            );
+          }
+
+          mobileRequestId = createdRequest.data.requestId;
+          console.log("[ABHA M2] Callback request registered");
+
+          const abdmResult = await baseQuery({
+            url: `${M2_BASE_URL_API}${END_POINTS.generateLinkToken}`,
+            method: "POST",
+            body,
+            headers: {
+              "X-HIP-ID": hipId,
+              "X-CM-ID": "sbx",
+              "REQUEST-ID": abdmRequestId,
+            },
+          });
+
+          console.log("[ABHA M2] ABDM generate-token completed", {
+            success: !abdmResult.error,
+          });
+
+          if (abdmResult.error) {
+            const cancelMessage = await cancelTokenRequest(
+              M2_CALLBACK_API_BASE_URL,
+              mobileRequestId,
+            );
+            if (cancelMessage) {
+              return {
+                error: {
+                  status: "CUSTOM_ERROR",
+                  error: `${getErrorMessage(abdmResult.error)} ${cancelMessage}`,
+                },
+              };
+            }
+
+            return { error: abdmResult.error };
+          }
+
+          const deadline = Date.now() + TOKEN_POLL_TIMEOUT_MS;
+          let pollCount = 0;
+          console.log("[ABHA M2] Waiting for token callback");
+          while (Date.now() < deadline) {
+            pollCount += 1;
+            const pollResult = await postCallbackApi<PolledTokenRequest>(
+              `${M2_CALLBACK_API_BASE_URL}${TOKEN_POLL_PATH}`,
+              { requestId: mobileRequestId },
+              api.signal,
+              false,
+            );
+
+            if (
+              pollResult.response.status === 202 &&
+              pollResult.data?.status === "pending"
+            ) {
+              if (pollCount === 1 || pollCount % 5 === 0) {
+                console.log("[ABHA M2] Callback still pending", {
+                  pollCount,
+                });
+              }
+              await waitForNextPoll(api.signal);
+              continue;
+            }
+
+            if (
+              pollResult.response.ok &&
+              pollResult.data?.status === "ready" &&
+              pollResult.data.linkToken
+            ) {
+              console.log("[ABHA M2] Link-token callback received", {
+                pollCount,
+                hasExpiry: Boolean(pollResult.data.expiresAt),
+              });
+              return {
+                data: {
+                  linkToken: pollResult.data.linkToken,
+                  transactionId: abdmRequestId,
+                  expiresAt: pollResult.data.expiresAt ?? "",
+                },
+              };
+            }
+
+            throw new Error(
+              getCallbackErrorMessage(
+                pollResult.data,
+                pollResult.response.status,
+              ),
+            );
+          }
+
+          throw new Error(
+            "Timed out waiting for the ABDM token callback. Try generating a new token.",
+          );
+        } catch (error) {
+          const cancelMessage = mobileRequestId
+            ? await cancelTokenRequest(
+                M2_CALLBACK_API_BASE_URL,
+                mobileRequestId,
+              )
+            : undefined;
+          const message = api.signal.aborted
+            ? "Token request was cancelled."
+            : error instanceof Error
+              ? error.message
+              : getErrorMessage(error);
+
+          console.error("[ABHA M2] Link-token flow failed", {
+            name: error instanceof Error ? error.name : "UnknownError",
+          });
+
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error: cancelMessage ? `${message} ${cancelMessage}` : message,
+            },
+          };
+        }
+      },
+
+      async onQueryStarted(_arg, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
           showToast(
-            'error',
-            'Link Request Failed',
-            getErrorMessage(error),
+            "success",
+            "Link token received",
+            "ABDM callback received. Continue to link care contexts.",
+          );
+        } catch (error) {
+          showToast(
+            "error",
+            "Link Request Failed",
+            getLinkRequestErrorMessage(error),
           );
         }
       },

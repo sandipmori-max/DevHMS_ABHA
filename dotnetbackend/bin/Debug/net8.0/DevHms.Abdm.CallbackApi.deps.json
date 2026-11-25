@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "DevHms.Abdm.CallbackApi/1.0.0": {
+        "runtime": {
+          "DevHms.Abdm.CallbackApi.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "DevHms.Abdm.CallbackApi/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

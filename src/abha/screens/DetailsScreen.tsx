@@ -78,10 +78,8 @@ const DetailsScreen = ({ route }: any) => {
       const response = await getPage(payload);
       const parsedData = JSON.parse(response?.data.d);
       const pagectl = parsedData.pagectl;
-      console.log("respon+ + + + + + ++ + + se", pagectl)
       setAbhaDetail(pagectl);
-    } catch (error) {
-      console.log("error++++++++++++++++++++++", error)
+    } catch {
       dispatch(hideLoader())
     } finally {
       dispatch(hideLoader())
@@ -97,10 +95,9 @@ const DetailsScreen = ({ route }: any) => {
       try {
         await createSession().unwrap();
         const response = await getBridgeServices().unwrap();
-        console.log(response);
         setBridgeServices(response)
-      } catch (error) {
-        console.log(error);
+      } catch {
+        return;
       }
     };
 

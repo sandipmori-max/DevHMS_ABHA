@@ -26,17 +26,6 @@ export const getPageApi = baseApi.injectEndpoints({
                 _extraOptions,
                 baseQuery
             ) {
-
-                console.log(
-                    "========== GET PAGE =========="
-                );
-
-                console.log(
-                    "Request Body =>",
-                    JSON.stringify(body, null, 2)
-                );
-
-
                 // ================= MOCK =================
                 if (MOCK_GET_PAGE) {
 
@@ -73,47 +62,19 @@ export const getPageApi = baseApi.injectEndpoints({
 
 
             async onQueryStarted(
-                arg,
+                _arg,
                 {
                     queryFulfilled
                 }
             ) {
-
-                console.log(
-                    "========== GET PAGE START =========="
-                );
-
-                console.log(
-                    "Arguments =>",
-                    JSON.stringify(arg, null, 2)
-                );
-
-
                 try {
-
-                    const result = await queryFulfilled;
-
-
-                    console.log(
-                        "Response =>",
-                        JSON.stringify(result.data, null, 2)
-                    );
-
-
+                    await queryFulfilled;
                 } catch(error:any){
-
                     showToast(
                         "error",
                         "Get Page Failed",
                         getErrorMessage(error)
                     );
-
-
-                    console.log(
-                        "GET PAGE ERROR",
-                        error
-                    );
-
                 }
 
             },

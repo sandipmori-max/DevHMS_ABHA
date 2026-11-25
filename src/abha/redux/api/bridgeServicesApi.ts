@@ -9,14 +9,6 @@ export const bridgeServicesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getBridgeServices: builder.query<any, void>({
       async queryFn(_arg, _api, _extraOptions, baseQuery) {
-        console.log("========== GET BRIDGE SERVICES ==========");
-
-        console.log(
-          "Request URL => https://dev.abdm.gov.in/api/hiecm/gateway/v3/bridge-services"
-        );
-
-        console.log("Request Method => GET");
-
         // ================= MOCK =================
         if (MOCK_BRIDGE_SERVICES) {
           return {
@@ -66,27 +58,13 @@ export const bridgeServicesApi = baseApi.injectEndpoints({
 
       async onQueryStarted(_arg, { queryFulfilled }) {
         try {
-          const result = await queryFulfilled;
-
-          console.log(
-            "========== BRIDGE SERVICES RESPONSE =========="
-          );
-
-          console.log(
-            JSON.stringify(result.data, null, 2)
-          );
+          await queryFulfilled;
         } catch (error: any) {
           showToast(
             "error",
             "Bridge Services Failed",
             getErrorMessage(error)
           );
-
-          console.log(
-            "========== BRIDGE SERVICES ERROR =========="
-          );
-
-          console.log(error);
         }
       },
     }),

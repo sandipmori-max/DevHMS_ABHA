@@ -46,7 +46,6 @@ setSelectedXCMID: (
       state,
       action
     ) => {
-      console.log("linkTokenlinkTokenlinkToken", action?.payload)
       state.linkToken =
         action.payload;
     },
@@ -121,7 +120,6 @@ setSelectedXCMID: (
       state,
       action
     ) => {
-      console.log("txnIdtxnIdtxnIdtxnIdtxnIdtxnId",action.payload )
       state.txnId =
         action.payload;
     },

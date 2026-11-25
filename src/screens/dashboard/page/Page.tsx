@@ -358,6 +358,7 @@ const PageScreen = ({ isFromForceLeave, pageUrl }: any) => {
     return errorMessages?.length === 0;
   }, [controls, formValues]);
 
+  console.log("formValuesformValuesformValues", formValues)
   const handleSave = async () => {
     try {
       setTapLoader(true);

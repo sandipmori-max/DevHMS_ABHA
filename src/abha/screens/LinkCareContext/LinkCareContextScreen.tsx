@@ -1,5 +1,5 @@
 import MaterialIcons from '@react-native-vector-icons/material-icons';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
     SafeAreaView,
     View,
@@ -13,14 +13,19 @@ import {
 
 } from 'react-native';
 import { ERP_COLOR_CODE } from '../../../utils/constants';
-import { useNavigation } from "@react-navigation/native";
+import { CommonActions, useNavigation } from "@react-navigation/native";
 import Header from '../../Components/Header';
-import { useLinkCareContextMutation } from '../../redux/api/linkCareContextApi';
+import {
+    CareContextLinkStatusResponse,
+    useLinkCareContextMutation,
+    usePollCareContextLinkStatusMutation,
+} from '../../redux/api/linkCareContextApi';
 import { showToast } from '../../utils/toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { useCreateSessionMutation } from '../../redux/api/sessionApi';
 import { hideLoader, showLoader } from '../../redux/slices/loaderSlice';
-import { getNotifyLinkPayload, useNotifyLinkMutation } from '../../redux/api/notifyLinkApi';
+import { setLinkToken } from '../../redux/slices/abhaSlice';
+import { getErrorMessage } from '../../utils/helpers';
 
  
 interface CareContextItem {
@@ -28,6 +33,11 @@ interface CareContextItem {
     display: string;
     hiType: string;
 }
+
+type CareContextLinkState = 'idle' | 'pending' | 'linked' | 'failed';
+
+const CARE_CONTEXT_STATUS_POLL_INTERVAL_MS = 2_000;
+const CARE_CONTEXT_STATUS_POLL_TIMEOUT_MS = 60_000;
 
 const LinkCareContextScreen = ({ route }: any) => {
     const { abhaDetail } = route.params || {};
@@ -40,15 +50,21 @@ const LinkCareContextScreen = ({ route }: any) => {
 
     const [linkCareContext, { isLoading }] =
         useLinkCareContextMutation();
+    const [pollCareContextLinkStatus] =
+        usePollCareContextLinkStatusMutation();
     const [
         createSession
     ] = useCreateSessionMutation();
-    const [notifyLink,] = useNotifyLinkMutation();
 
 
     const navigation = useNavigation();
     const [selectedRecords, setSelectedRecords] = useState<string[]>([]);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [linkRequestId, setLinkRequestId] = useState<string>();
+    const [linkStatus, setLinkStatus] = useState<CareContextLinkState>('idle');
+    const [linkStatusMessage, setLinkStatusMessage] = useState('');
+    const [isCheckingLinkStatus, setIsCheckingLinkStatus] = useState(false);
+    const hasReturnedToList = useRef(false);
     const careContextList = [
         {
             referenceNumber: 'c7e95611-3d63-41bb-bd90-d11d0b1cb0b2',
@@ -145,62 +161,174 @@ const LinkCareContextScreen = ({ route }: any) => {
         });
     };
 
+    const applyCareContextStatus = (
+        result: CareContextLinkStatusResponse,
+    ) => {
+        if (result.status === 'pending') {
+            if (!hasReturnedToList.current) {
+                setLinkStatus('pending');
+                setLinkStatusMessage('Waiting for ABDM to confirm the care-context link.');
+            }
+            return false;
+        }
 
+        if (
+            result.linkStatus?.trim().toLowerCase() ===
+            'successfully linked care context'
+        ) {
+            if (!hasReturnedToList.current) {
+                setLinkStatus('linked');
+                setLinkStatusMessage('Care context linked successfully.');
+            }
+            showToast('success', 'Care Context Linked', 'ABDM confirmed the link.');
+            return true;
+        }
 
+        if (!hasReturnedToList.current) {
+            setLinkStatus('failed');
+            setLinkStatusMessage(
+                result.linkStatus
+                    ? `ABDM could not link the care context: ${result.linkStatus}`
+                    : 'ABDM could not link the care context.',
+            );
+        }
+        showToast(
+            'error',
+            'Care Context Link Failed',
+            result.linkStatus || 'ABDM reported a link failure.',
+        );
+        return true;
+    };
 
-    const onLinkCareContext = async () => {
+    const pollCareContextStatus = async (requestId: string) => {
+        setIsCheckingLinkStatus(true);
+        try {
+            const result = await pollCareContextLinkStatus(requestId).unwrap();
+            applyCareContextStatus(result);
+        } catch {
+            showToast(
+                'error',
+                'Status Check Failed',
+                'Could not retrieve the ABDM callback status. Try again.',
+            );
+        } finally {
+            setIsCheckingLinkStatus(false);
+        }
+    };
+
+    const waitForCareContextStatus = async (requestId: string) => {
+        const deadline = Date.now() + CARE_CONTEXT_STATUS_POLL_TIMEOUT_MS;
+        if (!hasReturnedToList.current) {
+            setIsCheckingLinkStatus(true);
+        }
 
         try {
-            if (!selectedIds) {
-                showToast('error', 'Care contexts', 'Please select one')
-                return;
+            while (Date.now() < deadline) {
+                const result = await pollCareContextLinkStatus(requestId).unwrap();
+                if (applyCareContextStatus(result)) {
+                    return;
+                }
+
+                await new Promise<void>(resolve =>
+                    setTimeout(resolve, CARE_CONTEXT_STATUS_POLL_INTERVAL_MS),
+                );
             }
-            dispatch(showLoader())
+
+            if (!hasReturnedToList.current) {
+                setLinkStatusMessage(
+                    'Still waiting for ABDM. Use Check Link Status to check again.',
+                );
+            }
+        } catch {
+            if (!hasReturnedToList.current) {
+                setLinkStatusMessage(
+                    'The request is pending, but its status could not be checked. Try again.',
+                );
+            }
+        } finally {
+            if (!hasReturnedToList.current) {
+                setIsCheckingLinkStatus(false);
+            }
+        }
+    };
+
+    const resetToList = () => {
+        const listRoute = [...navigation.getState().routes]
+            .reverse()
+            .find(routeItem => routeItem.name === 'List');
+
+        if (!listRoute) {
+            showToast(
+                'error',
+                'Navigation Failed',
+                'The List page is not available in the current navigation stack.',
+            );
+            return;
+        }
+
+        hasReturnedToList.current = true;
+        navigation.dispatch(CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'List', params: listRoute.params }],
+        }));
+    };
+
+    const onLinkCareContext = async () => {
+        if (linkStatus === 'pending' && linkRequestId) {
+            await pollCareContextStatus(linkRequestId);
+            return;
+        }
+
+        if (selectedIds.length === 0) {
+            showToast('error', 'Care contexts', 'Please select at least one.');
+            return;
+        }
+
+        setLinkRequestId(undefined);
+        setLinkStatus('idle');
+        setLinkStatusMessage('');
+        hasReturnedToList.current = false;
+        let linkRequestAccepted = false;
+
+        try {
+            dispatch(showLoader());
             const selectedItems = careContextList.filter(item =>
                 selectedIds.includes(item.referenceNumber),
             );
-
             const payload = buildPayload(selectedItems, {
                 abhaNumber: getValue("abhanumber"),
                 abhaAddress: getValue("preferredabhaaddress"),
                 patientId: getValue("patientabhaid"),
             });
 
-            console.log(
-                '========== LINK CARE CONTEXT PAYLOAD =========='
+            await createSession().unwrap();
+            const acceptedRequest = await linkCareContext(payload).unwrap();
+            linkRequestAccepted = true;
+            const requestId = acceptedRequest.response.requestId;
+
+            setLinkRequestId(requestId);
+            setLinkStatus('pending');
+            setLinkStatusMessage(
+                'Request accepted. Waiting for ABDM to confirm the link.',
             );
+            dispatch(setLinkToken(""));
+            dispatch(hideLoader());
+            resetToList();
 
-            console.log(
-                JSON.stringify(payload, null, 2),
-            );
-            await createSession()
-                .unwrap();
-            const response = await linkCareContext(payload).unwrap();
-
-            console.log(
-                'Link CareContext Response =>',
-                response,
-            );
-
-            try {
-                const payload = getNotifyLinkPayload(
-                    'sandip@abdm',        // ABHA Address
-                    'CC-10001',           // Care Context Reference
-                    'Prescription'        // HI Type
-                );
-
-                const response = await notifyLink(payload).unwrap();
-
-                console.log('Success =>', response);
-            } catch (error) {
-                console.log('Error =>', error);
-            }
-
+            await waitForCareContextStatus(requestId);
         } catch (error) {
-            dispatch(hideLoader())
-
+            if (linkRequestAccepted) {
+                setLinkStatus('pending');
+                setLinkStatusMessage(
+                    'The request was accepted. Check its status from the List page later.',
+                );
+            } else {
+                setLinkStatus('failed');
+                setLinkStatusMessage(getErrorMessage(error));
+            }
         } finally {
-            dispatch(hideLoader())
+            dispatch(hideLoader());
+            dispatch(setLinkToken(""))
         }
     };
 
@@ -448,6 +576,19 @@ const LinkCareContextScreen = ({ route }: any) => {
                     />
                 </View>
 
+                {linkStatus !== 'idle' && (
+                    <View style={styles.linkStatusCard}>
+                        <Text
+                            style={[
+                                styles.linkStatusText,
+                                linkStatus === 'linked' && { color: '#16803C' },
+                                linkStatus === 'failed' && { color: '#B42318' },
+                            ]}
+                        >
+                            {linkStatusMessage}
+                        </Text>
+                    </View>
+                )}
 
             </ScrollView>
 
@@ -455,7 +596,10 @@ const LinkCareContextScreen = ({ route }: any) => {
                 style={{
                     height: 46,
                     width: '92%',
-                    backgroundColor: selectedIds.length === 0 ? '#ccc' : ERP_COLOR_CODE.ERP_APP_COLOR,
+                    backgroundColor:
+                        selectedIds.length === 0 && linkStatus !== 'pending'
+                            ? '#ccc'
+                            : ERP_COLOR_CODE.ERP_APP_COLOR,
                     borderRadius: 4,
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -465,17 +609,31 @@ const LinkCareContextScreen = ({ route }: any) => {
                     flexDirection: 'row'
                 }}
                 activeOpacity={0.8}
-                disabled={selectedIds.length === 0}
+                disabled={
+                    isLoading ||
+                    isCheckingLinkStatus ||
+                    (selectedIds.length === 0 && linkStatus !== 'pending') ||
+                    linkStatus === 'linked' ||
+                    linkStatus === 'failed'
+                }
                 onPress={onLinkCareContext}
             >
                 <MaterialIcons
-                    name="link"
+                    name={linkStatus === 'pending' ? 'refresh' : 'link'}
                     size={22}
                     color="#FFF"
                 />
 
                 <Text style={styles.linkButtonText}>
-                    Link Care Context
+                    {linkStatus === 'pending'
+                        ? isCheckingLinkStatus
+                            ? 'Checking Link Status...'
+                            : 'Check Link Status'
+                        : linkStatus === 'linked'
+                            ? 'Care Context Linked'
+                            : linkStatus === 'failed'
+                                ? 'Failed - Generate New Token'
+                                : 'Link Care Context'}
                 </Text>
             </TouchableOpacity>
         </SafeAreaView>
@@ -709,6 +867,17 @@ const styles = StyleSheet.create({
         color: '#777',
         fontSize: 13,
         marginBottom: 14,
+    },
+    linkStatusCard: {
+        marginHorizontal: 15,
+        marginBottom: 72,
+        padding: 14,
+        borderRadius: 8,
+        backgroundColor: '#FFF',
+    },
+    linkStatusText: {
+        color: '#6B4E00',
+        fontSize: 14,
     },
 
     contextCard: {

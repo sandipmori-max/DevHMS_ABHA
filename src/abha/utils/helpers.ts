@@ -1,4 +1,5 @@
 import { KeyboardTypeOptions } from "react-native";
+import Config from "react-native-config";
 import { LOGIN_TYPES } from "./constants";
 
 
@@ -239,12 +240,13 @@ export const getIsFormValid = (loginType, loginValue, isFromForgotAbhaNumber, is
 };
 
 export const getErrorMessage = (error: any) => {
-  console.log("getErrorMessage error", error?.error?.data?.error?.message );
+  console.log("========== ABHA ADDRESS OTP ERROR ==========" , error);
   return (
-
+    (typeof error?.error === "string" ? error.error : undefined) ||
+    error?.data?.message ||
     error?.error?.data?.error?.message ||
-    error?.error?.data[0]?.error?.message ||
-    error?.error?.data[0]?.message ||
+    error?.error?.data?.[0]?.error?.message ||
+    error?.error?.data?.[0]?.message ||
     error?.error?.authMethods ||
     error?.error?.mobile ||
 
@@ -326,6 +328,8 @@ export const M2_BASE_URL_API = "https://dev.abdm.gov.in/api/hiecm/v3/"
 export const M2_BASE_URL_API_HIP = "https://dev.abdm.gov.in/api/hiecm/hip/v3/"
 
 export const BASE_URL_PUBLIC_API = 'https://dev.abdm.gov.in/api/hiecm/gateway/v3/'
+export const M2_CALLBACK_API_BASE_URL =
+   "https://stingily-varying-bloomers.ngrok-free.dev";
 
 export const TERMS_ONE = `I hereby declare that I am voluntarily sharing my
                     Aadhaar Number and demographic information issued
@@ -524,9 +528,6 @@ export const getPayloadForProfile = (stepOne, stepTwo, stepThree, stepFour, resp
     tokens: abhaResult?.tokens?.token,
     txnId: txnId
   };
-  console.log("responseProfile++++++++++++++++-----------------------", responseProfile)
-  console.log("payload.++++++++++------------------------------------------------", payload)
-
   const payloadRow = {
     "patientabhaid": "",
     "abhanumber": payload.data.ABHANumber,
@@ -590,8 +591,6 @@ export const getPayloadForProfile = (stepOne, stepTwo, stepThree, stepFour, resp
     "cdt": new Date(),
     "date": payload?.data?.createdDate
   }
-
-  console.log("payloadRowpayloadRow.++++++++++------------------------------------------------", payloadRow)
 
   return payloadRow
 }
