@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
     SafeAreaView,
     ScrollView,
@@ -17,8 +17,17 @@ import DateSelector from "./components/DateSelector";
 import Dropdown from "./components/Dropdown";
 
 import { ERP_COLOR_CODE } from "../../../utils/constants";
+import {
+    ABDM_REQUESTER_IDENTIFIER_SYSTEM,
+    ABDM_REQUESTER_IDENTIFIER_TYPE,
+    ABDM_REQUESTER_IDENTIFIER_VALUE,
+} from "../../utils/helpers";
 import { showToast } from "../../utils/toast";
-import { useConsentRequestMutation } from "../../redux/api/consentRequestApi";
+import {
+    ConsentRequestStatusResult,
+    useConsentRequestMutation,
+    usePollConsentRequestStatusMutation,
+} from "../../redux/api/consentRequestApi";
 import { useDispatch } from "react-redux";
 import { hideLoader, showLoader } from "../../redux/slices/loaderSlice";
 import { useCreateSessionMutation } from "../../redux/api/sessionApi";
@@ -114,35 +123,54 @@ const HI_TYPES = [
     },
 ];
 
-// | type      | value kahan se aayegi?                             |
-// | --------- | -------------------------------------------------- |
-// | `REGNO`   | Hospital Registration Number                       |
-// | `HFR`     | HFR ID (agar registered hai)                       |
-// | `LICENSE` | Hospital License Number                            |
-// | `GSTIN`   | GST Number (agar us purpose ke liye use kiya jaye) |
-
-const requesterIdentifierTypes = [
-  { label: "REGNO", value: "REGNO" },
-  { label: "HFR", value: "HFR" },
-  { label: "LICENSE", value: "LICENSE" },
-  { label: "GSTIN", value: "GSTIN" },
-];
-
 const ConsentFormScreen = ({ route }: any) => {
     const { abhaDetail, bridgeServices } = route.params || {};
     const [purpose, setPurpose] = useState(PURPOSES[0].value);
     const dispatch = useDispatch();
     const [selectedHip, setSelectedHip] = useState<any>(null);
     const [service, setSelectedService] = useState<any>(null);
-    const options = bridgeServices?.services.map(item => ({
-        value: item.id,
-        label: item.name,
+    const hiuServices = (Array.isArray(bridgeServices?.services)
+        ? bridgeServices.services
+        : [])
+        .filter((item: any) => {
+            const supportsHiu = Array.isArray(item?.types)
+                ? item.types.some(
+                    (type: unknown) =>
+                        typeof type === "string" &&
+                        type.trim().toUpperCase() === "HIU",
+                )
+                : item?.isHiu === true;
+            const serviceId = item?.id ?? item?.serviceId;
+            return item?.active !== false &&
+                supportsHiu &&
+                serviceId !== undefined &&
+                serviceId !== null &&
+                String(serviceId).trim() !== "";
+        });
+    const options = hiuServices.map((item: any) => ({
+        value: item.id ?? item.serviceId,
+        label: item.name ?? "Unnamed HIU service",
     }));
     const [
         createSession
     ] = useCreateSessionMutation();
     const [consentRequest, { isLoading }] =
         useConsentRequestMutation();
+    const [pollConsentRequestStatus, { isLoading: isPollingStatus }] =
+        usePollConsentRequestStatusMutation();
+    const [consentPollId, setConsentPollId] = useState<string | null>(null);
+    const [consentStatus, setConsentStatus] =
+        useState<ConsentRequestStatusResult | null>(null);
+    const [statusPollError, setStatusPollError] = useState<string | null>(null);
+    const statusPollInFlight = useRef(false);
+    const isMounted = useRef(false);
+
+    useEffect(() => {
+        isMounted.current = true;
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
 
     const [selectedHiTypes, setSelectedHiTypes] = useState<string[]>([
         "Prescription",
@@ -160,14 +188,27 @@ const ConsentFormScreen = ({ route }: any) => {
     initialEraseAt.setDate(initialEraseAt.getDate() + 2);
 
     const [eraseAt, setEraseAt] = useState(initialEraseAt);
-    const getValue = (fieldName: any) => {
-        if (abhaDetail.length === 0) {
-            return;
+    const selectedHiuService = hiuServices.find(
+        (item: any) =>
+            service !== null &&
+            service !== undefined &&
+            String(item.id ?? item.serviceId) === String(service),
+    );
+    const getValue = (fieldName: string): string => {
+        if (!Array.isArray(abhaDetail)) {
+            return "";
         }
-        const fieldMap = Object.fromEntries(
-            abhaDetail.map(item => [item.field, item.text])
+
+        const normalize = (value: string) =>
+            value.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+        const field = abhaDetail.find(
+            (item: any) =>
+                typeof item?.field === "string" &&
+                normalize(item.field) === normalize(fieldName),
         );
-        return fieldMap[fieldName];
+        return field?.text === undefined || field?.text === null
+            ? ""
+            : String(field.text).trim();
     };
 
     const toggleHiType = (item: string) => {
@@ -177,6 +218,62 @@ const ConsentFormScreen = ({ route }: any) => {
             setSelectedHiTypes([...selectedHiTypes, item]);
         }
     };
+
+    const checkConsentStatus = useCallback(async (showFailureToast = true) => {
+        if (!consentPollId || statusPollInFlight.current) {
+            return;
+        }
+
+        statusPollInFlight.current = true;
+        if (isMounted.current) {
+            setStatusPollError(null);
+        }
+
+        try {
+            const result = await pollConsentRequestStatus(consentPollId).unwrap();
+            if (isMounted.current) {
+                setConsentStatus(result);
+            }
+        } catch (error: any) {
+            const message =
+                error?.data?.error ||
+                error?.error ||
+                "Could not check consent status.";
+            if (isMounted.current) {
+                setStatusPollError(message);
+                if (showFailureToast) {
+                    showToast("error", "Status Check Failed", message);
+                }
+            }
+        } finally {
+            statusPollInFlight.current = false;
+        }
+    }, [consentPollId, pollConsentRequestStatus]);
+
+    useEffect(() => {
+        if (
+            !consentPollId ||
+            (consentStatus?.status !== "PENDING" &&
+                consentStatus?.status !== "REQUESTED")
+        ) {
+            return;
+        }
+
+        let isActive = true;
+        let timer: ReturnType<typeof setTimeout>;
+        const poll = async () => {
+            await checkConsentStatus(false);
+            if (isActive) {
+                timer = setTimeout(poll, 5000);
+            }
+        };
+
+        timer = setTimeout(poll, 5000);
+        return () => {
+            isActive = false;
+            clearTimeout(timer);
+        };
+    }, [checkConsentStatus, consentPollId, consentStatus?.status]);
 
     const onSubmit = async () => {
         if (toDate < fromDate) {
@@ -188,32 +285,96 @@ const ConsentFormScreen = ({ route }: any) => {
             return;
         }
 
-        if (!service) {
+        if (!selectedHiuService) {
             showToast(
                 'error',
-                "Invalid service",
-                "Please select service first"
+                "HIU service required",
+                "Select an active service that has the HIU role.",
             );
-            return
+            return;
         }
+
+        if (!selectedHiuService.name?.trim()) {
+            showToast(
+                "error",
+                "HIU service name unavailable",
+                "Choose a registered HIU service with a name.",
+            );
+            return;
+        }
+
+        const patientAddress = getValue("preferredabhaaddress");
+        if (!patientAddress) {
+            showToast(
+                "error",
+                "ABHA Address Missing",
+                "The selected patient does not have an ABHA address.",
+            );
+            return;
+        }
+
+        const missingRequesterIdentityFields = [
+            {
+                key: "ABDM_REQUESTER_IDENTIFIER_TYPE",
+                value: ABDM_REQUESTER_IDENTIFIER_TYPE,
+            },
+            {
+                key: "ABDM_REQUESTER_IDENTIFIER_VALUE",
+                value: ABDM_REQUESTER_IDENTIFIER_VALUE,
+            },
+            {
+                key: "ABDM_REQUESTER_IDENTIFIER_SYSTEM",
+                value: ABDM_REQUESTER_IDENTIFIER_SYSTEM,
+            },
+        ]
+            .filter(({ value }) => !value?.trim())
+            .map(({ key }) => key);
+
+        if (missingRequesterIdentityFields.length > 0) {
+            showToast(
+                "error",
+                "Requester Identity Missing",
+                `Missing app config: ${missingRequesterIdentityFields.join(", ")}. Update the root .env and rebuild/reinstall the app.`,
+            );
+            return;
+        }
+
+        if (selectedHiTypes.length === 0) {
+            showToast(
+                "error",
+                "Select Health Information",
+                "Choose at least one health-information type.",
+            );
+            return;
+        }
+
+        const frequencyUnit = {
+            "One Time": "HOUR",
+            Hourly: "HOUR",
+            Daily: "DAY",
+            Weekly: "WEEK",
+            Monthly: "MONTH",
+        }[frequency] as "HOUR" | "DAY" | "WEEK" | "MONTH";
 
         const payload = {
             consent: {
                 purpose,
                 patient: {
-                    id: getValue("preferredabhaaddress"), // ABHA Address
+                    id: patientAddress,
                 },
                 hiu: {
-                    id: service
+                    id: String(
+                        selectedHiuService.id ?? selectedHiuService.serviceId,
+                    ),
                 },
                 hip: null,
                 careContexts: null,
                 requester: {
-                    name: bridgeServices?.bridge.name,
+                    name: selectedHiuService.name.trim(),
                     identifier: {
-                        type: "REGNO",
-                        value: "123456",
-                        system: "https://hospital.com",
+                        type: ABDM_REQUESTER_IDENTIFIER_TYPE,
+                        value: ABDM_REQUESTER_IDENTIFIER_VALUE,
+                        system: ABDM_REQUESTER_IDENTIFIER_SYSTEM,
                     },
                 },
                 hiTypes: selectedHiTypes,
@@ -224,51 +385,40 @@ const ConsentFormScreen = ({ route }: any) => {
                         to: toDate.toISOString(),
                     },
                     dataEraseAt: eraseAt.toISOString(),
-                    "frequency": {
-                        "unit": "HOUR",
-                        "value": 0,
-                        "repeats": 0
+                    frequency: {
+                        unit: frequencyUnit,
+                        value: 1,
+                        repeats: 0,
                     }
 
                 },
             },
         };
 
-        console.log(
-            "Consent Payload =>",
-            JSON.stringify(payload, null, 2)
-        );
-
+        dispatch(showLoader());
         try {
-            dispatch(showLoader());
             await createSession().unwrap();
             const response = await consentRequest(payload).unwrap();
-
-            console.log(
-                "Consent Response =>",
-                JSON.stringify(response, null, 2)
-            );
-
+            setConsentPollId(response.pollId);
+            setConsentStatus({
+                status: "PENDING",
+                consentArtefactIds: [],
+            });
             showToast(
                 "success",
-                "Success",
-                "Consent request sent successfully."
+                "Request Submitted",
+                "Patient can review the consent request in the ABHA app.",
             );
-            dispatch(hideLoader());
         } catch (error: any) {
-
-            console.log(
-                "Consent Error =>",
-                JSON.stringify(error, null, 2)
-            );
-
             showToast(
                 "error",
                 "Consent Request Failed",
-                error?.data?.message || "Something went wrong."
+                error?.data?.message ||
+                    error?.error ||
+                    "Something went wrong."
             );
+        } finally {
             dispatch(hideLoader());
-
         }
     };
 
@@ -317,17 +467,19 @@ const ConsentFormScreen = ({ route }: any) => {
                 />
 
                 <InfoCard
-                    title="Requester"
+                    title="Requester (HIU service)"
                     icon="person"
                     data={[
                         {
-                            label: "Name",
-                            value: bridgeServices?.bridge.name,
+                            label: "Service",
+                            value: selectedHiuService?.name ?? "Select an HIU service",
                         },
 
                         {
-                            label: "Entity",
-                            value: bridgeServices?.bridge.entity,
+                            label: "HIU ID",
+                            value: selectedHiuService?.id ??
+                                selectedHiuService?.serviceId ??
+                                "-",
                         },
                     ]}
                 />
@@ -337,6 +489,11 @@ const ConsentFormScreen = ({ route }: any) => {
                     selected={service}
                     onChange={setSelectedService}
                 />
+                {options.length === 0 && (
+                    <Text style={styles.serviceWarning}>
+                        No active HIU service found. The selected ABDM service must include the HIU role.
+                    </Text>
+                )}
 
                 <View style={{
                     margin: 14,
@@ -395,7 +552,7 @@ const ConsentFormScreen = ({ route }: any) => {
                         setToDate(date);
                         const eraseDate = new Date(date);
                         eraseDate.setDate(eraseDate.getDate() + 2);
-                        setEraseAt(date);
+                        setEraseAt(eraseDate);
                     }}
                 />
 
@@ -410,14 +567,49 @@ const ConsentFormScreen = ({ route }: any) => {
             </ScrollView>
 
             <View style={styles.bottom}>
+                {consentPollId && consentStatus && (
+                    <View style={styles.consentStatusCard}>
+                        <Text style={styles.consentStatusTitle}>
+                            Consent status: {consentStatus.status}
+                        </Text>
+                        <Text style={styles.consentStatusMessage}>
+                            {consentStatus.status === "PENDING"
+                                ? "Waiting for ABDM to confirm the request."
+                                : consentStatus.status === "REQUESTED"
+                                ? "Request sent. The patient must approve it in the ABHA app."
+                                : consentStatus.status === "GRANTED"
+                                ? `Patient approved. ${consentStatus.consentArtefactIds.length} consent artefact(s) received.`
+                                : consentStatus.status === "FAILED"
+                                ? consentStatus.error || "ABDM could not create the request."
+                                : `Consent ${consentStatus.status.toLowerCase()}.`}
+                        </Text>
+                        {statusPollError && (
+                            <Text style={styles.consentStatusError}>
+                                Could not refresh status. Retrying automatically: {statusPollError}
+                            </Text>
+                        )}
+                        <TouchableOpacity
+                            disabled={isPollingStatus}
+                            onPress={() => checkConsentStatus()}
+                            style={styles.checkStatusButton}
+                        >
+                            <Text style={styles.checkStatusText}>
+                                {isPollingStatus ? "Checking..." : "Refresh Status"}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
                 <TouchableOpacity
+                    disabled={isLoading}
                     style={[styles.button, {
-                        backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+                        backgroundColor: isLoading
+                            ? "#98A2B3"
+                            : ERP_COLOR_CODE.ERP_APP_COLOR,
                     }]}
                     onPress={onSubmit}
                 >
                     <Text style={styles.buttonText}>
-                        Request Consent
+                        {isLoading ? "Submitting..." : "Request Consent"}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -445,6 +637,44 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFF", 
         borderColor: "#ECECEC",
         paddingHorizontal: 16,
+    },
+
+    consentStatusCard: {
+        marginBottom: 10,
+        padding: 12,
+        borderRadius: 8,
+        backgroundColor: "#F2F4F7",
+    },
+
+    consentStatusTitle: {
+        fontWeight: "700",
+        color: "#101828",
+    },
+
+    consentStatusMessage: {
+        marginTop: 4,
+        color: "#475467",
+    },
+    consentStatusError: {
+        marginTop: 4,
+        color: "#B42318",
+    },
+    serviceWarning: {
+        color: "#B42318",
+        fontSize: 13,
+        marginHorizontal: 16,
+        marginBottom: 8,
+    },
+
+    checkStatusButton: {
+        alignSelf: "flex-start",
+        marginTop: 8,
+        paddingVertical: 5,
+    },
+
+    checkStatusText: {
+        fontWeight: "600",
+        color: ERP_COLOR_CODE.ERP_APP_COLOR,
     },
 
     button: {

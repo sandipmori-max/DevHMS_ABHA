@@ -315,12 +315,11 @@ export const CLIENT_ID = 'SBX_000704'
 export const X_CM_ID = 'sbx'
 
 export const GRANT_TYPE = 'client_credentials'
-export const CLIENT_SECERET = '8a69243f-e04a-4d68-b902-eccd85c9e6fa'
-//83784be3-e94e-4d03-b0c1-d63cf46a76f4
+export const CLIENT_SECRET = "8a69243f-e04a-4d68-b902-eccd85c9e6fa";
+export const ABDM_REQUESTER_IDENTIFIER_TYPE = 'GSTIN';
+export const ABDM_REQUESTER_IDENTIFIER_VALUE ='24AAHCD0237E1Z7';
+export const ABDM_REQUESTER_IDENTIFIER_SYSTEM ='https://facility.abdm.gov.in';
 
-
-//7483803d-fd4a-43c6-8832-2d7f18407af2
-//8a69243f-e04a-4d68-b902-eccd85c9e6fa
 export const BASE_URL_API = 'https://abhasbx.abdm.gov.in/abha/api/v3/'
 
 export const M3_BASE_URL_API_HIP = 'https://dev.abdm.gov.in/api/hiecm/consent/v3/'
@@ -329,7 +328,7 @@ export const M2_BASE_URL_API_HIP = "https://dev.abdm.gov.in/api/hiecm/hip/v3/"
 
 export const BASE_URL_PUBLIC_API = 'https://dev.abdm.gov.in/api/hiecm/gateway/v3/'
 export const M2_CALLBACK_API_BASE_URL =
-   "https://abha.deverp.net";
+  'https://stingily-varying-bloomers.ngrok-free.dev';
 
 export const TERMS_ONE = `I hereby declare that I am voluntarily sharing my
                     Aadhaar Number and demographic information issued

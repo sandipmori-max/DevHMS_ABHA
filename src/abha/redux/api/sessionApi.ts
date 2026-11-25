@@ -7,7 +7,7 @@ import { certificateApi } from "./certificateApi";
 import {
     BASE_URL_PUBLIC_API,
     CLIENT_ID,
-    CLIENT_SECERET,
+    CLIENT_SECRET,
     GRANT_TYPE,
     X_CM_ID,
     getErrorMessage,
@@ -18,18 +18,29 @@ import { showToast } from "../../utils/toast";
 export const sessionApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         createSession: builder.mutation<any, void>({
-            query: () => ({
-                url: `${BASE_URL_PUBLIC_API}${END_POINTS.sessions}`,
-                method: "POST",
-                headers: {
-                    "X-CM-ID": X_CM_ID,
-                },
-                body: {
-                    clientId: CLIENT_ID,
-                    clientSecret: CLIENT_SECERET,
-                    grantType: GRANT_TYPE,
-                },
-            }),
+            async queryFn(_arg, _api, _extraOptions, baseQuery) {
+                if (!CLIENT_ID || !CLIENT_SECRET) {
+                    return {
+                        error: {
+                            status: "CUSTOM_ERROR",
+                            error: "Configure ABDM_CLIENT_ID and ABDM_CLIENT_SECRET before requesting an ABDM session.",
+                        },
+                    };
+                }
+
+                return baseQuery({
+                    url: `${BASE_URL_PUBLIC_API}${END_POINTS.sessions}`,
+                    method: "POST",
+                    headers: {
+                        "X-CM-ID": X_CM_ID,
+                    },
+                    body: {
+                        clientId: CLIENT_ID,
+                        clientSecret: CLIENT_SECRET,
+                        grantType: GRANT_TYPE,
+                    },
+                });
+            },
 
             async onQueryStarted(
                 _arg,

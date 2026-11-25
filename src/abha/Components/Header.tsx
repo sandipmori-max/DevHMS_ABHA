@@ -24,9 +24,12 @@ const Header = ({
   addConsentForm,
   handleFetch,
   isFetch = false,
-  isSearch = true, isMenu = true, isShare = false, handleShare, handleConsentForm }: {
+  isSearch = true, isMenu = true, isShare = false, isAdd = false,
+  handleShare, handleConsentForm, handleAdd }: {
     title: string, isSearch?: boolean, isMenu?: boolean,
     isShare?: boolean,
+    isAdd?: boolean,
+    handleAdd?: () => void,
     handleShare?: any,
     setSearch?: any,
     setSearchActive?: any,
@@ -90,17 +93,31 @@ const Header = ({
 
 
       {
-        isSearch && <View style={styles.rightContainer}>
-          <TouchableOpacity
-
-            onPress={handleSearch}
-            style={styles.iconBtn}>
-            <MaterialIcons
-              name={seachActive ? 'close' : 'search'}
-              size={20}
-              color="#FFF"
-            />
-          </TouchableOpacity>
+        (isSearch || isAdd) && <View style={styles.rightContainer}>
+          {
+            isSearch && <TouchableOpacity
+              onPress={handleSearch}
+              style={styles.iconBtn}>
+              <MaterialIcons
+                name={seachActive ? 'close' : 'search'}
+                size={20}
+                color="#FFF"
+              />
+            </TouchableOpacity>
+          }
+          {
+            isAdd && <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel="Add"
+              onPress={handleAdd}
+              style={styles.iconBtn}>
+              <MaterialIcons
+                name="add"
+                size={22}
+                color="#FFF"
+              />
+            </TouchableOpacity>
+          }
         </View>
 
       }

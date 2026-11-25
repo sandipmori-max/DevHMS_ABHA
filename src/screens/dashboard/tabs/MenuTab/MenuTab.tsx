@@ -751,7 +751,7 @@ const MenuTab = ({
                 return;
               }
               if (parsedConfig?.newentry === 1 || parsedConfig?.newentry === "1") {
-                 if (parsedConfig?.title.includes('ABHA')) {
+                 if (parsedConfig?.title.includes('ABHA Patient Master')) {
                   openSheet();
                 } else {
                 navigation.navigate("Page", {

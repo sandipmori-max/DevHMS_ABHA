@@ -1,9 +1,17 @@
 const SENSITIVE_FIELD =
-  /abha|aadhaar|aadhar|token|secret|password|otp|authorization|patient|name|phone|mobile|email|address|dob|birth|gender|reference|care.?context|request.?id|txn|account|identifier|photo|image|pin|postal|date|display|login|user/i;
+  /abha|aadhaar|aadhar|token|secret|password|otp|authorization|patient|name|phone|mobile|email|address|dob|birth|gender|reference|care.?context|request.?id|poll.?id|txn|account|identifier|photo|image|pin|postal|date|display|login|user/i;
 
 const redactValue = (value: unknown, fieldName = ""): unknown => {
   if (SENSITIVE_FIELD.test(fieldName)) {
-    return value;
+    return "[REDACTED]";
+  }
+
+  if (typeof value === "string" && fieldName.toLowerCase() === "data") {
+    try {
+      return redactValue(JSON.parse(value));
+    } catch {
+      return "[REDACTED]";
+    }
   }
 
   if (Array.isArray(value)) {

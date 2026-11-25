@@ -1,8 +1,11 @@
 import { RootState } from "../../../store/store";
 import { baseApi } from "./baseApi";
 import { showToast } from "../../utils/toast";
-import { API_BOOL } from "./end_points";
 import { Platform } from "react-native";
+import {
+  logAbhaApiRequest,
+  logAbhaApiResponse,
+} from "../../utils/apiLogging";
 
 const MOCK_SAVE_PAGE = false;
 
@@ -22,27 +25,22 @@ export const savePageApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     savePage: builder.mutation<SavePageResponse, SavePagePayload>({
       async queryFn(body, api, _extraOptions, baseQuery) {
-        const state = api.getState() as RootState;
-         const baseUrl = state.auth.user?.companyLink;
-       
-                       let normalizedBase = (baseUrl || "").replace(/\/+$/, ""); 
-                           normalizedBase = normalizedBase.replace(
-                             /^https:\/\//i,
-                             Platform.OS === "ios" ? "https://" : "http://",
-                           );
-
-        console.log("========== SAVE PAGE ==========");
-        console.log("Request URL =>", `${baseUrl}/savePage`);
-        console.log("Request Method => POST");
-        console.log(
-          "Request Body =>",
-          JSON.stringify(body, null, 2)
+        const state = api.getState() as RootState & {
+          auth: RootState["auth"] & {
+            user: (RootState["auth"]["user"] & { companyLink?: string }) | null;
+          };
+        };
+        const baseUrl = state.auth.user?.companyLink;
+        let normalizedBase = (baseUrl || "").replace(/\/+$/, "");
+        normalizedBase = normalizedBase.replace(
+          /^https:\/\//i,
+          Platform.OS === "ios" ? "https://" : "http://",
         );
+        const requestUrl = `${normalizedBase}/msp_api.aspx/pageSave`;
+        logAbhaApiRequest("POST", requestUrl, JSON.stringify(body));
 
         // MOCK RESPONSE
         if (MOCK_SAVE_PAGE) {
-          console.log("========== MOCK SAVE PAGE RESPONSE ==========");
-
           return {
             data: {
               success: 1,
@@ -53,20 +51,26 @@ export const savePageApi = baseApi.injectEndpoints({
 
         // ACTUAL API
         const response: any = await baseQuery({
-          url: `${normalizedBase}/msp_api.aspx/pageSave`,
+          url: requestUrl,
           method: "POST",
           body,
         });
-        console.log("========== response response ==========", response);
+        logAbhaApiResponse(
+          "POST",
+          requestUrl,
+          response.meta?.response?.status ?? (response.error ? 500 : 200),
+          !response.error,
+        );
+        if (response.error) {
+          return { error: response.error };
+        }
+
         if (response.data?.d) {
           const raw = response.data.d;
 
           try {
             response.data = JSON.parse(raw);
-          } catch (e) {
-            console.log("========== NON JSON D ==========");
-            console.log(raw);
-
+          } catch {
             response.data = {
               success: Number(raw?.split(",")[0]) || 0,
               message: raw?.split(",").slice(1).join(",") || raw,
@@ -74,38 +78,28 @@ export const savePageApi = baseApi.injectEndpoints({
           }
         }
 
+        if (response.data === undefined || response.data === null) {
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error: "The save-page server returned an empty response.",
+            },
+          };
+        }
+
         return {
           data: response.data,
         };
       },
 
-      async onQueryStarted(arg, { queryFulfilled }) {
-        console.log("========== SAVE PAGE onQueryStarted ==========");
-        console.log(
-          "Request Argument =>",
-          JSON.stringify(arg, null, 2)
-        );
-
+      async onQueryStarted(_arg, { queryFulfilled }) {
         try {
-          const result = await queryFulfilled;
-
-          console.log(
-            "Full Query Result =>",
-            JSON.stringify(result, null, 2)
-          );
-
-          console.log(
-            "Response Data =>111 11 11111 1111 1111 ",
-            JSON.stringify(result.data, null, 2)
-          );
+          await queryFulfilled;
         } catch (error) {
           showToast(
             "error",
             "Something went wrong. Please try again later."
           );
-
-          console.log("========== SAVE PAGE ERROR ==========");
-          console.log(error);
         }
       },
     }),

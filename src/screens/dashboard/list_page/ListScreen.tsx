@@ -1864,7 +1864,7 @@ const ListScreen = () => {
               onPressOut={onPressOut}
               onPress={() => {
                 setTapLoader(true);
-                if (parsedConfig?.title.includes('ABHA')) {
+                if (parsedConfig?.title.includes('ABHA Patient Master')) {
                   openSheet();
                 } else {
                   handleItemPressed({}, pageParamsName, pageTitle);

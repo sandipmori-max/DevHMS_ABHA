@@ -8,6 +8,10 @@ import {
   logAbhaApiRequest,
   logAbhaApiResponse,
 } from "../../utils/apiLogging";
+import {
+  getSavePagePayload,
+  savePageApi,
+} from "./savePageApi";
 import { showToast } from "../../utils/toast";
 import { baseApi } from "./baseApi";
 import { END_POINTS } from "./end_points";
@@ -21,6 +25,7 @@ export interface GenerateLinkTokenPayload {
 }
 
 export interface GenerateLinkTokenResponse {
+  status: "ready";
   linkToken: string;
   transactionId: string;
   expiresAt: string;
@@ -219,6 +224,7 @@ export const linkAbhaApi = baseApi.injectEndpoints({
 
         const state = api.getState() as {
           abha?: { selectedXCMID?: string };
+          auth?: { user?: { token?: string } | null };
         };
         const hipId = state.abha?.selectedXCMID;
         if (!hipId) {
@@ -232,7 +238,7 @@ export const linkAbhaApi = baseApi.injectEndpoints({
 
         let mobileRequestId: string | undefined;
         const abdmRequestId = generateGUID();
-        console.log("[ABHA M2] Link-token flow started", body);
+        console.log("[ABHA M2] Link-token flow started");
 
         try {
           const createdRequest = await postCallbackApi<CreatedTokenRequest>(
@@ -320,9 +326,37 @@ export const linkAbhaApi = baseApi.injectEndpoints({
               pollResult.data?.status === "ready" &&
               pollResult.data.linkToken
             ) {
-              console.log("[ABHA M2] Link-token callback received",pollResult);
+              const erpToken = state.auth?.user?.token;
+              if (!erpToken) {
+                throw new Error(
+                  "ERP user session is unavailable to save the generated link token.",
+                );
+              }
+
+              const tokenPageData = {
+                "tgid": "",
+                ...body,
+                status: pollResult.data.status,
+                linktoken: pollResult.data.linkToken,
+                expiresat: pollResult.data.expiresAt ?? "",
+              };
+              console.log("[ABHA M2] Saving link token to ERP server", {
+                hasSessionToken: Boolean(erpToken),
+                hasLinkToken: Boolean(tokenPageData.linktoken),
+              });
+              await api.dispatch(
+                savePageApi.endpoints.savePage.initiate(
+                  getSavePagePayload(
+                    erpToken,
+                    "TokenGenerate",
+                    JSON.stringify(tokenPageData),
+                  ),
+                ),
+              ).unwrap();
+
               return {
                 data: {
+                  status: "ready",
                   linkToken: pollResult.data.linkToken,
                   transactionId: abdmRequestId,
                   expiresAt: pollResult.data.expiresAt ?? "",
