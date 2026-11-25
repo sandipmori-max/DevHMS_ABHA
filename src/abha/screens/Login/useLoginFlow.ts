@@ -22,6 +22,10 @@ import { LOGIN_TYPES, VALIDATION_METHODS } from "../../utils/constants";
 import { isValidAadhaar } from "../../utils/aadhaarValidator";
 
 import { showToast } from "../../utils/toast";
+import {
+    logAbhaApiRequest,
+    logAbhaApiResponse,
+} from "../../utils/apiLogging";
 
 import { showLoader, hideLoader } from "../../redux/slices/loaderSlice";
 
@@ -276,8 +280,10 @@ export const useLoginFlow = ({
 
     const getProfileQrCode = async (endpoints: any, xtoken: any) => {
         try {
+          const requestUrl = `${BASE_URL_API}${endpoints}`;
+          logAbhaApiRequest("GET", requestUrl);
           const response = await fetch(
-            `${BASE_URL_API}${endpoints}`,
+            requestUrl,
             {
               method: "GET",
               headers: {
@@ -288,18 +294,12 @@ export const useLoginFlow = ({
               },
             }
           );
-    
-          console.log("Status =>", response.status);
-    
-          console.log(
-            "Content-Type =>",
-            response.headers.get("content-type")
-          );
-    
-    
+
+          logAbhaApiResponse("GET", requestUrl, response.status, response.ok);
+
           const contentType = response.headers.get("content-type");
-          console.log("contentTypecontentTypecontentTypecontentType", contentType)
-    
+
+
           if (
             contentType?.includes("image")
           ) {
@@ -318,26 +318,12 @@ export const useLoginFlow = ({
     
             const base64 = `data:${contentType};base64,${btoa(binary)}`;
     
-    
-            console.log(
-              "BASE64 IMAGE =>",
-              base64.substring(0, 100)
-            );
-    
-    
             return base64;
     
           }
     
     
           const text = await response.text();
-    
-          console.log(
-            "TEXT RESPONSE =>",
-            text
-          );
-    
-    
           return text;
     
     

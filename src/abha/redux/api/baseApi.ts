@@ -3,6 +3,11 @@ import {
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
 import { generateGUID } from "../../utils/helpers";
+import {
+  getSafeApiUrl,
+  logAbhaApiRequest,
+  logAbhaApiResponse,
+} from "../../utils/apiLogging";
 
 const fetchWithAbhaLogging: typeof fetch = async (input, init) => {
   const rawUrl =
@@ -11,19 +16,16 @@ const fetchWithAbhaLogging: typeof fetch = async (input, init) => {
       : "url" in input
         ? input.url
         : input.toString();
-  const endpoint = rawUrl.split("?")[0];
+  const endpoint = getSafeApiUrl(rawUrl);
   const method =
     init?.method ??
     (typeof input !== "string" && "method" in input ? input.method : "GET");
 
-  console.log("[ABHA API] Request", method, endpoint);
+  logAbhaApiRequest(method, endpoint, init?.body);
 
   try {
     const response = await fetch(input, init);
-    console.log("[ABHA API] Response", method, endpoint, {
-      status: response.status,
-      ok: response.ok,
-    });
+    logAbhaApiResponse(method, endpoint, response.status, response.ok);
     return response;
   } catch (error) {
     console.error("[ABHA API] Network failure", method, endpoint, {

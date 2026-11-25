@@ -240,7 +240,7 @@ export const getIsFormValid = (loginType, loginValue, isFromForgotAbhaNumber, is
 };
 
 export const getErrorMessage = (error: any) => {
-  console.log("========== ABHA ADDRESS OTP ERROR ==========" , error);
+  console.log("========== ABHA AgetErrorMessage ==========" , error);
   return (
     (typeof error?.error === "string" ? error.error : undefined) ||
     error?.data?.message ||
@@ -329,7 +329,7 @@ export const M2_BASE_URL_API_HIP = "https://dev.abdm.gov.in/api/hiecm/hip/v3/"
 
 export const BASE_URL_PUBLIC_API = 'https://dev.abdm.gov.in/api/hiecm/gateway/v3/'
 export const M2_CALLBACK_API_BASE_URL =
-   "https://stingily-varying-bloomers.ngrok-free.dev";
+   "https://abha.deverp.net";
 
 export const TERMS_ONE = `I hereby declare that I am voluntarily sharing my
                     Aadhaar Number and demographic information issued

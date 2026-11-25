@@ -4,6 +4,10 @@ import {
   M2_BASE_URL_API,
   M2_CALLBACK_API_BASE_URL,
 } from "../../utils/helpers";
+import {
+  logAbhaApiRequest,
+  logAbhaApiResponse,
+} from "../../utils/apiLogging";
 import { showToast } from "../../utils/toast";
 import { baseApi } from "./baseApi";
 import { END_POINTS } from "./end_points";
@@ -61,7 +65,8 @@ const readJsonResponse = async <T>(
 
 const getCallbackPath = (url: string) => {
   try {
-    return new URL(url).pathname;
+    const parsedUrl = new URL(url);
+    return `${parsedUrl.origin}${parsedUrl.pathname}`;
   } catch {
     return url.split("?")[0];
   }
@@ -71,12 +76,9 @@ const postCallbackApi = async <T>(
   url: string,
   body: object,
   signal?: AbortSignal,
-  logRequest = true,
 ) => {
   const path = getCallbackPath(url);
-  if (logRequest) {
-    console.log("[ABHA callback] Request POST", path);
-  }
+  logAbhaApiRequest("POST", path, JSON.stringify(body));
 
   let response: Response;
   try {
@@ -90,24 +92,28 @@ const postCallbackApi = async <T>(
       signal,
     });
   } catch (error) {
-    if (logRequest) {
-      console.error("[ABHA callback] Network failure", path, {
-        name: error instanceof Error ? error.name : "UnknownError",
-      });
-    }
+    console.error("[ABHA callback] Network failure", path, {
+      name: error instanceof Error ? error.name : "UnknownError",
+    });
     throw error;
   }
 
-  if (logRequest) {
-    console.log("[ABHA callback] Response", path, {
-      status: response.status,
-      ok: response.ok,
-    });
+  logAbhaApiResponse("POST", path, response.status, response.ok);
+  const data = await readJsonResponse<T>(response);
+  const responseSummary =
+    data && typeof data === "object"
+      ? {
+          status: "status" in data ? data.status : undefined,
+          hasRequestId: "requestId" in data,
+          hasLinkToken: "linkToken" in data,
+        }
+      : undefined;
+  if (responseSummary) {
+    console.log("[ABHA callback] Response summary", path, responseSummary);
   }
-
   return {
     response,
-    data: await readJsonResponse<T>(response),
+    data,
   };
 };
 
@@ -226,7 +232,7 @@ export const linkAbhaApi = baseApi.injectEndpoints({
 
         let mobileRequestId: string | undefined;
         const abdmRequestId = generateGUID();
-        console.log("[ABHA M2] Link-token flow started");
+        console.log("[ABHA M2] Link-token flow started", body);
 
         try {
           const createdRequest = await postCallbackApi<CreatedTokenRequest>(
@@ -294,7 +300,6 @@ export const linkAbhaApi = baseApi.injectEndpoints({
               `${M2_CALLBACK_API_BASE_URL}${TOKEN_POLL_PATH}`,
               { requestId: mobileRequestId },
               api.signal,
-              false,
             );
 
             if (
@@ -315,10 +320,7 @@ export const linkAbhaApi = baseApi.injectEndpoints({
               pollResult.data?.status === "ready" &&
               pollResult.data.linkToken
             ) {
-              console.log("[ABHA M2] Link-token callback received", {
-                pollCount,
-                hasExpiry: Boolean(pollResult.data.expiresAt),
-              });
+              console.log("[ABHA M2] Link-token callback received",pollResult);
               return {
                 data: {
                   linkToken: pollResult.data.linkToken,

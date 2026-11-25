@@ -1,9 +1,55 @@
+using System.Diagnostics;
 using DevHms.Abdm.CallbackApi;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<AbdmCallbackStore>();
 
 var app = builder.Build();
+
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path;
+    var isAbdmFlowRoute =
+        path.StartsWithSegments("/api/v3/hip/token/on-generate-token") ||
+        path.StartsWithSegments("/api/v3/link/on_carecontext") ||
+        path.StartsWithSegments("/mobile/abdm/link-token-requests") ||
+        path.StartsWithSegments("/mobile/abdm/care-context-requests");
+
+    if (!isAbdmFlowRoute)
+    {
+        await next();
+        return;
+    }
+
+    var stopwatch = Stopwatch.StartNew();
+    app.Logger.LogInformation(
+        "ABDM flow request started: {Method} {Path}",
+        context.Request.Method,
+        path);
+
+    try
+    {
+        await next();
+    }
+    catch (Exception exception)
+    {
+        app.Logger.LogError(
+            exception,
+            "ABDM flow request failed: {Method} {Path}",
+            context.Request.Method,
+            path);
+        throw;
+    }
+    finally
+    {
+        app.Logger.LogInformation(
+            "ABDM flow request completed: {Method} {Path} -> {StatusCode} in {ElapsedMs} ms",
+            context.Request.Method,
+            path,
+            context.Response.StatusCode,
+            stopwatch.ElapsedMilliseconds);
+    }
+});
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 

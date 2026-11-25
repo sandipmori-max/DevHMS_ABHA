@@ -4,6 +4,10 @@ import {
   M2_BASE_URL_API_HIP,
   M2_CALLBACK_API_BASE_URL,
 } from '../../utils/helpers';
+import {
+  logAbhaApiRequest,
+  logAbhaApiResponse,
+} from '../../utils/apiLogging';
 import { showToast } from '../../utils/toast';
 import { baseApi } from './baseApi';
 import { END_POINTS } from './end_points';
@@ -74,24 +78,56 @@ const postCallbackApi = async <T>(
   body: object,
   signal?: AbortSignal,
 ): Promise<CallbackApiResponse<T>> => {
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-    signal,
-  });
+  const endpoint = (() => {
+    try {
+      const parsedUrl = new URL(url);
+      return `${parsedUrl.origin}${parsedUrl.pathname}`;
+    } catch {
+      return url.split('?')[0];
+    }
+  })();
+  logAbhaApiRequest('POST', endpoint, JSON.stringify(body));
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+      signal,
+    });
+  } catch (error) {
+    console.error('[ABHA callback] Network failure', endpoint, {
+      name: error instanceof Error ? error.name : 'UnknownError',
+    });
+    throw error;
+  }
+
   const text = await response.text();
+  logAbhaApiResponse('POST', endpoint, response.status, response.ok);
 
   if (!text) {
     return { response, data: null };
   }
 
   try {
-    return { response, data: JSON.parse(text) as T };
+    const data = JSON.parse(text) as T;
+    const responseSummary =
+      data && typeof data === 'object'
+        ? {
+            status: 'status' in data ? data.status : undefined,
+            hasRequestId: 'requestId' in data,
+          }
+        : undefined;
+    if (responseSummary) {
+      console.log('[ABHA callback] Response summary', endpoint, responseSummary);
+    }
+    return { response, data };
   } catch {
+    console.error('[ABHA callback] Invalid JSON response', endpoint);
     throw new Error('The callback server returned an invalid response.');
   }
 };

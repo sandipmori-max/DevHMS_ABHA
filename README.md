@@ -4,6 +4,19 @@
 // auth / view details
 // sms/notify2 -  This API will be invoked by HIP to trigger a SMS notification to the patient mobile number when health record is available to fetch.    
 
+
+
+{
+    "abhaNumber": 91132641334256,
+    "abhaAddress": "vivekchauhan191992@sbx",
+    "name": "Vivek M Chauhan",
+    "gender": "M",
+    "yearOfBirth": 1992,
+    "status": "ready",
+    "linkToken": "eyJhbGciOiJSUzUxMiJ9.eyJoaXBJZCI6IklOMjMxMDAwMDM3MiIsImFiaGFOdW1iZXIiOjkxMTMyNjQxMzM0MjU2LCJ0cmFuc2FjdGlvbklkIjoiZDBiNDNkYzctOGRiNy00NGRlLWJlODUtMzliMjc1YjRiMGIzIiwiYWJoYUFkZHJlc3MiOiJ2aXZla2NoYXVoYW4xOTE5OTJAc2J4Iiwic3ViIjoidml2ZWtjaGF1aGFuMTkxOTkyQHNieCIsImlhdCI6MTc5NTU5MTA2OSwiZXhwIjoxODExMzU5MDY5fQ.eJVAnMGFjohvecAWe9Ht8_8t5tVJxLqa8aMmFwdN3Qn_vTgLwW16oeYHwVY9JcJEhBuOCHHHa-9MpeTcLzrPLtjFTicUaYrCJEssAh-Sv0D47I5-uWxeXApSgq-e7ASRpB4RK5ax4B886cllM7K9KaqF_bHCgFGdwwiT0Ix-gbLgYu-VauhA49rqFnw7_58T9f4wMfkHz83AGcrZ0c3zksoHasPvYLGOeQgoJhz0dkRxUcZQ4ANr2lBf5t9wqQeivncnAiv3Y1VsN7_7YGHxcnkQe03BwZyvsEbukgZS-3yHJXFHvMp_1nsJq0aHKB2sYDqhvTwA2DruRlhve6Pi2A",
+    "expiresAt": "2026-11-25T07:27:48.9980017+00:00"
+}
+
 Varun2001@sbx
 
 Pass - Varun@007

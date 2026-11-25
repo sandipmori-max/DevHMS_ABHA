@@ -39,6 +39,10 @@ import AccountList from './AccountList';
 import { BASE_URL_API, generateGUID } from '../../utils/helpers';
 import { END_POINTS } from '../../redux/api/end_points';
 import { useCreateSessionMutation } from '../../redux/api/sessionApi';
+import {
+  logAbhaApiRequest,
+  logAbhaApiResponse,
+} from '../../utils/apiLogging';
 
 const OtpVerificationScreen = () => {
   const navigation = useNavigation<any>();
@@ -251,8 +255,10 @@ const OtpVerificationScreen = () => {
 
   const getProfileQrCode = async (endpoints: any) => {
     try {
+      const requestUrl = `${BASE_URL_API}${endpoints}`;
+      logAbhaApiRequest("GET", requestUrl);
       const response = await fetch(
-        `${BASE_URL_API}${endpoints}`,
+        requestUrl,
         {
           method: "GET",
           headers: {
@@ -264,16 +270,9 @@ const OtpVerificationScreen = () => {
         }
       );
 
-      console.log("Status =>", response.status);
-
-      console.log(
-        "Content-Type =>",
-        response.headers.get("content-type")
-      );
-
+      logAbhaApiResponse("GET", requestUrl, response.status, response.ok);
 
       const contentType = response.headers.get("content-type");
-      console.log("contentTypecontentTypecontentTypecontentType", contentType)
 
       if (
         contentType?.includes("image")
@@ -293,25 +292,12 @@ const OtpVerificationScreen = () => {
 
         const base64 = `data:${contentType};base64,${btoa(binary)}`;
 
-
-        console.log(
-          "BASE64 IMAGE =>",
-          base64.substring(0, 100)
-        );
-
-
         return base64;
 
       }
 
 
       const text = await response.text();
-
-      console.log(
-        "TEXT RESPONSE =>",
-        text
-      );
-
 
       return text;
 
