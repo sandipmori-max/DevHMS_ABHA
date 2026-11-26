@@ -13,6 +13,8 @@ Configure the registered HIP bridge URL as the public HTTPS base URL only
 - `POST /api/v3/hip/patient/care-context/discover`
 - `POST /api/v3/hiu/consent/request/on-init`
 - `POST /api/v3/hiu/consent/request/notify`
+- `POST /api/v3/hiu/consent/on-fetch`
+- `POST /api/v3/hiu/health-information/data-push`
 
 The token callback is matched against the ABHA address and the `REQUEST-ID`
 sent with the mobile app's ABDM `generate-token` call. The token is retained
@@ -40,9 +42,9 @@ are returned for other patients.
 
 ## Sandbox discovery configuration
 
-Configure these environment variables on the .NET host. Keep the client secret
-out of source control and use the same sandbox client credentials as the
-mobile app:
+Configure these values on the .NET host. The ASP.NET Core backend does not read
+the React Native `.env` file. Never put the client secret in source control or
+a mobile app bundle.
 
 - `ABDM_CLIENT_ID`
 - `ABDM_CLIENT_SECRET`
@@ -55,6 +57,19 @@ mobile app:
 - `ABDM_DEMO_PATIENT_YEAR_OF_BIRTH`
 - `ABDM_DEMO_PATIENT_REFERENCE` (optional; defaults to `DEMO-PATIENT-001`)
 - `ABDM_SESSION_URL` and `ABDM_ON_DISCOVER_URL` (optional sandbox endpoint overrides)
+
+For local Development, the project supports .NET User Secrets. Set the sandbox
+credentials on your machine, replacing the placeholders locally (do not send
+the secret in chat):
+
+```sh
+dotnet user-secrets set "ABDM_CLIENT_ID" "<your-sandbox-client-id>" --project dotnetbackend/DevHms.Abdm.CallbackApi.csproj
+dotnet user-secrets set "ABDM_CLIENT_SECRET" "<your-sandbox-client-secret>" --project dotnetbackend/DevHms.Abdm.CallbackApi.csproj
+```
+
+For hosted environments, set `ABDM_CLIENT_ID` and `ABDM_CLIENT_SECRET` as
+server environment variables or through the hosting provider's secret store.
+Restart the callback API after changing credentials.
 
 The demo care-context references are fixed sandbox fixtures. Replace the
 in-memory matcher and fixture contexts with the hospital's patient/encounter
@@ -110,9 +125,59 @@ production client secrets must stay on the backend.
 
 The mobile status poll ID is a random bearer capability; keep it private and do
 not log it. Consent callback state is in memory for up to 24 hours, so deploy
-durable shared storage before production use. Fetching consent artefacts and
-transferring health records are separate later steps and are not implemented
-by the consent form.
+durable shared storage before production use.
+
+### Fetching approved records
+
+After submission, the Consent Request screen shows a full-screen waiting state
+and polls for the patient's decision while the screen is open. On `DENIED`, it
+shows a rejection message for four seconds and returns to the form. On
+`GRANTED`, it hides the form, lists each consent artefact, and automatically
+starts a record fetch for each one; failed fetches can be retried. The backend
+validates the artefact scope, sends the permitted date range and a
+Fidelius-generated Curve25519 public key to the ABDM health-information request
+endpoint, accepts the encrypted data push, decrypts each FHIR payload on the
+server, and returns the records to the mobile screen. Private keys and
+decrypted records are not logged or sent to the Fidelius service from the
+mobile app. OS push notifications while the app is backgrounded are not
+configured by this flow.
+
+The consent notification initially supplies artefact IDs, not clinical files.
+The screen shows the requested terms until the approved artefact is fetched,
+then shows its approved scope. Only a completed health-information transfer
+confirms which records were received; an empty result should be checked with
+the HIP and does not by itself prove whether a document was uploaded.
+
+Configure these values on the **.NET host**, not in the mobile `.env`:
+
+- `ABDM_HIU_DATA_PUSH_URL`: public HTTPS URL ending in
+  `/api/v3/hiu/health-information/data-push`. It must route to this callback
+  API and be reachable by ABDM/HIP.
+- `Fidelius:BaseUrl`: private base URL for the Fidelius sidecar.
+- Optionally override `ABDM_CONSENT_FETCH_URL` and `ABDM_HIU_REQUEST_URL` for
+  the matching ABDM environment. Defaults target the dev sandbox.
+
+The local Development settings include the public tunnel URL currently used
+by the mobile app. Keep it running and update
+`dotnetbackend/appsettings.Development.json` if the tunnel URL changes.
+Configure the same setting through the hosting provider's environment
+variables for non-Development deployments.
+
+The backend holds transfer state and FHIR records in memory, removes them after
+24 hours or the artefact's `dataEraseAt` deadline (whichever comes first), with
+expiry checked on access and every five minutes. It clears key material after
+all data pages arrive. Restarting the process loses in-flight transfers. A
+successful consent grant alone does not guarantee records: the
+HIP must have linked, matching health records in the approved date range and
+must complete the ABDM data push. Sandbox demo Care Context references are not
+themselves health records.
+
+This is a sandbox implementation foundation, not production-ready storage or
+trust validation. Before production, add authenticated mobile access, ABDM
+callback authentication and consent-artefact signature verification, durable
+encrypted storage with audited retention/deletion, and end-to-end testing with
+the registered HIP/HIU and Fidelius deployment. The sandbox may also reject
+data-flow API calls due to its own service/subscription availability.
 
 ## M3 encryption sidecar
 
@@ -124,9 +189,7 @@ it defaults to `http://localhost:8090/`. The service must expose `GET
 contract. Keep it on a private network reachable only by the callback API:
 the sidecar handles ephemeral private keys and plaintext health records and
 does not provide application authentication. Never log its request or
-response bodies. This client is the crypto integration layer; the M3 consent
-fetch, health-information request, data-push callbacks, and FHIR handling are
-still separate implementation steps.
+response bodies. The client is used by the M3 health-record retrieval flow above.
 
 ## Mobile handoff
 

@@ -1,9 +1,22 @@
 using System.Diagnostics;
+using System.Text.Json;
 using DevHms.Abdm.CallbackApi;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<AbdmCallbackStore>();
 builder.Services.AddSingleton<AbdmConsentStore>();
+builder.Services.AddSingleton<AbdmM3Store>();
+builder.Services.AddSingleton<AbdmM3Queue>();
+var m3Options = new AbdmM3Options
+{
+    ConsentFetchUrl = builder.Configuration["ABDM_CONSENT_FETCH_URL"]
+                      ?? "https://dev.abdm.gov.in/api/hiecm/consent/v3/fetch",
+    HealthInformationRequestUrl = builder.Configuration["ABDM_HIU_REQUEST_URL"]
+                                  ?? "https://dev.abdm.gov.in/api/hiecm/data-flow/v3/health-information/request",
+    DataPushUrl = builder.Configuration["ABDM_HIU_DATA_PUSH_URL"] ?? "",
+    CmId = builder.Configuration["ABDM_CM_ID"] ?? "sbx",
+};
+builder.Services.AddSingleton(m3Options);
 var fideliusBaseUrl = builder.Configuration["Fidelius:BaseUrl"] ?? "http://localhost:8090/";
 if (!fideliusBaseUrl.EndsWith("/", StringComparison.Ordinal))
 {
@@ -51,7 +64,11 @@ builder.Services.AddSingleton<AbdmDiscoveryQueue>();
 builder.Services.AddHttpClient<AbdmSessionTokenProvider>();
 builder.Services.AddHttpClient<AbdmDiscoveryClient>();
 builder.Services.AddHttpClient<AbdmConsentNotificationAcknowledger>();
+builder.Services.AddHttpClient<AbdmM3Client>();
 builder.Services.AddHostedService<AbdmDiscoveryWorker>();
+builder.Services.AddHostedService<AbdmM3Worker>();
+builder.Services.AddHostedService<AbdmM3CleanupWorker>();
+builder.Services.AddSingleton<AbdmM3Coordinator>();
 
 var app = builder.Build();
 
@@ -64,9 +81,12 @@ app.Use(async (context, next) =>
         path.StartsWithSegments("/api/v3/hip/patient/care-context/discover") ||
         path.StartsWithSegments("/api/v3/hiu/consent/request/on-init") ||
         path.StartsWithSegments("/api/v3/hiu/consent/request/notify") ||
+        path.StartsWithSegments("/api/v3/hiu/consent/on-fetch") ||
+        path.StartsWithSegments("/api/v3/hiu/health-information/data-push") ||
         path.StartsWithSegments("/mobile/abdm/link-token-requests") ||
         path.StartsWithSegments("/mobile/abdm/care-context-requests") ||
-        path.StartsWithSegments("/mobile/abdm/consent-requests");
+        path.StartsWithSegments("/mobile/abdm/consent-requests") ||
+        path.StartsWithSegments("/mobile/abdm/consent-data");
 
     if (!isAbdmFlowRoute)
     {
@@ -184,6 +204,7 @@ app.MapPost(
         HiuConsentNotificationCallback callback,
         HttpRequest request,
         AbdmConsentStore store,
+        AbdmM3Store m3Store,
         AbdmConsentNotificationAcknowledger acknowledger,
         AbdmGatewayOptions options,
         CancellationToken cancellationToken) =>
@@ -208,6 +229,14 @@ app.MapPost(
                 });
         }
 
+        if (string.Equals(
+                notification.Status,
+                "REVOKED",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            m3Store.MarkRevoked(notification.ConsentRequestId!);
+        }
+
         if (!options.HasSessionCredentials)
         {
             return Results.Json(
@@ -225,6 +254,56 @@ app.MapPost(
             consentArtefactIds,
             cancellationToken);
         return Results.Ok();
+    });
+
+app.MapPost(
+    "/api/v3/hiu/consent/on-fetch",
+    (
+        JsonElement callback,
+        HttpRequest request,
+        AbdmM3Coordinator coordinator) =>
+    {
+        var requestId = request.Headers["REQUEST-ID"].FirstOrDefault();
+        var hiuId = request.Headers["X-HIU-ID"].FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(requestId) ||
+            string.IsNullOrWhiteSpace(hiuId))
+        {
+            return Results.BadRequest(new { message = "ABDM request ID and HIU ID are required." });
+        }
+
+        return coordinator.OnConsentFetched(
+                requestId,
+                hiuId,
+                callback)
+            ? Results.Ok()
+            : Results.NotFound(new { message = "No active M3 request matches this callback." });
+    });
+
+app.MapPost(
+    "/api/v3/hiu/health-information/data-push",
+    async (
+        JsonElement callback,
+        HttpRequest request,
+        AbdmM3Coordinator coordinator,
+        CancellationToken cancellationToken) =>
+    {
+        var requestId = request.Headers["REQUEST-ID"].FirstOrDefault();
+        var hiuId = request.Headers["X-HIU-ID"].FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(hiuId))
+        {
+            return Results.BadRequest(new { message = "ABDM HIU ID is required." });
+        }
+
+        return await coordinator.ReceiveDataPushAsync(
+                requestId,
+                hiuId,
+                callback,
+                cancellationToken)
+            ? Results.Ok(new
+            {
+                response = new { requestId = requestId ?? Guid.NewGuid().ToString() },
+            })
+            : Results.NotFound(new { message = "No active M3 transfer matches this data push." });
     });
 
 app.MapPost(
@@ -256,6 +335,92 @@ app.MapPost(
                 statusCode: StatusCodes.Status201Created)
             : Results.Conflict(
                 new { message = "A consent request with this ID already exists." });
+    });
+
+app.MapPost(
+    "/mobile/abdm/consent-data/start",
+    async (
+        StartConsentDataFetch request,
+        AbdmConsentStore consentStore,
+        AbdmM3Store m3Store,
+        AbdmM3Coordinator coordinator,
+        AbdmGatewayOptions gatewayOptions,
+        AbdmM3Options options,
+        CancellationToken cancellationToken) =>
+    {
+        if (string.IsNullOrWhiteSpace(request.PollId) ||
+            string.IsNullOrWhiteSpace(request.ConsentArtefactId))
+        {
+            return Results.BadRequest(
+                new { message = "Consent poll ID and artefact ID are required." });
+        }
+
+        if (!options.HasHttpsDataPushUrl)
+        {
+            return Results.Json(
+                new
+                {
+                    message = "Configure ABDM_HIU_DATA_PUSH_URL with the public HTTPS data-push callback URL before requesting records.",
+                },
+                statusCode: StatusCodes.Status503ServiceUnavailable);
+        }
+
+        if (!gatewayOptions.HasSessionCredentials)
+        {
+            return Results.Json(
+                new
+                {
+                    message = "Set ABDM_CLIENT_ID and ABDM_CLIENT_SECRET in the callback server configuration.",
+                },
+                statusCode: StatusCodes.Status503ServiceUnavailable);
+        }
+
+        if (consentStore.GetGrantedRequest(
+                request.PollId,
+                request.ConsentArtefactId) is null)
+        {
+            return Results.NotFound(
+                new { message = "The artefact is not available for this granted consent." });
+        }
+
+        try
+        {
+            if (!await coordinator.StartFetchAsync(
+                    request.PollId,
+                    request.ConsentArtefactId,
+                    cancellationToken))
+            {
+                return Results.NotFound(
+                    new { message = "The artefact is not available for this granted consent." });
+            }
+
+            return Results.Accepted(
+                value: m3Store.Poll(request.PollId, request.ConsentArtefactId));
+        }
+        catch (Exception exception)
+        {
+            return Results.Problem(
+                title: "ABDM consent artefact fetch failed",
+                detail: exception.Message,
+                statusCode: StatusCodes.Status502BadGateway);
+        }
+    });
+
+app.MapPost(
+    "/mobile/abdm/consent-data/poll",
+    (PollConsentDataFetch request, AbdmM3Store store) =>
+    {
+        if (string.IsNullOrWhiteSpace(request.PollId) ||
+            string.IsNullOrWhiteSpace(request.ConsentArtefactId))
+        {
+            return Results.BadRequest(
+                new { message = "Consent poll ID and artefact ID are required." });
+        }
+
+        var result = store.Poll(request.PollId, request.ConsentArtefactId);
+        return result is null
+            ? Results.NotFound(new { message = "Consent data transfer was not found or has expired." })
+            : Results.Ok(result);
     });
 
 app.MapPost(

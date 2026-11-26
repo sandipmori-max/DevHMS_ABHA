@@ -67,6 +67,51 @@ export interface ConsentRequestStatusResult {
   error?: string;
 }
 
+export interface FhirResource {
+  resourceType?: string;
+  title?: string;
+  date?: string;
+  authoredOn?: string;
+  effectiveDateTime?: string;
+  entry?: { resource?: FhirResource }[];
+  code?: {
+    text?: string;
+    coding?: { display?: string }[];
+  };
+  valueString?: string;
+  valueQuantity?: { value?: number; unit?: string };
+}
+
+export type FhirBundle = FhirResource;
+
+export interface ConsentDataFetchResult {
+  status:
+    | "FETCHING_CONSENT"
+    | "REQUESTING_DATA"
+    | "RECEIVING"
+    | "COMPLETED"
+    | "FAILED"
+    | "REVOKED";
+  error?: string;
+  consent?: {
+    consentId: string;
+    patientId: string;
+    hipId: string;
+    hiuId: string;
+    hiTypes: string[];
+    accessMode: string;
+    from: string;
+    to: string;
+    dataEraseAt?: string;
+  };
+  records: FhirBundle[];
+}
+
+export interface ConsentDataFetchRequest {
+  pollId: string;
+  consentArtefactId: string;
+}
+
 interface CallbackApiResponse<T> {
   response: Response;
   data: T | null;
@@ -75,6 +120,7 @@ interface CallbackApiResponse<T> {
 interface CallbackApiMessage {
   message?: string;
   error?: string;
+  detail?: string;
 }
 
 interface CreatedConsentRequest {
@@ -86,6 +132,7 @@ interface CreatedConsentRequest {
 const CONSENT_REQUEST_PATH = "/mobile/abdm/consent-requests";
 const CONSENT_POLL_PATH = `${CONSENT_REQUEST_PATH}/poll`;
 const CONSENT_CANCEL_PATH = `${CONSENT_REQUEST_PATH}/cancel`;
+const CONSENT_DATA_PATH = "/mobile/abdm/consent-data";
 
 const getCallbackPath = (url: string) => {
   try {
@@ -141,7 +188,34 @@ const getCallbackErrorMessage = (
 ) =>
   data?.message?.trim() ||
   data?.error?.trim() ||
+  data?.detail?.trim() ||
   `The callback server returned HTTP ${status}.`;
+
+export const getSafeConsentRequestErrorMessage = (error: unknown) => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === "object" && error !== null) {
+    const errorRecord = error as Record<string, unknown>;
+    const data =
+      typeof errorRecord.data === "object" && errorRecord.data !== null
+        ? errorRecord.data as Record<string, unknown>
+        : undefined;
+    for (const candidate of [
+      data?.message,
+      data?.detail,
+      data?.error,
+      errorRecord.error,
+    ]) {
+      if (typeof candidate === "string" && candidate.trim()) {
+        return candidate.trim();
+      }
+    }
+  }
+
+  return "The callback server request failed.";
+};
 
 const cancelConsentRequest = async (requestId: string) => {
   try {
@@ -299,7 +373,90 @@ export const consentRequestApi = baseApi.injectEndpoints({
           return {
             error: {
               status: "CUSTOM_ERROR",
-              error: error instanceof Error ? error.message : getErrorMessage(error),
+              error: getSafeConsentRequestErrorMessage(error),
+            },
+          };
+        }
+      },
+    }),
+  }),
+});
+
+export const consentDataApi = baseApi.injectEndpoints({
+  endpoints: builder => ({
+    startConsentDataFetch: builder.mutation<
+      ConsentDataFetchResult,
+      ConsentDataFetchRequest
+    >({
+      async queryFn(body, _api) {
+        if (!M2_CALLBACK_API_BASE_URL) {
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error: "Configure ABDM_CALLBACK_API_BASE_URL before fetching health records.",
+            },
+          };
+        }
+
+        try {
+          const result = await postCallbackApi<ConsentDataFetchResult>(
+            `${M2_CALLBACK_API_BASE_URL}${CONSENT_DATA_PATH}/start`,
+            body,
+          );
+          if (result.response.status === 202 && result.data) {
+            return { data: result.data };
+          }
+
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error: getCallbackErrorMessage(result.data, result.response.status),
+            },
+          };
+        } catch (error) {
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error: getSafeConsentRequestErrorMessage(error),
+            },
+          };
+        }
+      },
+    }),
+    pollConsentDataFetch: builder.mutation<
+      ConsentDataFetchResult,
+      ConsentDataFetchRequest
+    >({
+      async queryFn(body, _api) {
+        if (!M2_CALLBACK_API_BASE_URL) {
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error: "Configure ABDM_CALLBACK_API_BASE_URL before checking health records.",
+            },
+          };
+        }
+
+        try {
+          const result = await postCallbackApi<ConsentDataFetchResult>(
+            `${M2_CALLBACK_API_BASE_URL}${CONSENT_DATA_PATH}/poll`,
+            body,
+          );
+          if (result.response.ok && result.data) {
+            return { data: result.data };
+          }
+
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error: getCallbackErrorMessage(result.data, result.response.status),
+            },
+          };
+        } catch (error) {
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error: getSafeConsentRequestErrorMessage(error),
             },
           };
         }
@@ -312,3 +469,8 @@ export const {
   useConsentRequestMutation,
   usePollConsentRequestStatusMutation,
 } = consentRequestApi;
+
+export const {
+  useStartConsentDataFetchMutation,
+  usePollConsentDataFetchMutation,
+} = consentDataApi;

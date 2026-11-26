@@ -1,5 +1,5 @@
 const SENSITIVE_FIELD =
-  /abha|aadhaar|aadhar|token|secret|password|otp|authorization|patient|name|phone|mobile|email|address|dob|birth|gender|reference|care.?context|request.?id|poll.?id|txn|account|identifier|photo|image|pin|postal|date|display|login|user/i;
+  /abha|aadhaar|aadhar|token|secret|password|otp|authorization|patient|name|phone|mobile|email|address|dob|birth|gender|reference|care.?context|consent|artefact|request.?id|poll.?id|txn|account|identifier|photo|image|pin|postal|date|display|login|user|clinical|health.?record|resource|bundle|content|fhir/i;
 
 const redactValue = (value: unknown, fieldName = ""): unknown => {
   if (SENSITIVE_FIELD.test(fieldName)) {

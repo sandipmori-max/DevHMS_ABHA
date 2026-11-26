@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("0db3b3bf-36a6-425b-a32d-efa0b0054c7e")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("DevHms.Abdm.CallbackApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+23e774ce7e2245529ca58baa927638ed839ee720")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+22ee432b36b78ed27f233de5f42f75752d1f2dcb")]
 [assembly: System.Reflection.AssemblyProductAttribute("DevHms.Abdm.CallbackApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DevHms.Abdm.CallbackApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

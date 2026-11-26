@@ -27,3 +27,11 @@
 /Users/deverp/Desktop/Sandip_Mori/DevHMS_ABHA/dotnetbackend/obj/Debug/net8.0/DevHms.Abdm.CallbackApi.pdb
 /Users/deverp/Desktop/Sandip_Mori/DevHMS_ABHA/dotnetbackend/obj/Debug/net8.0/DevHms.Abdm.CallbackApi.genruntimeconfig.cache
 /Users/deverp/Desktop/Sandip_Mori/DevHMS_ABHA/dotnetbackend/obj/Debug/net8.0/ref/DevHms.Abdm.CallbackApi.dll
+/tmp/devhms-abdm-bin/appsettings.Development.json
+/tmp/devhms-abdm-bin/appsettings.json
+/tmp/devhms-abdm-bin/DevHms.Abdm.CallbackApi.staticwebassets.endpoints.json
+/tmp/devhms-abdm-bin/DevHms.Abdm.CallbackApi
+/tmp/devhms-abdm-bin/DevHms.Abdm.CallbackApi.deps.json
+/tmp/devhms-abdm-bin/DevHms.Abdm.CallbackApi.runtimeconfig.json
+/tmp/devhms-abdm-bin/DevHms.Abdm.CallbackApi.dll
+/tmp/devhms-abdm-bin/DevHms.Abdm.CallbackApi.pdb

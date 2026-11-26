@@ -172,6 +172,31 @@ public sealed class AbdmConsentStore
         }
     }
 
+    public GrantedConsentRequest? GetGrantedRequest(
+        string pollId,
+        string consentArtefactId)
+    {
+        lock (_sync)
+        {
+            RemoveExpiredRequests();
+            if (!_requestsByPollId.TryGetValue(pollId.Trim(), out var request) ||
+                request.Status != "GRANTED" ||
+                request.ConsentRequestId is null ||
+                !request.ConsentArtefactIds.Contains(
+                    consentArtefactId.Trim(),
+                    StringComparer.Ordinal))
+            {
+                return null;
+            }
+
+            return new GrantedConsentRequest(
+                request.ConsentRequestId,
+                request.PatientAddress,
+                request.HiuId,
+                request.Status);
+        }
+    }
+
     private void RemoveExpiredRequests()
     {
         var expiredRequests = _requestsByPollId.Values
@@ -245,6 +270,12 @@ public sealed record ConsentRequestPollResult(
     string? ConsentRequestId,
     IReadOnlyList<string> ConsentArtefactIds,
     string? Error);
+
+public sealed record GrantedConsentRequest(
+    string ConsentRequestId,
+    string PatientAddress,
+    string HiuId,
+    string Status);
 
 public sealed record HiuConsentRequestInitCallback(
     ConsentRequestCallbackDetails? ConsentRequest,

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
+    ActivityIndicator,
     SafeAreaView,
     ScrollView,
     StyleSheet,
@@ -7,6 +8,7 @@ import {
     Text,
     View,
 } from "react-native";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
 
 import Header from "../../Components/Header";
 import InfoCard from "./components/InfoCard";
@@ -24,9 +26,14 @@ import {
 } from "../../utils/helpers";
 import { showToast } from "../../utils/toast";
 import {
+    ConsentDataFetchResult,
+    FhirResource,
     ConsentRequestStatusResult,
+    getSafeConsentRequestErrorMessage,
     useConsentRequestMutation,
+    usePollConsentDataFetchMutation,
     usePollConsentRequestStatusMutation,
+    useStartConsentDataFetchMutation,
 } from "../../redux/api/consentRequestApi";
 import { useDispatch } from "react-redux";
 import { hideLoader, showLoader } from "../../redux/slices/loaderSlice";
@@ -158,6 +165,50 @@ const getDefaultFromDate = () => {
     return startOfDay(date);
 };
 
+const getFhirResources = (
+    bundles: ConsentDataFetchResult["records"],
+): FhirResource[] =>
+    bundles.flatMap(bundle =>
+        bundle.resourceType === "Bundle"
+            ? (bundle.entry ?? [])
+                .map(entry => entry.resource)
+                .filter((resource): resource is FhirResource => Boolean(resource))
+            : [bundle],
+    );
+
+const getFhirResourceLabel = (resource: FhirResource) =>
+    resource.title ||
+    resource.code?.text ||
+    resource.code?.coding?.find(coding => coding.display)?.display ||
+    resource.resourceType ||
+    "Health record";
+
+const getFhirResourceValue = (resource: FhirResource) =>
+    resource.valueString ||
+    (resource.valueQuantity?.value !== undefined
+        ? `${resource.valueQuantity.value} ${resource.valueQuantity.unit ?? ""}`.trim()
+        : "");
+
+const getFhirResourceDate = (resource: FhirResource) => {
+    const value =
+        resource.date || resource.authoredOn || resource.effectiveDateTime;
+    if (!value) {
+        return "";
+    }
+
+    const date = new Date(value);
+    return Number.isNaN(date.getTime())
+        ? value
+        : date.toLocaleDateString();
+};
+
+const ConsentDetailRow = ({ label, value }: { label: string; value: string }) => (
+    <View style={styles.consentDetailRow}>
+        <Text style={styles.consentDetailLabel}>{label}</Text>
+        <Text style={styles.consentDetailValue}>{value || "-"}</Text>
+    </View>
+);
+
 const ConsentFormScreen = ({ route }: any) => {
     const { abhaDetail, bridgeServices } = route.params || {};
     const [purpose, setPurpose] = useState(PURPOSES[0].value);
@@ -191,13 +242,23 @@ const ConsentFormScreen = ({ route }: any) => {
     ] = useCreateSessionMutation();
     const [consentRequest, { isLoading }] =
         useConsentRequestMutation();
+    const [startConsentDataFetch] = useStartConsentDataFetchMutation();
+    const [pollConsentDataFetch] = usePollConsentDataFetchMutation();
     const [pollConsentRequestStatus, { isLoading: isPollingStatus }] =
         usePollConsentRequestStatusMutation();
     const [consentPollId, setConsentPollId] = useState<string | null>(null);
     const [consentStatus, setConsentStatus] =
         useState<ConsentRequestStatusResult | null>(null);
     const [statusPollError, setStatusPollError] = useState<string | null>(null);
+    const [dataTransfers, setDataTransfers] =
+        useState<Record<string, ConsentDataFetchResult>>({});
+    const [dataTransferErrors, setDataTransferErrors] =
+        useState<Record<string, string>>({});
+    const [startingDataFetches, setStartingDataFetches] = useState<string[]>([]);
     const statusPollInFlight = useRef(false);
+    const dataPollInFlight = useRef(new Set<string>());
+    const autoFetchStartedPollId = useRef<string | null>(null);
+    const lastNotifiedConsentStatus = useRef<string | null>(null);
     const isMounted = useRef(false);
 
     useEffect(() => {
@@ -268,9 +329,15 @@ const ConsentFormScreen = ({ route }: any) => {
             const result = await pollConsentRequestStatus(consentPollId).unwrap();
             if (isMounted.current) {
                 setConsentStatus(result);
+                if (result.status === "REVOKED" || result.status === "DENIED") {
+                    setDataTransfers({});
+                    setDataTransferErrors({});
+                }
             }
         } catch (error: any) {
             const message =
+                error?.data?.message ||
+                error?.data?.detail ||
                 error?.data?.error ||
                 error?.error ||
                 "Could not check consent status.";
@@ -285,30 +352,245 @@ const ConsentFormScreen = ({ route }: any) => {
         }
     }, [consentPollId, pollConsentRequestStatus]);
 
+    const isConsentWaiting =
+        consentStatus?.status === "PENDING" ||
+        consentStatus?.status === "REQUESTED";
+    const isConsentGranted = consentStatus?.status === "GRANTED";
+    const isConsentDenied = consentStatus?.status === "DENIED";
+    const hasAnyDataTransfers = Object.keys(dataTransfers).length > 0;
+
     useEffect(() => {
-        if (
-            !consentPollId ||
-            (consentStatus?.status !== "PENDING" &&
-                consentStatus?.status !== "REQUESTED")
-        ) {
+        const status = consentStatus?.status;
+        if (!status) {
+            lastNotifiedConsentStatus.current = null;
             return;
         }
 
+        if (
+            status === "GRANTED" &&
+            lastNotifiedConsentStatus.current !== "GRANTED"
+        ) {
+            showToast(
+                "success",
+                "Consent Approved",
+                "The patient approved the consent request.",
+            );
+        } else if (
+            status === "DENIED" &&
+            lastNotifiedConsentStatus.current !== status
+        ) {
+            showToast(
+                "error",
+                "Consent Rejected",
+                "The patient rejected the consent request.",
+            );
+        }
+
+        lastNotifiedConsentStatus.current = status;
+    }, [consentStatus?.status]);
+
+    useEffect(() => {
+        if (!isConsentDenied || !consentPollId) {
+            return;
+        }
+
+        const timeout = setTimeout(() => {
+            setConsentPollId(null);
+            setConsentStatus(null);
+            setStatusPollError(null);
+            setDataTransfers({});
+            setDataTransferErrors({});
+            setStartingDataFetches([]);
+            autoFetchStartedPollId.current = null;
+        }, 4000);
+
+        return () => clearTimeout(timeout);
+    }, [consentPollId, isConsentDenied]);
+
+    useEffect(() => {
+        const trackingGrantedRecords =
+            isConsentGranted && hasAnyDataTransfers;
+        if (!consentPollId || (!isConsentWaiting && !trackingGrantedRecords)) {
+            return;
+        }
+
+        const interval = isConsentWaiting ? 5000 : 30_000;
         let isActive = true;
         let timer: ReturnType<typeof setTimeout>;
         const poll = async () => {
             await checkConsentStatus(false);
             if (isActive) {
-                timer = setTimeout(poll, 5000);
+                timer = setTimeout(poll, interval);
             }
         };
 
-        timer = setTimeout(poll, 5000);
+        timer = setTimeout(poll, interval);
         return () => {
             isActive = false;
             clearTimeout(timer);
         };
-    }, [checkConsentStatus, consentPollId, consentStatus?.status]);
+    }, [
+        checkConsentStatus,
+        consentPollId,
+        isConsentGranted,
+        isConsentWaiting,
+        hasAnyDataTransfers,
+    ]);
+
+    const checkConsentDataStatus = useCallback(async (
+        pollId: string,
+        consentArtefactId: string,
+    ) => {
+        const requestKey = `${pollId}:${consentArtefactId}`;
+        if (dataPollInFlight.current.has(requestKey)) {
+            return;
+        }
+
+        dataPollInFlight.current.add(requestKey);
+        try {
+            const result = await pollConsentDataFetch({
+                pollId,
+                consentArtefactId,
+            }).unwrap();
+            if (isMounted.current) {
+                setDataTransfers(current => ({
+                    ...current,
+                    [consentArtefactId]: result,
+                }));
+                setDataTransferErrors(current => {
+                    const next = { ...current };
+                    delete next[consentArtefactId];
+                    return next;
+                });
+            }
+        } catch (error) {
+            if (isMounted.current) {
+                setDataTransferErrors(current => ({
+                    ...current,
+                    [consentArtefactId]: getSafeConsentRequestErrorMessage(error),
+                }));
+            }
+        } finally {
+            dataPollInFlight.current.delete(requestKey);
+        }
+    }, [pollConsentDataFetch]);
+
+    const transferPollingKey = Object.entries(dataTransfers)
+        .filter(([, transfer]) =>
+            ["FETCHING_CONSENT", "REQUESTING_DATA", "RECEIVING"].includes(
+                transfer.status,
+            ),
+        )
+        .map(([artefactId]) => artefactId)
+        .join("|");
+
+    useEffect(() => {
+        if (!consentPollId || !transferPollingKey) {
+            return;
+        }
+
+        const artefactIds = transferPollingKey.split("|");
+        let isActive = true;
+        let timer: ReturnType<typeof setTimeout>;
+        const poll = async () => {
+            await Promise.all(
+                artefactIds.map(artefactId =>
+                    checkConsentDataStatus(consentPollId, artefactId),
+                ),
+            );
+            if (isActive) {
+                timer = setTimeout(poll, 5000);
+            }
+        };
+
+        timer = setTimeout(poll, 3000);
+        return () => {
+            isActive = false;
+            clearTimeout(timer);
+        };
+    }, [
+        checkConsentDataStatus,
+        consentPollId,
+        transferPollingKey,
+    ]);
+
+    const onFetchApprovedRecords = useCallback(async (consentArtefactId: string) => {
+        if (!consentPollId) {
+            showToast(
+                "error",
+                "Consent request unavailable",
+                "Refresh consent status and try again.",
+            );
+            return;
+        }
+
+        setStartingDataFetches(current =>
+            current.includes(consentArtefactId)
+                ? current
+                : [...current, consentArtefactId],
+        );
+        setDataTransferErrors(current => {
+            const next = { ...current };
+            delete next[consentArtefactId];
+            return next;
+        });
+        try {
+            const result = await startConsentDataFetch({
+                pollId: consentPollId,
+                consentArtefactId,
+            }).unwrap();
+            if (isMounted.current) {
+                setDataTransfers(current => ({
+                    ...current,
+                    [consentArtefactId]: result,
+                }));
+            }
+        } catch (error) {
+            if (isMounted.current) {
+                setDataTransferErrors(current => ({
+                    ...current,
+                    [consentArtefactId]: getSafeConsentRequestErrorMessage(error),
+                }));
+            }
+        } finally {
+            if (isMounted.current) {
+                setStartingDataFetches(current =>
+                    current.filter(id => id !== consentArtefactId),
+                );
+            }
+        }
+    }, [consentPollId, startConsentDataFetch]);
+
+    useEffect(() => {
+        if (
+            !consentPollId ||
+            !consentStatus ||
+            !isConsentGranted ||
+            autoFetchStartedPollId.current === consentPollId
+        ) {
+            return;
+        }
+
+        autoFetchStartedPollId.current = consentPollId;
+        consentStatus.consentArtefactIds.forEach(artefactId => {
+            void onFetchApprovedRecords(artefactId);
+        });
+    }, [
+        consentPollId,
+        consentStatus,
+        isConsentGranted,
+        onFetchApprovedRecords,
+    ]);
+
+    const isDataTransferInProgress = (artefactId: string) => {
+        const status = dataTransfers[artefactId]?.status;
+        return (
+            startingDataFetches.includes(artefactId) ||
+            status === "FETCHING_CONSENT" ||
+            status === "REQUESTING_DATA" ||
+            status === "RECEIVING"
+        );
+    };
 
     const onSubmit = async () => {
         const now = new Date();
@@ -457,6 +739,12 @@ const ConsentFormScreen = ({ route }: any) => {
         try {
             await createSession().unwrap();
             const response = await consentRequest(payload).unwrap();
+            setStatusPollError(null);
+            setDataTransfers({});
+            setDataTransferErrors({});
+            setStartingDataFetches([]);
+            autoFetchStartedPollId.current = null;
+            lastNotifiedConsentStatus.current = null;
             setConsentPollId(response.pollId);
             setConsentStatus({
                 status: "PENDING",
@@ -489,6 +777,68 @@ const ConsentFormScreen = ({ route }: any) => {
                 },
             ]}
         >
+            {isConsentWaiting ? (
+                <View style={styles.fullScreenState}>
+                    <Header
+                        title="Waiting for Consent"
+                        isMenu={false}
+                        isSearch={false}
+                        isShare={false}
+                    />
+                    <View style={styles.decisionContent}>
+                        <View style={styles.decisionIcon}>
+                            <ActivityIndicator
+                                size="large"
+                                color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                            />
+                        </View>
+                        <Text style={styles.decisionTitle}>
+                            Waiting for patient confirmation
+                        </Text>
+                        <Text style={styles.decisionMessage}>
+                            Keep this page open. The consent status will update automatically when the patient approves or rejects the request.
+                        </Text>
+                        {statusPollError && (
+                            <Text style={styles.consentStatusError}>
+                                Still waiting; status refresh will retry automatically. {statusPollError}
+                            </Text>
+                        )}
+                        <TouchableOpacity
+                            disabled={isPollingStatus}
+                            onPress={() => checkConsentStatus()}
+                            style={styles.checkStatusButton}
+                        >
+                            <Text style={styles.checkStatusText}>
+                                {isPollingStatus ? "Checking..." : "Check Status Now"}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            ) : isConsentDenied ? (
+                <View style={styles.fullScreenState}>
+                    <Header
+                        title="Consent Rejected"
+                        isMenu={false}
+                        isSearch={false}
+                        isShare={false}
+                    />
+                    <View style={styles.decisionContent}>
+                        <View style={[styles.decisionIcon, styles.rejectedIcon]}>
+                            <MaterialIcons
+                                name="cancel"
+                                size={44}
+                                color="#B42318"
+                            />
+                        </View>
+                        <Text style={styles.decisionTitle}>
+                            Consent request rejected
+                        </Text>
+                        <Text style={styles.decisionMessage}>
+                            The patient declined this request. Returning to the consent form...
+                        </Text>
+                    </View>
+                </View>
+            ) : (
             <ScrollView
                 stickyHeaderIndices={[0]}
                 bounces={false}
@@ -499,12 +849,14 @@ const ConsentFormScreen = ({ route }: any) => {
                 }}
             >
                 <Header
-                    title="Consent Request"
+                    title={isConsentGranted ? "Consent Approved" : "Consent Request"}
                     isMenu={false}
                     isSearch={false}
                     isShare={false}
                 />
 
+                {!isConsentGranted && (
+                    <>
                 <InfoCard
                     title="Patient Information"
                     icon="person"
@@ -634,8 +986,277 @@ const ConsentFormScreen = ({ route }: any) => {
                     eraseAt={eraseAt}
                     onChangeEraseAt={setEraseAt}
                 />
-            </ScrollView>
+                    </>
+                )}
+                {isConsentGranted && (
+                    <View style={styles.recordsCard}>
+                        <View style={styles.approvalBanner}>
+                            <MaterialIcons
+                                name="verified"
+                                size={28}
+                                color="#15803D"
+                            />
+                            <View style={styles.approvalBannerText}>
+                                <Text style={styles.recordsTitle}>
+                                    Consent approved
+                                </Text>
+                                <Text style={styles.approvalBannerSubtitle}>
+                                    {consentStatus?.consentArtefactIds.length ?? 0} artefact(s) received
+                                </Text>
+                            </View>
+                        </View>
+                        <View style={styles.informationBanner}>
+                            <MaterialIcons
+                                name="info-outline"
+                                size={18}
+                                color="#175CD3"
+                            />
+                            <Text style={styles.informationBannerText}>
+                                Consent artefacts contain permission details, not health files. Records arrive separately from the HIP.
+                            </Text>
+                        </View>
 
+                        {!consentStatus?.consentArtefactIds.length && (
+                            <Text style={styles.recordsDescription}>
+                                No consent artefacts were returned.
+                            </Text>
+                        )}
+
+                        {(consentStatus?.consentArtefactIds ?? []).map(artefactId => {
+                            const transfer = dataTransfers[artefactId];
+                            const error = dataTransferErrors[artefactId];
+                            const isStarting =
+                                startingDataFetches.includes(artefactId);
+                            const isInProgress =
+                                isDataTransferInProgress(artefactId);
+                            const transferStatus = isStarting
+                                ? "STARTING"
+                                : transfer?.status ?? (error ? "FAILED" : "QUEUED");
+                            const statusColor =
+                                transferStatus === "COMPLETED"
+                                    ? "#15803D"
+                                    : transferStatus === "FAILED"
+                                        ? "#B42318"
+                                        : isInProgress
+                                            ? "#175CD3"
+                                            : "#475467";
+                            const statusIcon =
+                                transferStatus === "COMPLETED"
+                                    ? "check-circle"
+                                    : transferStatus === "FAILED"
+                                        ? "error-outline"
+                                        : isInProgress
+                                            ? "autorenew"
+                                            : "schedule";
+                            const statusBackgroundColor =
+                                transferStatus === "COMPLETED"
+                                    ? "#ECFDF3"
+                                    : transferStatus === "FAILED"
+                                            ? "#FEF3F2"
+                                            : isInProgress
+                                                ? "#EFF8FF"
+                                                : "#F2F4F7";
+
+                            return (
+                                <View key={artefactId} style={styles.artefactCard}>
+                                    <View style={styles.artefactHeader}>
+                                        <View style={styles.artefactIcon}>
+                                            <MaterialIcons
+                                                name="description"
+                                                size={22}
+                                                color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                                            />
+                                        </View>
+                                        <View style={styles.artefactHeading}>
+                                            <Text style={styles.artefactTitle}>
+                                                Consent artefact
+                                            </Text>
+                                            <Text
+                                                selectable
+                                                style={styles.artefactId}
+                                            >
+                                                {artefactId}
+                                            </Text>
+                                        </View>
+                                        <View
+                                            style={[
+                                                styles.statusBadge,
+                                                {
+                                                    backgroundColor: statusBackgroundColor,
+                                                },
+                                            ]}
+                                        >
+                                            <MaterialIcons
+                                                name={statusIcon}
+                                                size={14}
+                                                color={statusColor}
+                                            />
+                                            <Text
+                                                style={[
+                                                    styles.statusBadgeText,
+                                                    { color: statusColor },
+                                                ]}
+                                            >
+                                                {transferStatus}
+                                            </Text>
+                                        </View>
+                                    </View>
+
+                                    {transfer?.consent && (
+                                        <View style={styles.consentScope}>
+                                            <Text style={styles.recordsSectionTitle}>
+                                                Approved consent details
+                                            </Text>
+                                            <ConsentDetailRow
+                                                label="Consent ID"
+                                                value={transfer.consent.consentId}
+                                            />
+                                            <ConsentDetailRow
+                                                label="HIP"
+                                                value={transfer.consent.hipId}
+                                            />
+                                            <ConsentDetailRow
+                                                label="HIU"
+                                                value={transfer.consent.hiuId}
+                                            />
+                                            <ConsentDetailRow
+                                                label="Health types"
+                                                value={transfer.consent.hiTypes.join(", ")}
+                                            />
+                                            <ConsentDetailRow
+                                                label="Date range"
+                                                value={`${new Date(transfer.consent.from).toLocaleDateString()} – ${new Date(transfer.consent.to).toLocaleDateString()}`}
+                                            />
+                                            <ConsentDetailRow
+                                                label="Access"
+                                                value={transfer.consent.accessMode}
+                                            />
+                                            {transfer.consent.dataEraseAt && (
+                                                <ConsentDetailRow
+                                                    label="Erase data at"
+                                                    value={new Date(transfer.consent.dataEraseAt).toLocaleString()}
+                                                />
+                                            )}
+                                        </View>
+                                    )}
+
+                                    {!transfer?.consent && (
+                                        <View style={styles.consentScope}>
+                                            <Text style={styles.recordsSectionTitle}>
+                                                Requested scope
+                                            </Text>
+                                            <ConsentDetailRow
+                                                label="HIU"
+                                                value={selectedHiuService?.name ?? "-"}
+                                            />
+                                            <ConsentDetailRow
+                                                label="Purpose"
+                                                value={purpose.text}
+                                            />
+                                            <ConsentDetailRow
+                                                label="Health types"
+                                                value={HI_TYPES
+                                                    .filter(item => selectedHiTypes.includes(item.id))
+                                                    .map(item => item.label)
+                                                    .join(", ")}
+                                            />
+                                            <ConsentDetailRow
+                                                label="Date range"
+                                                value={`${fromDate.toLocaleDateString()} – ${toDate.toLocaleDateString()}`}
+                                            />
+                                            <ConsentDetailRow
+                                                label="Access"
+                                                value={accessMode}
+                                            />
+                                            <ConsentDetailRow
+                                                label="Erase data at"
+                                                value={eraseAt.toLocaleDateString()}
+                                            />
+                                            <Text style={styles.recordsDescription}>
+                                                Requested terms; approved artefact details will replace these after retrieval.
+                                            </Text>
+                                        </View>
+                                    )}
+
+                                    {isInProgress && (
+                                        <View style={styles.transferProgress}>
+                                            <ActivityIndicator
+                                                size="small"
+                                                color={ERP_COLOR_CODE.ERP_APP_COLOR}
+                                            />
+                                            <Text style={styles.recordsDescription}>
+                                                Fetching records...
+                                            </Text>
+                                        </View>
+                                    )}
+                                    {transfer?.status === "COMPLETED" && (
+                                        <Text style={styles.recordsSectionTitle}>
+                                            {getFhirResources(transfer.records).length} health record(s) received
+                                        </Text>
+                                    )}
+                                    {(error || transfer?.error) && (
+                                        <Text style={styles.recordsError}>
+                                            {error || transfer?.error}
+                                        </Text>
+                                    )}
+
+                                    {(!transfer || transfer.status === "FAILED") && (
+                                        <TouchableOpacity
+                                            disabled={isStarting}
+                                            onPress={() => onFetchApprovedRecords(artefactId)}
+                                            style={[
+                                                styles.fetchRecordsButton,
+                                                isStarting && styles.disabledFetchButton,
+                                            ]}
+                                        >
+                                            <Text style={styles.fetchRecordsButtonText}>
+                                                {isStarting
+                                                    ? "Starting..."
+                                                    : transfer?.status === "FAILED" || error
+                                                        ? "Retry Fetch"
+                                                        : "Fetch Health Records"}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    )}
+
+                                    {transfer?.status === "COMPLETED" &&
+                                        transfer.records.length === 0 && (
+                                            <Text style={styles.recordsDescription}>
+                                                No matching health records were received for this consent scope. The consent artefact does not show whether the HIP has uploaded records; confirm linked records with the HIP.
+                                            </Text>
+                                        )}
+                                    {transfer?.status === "COMPLETED" &&
+                                        getFhirResources(transfer.records).map(
+                                            (resource, index) => (
+                                                <View
+                                                    key={`${resource.resourceType ?? "record"}-${index}`}
+                                                    style={styles.fhirResource}
+                                                >
+                                                    <Text style={styles.fhirResourceTitle}>
+                                                        {getFhirResourceLabel(resource)}
+                                                    </Text>
+                                                    <Text style={styles.fhirResourceType}>
+                                                        {resource.resourceType ?? "FHIR resource"}
+                                                        {getFhirResourceDate(resource)
+                                                            ? ` · ${getFhirResourceDate(resource)}`
+                                                            : ""}
+                                                    </Text>
+                                                    {getFhirResourceValue(resource) ? (
+                                                        <Text style={styles.recordsDescription}>
+                                                            {getFhirResourceValue(resource)}
+                                                        </Text>
+                                                    ) : null}
+                                                </View>
+                                            ),
+                                        )}
+                                </View>
+                            );
+                        })}
+                    </View>
+                )}
+            </ScrollView>
+            )}
+            {!isConsentWaiting && !isConsentDenied && !isConsentGranted && (
             <View style={styles.bottom}>
                 {consentPollId && consentStatus && (
                     <View style={styles.consentStatusCard}>
@@ -683,6 +1304,7 @@ const ConsentFormScreen = ({ route }: any) => {
                     </Text>
                 </TouchableOpacity>
             </View>
+            )}
         </SafeAreaView>
     );
 };
@@ -692,6 +1314,92 @@ export default ConsentFormScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+
+    fullScreenState: {
+        flex: 1,
+        backgroundColor: "#F5F7FA",
+    },
+
+    decisionContent: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        paddingHorizontal: 28,
+    },
+
+    decisionTitle: {
+        marginTop: 18,
+        color: "#202939",
+        fontSize: 20,
+        fontWeight: "700",
+        textAlign: "center",
+    },
+
+    decisionMessage: {
+        marginTop: 10,
+        color: "#667085",
+        fontSize: 14,
+        lineHeight: 21,
+        textAlign: "center",
+    },
+
+    decisionIcon: {
+        width: 76,
+        height: 76,
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 38,
+        backgroundColor: "#EEF2FF",
+    },
+
+    rejectedIcon: {
+        backgroundColor: "#FEF3F2",
+    },
+
+    transferProgress: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginTop: 8,
+        padding: 10,
+        borderRadius: 8,
+        backgroundColor: "#EFF8FF",
+    },
+
+    approvalBanner: {
+        flexDirection: "row",
+        alignItems: "center",
+        padding: 14,
+        borderRadius: 12,
+        backgroundColor: "#ECFDF3",
+    },
+
+    approvalBannerText: {
+        flex: 1,
+        marginLeft: 10,
+    },
+
+    approvalBannerSubtitle: {
+        marginTop: 3,
+        color: "#475467",
+        fontSize: 12,
+    },
+
+    informationBanner: {
+        flexDirection: "row",
+        alignItems: "flex-start",
+        marginTop: 12,
+        padding: 11,
+        borderRadius: 10,
+        backgroundColor: "#EFF8FF",
+    },
+
+    informationBannerText: {
+        flex: 1,
+        marginLeft: 8,
+        color: "#175CD3",
+        fontSize: 12,
+        lineHeight: 18,
     },
 
     wrap: {
@@ -728,6 +1436,141 @@ const styles = StyleSheet.create({
     consentStatusError: {
         marginTop: 4,
         color: "#B42318",
+    },
+    recordsCard: {
+        margin: 14,
+        padding: 16,
+        borderRadius: 14,
+        backgroundColor: "#FFFFFF",
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: "#E4E7EC",
+        elevation: 2,
+    },
+    recordsTitle: {
+        fontSize: 16,
+        fontWeight: "700",
+        color: "#202939",
+    },
+    recordsSectionTitle: {
+        marginTop: 12,
+        marginBottom: 6,
+        fontSize: 14,
+        fontWeight: "600",
+        color: "#344054",
+    },
+    recordsDescription: {
+        marginTop: 5,
+        color: "#667085",
+        fontSize: 12,
+    },
+    consentScope: {
+        marginTop: 12,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 10,
+        backgroundColor: "#F8FAFC",
+    },
+    artefactCard: {
+        marginTop: 12,
+        padding: 14,
+        borderRadius: 12,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: "#E4E7EC",
+        backgroundColor: "#FFFFFF",
+    },
+    artefactHeader: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    artefactIcon: {
+        width: 40,
+        height: 40,
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 12,
+        backgroundColor: "#F2F4F7",
+    },
+    artefactHeading: {
+        flex: 1,
+        minWidth: 0,
+        marginLeft: 10,
+    },
+    artefactTitle: {
+        color: "#344054",
+        fontSize: 14,
+        fontWeight: "700",
+    },
+    artefactId: {
+        marginTop: 2,
+        color: "#475467",
+        fontSize: 11,
+        lineHeight: 16,
+    },
+    statusBadge: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginLeft: 8,
+        paddingHorizontal: 8,
+        paddingVertical: 5,
+        borderRadius: 20,
+    },
+    statusBadgeText: {
+        marginLeft: 4,
+        fontSize: 10,
+        fontWeight: "700",
+    },
+    consentDetailRow: {
+        paddingVertical: 7,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: "#EAECF0",
+    },
+    consentDetailLabel: {
+        color: "#667085",
+        fontSize: 11,
+        fontWeight: "500",
+    },
+    consentDetailValue: {
+        marginTop: 2,
+        color: "#344054",
+        fontSize: 13,
+        fontWeight: "600",
+    },
+    fetchRecordsButton: {
+        marginTop: 8,
+        paddingVertical: 9,
+        paddingHorizontal: 12,
+        alignItems: "center",
+        borderRadius: 6,
+        backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+    },
+    disabledFetchButton: {
+        opacity: 0.6,
+    },
+    fetchRecordsButtonText: {
+        color: "#FFFFFF",
+        fontSize: 13,
+        fontWeight: "600",
+    },
+    recordsError: {
+        marginTop: 8,
+        color: "#B42318",
+        fontSize: 12,
+    },
+    fhirResource: {
+        marginTop: 10,
+        padding: 10,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: "#D0D5DD",
+        borderRadius: 8,
+    },
+    fhirResourceTitle: {
+        color: "#202939",
+        fontWeight: "600",
+    },
+    fhirResourceType: {
+        marginTop: 3,
+        color: "#667085",
+        fontSize: 11,
     },
     dateRangeHint: {
         marginHorizontal: 16,

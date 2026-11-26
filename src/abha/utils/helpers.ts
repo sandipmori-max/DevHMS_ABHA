@@ -1,5 +1,4 @@
 import { KeyboardTypeOptions } from "react-native";
-import Config from "react-native-config";
 import { LOGIN_TYPES } from "./constants";
 
 
