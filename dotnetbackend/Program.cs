@@ -4,6 +4,21 @@ using DevHms.Abdm.CallbackApi;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<AbdmCallbackStore>();
 builder.Services.AddSingleton<AbdmConsentStore>();
+var fideliusBaseUrl = builder.Configuration["Fidelius:BaseUrl"] ?? "http://localhost:8090/";
+if (!fideliusBaseUrl.EndsWith("/", StringComparison.Ordinal))
+{
+    fideliusBaseUrl += "/";
+}
+
+if (!Uri.TryCreate(fideliusBaseUrl, UriKind.Absolute, out var fideliusBaseUri))
+{
+    throw new InvalidOperationException("Fidelius:BaseUrl must be an absolute URL.");
+}
+
+builder.Services.AddHttpClient<AbdmFideliusClient>(client =>
+{
+    client.BaseAddress = fideliusBaseUri;
+});
 var abdmOptions = new AbdmGatewayOptions
 {
     SessionUrl = builder.Configuration["ABDM_SESSION_URL"]

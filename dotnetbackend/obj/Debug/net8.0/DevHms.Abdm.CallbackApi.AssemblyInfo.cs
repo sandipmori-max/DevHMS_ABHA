@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DevHms.Abdm.CallbackApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+df6465d34fd17429a373259d2d9e64cc4e11b09a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+23e774ce7e2245529ca58baa927638ed839ee720")]
 [assembly: System.Reflection.AssemblyProductAttribute("DevHms.Abdm.CallbackApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DevHms.Abdm.CallbackApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

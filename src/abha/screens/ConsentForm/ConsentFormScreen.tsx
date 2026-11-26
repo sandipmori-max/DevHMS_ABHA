@@ -123,6 +123,41 @@ const HI_TYPES = [
     },
 ];
 
+const startOfDay = (date: Date) =>
+    new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+const endOfDay = (date: Date) =>
+    new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        23,
+        59,
+        59,
+        999,
+    );
+
+const CONSENT_DATE_SERVER_SKEW_BUFFER_MS = 60_000;
+
+const getConsentRangeEnd = (date: Date, now: Date) => {
+    if (startOfDay(date).getTime() !== startOfDay(now).getTime()) {
+        return endOfDay(date);
+    }
+
+    return new Date(
+        Math.max(
+            startOfDay(now).getTime(),
+            now.getTime() - CONSENT_DATE_SERVER_SKEW_BUFFER_MS,
+        ),
+    );
+};
+
+const getDefaultFromDate = () => {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() - 1);
+    return startOfDay(date);
+};
+
 const ConsentFormScreen = ({ route }: any) => {
     const { abhaDetail, bridgeServices } = route.params || {};
     const [purpose, setPurpose] = useState(PURPOSES[0].value);
@@ -176,9 +211,9 @@ const ConsentFormScreen = ({ route }: any) => {
         "Prescription",
     ]);
 
-    const [fromDate, setFromDate] = useState(new Date());
+    const [fromDate, setFromDate] = useState(getDefaultFromDate);
 
-    const [toDate, setToDate] = useState(new Date());
+    const [toDate, setToDate] = useState(() => startOfDay(new Date()));
 
     const [accessMode, setAccessMode] = useState("VIEW");
 
@@ -276,11 +311,34 @@ const ConsentFormScreen = ({ route }: any) => {
     }, [checkConsentStatus, consentPollId, consentStatus?.status]);
 
     const onSubmit = async () => {
-        if (toDate < fromDate) {
+        const now = new Date();
+        const fromDay = startOfDay(fromDate);
+        const toDay = startOfDay(toDate);
+        const today = startOfDay(now);
+
+        if (toDay < fromDay) {
             showToast(
                 'error',
                 "Invalid Date Range",
                 "To Date should be greater than or equal to From Date."
+            );
+            return;
+        }
+
+        if (toDay > today) {
+            showToast(
+                "error",
+                "Invalid Date Range",
+                "To Date cannot be in the future.",
+            );
+            return;
+        }
+
+        if (eraseAt <= new Date()) {
+            showToast(
+                "error",
+                "Invalid Erase Date",
+                "Erase data at must be a future date.",
             );
             return;
         }
@@ -381,8 +439,8 @@ const ConsentFormScreen = ({ route }: any) => {
                 permission: {
                     accessMode,
                     dateRange: {
-                        from: fromDate.toISOString(),
-                        to: toDate.toISOString(),
+                        from: fromDay.toISOString(),
+                        to: getConsentRangeEnd(toDate, now).toISOString(),
                     },
                     dataEraseAt: eraseAt.toISOString(),
                     frequency: {
@@ -534,14 +592,26 @@ const ConsentFormScreen = ({ route }: any) => {
                 <DateSelector
                     label="From Date"
                     value={fromDate}
-                    onChange={setFromDate}
+                    disablePastDates={false}
+                    onChange={(date: Date) => {
+                        if (startOfDay(date) > startOfDay(toDate)) {
+                            showToast(
+                                "error",
+                                "Invalid Date",
+                                "From Date cannot be later than To Date.",
+                            );
+                            return;
+                        }
+                        setFromDate(date);
+                    }}
                 />
 
                 <DateSelector
                     label="To Date"
                     value={toDate}
+                    disablePastDates={false}
                     onChange={(date: Date) => {
-                        if (date < fromDate) {
+                        if (startOfDay(date) < startOfDay(fromDate)) {
                             showToast(
                                 'error',
                                 "Invalid Date",
@@ -550,11 +620,11 @@ const ConsentFormScreen = ({ route }: any) => {
                             return;
                         }
                         setToDate(date);
-                        const eraseDate = new Date(date);
-                        eraseDate.setDate(eraseDate.getDate() + 2);
-                        setEraseAt(eraseDate);
                     }}
                 />
+                <Text style={styles.dateRangeHint}>
+                    This date range selects which records to request. Today's range ends at the current time; "Erase data at" is a separate retention deadline.
+                </Text>
 
                 <PermissionCard
                     accessMode={accessMode}
@@ -658,6 +728,12 @@ const styles = StyleSheet.create({
     consentStatusError: {
         marginTop: 4,
         color: "#B42318",
+    },
+    dateRangeHint: {
+        marginHorizontal: 16,
+        marginTop: 8,
+        color: "#667085",
+        fontSize: 12,
     },
     serviceWarning: {
         color: "#B42318",

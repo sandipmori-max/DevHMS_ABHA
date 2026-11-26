@@ -1,7 +1,7 @@
 import {
-  CLIENT_ID,
   getErrorMessage,
-  M2_BASE_URL_API,
+  M2_BASE_URL_API_HIP,
+  X_CM_ID,
 } from '../../utils/helpers';
 import { showToast } from '../../utils/toast';
 import { baseApi } from './baseApi';
@@ -42,18 +42,23 @@ export const notifyLinkApi = baseApi.injectEndpoints({
     >({
       async queryFn(body, api, _extraOptions, baseQuery) {
         const state: any = api.getState();
-
-        const linkToken =
-          state.abha.linkToken;
         const selectedXCMID = state?.abha?.selectedXCMID;
+        if (!selectedXCMID) {
+          return {
+            error: {
+              status: 'CUSTOM_ERROR',
+              error: 'Select the registered HIP service before notifying ABDM.',
+            },
+          };
+        }
+
         const result: any = await baseQuery({
-          url: `${M2_BASE_URL_API}${END_POINTS.notifyLinkContext}`,
+          url: `${M2_BASE_URL_API_HIP}${END_POINTS.notifyLinkContext}`,
           method: 'POST',
           body,
           headers: {
             'X-HIP-ID': selectedXCMID,
-            'X-CM-ID': 'sbx',
-            'X-LINK-TOKEN': linkToken,
+            'X-CM-ID': X_CM_ID,
           },
         });
 
@@ -67,14 +72,9 @@ export const notifyLinkApi = baseApi.injectEndpoints({
           data: result.data,
         };
       },
-
-      async onQueryStarted(
-        _arg,
-        { queryFulfilled },
-      ) {
+      async onQueryStarted(_arg, { queryFulfilled }) {
         try {
           await queryFulfilled;
-
           showToast(
             'success',
             'Notification Sent',
@@ -98,8 +98,10 @@ export const {
 
 export const getNotifyLinkPayload = (
   abhaAddress: string,
+  patientReference: string,
   careContextReference: string,
   hiType: string,
+  hipId: string,
 ): NotifyLinkPayload => ({
   notification: {
     patient: {
@@ -107,7 +109,7 @@ export const getNotifyLinkPayload = (
     },
 
     careContext: {
-      patientReference: abhaAddress,
+      patientReference,
       careContextReference,
     },
 
@@ -116,7 +118,7 @@ export const getNotifyLinkPayload = (
     date: new Date().toISOString(),
 
     hip: {
-      id: 'SBX_000051',
+      id: hipId,
     },
   },
 });

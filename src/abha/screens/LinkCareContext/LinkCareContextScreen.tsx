@@ -25,7 +25,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useCreateSessionMutation } from '../../redux/api/sessionApi';
 import { hideLoader, showLoader } from '../../redux/slices/loaderSlice';
 import { setLinkToken } from '../../redux/slices/abhaSlice';
-import { getErrorMessage } from '../../utils/helpers';
+import {
+    getErrorMessage,
+    M2_BASE_URL_API_HIP,
+} from '../../utils/helpers';
 
  
 interface CareContextItem {
@@ -38,6 +41,37 @@ type CareContextLinkState = 'idle' | 'pending' | 'linked' | 'failed';
 
 const CARE_CONTEXT_STATUS_POLL_INTERVAL_MS = 2_000;
 const CARE_CONTEXT_STATUS_POLL_TIMEOUT_MS = 60_000;
+
+const SANDBOX_CARE_CONTEXTS: CareContextItem[] = [
+    {
+        referenceNumber: 'c7e95611-3d63-41bb-bd90-d11d0b1cb0b2',
+        display: 'Sandbox test prescription 1',
+        hiType: 'Prescription',
+    },
+    {
+        referenceNumber: '8dd392ae-f94d-4b47-a08f-bbc07afdaae7',
+        display: 'Sandbox test prescription 2',
+        hiType: 'Prescription',
+    },
+    {
+        referenceNumber: '711bd3a2-7b44-433c-95fe-8b5a67673089',
+        display: 'Sandbox test prescription 3',
+        hiType: 'Prescription',
+    },
+    {
+        referenceNumber: '711bd3a2-7b44-433c-95fe-8b5a67673088',
+        display: 'Sandbox test diagnostic report',
+        hiType: 'DiagnosticReport',
+    },
+];
+
+const isAbdmSandbox = (() => {
+    try {
+        return new URL(M2_BASE_URL_API_HIP).hostname === 'dev.abdm.gov.in';
+    } catch {
+        return false;
+    }
+})();
 
 const LinkCareContextScreen = ({ route }: any) => {
     const { abhaDetail } = route.params || {};
@@ -65,28 +99,7 @@ const LinkCareContextScreen = ({ route }: any) => {
     const [linkStatusMessage, setLinkStatusMessage] = useState('');
     const [isCheckingLinkStatus, setIsCheckingLinkStatus] = useState(false);
     const hasReturnedToList = useRef(false);
-    const careContextList = [
-        {
-            referenceNumber: 'c7e95611-3d63-41bb-bd90-d11d0b1cb0b2',
-            display: 'ABC ',
-            hiType: 'Prescription',
-        },
-        {
-            referenceNumber: '8dd392ae-f94d-4b47-a08f-bbc07afdaae7',
-            display: 'DEF ',
-            hiType: 'Prescription',
-        },
-        {
-            referenceNumber: '711bd3a2-7b44-433c-95fe-8b5a67673089',
-            display: 'GHI ',
-            hiType: 'Prescription',
-        },
-        {
-            referenceNumber: '711bd3a2-7b44-433c-95fe-8b5a67673088',
-            display: 'JKL req',
-            hiType: 'DiagnosticReport',
-        },
-    ];
+    const careContextList = isAbdmSandbox ? SANDBOX_CARE_CONTEXTS : [];
 
 
     const getValue = (fieldName: any) => {
@@ -274,6 +287,15 @@ const LinkCareContextScreen = ({ route }: any) => {
     };
 
     const onLinkCareContext = async () => {
+        if (!isAbdmSandbox) {
+            showToast(
+                'error',
+                'Care Context records unavailable',
+                'Only sandbox demo records are configured. Connect the hospital records API before using real-patient Care Contexts.',
+            );
+            return;
+        }
+
         if (linkStatus === 'pending' && linkRequestId) {
             await pollCareContextStatus(linkRequestId);
             return;
@@ -314,7 +336,6 @@ const LinkCareContextScreen = ({ route }: any) => {
             dispatch(setLinkToken(""));
             dispatch(hideLoader());
             resetToList();
-
             await waitForCareContextStatus(requestId);
         } catch (error) {
             if (linkRequestAccepted) {
@@ -515,11 +536,21 @@ const LinkCareContextScreen = ({ route }: any) => {
                         Select one or more records that you want to
                         link with this patient's ABHA.
                     </Text>
+                    <Text style={styles.sandboxDataNotice}>
+                        {isAbdmSandbox
+                            ? 'Sandbox demo records only. These are test fixtures, not real hospital records.'
+                            : 'No real hospital records are connected for Care Context linking in this environment.'}
+                    </Text>
 
                     <FlatList
                         data={careContextList}
                         keyExtractor={(item) => item.referenceNumber}
                         scrollEnabled={false}
+                        ListEmptyComponent={
+                            <Text style={styles.emptyCareContexts}>
+                                No Care Context records available.
+                            </Text>
+                        }
                         renderItem={({ item }) => {
                             const selected = selectedIds.includes(
                                 item.referenceNumber,
@@ -867,6 +898,18 @@ const styles = StyleSheet.create({
         color: '#777',
         fontSize: 13,
         marginBottom: 14,
+    },
+    sandboxDataNotice: {
+        color: '#8A4B08',
+        backgroundColor: '#FFF4E5',
+        borderRadius: 6,
+        padding: 10,
+        marginBottom: 12,
+    },
+    emptyCareContexts: {
+        color: '#667085',
+        paddingVertical: 12,
+        textAlign: 'center',
     },
     linkStatusCard: {
         marginHorizontal: 15,

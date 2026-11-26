@@ -39,6 +39,7 @@ import { downloadAndShare } from "../../../../utils/helpers";
 import DynamicJsonView from "./DynamicJsonView";
 import { useAppSelector } from "../../../../store/hooks";
 import DeviceInfo from "react-native-device-info";
+import ExistingFilePreview from "./ExistingFilePreview";
 
 const { DocumentScanner } = NativeModules;
 
@@ -4508,6 +4509,14 @@ const DevBusinessCardView = ({
 
   return (
     <View>
+
+         {/* EXISTING FILE PREVIEW */}
+    <ExistingFilePreview
+      baseLink={baseLink}
+      infoData={infoData}
+      item={item}
+    />
+
       <Text style={styles.title}>
         {item?.fieldtitle}
       </Text>

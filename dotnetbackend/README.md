@@ -24,6 +24,12 @@ The care-context callback is matched against the ABHA address and the
 is the final outcome; the `202` response from the link call only means ABDM
 accepted the request. The callback is acknowledged with `200 OK`.
 
+The mobile `notifyLink` API targets
+`POST /api/hiecm/hip/v3/link/context/notify` and is intended for changes to an
+already-linked Care Context. The initial link request already registers its
+Care Contexts; send a notification when linked context types or records are
+updated, not as a substitute for the link callback.
+
 The discovery callback is acknowledged with `202 Accepted` and handled by a
 background worker. The worker obtains an ABDM gateway session token, matches
 the request against the configured sandbox demo patient's verified ABHA number
@@ -56,6 +62,12 @@ repository before production use. This callback queue, duplicate tracking, and
 the existing token/care-context callback state are in memory and are not
 multi-instance or restart-safe.
 
+The mobile Care Context linking screen also uses clearly labelled demo
+references, and only when its ABDM HIP endpoint is `dev.abdm.gov.in`. It does
+not load real visits or documents from the hospital ERP. The screen blocks
+these fixtures outside the sandbox; connect the hospital records API before
+enabling production Care Context linking.
+
 ## Consent request flow (HIU)
 
 The mobile app registers a request with
@@ -67,6 +79,16 @@ request in the ABHA app. The bridge stores the `consentRequest.id` from
 revokes, or the request expires, ABDM calls
 `/api/v3/hiu/consent/request/notify`; the bridge stores the status and all
 consent-artefact IDs, then acknowledges the notification with ABDM.
+
+The mobile consent form defaults the requested record range to the previous
+year through today and permits selecting past dates. It serializes `from` at
+the start of the selected day and past `to` dates at the end of that day. When
+`to` is today, it uses the current time with a short clock-skew margin rather
+than sending the end of today as a future timestamp. `dataEraseAt` remains a
+separate retention deadline; changing it does not expand the requested record
+range. A wider range only helps when the linked HIP actually has records of the
+requested types and dates. Demo Care Context references alone do not create
+shareable health records.
 
 The mobile app registers the selected active HIU service ID with each request.
 The callback server binds the `X-HIU-ID` on init and notify callbacks to that
@@ -91,6 +113,20 @@ not log it. Consent callback state is in memory for up to 24 hours, so deploy
 durable shared storage before production use. Fetching consent artefacts and
 transferring health records are separate later steps and are not implemented
 by the consent form.
+
+## M3 encryption sidecar
+
+The callback API can call a separately hosted Fidelius service through
+`AbdmFideliusClient` for key generation, encryption, and decryption. Set the
+backend configuration key `Fidelius:BaseUrl` to the sidecar's private base URL;
+it defaults to `http://localhost:8090/`. The service must expose `GET
+/keys/generate` and `POST /encrypt` and `/decrypt` with the Fidelius JSON
+contract. Keep it on a private network reachable only by the callback API:
+the sidecar handles ephemeral private keys and plaintext health records and
+does not provide application authentication. Never log its request or
+response bodies. This client is the crypto integration layer; the M3 consent
+fetch, health-information request, data-push callbacks, and FHIR handling are
+still separate implementation steps.
 
 ## Mobile handoff
 
