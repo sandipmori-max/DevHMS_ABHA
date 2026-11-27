@@ -1670,6 +1670,7 @@ export interface DownloadFileResponse {
   success: boolean;
   path: string | null;
   fileName: string | null;
+  mimeType?: string;
   statusCode?: number;
   error?: string;
 }
@@ -1764,10 +1765,17 @@ export const downloadFile = async ({
       throw new Error('Downloaded file not found');
     }
 
+    const contentType =
+      response.headers?.['content-type'] ||
+      response.headers?.['Content-Type'];
+
     return {
       success: true,
       path: destination,
       fileName: destination.split('/').pop() || null,
+      mimeType: typeof contentType === 'string'
+        ? contentType.split(';')[0].trim().toLowerCase()
+        : undefined,
       statusCode: response.statusCode,
     };
   } catch (error: any) {

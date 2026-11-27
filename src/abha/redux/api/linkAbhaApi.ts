@@ -326,6 +326,17 @@ export const linkAbhaApi = baseApi.injectEndpoints({
               pollResult.data?.status === "ready" &&
               pollResult.data.linkToken
             ) {
+              const expiresAt = pollResult.data.expiresAt;
+              if (
+                !expiresAt ||
+                !Number.isFinite(Date.parse(expiresAt)) ||
+                Date.parse(expiresAt) <= Date.now()
+              ) {
+                throw new Error(
+                  "The callback did not provide a valid link-token expiry. Update the callback server and try again.",
+                );
+              }
+
               const erpToken = state.auth?.user?.token;
               if (!erpToken) {
                 throw new Error(
@@ -334,11 +345,17 @@ export const linkAbhaApi = baseApi.injectEndpoints({
               }
 
               const tokenPageData = {
-                "tgid": "",
-                ...body,
+                tgid: "",
+                abhanumber: String(body.abhaNumber),
+                abhaaddress: body.abhaAddress,
+                name: body.name,
+                gender: body.gender,
+                yearofbirth: body.yearOfBirth,
+                hipid: hipId,
+                transactionid: abdmRequestId,
                 status: pollResult.data.status,
                 linktoken: pollResult.data.linkToken,
-                expiresat: pollResult.data.expiresAt ?? "",
+                expiresat: expiresAt,
               };
               console.log("[ABHA M2] Saving link token to ERP server", {
                 hasSessionToken: Boolean(erpToken),
@@ -359,7 +376,7 @@ export const linkAbhaApi = baseApi.injectEndpoints({
                   status: "ready",
                   linkToken: pollResult.data.linkToken,
                   transactionId: abdmRequestId,
-                  expiresAt: pollResult.data.expiresAt ?? "",
+                  expiresAt,
                 },
               };
             }

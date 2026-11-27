@@ -31,6 +31,27 @@ import Share from 'react-native-share';
 import RNFS from "react-native-fs";
 import AbhaUserItem from "../../../../abha/screens/Profile/AbhaUserItem";
 
+const MIME_TYPE_BY_EXTENSION: Record<string, string> = {
+  pdf: "application/pdf",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  gif: "image/gif",
+  webp: "image/webp",
+  bmp: "image/bmp",
+  heic: "image/heic",
+};
+
+const EXTENSION_BY_MIME_TYPE: Record<string, string> = {
+  "application/pdf": "pdf",
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/gif": "gif",
+  "image/webp": "webp",
+  "image/bmp": "bmp",
+  "image/heic": "heic",
+};
+
 if (
   Platform.OS === "android" &&
   UIManager.setLayoutAnimationEnabledExperimental
@@ -660,17 +681,80 @@ const ReadableView = ({
                       onPress={async () => {
                         if (authUser) return;
                         if (key === "btn_download") {
-                          const response = await downloadFile({
-                            url: item[key],
-                            onProgress: percentage => {
-                              console.log('Download Progress:', percentage);
-                            },
-                          });
+                          try {
+                            const url = item[key];
+                            const reportName = url.match(
+                              /[?&]ReportName=([^&]+)/i,
+                            )?.[1] || "report";
+                            const response = await downloadFile({
+                              url,
+                              fileName: `${reportName}_${Date.now()}`,
+                              onProgress: percentage => {
+                                console.log('Download Progress:', percentage);
+                              },
+                            });
 
-                          if (response.success) {
-                            console.log('File Path:', response.path);
-                            console.log('File Name:', response.fileName);
-                            Alert.alert('Download Complete');
+                            if (!response.success || !response.path) {
+                              Alert.alert(
+                                'Download Failed',
+                                response.error || 'Unable to download the report.',
+                              );
+                              return;
+                            }
+
+                            const urlExtension = url
+                              .split(/[?#]/)[0]
+                              .split(".")
+                              .pop()
+                              ?.toLowerCase();
+                            const mimeType =
+                              response.mimeType &&
+                              response.mimeType !== "application/octet-stream"
+                                ? response.mimeType
+                                : MIME_TYPE_BY_EXTENSION[urlExtension || ""] ||
+                                  response.mimeType;
+
+                            if (
+                              !mimeType ||
+                              (mimeType !== "application/pdf" &&
+                                !mimeType.startsWith("image/"))
+                            ) {
+                              Alert.alert(
+                                "Preview Unavailable",
+                                `Unsupported file type: ${mimeType || "unknown"}`,
+                              );
+                              return;
+                            }
+
+                            const extension = EXTENSION_BY_MIME_TYPE[mimeType];
+                            const filePath = extension
+                              ? `${response.path}.${extension}`
+                              : response.path;
+                            if (extension) {
+                              await RNFS.moveFile(response.path, filePath);
+                            }
+
+                            if (
+                              mimeType.startsWith("image/") &&
+                              extension
+                            ) {
+                              setImg(`file://${filePath}`);
+                              setShowModal(true);
+                              return;
+                            }
+
+                            await Share.open({
+                              url: `file://${filePath}`,
+                              type: mimeType,
+                              failOnCancel: false,
+                            });
+                          } catch (error) {
+                            Alert.alert(
+                              'Unable to Preview',
+                              error instanceof Error
+                                ? error.message
+                                : 'The report was downloaded, but could not be opened.',
+                            );
                           }
                           return;
                         }

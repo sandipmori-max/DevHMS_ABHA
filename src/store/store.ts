@@ -1,5 +1,5 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import { persistReducer, persistStore } from "redux-persist";
+import { createMigrate, persistReducer, persistStore } from "redux-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import authReducer from "./slices/auth/authSlice";
@@ -52,13 +52,30 @@ const abhaAuthPersistConfig = {
   whitelist: ["publicKey", "appId", "deviceName"],
 };
 
+const abhaMigrations = {
+  2: (state: any) => {
+    if (!state) {
+      return state;
+    }
+
+    const migratedState = { ...state };
+    delete migratedState.linkToken;
+    delete migratedState.linkTokenExpiresAt;
+    delete migratedState.linkTokenAbhaAddress;
+    delete migratedState.linkTokenAbhaNumber;
+    delete migratedState.linkTokenHipId;
+    return migratedState;
+  },
+};
+
 const abhaPersistConfig = {
   key: "abha",
+  version: 2,
   storage: AsyncStorage,
+  migrate: createMigrate(abhaMigrations, { debug: false }),
   whitelist: [
     "activeUser",  
     "devERPBaseUrl",
-    "linkToken"
   ],
 };
 

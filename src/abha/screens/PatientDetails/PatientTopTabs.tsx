@@ -15,6 +15,7 @@ export type PatientTabKey =
     | 'visits'
     | 'careContexts'
     | 'documents'
+    | 'consent'
     | 'abha'
     | 'abdmStatus';
 
@@ -39,7 +40,11 @@ const TABS = [
     {
         key: 'documents' as const,
         title: 'Documents',
-    }, 
+    },
+    {
+        key: 'consent' as const,
+        title: 'Consent',
+    },
     {
         key: 'abdmStatus' as const,
         title: 'ABDM Status',

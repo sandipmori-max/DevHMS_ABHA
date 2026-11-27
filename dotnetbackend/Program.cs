@@ -82,6 +82,7 @@ app.Use(async (context, next) =>
         path.StartsWithSegments("/api/v3/hiu/consent/request/on-init") ||
         path.StartsWithSegments("/api/v3/hiu/consent/request/notify") ||
         path.StartsWithSegments("/api/v3/hiu/consent/on-fetch") ||
+        path.StartsWithSegments("/api/v3/hiu/health-information/on-request") ||
         path.StartsWithSegments("/api/v3/hiu/health-information/data-push") ||
         path.StartsWithSegments("/mobile/abdm/link-token-requests") ||
         path.StartsWithSegments("/mobile/abdm/care-context-requests") ||
@@ -280,6 +281,29 @@ app.MapPost(
     });
 
 app.MapPost(
+    "/api/v3/hiu/health-information/on-request",
+    (
+        JsonElement callback,
+        HttpRequest request,
+        AbdmM3Coordinator coordinator) =>
+    {
+        var requestId = request.Headers["REQUEST-ID"].FirstOrDefault();
+        var hiuId = request.Headers["X-HIU-ID"].FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(requestId) ||
+            string.IsNullOrWhiteSpace(hiuId))
+        {
+            return Results.BadRequest(new { message = "ABDM request ID and HIU ID are required." });
+        }
+
+        return coordinator.OnHealthInformationRequested(
+                requestId,
+                hiuId,
+                callback)
+            ? Results.Ok()
+            : Results.NotFound(new { message = "No active M3 health request matches this callback." });
+    });
+
+app.MapPost(
     "/api/v3/hiu/health-information/data-push",
     async (
         JsonElement callback,
@@ -288,20 +312,19 @@ app.MapPost(
         CancellationToken cancellationToken) =>
     {
         var requestId = request.Headers["REQUEST-ID"].FirstOrDefault();
-        var hiuId = request.Headers["X-HIU-ID"].FirstOrDefault();
-        if (string.IsNullOrWhiteSpace(hiuId))
+        if (string.IsNullOrWhiteSpace(requestId))
         {
-            return Results.BadRequest(new { message = "ABDM HIU ID is required." });
+            return Results.BadRequest(new { message = "ABDM request ID is required." });
         }
 
+        var hipId = request.Headers["X-HIP-ID"].FirstOrDefault();
         return await coordinator.ReceiveDataPushAsync(
-                requestId,
-                hiuId,
+                hipId,
                 callback,
                 cancellationToken)
             ? Results.Ok(new
             {
-                response = new { requestId = requestId ?? Guid.NewGuid().ToString() },
+                response = new { requestId },
             })
             : Results.NotFound(new { message = "No active M3 transfer matches this data push." });
     });

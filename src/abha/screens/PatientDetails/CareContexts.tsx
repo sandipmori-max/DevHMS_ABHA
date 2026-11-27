@@ -1,580 +1,383 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { useAppDispatch } from '../../../store/hooks';
+import { getERPListDataThunk } from '../../../store/slices/auth/thunk';
+import { ERP_COLOR_CODE } from '../../../utils/constants';
+import {
+  getERPField,
+  matchesERPPatient,
+  normalizeERPKey,
+  parseERPListRows,
+  type ERPRecord,
+} from '../../utils/erpRecords';
+import { getErrorMessage } from '../../utils/helpers';
+import { showToast } from '../../utils/toast';
 
-type CareContextStatus =
-  | 'Linked'
-  | 'Pending'
-  | 'Failed';
+type CareContextStatus = 'Linked' | 'Pending' | 'Failed';
 
 type CareContext = {
   id: string;
+  requestId: string;
   referenceId: string;
   displayName: string;
-
-  visitId: string;
-  visitType: 'OPD' | 'IPD' | 'Emergency';
-
-  department: string;
-  doctor: string;
-
-  documentsCount: number;
-
+  hiType: string;
   createdAt: string;
-  linkedAt?: string;
-
+  linkedAt: string;
   status: CareContextStatus;
+  errorMessage: string;
 };
 
 interface CareContextsProps {
-  onCreateCareContext?: () => void;
-
-  onContextPress?: (
-    context: CareContext,
-  ) => void;
-
-  onLinkPress?: (
-    context: CareContext,
-  ) => void;
+  patientId?: string;
+  abhaDetail: Array<{ field: string; text: string }>;
 }
 
-const CARE_CONTEXTS: CareContext[] = [
-  {
-    id: '1',
-    referenceId: 'CC-2026-001',
-    displayName: 'Cardiology OPD',
-
-    visitId: 'V1001',
-    visitType: 'OPD',
-
-    department: 'Cardiology',
-    doctor: 'Dr. Patel',
-
-    documentsCount: 3,
-
-    createdAt: '14 Aug 2026, 10:15 AM',
-    linkedAt: '14 Aug 2026, 10:32 AM',
-
-    status: 'Linked',
-  },
-
-  {
-    id: '2',
-    referenceId: 'CC-2026-002',
-    displayName: 'General OPD',
-
-    visitId: 'V0987',
-    visitType: 'OPD',
-
-    department: 'General Medicine',
-    doctor: 'Dr. Sharma',
-
-    documentsCount: 2,
-
-    createdAt: '02 Aug 2026, 12:10 PM',
-
-    status: 'Pending',
-  },
-
-  {
-    id: '3',
-    referenceId: 'CC-2026-003',
-    displayName: 'ENT Consultation',
-
-    visitId: 'V0876',
-    visitType: 'OPD',
-
-    department: 'ENT',
-    doctor: 'Dr. Mehta',
-
-    documentsCount: 4,
-
-    createdAt: '12 Jul 2026, 11:00 AM',
-    linkedAt: '12 Jul 2026, 11:20 AM',
-
-    status: 'Linked',
-  },
-
-  {
-    id: '4',
-    referenceId: 'CC-2026-004',
-    displayName: 'Emergency Visit',
-
-    visitId: 'V0765',
-    visitType: 'Emergency',
-
-    department: 'Emergency',
-    doctor: 'Dr. Rao',
-
-    documentsCount: 5,
-
-    createdAt: '18 Jun 2026, 08:45 PM',
-
-    status: 'Failed',
-  },
-
-  {
-    id: '5',
-    referenceId: 'CC-2026-005',
-    displayName: 'Orthopedic Consultation',
-
-    visitId: 'V0654',
-    visitType: 'IPD',
-
-    department: 'Orthopedics',
-    doctor: 'Dr. Shah',
-
-    documentsCount: 6,
-
-    createdAt: '05 Jun 2026, 09:30 AM',
-
-    status: 'Linked',
-    linkedAt: '05 Jun 2026, 10:05 AM',
-  },
+const STATUS_FILTERS = [
+  { key: 'all', title: 'All' },
+  { key: 'linked', title: 'Linked' },
+  { key: 'pending', title: 'Pending' },
+  { key: 'failed', title: 'Failed' },
 ];
 
-const CareContexts: React.FC<
-  CareContextsProps
-> = ({
-  onCreateCareContext,
-  onContextPress,
-  onLinkPress,
-}) => {
-  const [refreshing, setRefreshing] =
-    useState(false);
+const getStatus = (value: unknown): CareContextStatus => {
+  const status = String(value ?? '').trim().toUpperCase();
+  if (['LINKED', 'SUCCESS', 'COMPLETED', 'GRANTED'].includes(status)) {
+    return 'Linked';
+  }
+  if (['FAILED', 'ERROR', 'DENIED'].includes(status)) {
+    return 'Failed';
+  }
+  return 'Pending';
+};
 
-  const handleRefresh = useCallback(() => {
-    setRefreshing(true);
+const parseContextPayload = (value: unknown): ERPRecord[] => {
+  let parsed = value;
+  if (typeof parsed === 'string') {
+    try {
+      parsed = JSON.parse(parsed);
+    } catch {
+      throw new Error('A saved care-context record contains invalid JSON.');
+    }
+  }
+  if (!Array.isArray(parsed)) {
+    return [];
+  }
 
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 800);
-  }, []);
+  return parsed.flatMap((group): ERPRecord[] => {
+    if (!group || typeof group !== 'object' || Array.isArray(group)) {
+      return [];
+    }
+    const parent = group as ERPRecord;
+    const children = getERPField(parent, ['carecontexts']);
+    if (!Array.isArray(children)) {
+      return [parent];
+    }
+    return children
+      .filter(
+        (child): child is ERPRecord =>
+          Boolean(child) && typeof child === 'object' && !Array.isArray(child),
+      )
+      .map(child => ({
+        ...child,
+        hiType: getERPField(child, ['hiType']) ?? getERPField(parent, ['hiType']),
+      }));
+  });
+};
 
-  const renderItem = ({
-    item,
-  }: {
-    item: CareContext;
-  }) => {
-    return (
-      <CareContextCard
-        context={item}
-        onPress={() =>
-          onContextPress?.(item)
-        }
-        onLinkPress={() =>
-          onLinkPress?.(item)
-        }
-      />
+const dedupeLinkRequests = (rows: ERPRecord[]) => {
+  const latest = new Map<
+    string,
+    { row: ERPRecord; updatedAt: number; index: number }
+  >();
+  const rowsWithoutId: ERPRecord[] = [];
+
+  rows.forEach((row, index) => {
+    const requestId = String(getERPField(row, ['requestid']) ?? '').trim();
+    if (!requestId) {
+      rowsWithoutId.push(row);
+      return;
+    }
+    const updatedAt = Date.parse(String(
+      getERPField(row, ['completedat']) ||
+      getERPField(row, ['updatedat']) ||
+      getERPField(row, ['linkedat']) ||
+      getERPField(row, ['createdat']) ||
+      '',
+    )) || 0;
+    const previous = latest.get(requestId);
+    if (!previous || updatedAt >= previous.updatedAt) {
+      latest.set(requestId, { row, updatedAt, index });
+    }
+  });
+
+  return [
+    ...rowsWithoutId,
+    ...[...latest.values()]
+      .sort((left, right) => left.index - right.index)
+      .map(item => item.row),
+  ];
+};
+
+const expandCareContexts = (rows: ERPRecord[]): CareContext[] =>
+  dedupeLinkRequests(rows).flatMap((row, rowIndex) => {
+    const requestId = String(getERPField(row, ['requestid']) ?? '').trim();
+    const savedContexts = parseContextPayload(
+      getERPField(row, ['carecontexts', 'contexts']),
     );
-  };
+    const contextRecords = savedContexts.length > 0
+      ? savedContexts
+      : getERPField(row, ['referencenumber', 'referenceid', 'carecontextid'])
+        ? [row]
+        : [];
+    const status = getStatus(
+      getERPField(row, ['status']) || getERPField(row, ['linkstatus']),
+    );
 
-  const CARE_CONTEXT_STATUS_FILTERS = [
-  {
-    key: 'all',
-    title: 'All',
-  },
-  {
-    key: 'linked',
-    title: 'Linked',
-  },
-  {
-    key: 'pending',
-    title: 'Pending',
-  },
-  {
-    key: 'failed',
-    title: 'Failed',
-  },
-];
-const [selectedStatusFilter, setSelectedStatusFilter] =
-  useState('all');
+    return contextRecords.map((context, contextIndex) => {
+      const referenceId = String(
+        getERPField(context, ['referencenumber', 'referenceid', 'carecontextid']) ?? '',
+      ).trim();
+      const hiType = String(
+        getERPField(context, ['hitype', 'type']) ??
+        getERPField(row, ['hitype']) ??
+        'Health record',
+      );
+      return {
+        id: `${requestId || rowIndex}-${referenceId || contextIndex}`,
+        requestId,
+        referenceId: referenceId || requestId || 'Care context',
+        displayName: String(
+          getERPField(context, ['display', 'displayname', 'name']) ??
+          referenceId ??
+          'Care context',
+        ),
+        hiType,
+        createdAt: String(
+          getERPField(row, ['createdat', 'requestedat']) ?? '',
+        ),
+        linkedAt: String(
+          getERPField(row, ['completedat']) ||
+          getERPField(row, ['linkedat']) ||
+          '',
+        ),
+        status,
+        errorMessage: String(getERPField(row, ['errormessage', 'error']) ?? ''),
+      };
+    });
+  });
+
+const formatDate = (value: string) => {
+  if (!value) {
+    return '-';
+  }
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime())
+    ? value
+    : parsed.toLocaleString();
+};
+
+const CareContexts: React.FC<CareContextsProps> = ({
+  patientId,
+  abhaDetail,
+}) => {
+  const dispatch = useAppDispatch();
+  const [contexts, setContexts] = useState<CareContext[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState('all');
+
+  const getProfileValue = useCallback((fieldName: string) => {
+    const normalized = normalizeERPKey(fieldName);
+    return (
+      abhaDetail.find(item => normalizeERPKey(item.field) === normalized)?.text ??
+      ''
+    ).trim();
+  }, [abhaDetail]);
+
+  const address =
+    getProfileValue('preferredabhaaddress') ||
+    getProfileValue('abhaaddress');
+  const abhaNumber = getProfileValue('abhanumber').replace(/\D/g, '');
+  const patientReferences = [
+    String(patientId ?? '').trim(),
+    getProfileValue('patientabhaid'),
+  ];
+
+  const loadCareContexts = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setIsLoading(true);
+    }
+    setError(null);
+    try {
+      const response = await dispatch(getERPListDataThunk({
+        page: 'Linkcarecontextrequest',
+        fromDate: '',
+        toDate: '',
+        param: '',
+        branch: '',
+      })).unwrap();
+      const rows = parseERPListRows(response, 'care context')
+        .filter(row =>
+          matchesERPPatient(row, { address, abhaNumber, patientReferences }),
+        );
+      setContexts(expandCareContexts(rows));
+    } catch (loadError) {
+      const message = getErrorMessage(loadError);
+      setError(message);
+      showToast('error', 'Care Context List Failed', message);
+    } finally {
+      setIsLoading(false);
+      setRefreshing(false);
+    }
+  }, [abhaNumber, address, dispatch, patientReferences.join('|')]);
+
+  useEffect(() => {
+    void loadCareContexts();
+  }, [loadCareContexts]);
+
+  const visibleContexts = useMemo(
+    () => selectedFilter === 'all'
+      ? contexts
+      : contexts.filter(
+          context => context.status.toLowerCase() === selectedFilter,
+        ),
+    [contexts, selectedFilter],
+  );
+
+  const renderItem = ({ item }: { item: CareContext }) => (
+    <CareContextCard context={item} />
+  );
 
   return (
     <View style={styles.container}>
-
-      {/* Header */}
-
-     
-
-      {/* Summary */}
-
       <View style={styles.summaryContainer}>
         <SummaryItem
-          value={
-            CARE_CONTEXTS.filter(
-              item => item.status === 'Linked',
-            ).length
-          }
+          value={contexts.filter(item => item.status === 'Linked').length}
           label="Linked"
           type="linked"
         />
-
         <SummaryItem
-          value={
-            CARE_CONTEXTS.filter(
-              item => item.status === 'Pending',
-            ).length
-          }
+          value={contexts.filter(item => item.status === 'Pending').length}
           label="Pending"
           type="pending"
         />
-
         <SummaryItem
-          value={
-            CARE_CONTEXTS.filter(
-              item => item.status === 'Failed',
-            ).length
-          }
+          value={contexts.filter(item => item.status === 'Failed').length}
           label="Failed"
           type="failed"
         />
       </View>
 
-      {/* Filter */}
-
-     <View style={styles.filterRow}>
-  {CARE_CONTEXT_STATUS_FILTERS.map(filter => (
-    <FilterChip
-      key={filter.key}
-      title={filter.title}
-      active={
-        selectedStatusFilter === filter.key
-      }
-      onPress={() =>
-        setSelectedStatusFilter(filter.key)
-      }
-    />
-  ))}
-</View>
-
-      {/* List */}
-
-      <FlatList
-        data={CARE_CONTEXTS}
-        keyExtractor={item => item.id}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-        refreshing={refreshing}
-        onRefresh={handleRefresh}
-        ItemSeparatorComponent={() => (
-          <View style={styles.separator} />
-        )}
-        contentContainerStyle={
-          CARE_CONTEXTS.length === 0
-            ? styles.emptyContainer
-            : styles.listContent
-        }
-        ListEmptyComponent={
-          <EmptyState
-            onCreate={onCreateCareContext}
+      <View style={styles.filterRow}>
+        {STATUS_FILTERS.map(filter => (
+          <FilterChip
+            key={filter.key}
+            title={filter.title}
+            active={selectedFilter === filter.key}
+            onPress={() => setSelectedFilter(filter.key)}
           />
-        }
-      />
+        ))}
+      </View>
+
+      <Pressable
+        accessibilityRole="button"
+        disabled={isLoading || refreshing}
+        onPress={() => void loadCareContexts(true)}
+        style={styles.refreshButton}
+      >
+        <Text style={styles.refreshText}>Refresh care contexts</Text>
+      </Pressable>
+
+      {isLoading ? (
+        <ActivityIndicator
+          color={ERP_COLOR_CODE.ERP_APP_COLOR}
+          style={{ marginVertical: 36 }}
+        />
+      ) : error && contexts.length === 0 ? (
+        <View style={styles.loadError}>
+          <Text style={styles.emptyDescription}>{error}</Text>
+          <Pressable
+            onPress={() => void loadCareContexts()}
+            style={styles.emptyButton}
+          >
+            <Text style={styles.emptyButtonText}>Try again</Text>
+          </Pressable>
+        </View>
+      ) : visibleContexts.length === 0 ? (
+        <EmptyState
+          description={
+            contexts.length === 0
+              ? 'No saved care-context links were found for this patient.'
+              : `No ${selectedFilter} care-context links were found for this patient.`
+          }
+        />
+      ) : (
+        <FlatList
+          data={visibleContexts}
+          keyExtractor={item => item.id}
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
+          refreshing={refreshing}
+          onRefresh={() => void loadCareContexts(true)}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          contentContainerStyle={styles.listContent}
+        />
+      )}
     </View>
   );
 };
 
 interface CareContextCardProps {
   context: CareContext;
-  onPress?: () => void;
-  onLinkPress?: () => void;
 }
 
-const CareContextCard: React.FC<
-  CareContextCardProps
-> = ({
-  context,
-  onPress,
-  onLinkPress,
-}) => {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.card,
-        pressed && styles.cardPressed,
-      ]}
-      android_ripple={{
-        color: '#EAF2FF',
-      }}
-    >
-      {/* Card Header */}
-
-      <View style={styles.cardHeader}>
-        <View style={styles.leftSection}>
-          <ContextIcon
-            type={context.visitType}
-          />
-
-          <View style={styles.titleSection}>
-            <View style={styles.referenceRow}>
-              <Text style={styles.referenceId}>
-                {context.referenceId}
-              </Text>
-
-              <VisitTypeBadge
-                type={context.visitType}
-              />
-            </View>
-
-            <Text
-              style={styles.displayName}
-              numberOfLines={1}
-            >
-              {context.displayName}
-            </Text>
-          </View>
+const CareContextCard: React.FC<CareContextCardProps> = ({ context }) => (
+  <View style={styles.card}>
+    <View style={styles.cardHeader}>
+      <View style={styles.leftSection}>
+        <View style={styles.contextIcon}>
+          <Text style={styles.contextIconText}>▣</Text>
         </View>
-
-        <StatusBadge
-          status={context.status}
-        />
-      </View>
-
-      {/* Details */}
-
-      <View style={styles.detailsContainer}>
-
-    
-
-        <DetailRow
-          icon="🪪"
-          label="Visit"
-          value={`${context.visitId} • ${context.visitType}`}
-        />
-
-        <DetailRow
-          icon="👨‍⚕️"
-          label="Doctor"
-          value={context.doctor}
-        />
-
-        <DetailRow
-          icon="🏥"
-          label="Department"
-          value={context.department}
-        />
-
-      </View>
-
-      {/* Document */}
-
-      <View style={styles.documentRow}>
-        <View style={styles.documentLeft}>
-          <View style={styles.documentIcon}>
-            <Text style={styles.documentIconText}>
-              📄
-            </Text>
-          </View>
-
-          <Text style={styles.documentText}>
-            {context.documentsCount}{' '}
-            {context.documentsCount === 1
-              ? 'Document'
-              : 'Documents'}
+        <View style={styles.titleSection}>
+          <Text style={styles.referenceId} numberOfLines={1}>
+            {context.referenceId}
+          </Text>
+          <Text style={styles.displayName} numberOfLines={2}>
+            {context.displayName}
           </Text>
         </View>
-
-        <Text style={styles.dateText}>
-          {context.createdAt}
-        </Text>
       </View>
-
-      {/* Footer */}
-
-      <View style={styles.footer}>
-
-        <View>
-          {context.status ===
-            'Linked' &&
-            context.linkedAt && (
-              <Text style={styles.linkedDate}>
-                Linked: {context.linkedAt}
-              </Text>
-            )}
-
-          {context.status ===
-            'Pending' && (
-            <Text style={styles.pendingInfo}>
-              Ready to link with ABDM
-            </Text>
-          )}
-
-          {context.status ===
-            'Failed' && (
-            <Text style={styles.failedInfo}>
-              ABDM linking failed
-            </Text>
-          )}
-        </View>
-
-        <View style={styles.actionContainer}>
-
-          {context.status ===
-            'Pending' && (
-            <Pressable
-              onPress={event => {
-                event.stopPropagation();
-                onLinkPress?.();
-              }}
-              style={styles.linkButton}
-              android_ripple={{
-                color: '#D9E9FF',
-              }}
-            >
-              <Text style={styles.linkButtonText}>
-                Link to ABDM
-              </Text>
-            </Pressable>
-          )}
-
-          {context.status ===
-            'Failed' && (
-            <Pressable
-              onPress={event => {
-                event.stopPropagation();
-                onLinkPress?.();
-              }}
-              style={styles.retryButton}
-              android_ripple={{
-                color: '#FFF0F0',
-              }}
-            >
-              <Text style={styles.retryButtonText}>
-                Retry
-              </Text>
-            </Pressable>
-          )}
-
-          <Text style={styles.arrow}>
-            ›
-          </Text>
-        </View>
-
-      </View>
-    </Pressable>
-  );
-};
-
-const ContextIcon = ({
-  type,
-}: {
-  type: CareContext['visitType'];
-}) => {
-  return (
-    <View
-      style={[
-        styles.contextIcon,
-        type === 'Emergency' &&
-          styles.emergencyContextIcon,
-        type === 'IPD' &&
-          styles.ipdContextIcon,
-      ]}
-    >
-      <Text style={styles.contextIconText}>
-        {type === 'Emergency'
-          ? '✚'
-          : type === 'IPD'
-          ? '⌂'
-          : '▣'}
-      </Text>
+      <StatusBadge status={context.status} />
     </View>
-  );
-};
 
-const VisitTypeBadge = ({
-  type,
-}: {
-  type: CareContext['visitType'];
-}) => {
-  return (
-    <View
-      style={[
-        styles.visitTypeBadge,
-        type === 'Emergency' &&
-          styles.emergencyBadge,
-        type === 'IPD' &&
-          styles.ipdBadge,
-      ]}
-    >
-      <Text
-        style={[
-          styles.visitTypeText,
-          type === 'Emergency' &&
-            styles.emergencyText,
-        ]}
-      >
-        {type}
-      </Text>
+    <View style={styles.detailsContainer}>
+      <DetailRow icon="📄" label="Health information type" value={context.hiType} />
+      <DetailRow icon="🔗" label="Link request" value={context.requestId || '-'} />
     </View>
-  );
-};
 
-const StatusBadge = ({
-  status,
-}: {
-  status: CareContextStatus;
-}) => {
-  const statusConfig = {
-    Linked: {
-      background: '#ECFDF3',
-      text: '#027A48',
-      dot: '#12B76A',
-    },
-
-    Pending: {
-      background: '#FFFAEB',
-      text: '#B54708',
-      dot: '#F79009',
-    },
-
-    Failed: {
-      background: '#FEF3F2',
-      text: '#B42318',
-      dot: '#F04438',
-    },
-  };
-
-  const config = statusConfig[status];
-
-  return (
-    <View
-      style={[
-        styles.statusBadge,
-        {
-          backgroundColor:
-            config.background,
-        },
-      ]}
-    >
-      <View
-        style={[
-          styles.statusDot,
-          {
-            backgroundColor: config.dot,
-          },
-        ]}
-      />
-
-      <Text
-        style={[
-          styles.statusText,
-          {
-            color: config.text,
-          },
-        ]}
-      >
-        {status}
-      </Text>
+    <View style={styles.documentRow}>
+      <Text style={styles.dateText}>Requested: {formatDate(context.createdAt)}</Text>
+      {context.linkedAt ? (
+        <Text style={styles.dateText}>Linked: {formatDate(context.linkedAt)}</Text>
+      ) : null}
     </View>
-  );
-};
+
+    {context.status === 'Failed' && context.errorMessage ? (
+      <Text style={styles.failedInfo}>{context.errorMessage}</Text>
+    ) : null}
+
+  </View>
+);
 
 const DetailRow = ({
   icon,
@@ -584,19 +387,28 @@ const DetailRow = ({
   icon: string;
   label: string;
   value: string;
-}) => {
-  return (
-    <View style={styles.detailRow}>
-      <Text style={styles.detailIcon}>
-        {icon}
-      </Text>
+}) => (
+  <View style={styles.detailRow}>
+    <Text style={styles.detailIcon}>{icon}</Text>
+    <View style={styles.detailTextContainer}>
+      <Text style={styles.detailLabel}>{label}</Text>
+      <Text style={styles.detailValue} numberOfLines={1}>{value}</Text>
+    </View>
+  </View>
+);
 
-      <Text
-        style={styles.detailValue}
-        numberOfLines={1}
-      >
-        {value}
-      </Text>
+const StatusBadge = ({ status }: { status: CareContextStatus }) => {
+  const statusConfig = {
+    Linked: { background: '#ECFDF3', text: '#027A48', dot: '#12B76A' },
+    Pending: { background: '#FFFAEB', text: '#B54708', dot: '#F79009' },
+    Failed: { background: '#FEF3F2', text: '#B42318', dot: '#F04438' },
+  };
+  const config = statusConfig[status];
+
+  return (
+    <View style={[styles.statusBadge, { backgroundColor: config.background }]}>
+      <View style={[styles.statusDot, { backgroundColor: config.dot }]} />
+      <Text style={[styles.statusText, { color: config.text }]}>{status}</Text>
     </View>
   );
 };
@@ -609,528 +421,264 @@ const SummaryItem = ({
   value: number;
   label: string;
   type: 'linked' | 'pending' | 'failed';
-}) => {
-  return (
-    <View style={styles.summaryItem}>
-      <Text
-        style={[
-          styles.summaryValue,
-          type === 'linked' &&
-            styles.linkedSummary,
-          type === 'pending' &&
-            styles.pendingSummary,
-          type === 'failed' &&
-            styles.failedSummary,
-        ]}
-      >
-        {value}
-      </Text>
-
-      <Text style={styles.summaryLabel}>
-        {label}
-      </Text>
-    </View>
-  );
-};
+}) => (
+  <View style={styles.summaryItem}>
+    <Text
+      style={[
+        styles.summaryValue,
+        type === 'linked' && styles.linkedSummary,
+        type === 'pending' && styles.pendingSummary,
+        type === 'failed' && styles.failedSummary,
+      ]}
+    >
+      {value}
+    </Text>
+    <Text style={styles.summaryLabel}>{label}</Text>
+  </View>
+);
 
 const FilterChip = ({
   title,
-  active = false,
+  active,
   onPress,
 }: {
   title: string;
-  active?: boolean;
-  onPress?: () => void;
-}) => {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={[
-        styles.filterChip,
-        active && styles.activeFilterChip,
-      ]}
-    >
-      <Text
-        style={[
-          styles.filterText,
-          active && styles.activeFilterText,
-        ]}
-      >
-        {title}
-      </Text>
-    </Pressable>
-  );
-};
+  active: boolean;
+  onPress: () => void;
+}) => (
+  <Pressable
+    onPress={onPress}
+    style={[styles.filterChip, active && styles.activeFilterChip]}
+  >
+    <Text style={[styles.filterText, active && styles.activeFilterText]}>
+      {title}
+    </Text>
+  </Pressable>
+);
 
-const EmptyState = ({
-  onCreate,
-}: {
-  onCreate?: () => void;
-}) => {
-  return (
-    <View style={styles.empty}>
-      <View style={styles.emptyIcon}>
-        <Text style={styles.emptyIconText}>
-          +
-        </Text>
-      </View>
-
-      <Text style={styles.emptyTitle}>
-        No Care Contexts
-      </Text>
-
-      <Text style={styles.emptyDescription}>
-        Create a care context for this
-        patient's visit to share health
-        information with ABDM.
-      </Text>
-
-      <Pressable
-        onPress={onCreate}
-        style={styles.emptyButton}
-      >
-        <Text style={styles.emptyButtonText}>
-          Create Care Context
-        </Text>
-      </Pressable>
+const EmptyState = ({ description }: { description: string }) => (
+  <View style={styles.empty}>
+    <View style={styles.emptyIcon}>
+      <Text style={styles.emptyIconText}>+</Text>
     </View>
-  );
-};
+    <Text style={styles.emptyTitle}>No Care Contexts</Text>
+    <Text style={styles.emptyDescription}>
+      {description}
+    </Text>
+  </View>
+);
 
 export default CareContexts;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10
+    padding: 10,
   },
-
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 14,
-  },
-
-  title: { 
-    fontWeight: '700',
-    color: '#101828',
-  },
-
-  subtitle: {
-    marginTop: 3, 
-    color: '#667085',
-  },
-
-  createButton: {
-    height: 38,
-    paddingHorizontal: 13,
-    borderRadius: 9,
-    backgroundColor: '#1565C0',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  createIcon: {
-    color: '#FFFFFF', 
-    lineHeight: 20,
-    marginRight: 4,
-  },
-
-  createText: {
-    color: '#FFFFFF', 
-    fontWeight: '600',
-  },
-
   summaryContainer: {
     flexDirection: 'row',
+    marginBottom: 14,
     backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E4E7EC',
-    borderRadius: 8,
-    paddingVertical: 12,
-    marginBottom: 12,
+    borderRadius: 10,
+    paddingVertical: 14,
   },
-
   summaryItem: {
     flex: 1,
     alignItems: 'center',
-    borderRightWidth: 1,
-    borderRightColor: '#EAECF0',
   },
-
-  summaryItemLast: {
-    borderRightWidth: 0,
-  },
-
-  summaryValue: { 
+  summaryValue: {
+    fontSize: 20,
     fontWeight: '700',
-    color: '#101828',
   },
-
   summaryLabel: {
-    marginTop: 2, 
     color: '#667085',
-    fontWeight: '500',
+    fontSize: 12,
+    marginTop: 4,
   },
-
-  linkedSummary: {
-    color: '#027A48',
-  },
-
-  pendingSummary: {
-    color: '#B54708',
-  },
-
-  failedSummary: {
-    color: '#B42318',
-  },
-
+  linkedSummary: { color: '#027A48' },
+  pendingSummary: { color: '#B54708' },
+  failedSummary: { color: '#B42318' },
   filterRow: {
     flexDirection: 'row',
-    marginBottom: 8,
+    marginBottom: 4,
   },
-
   filterChip: {
-    height: 28,
-    paddingHorizontal: 13,
-    borderRadius: 4,
-    backgroundColor: '#F2F4F7',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: '#D7DDE5',
+    borderRadius: 18,
+    borderWidth: 1,
     marginRight: 8,
-    borderWidth: 0.4
+    paddingHorizontal: 14,
+    paddingVertical: 8,
   },
-
   activeFilterChip: {
-    backgroundColor: '#1565C0',
+    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+    borderColor: ERP_COLOR_CODE.ERP_APP_COLOR,
   },
-
-  filterText: { 
-    fontWeight: '500',
-    color: '#667085',
-  },
-
-  activeFilterText: {
-    color: '#FFFFFF',
+  filterText: {
+    color: '#5F6368',
+    fontSize: 13,
     fontWeight: '600',
   },
-
+  activeFilterText: { color: '#FFFFFF' },
+  refreshButton: {
+    alignSelf: 'flex-end',
+    padding: 10,
+  },
+  refreshText: {
+    color: ERP_COLOR_CODE.ERP_APP_COLOR,
+    fontWeight: '600',
+  },
+  loadError: {
+    alignItems: 'center',
+    padding: 24,
+  },
   listContent: {
-    paddingBottom: 24,
+    paddingBottom: 20,
   },
-
-  separator: {
-    height: 10,
-  },
-
+  separator: { height: 12 },
   card: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 8,
+    borderColor: '#EAECF0',
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E4E7EC',
+    overflow: 'hidden',
     padding: 14,
-
-    shadowColor: '#101828',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.04,
-    shadowRadius: 5,
-
-    elevation: 2,
   },
-
-  cardPressed: {
-    opacity: 0.85,
-  },
-
   cardHeader: {
+    alignItems: 'center',
     flexDirection: 'row',
-    alignItems: 'flex-start',
     justifyContent: 'space-between',
   },
-
   leftSection: {
-    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
+    flexDirection: 'row',
     marginRight: 8,
   },
-
   contextIcon: {
-    width: 42,
+    alignItems: 'center',
+    backgroundColor: '#EAF2FF',
+    borderRadius: 10,
     height: 42,
-    borderRadius: 8,
-    backgroundColor: '#E8F1FF',
     justifyContent: 'center',
-    alignItems: 'center',
     marginRight: 10,
+    width: 42,
   },
-
-  ipdContextIcon: {
-    backgroundColor: '#EEF4FF',
+  contextIconText: {
+    color: ERP_COLOR_CODE.ERP_APP_COLOR,
+    fontSize: 20,
   },
-
-  emergencyContextIcon: {
-    backgroundColor: '#FFF0F0',
+  titleSection: { flex: 1 },
+  referenceId: {
+    color: '#667085',
+    fontSize: 12,
+    fontWeight: '600',
   },
-
-  contextIconText: { 
-    color: '#1565C0',
-    fontWeight: '700',
-  },
-
-  titleSection: {
-    flex: 1,
-  },
-
-  referenceRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  referenceId: { 
-    fontWeight: '700',
-    color: '#101828',
-    marginRight: 7,
-  },
-
   displayName: {
-    marginTop: 4, 
-    color: '#475467',
-    fontWeight: '500',
-     fontSize: 12
-
-  },
-
-  visitTypeBadge: {
-    height: 20,
-    paddingHorizontal: 7,
-    borderRadius: 4,
-    backgroundColor: '#E8F1FF',
-    justifyContent: 'center',
-  },
-
-  visitTypeText: { 
+    color: '#101828',
+    fontSize: 15,
     fontWeight: '700',
-     fontSize: 10,
-    color: '#1565C0',
+    marginTop: 3,
   },
-
-  emergencyBadge: {
-    backgroundColor: '#FEF3F2',
-  },
-
-  emergencyText: {
-    color: '#D92D20',
-  },
-
-  ipdBadge: {
-    backgroundColor: '#F2F4F7',
-  },
-
   statusBadge: {
-    height: 25,
-    paddingHorizontal: 8,
-    borderRadius: 8,
-    flexDirection: 'row',
     alignItems: 'center',
+    borderRadius: 14,
+    flexDirection: 'row',
+    paddingHorizontal: 9,
+    paddingVertical: 6,
   },
-
   statusDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 2,
+    borderRadius: 4,
+    height: 7,
     marginRight: 5,
+    width: 7,
   },
-
-  statusText: { 
-    fontWeight: '600',
-     fontSize: 10
-
+  statusText: {
+    fontSize: 11,
+    fontWeight: '700',
   },
-
   detailsContainer: {
-    marginTop: 13,
-    paddingTop: 11,
-    borderTopWidth: 1,
     borderTopColor: '#F2F4F7',
+    borderTopWidth: 1,
+    marginTop: 12,
+    paddingTop: 8,
   },
-
   detailRow: {
-    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 7,
+    flexDirection: 'row',
+    paddingVertical: 5,
   },
-
   detailIcon: {
-    width: 25, 
+    fontSize: 16,
+    marginRight: 9,
+    width: 22,
   },
-
+  detailTextContainer: { flex: 1 },
   detailLabel: {
-    width: 100, 
-    color: '#98A2B3',
-    fontWeight: '500',
+    color: '#667085',
+    fontSize: 11,
   },
-
   detailValue: {
-    flex: 1, 
-    color: '#475467',
+    color: '#344054',
+    fontSize: 13,
     fontWeight: '600',
+    marginTop: 2,
   },
-
   documentRow: {
-    marginTop: 4,
-    paddingTop: 10,
-    borderTopWidth: 1,
     borderTopColor: '#F2F4F7',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-
-  documentLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  documentIcon: {
-    width: 27,
-    height: 27,
-    borderRadius: 4,
-    backgroundColor: '#EFF8FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 7,
-  },
-
-  documentIconText: {
-    fontSize: 14,
-  },
-
-  documentText: { 
-    fontWeight: '600',
-    color: '#475467',
-  },
-
-  dateText: { 
-    color: '#98A2B3',
-     fontSize: 12
-
-  },
-
-  footer: {
-    marginTop: 10,
-    paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#F2F4F7',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    marginTop: 8,
+    paddingTop: 10,
   },
-
-  linkedDate: { 
-    color: '#027A48',
-    fontWeight: '500',
+  dateText: {
+    color: '#667085',
+    fontSize: 11,
+    marginBottom: 3,
   },
-
-  pendingInfo: { 
-    color: '#B54708',
-    fontWeight: '500',
-  },
-
-  failedInfo: { 
+  failedInfo: {
     color: '#B42318',
-    fontWeight: '500',
+    fontSize: 12,
+    marginTop: 8,
   },
-
-  actionContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  linkButton: {
-    height: 30,
-    paddingHorizontal: 10,
-    borderRadius: 4,
-    backgroundColor: '#1565C0',
-    justifyContent: 'center',
-  },
-
-  linkButtonText: { 
-    color: '#FFFFFF',
-    fontWeight: '600',
-  },
-
-  retryButton: {
-    height: 30,
-    paddingHorizontal: 12,
-    borderRadius: 4,
-    backgroundColor: '#FEF3F2',
-    justifyContent: 'center',
-  },
-
-  retryButtonText: { 
-    color: '#B42318',
-    fontWeight: '600',
-  },
-
-  arrow: {
-    marginLeft: 9, 
-    color: '#98A2B3',
-    fontWeight: '300',
-  },
-
-  emptyContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-
   empty: {
     alignItems: 'center',
-    paddingHorizontal: 28,
+    paddingHorizontal: 24,
+    paddingVertical: 36,
   },
-
   emptyIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 30,
-    backgroundColor: '#E8F1FF',
-    justifyContent: 'center',
     alignItems: 'center',
-  },
-
-  emptyIconText: {
-    fontSize: 30,
-    color: '#1565C0',
-  },
-
-  emptyTitle: {
-    marginTop: 14, 
-    fontWeight: '700',
-    color: '#101828',
-  },
-
-  emptyDescription: {
-    marginTop: 7, 
-    lineHeight: 18,
-    textAlign: 'center',
-    color: '#667085',
-  },
-
-  emptyButton: {
-    marginTop: 16,
-    height: 40,
-    paddingHorizontal: 18,
-    borderRadius: 8,
-    backgroundColor: '#1565C0',
+    backgroundColor: '#EAF2FF',
+    borderRadius: 28,
+    height: 56,
     justifyContent: 'center',
+    width: 56,
   },
-
+  emptyIconText: {
+    color: ERP_COLOR_CODE.ERP_APP_COLOR,
+    fontSize: 28,
+  },
+  emptyTitle: {
+    color: '#101828',
+    fontSize: 16,
+    fontWeight: '700',
+    marginTop: 14,
+  },
+  emptyDescription: {
+    color: '#667085',
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: 6,
+    textAlign: 'center',
+  },
+  emptyButton: {
+    backgroundColor: ERP_COLOR_CODE.ERP_APP_COLOR,
+    borderRadius: 8,
+    marginTop: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
   emptyButtonText: {
-    color: '#FFFFFF', 
-    fontWeight: '600',
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
 });

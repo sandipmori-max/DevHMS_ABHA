@@ -179,6 +179,31 @@ export const careContextLinkApi = baseApi.injectEndpoints({
             },
           };
         }
+        const tokenExpiresAt = Date.parse(
+          state?.abha?.linkTokenExpiresAt || '',
+        );
+        if (!Number.isFinite(tokenExpiresAt) || tokenExpiresAt <= Date.now()) {
+          return {
+            error: {
+              status: 'CUSTOM_ERROR',
+              error: 'The link token has expired. Return to Bridge Services to generate a new one.',
+            },
+          };
+        }
+        if (
+          state?.abha?.linkTokenHipId !== String(selectedXCMID) ||
+          String(state?.abha?.linkTokenAbhaAddress || '').toLowerCase() !==
+            body.abhaAddress.toLowerCase() ||
+          String(state?.abha?.linkTokenAbhaNumber || '').replace(/\D/g, '') !==
+            String(body.abhaNumber).replace(/\D/g, '')
+        ) {
+          return {
+            error: {
+              status: 'CUSTOM_ERROR',
+              error: 'The link token does not match this patient and HIP service. Generate a new token from Bridge Services.',
+            },
+          };
+        }
 
         const requestId = generateGUID();
         let isRegistered = false;

@@ -11,6 +11,10 @@ const initialState = {
   devERPBaseUrl: "",
   abhaDrProfile: "",
   linkToken: "",
+  linkTokenExpiresAt: "",
+  linkTokenAbhaAddress: "",
+  linkTokenAbhaNumber: "",
+  linkTokenHipId: "",
   selectedXCMID:"",
 };
 
@@ -31,8 +35,19 @@ setSelectedXCMID: (
       state,
       action
     ) => {
-      state.selectedXCMID =
-        action.payload;
+      const selectedHipId = String(action.payload ?? "");
+      if (
+        state.linkToken &&
+        state.linkTokenHipId &&
+        state.linkTokenHipId !== selectedHipId
+      ) {
+        state.linkToken = "";
+        state.linkTokenExpiresAt = "";
+        state.linkTokenAbhaAddress = "";
+        state.linkTokenAbhaNumber = "";
+        state.linkTokenHipId = "";
+      }
+      state.selectedXCMID = selectedHipId;
     },
      setActiveUser: (
       state,
@@ -42,12 +57,23 @@ setSelectedXCMID: (
         action.payload;
     },
 
-     setLinkToken: (
+     setActiveLinkToken: (
       state,
       action
     ) => {
-      state.linkToken =
-        action.payload;
+      state.linkToken = action.payload.token;
+      state.linkTokenExpiresAt = action.payload.expiresAt;
+      state.linkTokenAbhaAddress = action.payload.abhaAddress;
+      state.linkTokenAbhaNumber = action.payload.abhaNumber;
+      state.linkTokenHipId = action.payload.hipId;
+    },
+
+    clearLinkToken: (state) => {
+      state.linkToken = "";
+      state.linkTokenExpiresAt = "";
+      state.linkTokenAbhaAddress = "";
+      state.linkTokenAbhaNumber = "";
+      state.linkTokenHipId = "";
     },
 
      setAbhaDrProfile: (
@@ -142,7 +168,8 @@ export const {
   setDevERPBaseUrl,
   setAbhaDrProfile,
   updateAuthToken,
-  setLinkToken,
+  setActiveLinkToken,
+  clearLinkToken,
   setSelectedXCMID,
   setRToken,
 } = abhaSlice.actions;

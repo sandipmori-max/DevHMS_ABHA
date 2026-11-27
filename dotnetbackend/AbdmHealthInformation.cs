@@ -183,9 +183,8 @@ public sealed class AbdmM3Store
         }
     }
 
-    public bool TryGetForDataPush(
-        string? requestId,
-        string? transactionId,
+    public bool TryGetForHealthRequest(
+        string requestId,
         string hiuId,
         out TransferSnapshot? transfer)
     {
@@ -193,20 +192,35 @@ public sealed class AbdmM3Store
         {
             RemoveExpiredTransfers();
             transfer = null;
-            string? key = null;
-            if (!string.IsNullOrWhiteSpace(requestId))
-            {
-                _healthRequests.TryGetValue(requestId, out key);
-            }
-
-            if (key is null && !string.IsNullOrWhiteSpace(transactionId))
-            {
-                _transactions.TryGetValue(transactionId, out key);
-            }
-
-            if (key is null ||
+            if (!_healthRequests.TryGetValue(requestId, out var key) ||
                 !_transfers.TryGetValue(key, out var found) ||
                 !string.Equals(found.HiuId, hiuId, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            transfer = Snapshot(found);
+            return true;
+        }
+    }
+
+    public bool TryGetForDataPush(
+        string? transactionId,
+        string? hipId,
+        out TransferSnapshot? transfer)
+    {
+        lock (_sync)
+        {
+            RemoveExpiredTransfers();
+            transfer = null;
+            if (string.IsNullOrWhiteSpace(transactionId) ||
+                !_transactions.TryGetValue(transactionId, out var key) ||
+                !_transfers.TryGetValue(key, out var found) ||
+                (!string.IsNullOrWhiteSpace(hipId) &&
+                 !string.Equals(
+                     found.Consent?.HipId,
+                     hipId,
+                     StringComparison.Ordinal)))
             {
                 return false;
             }
@@ -865,17 +879,14 @@ public sealed class AbdmM3Coordinator
     }
 
     public async Task<bool> ReceiveDataPushAsync(
-        string? requestId,
-        string? hiuId,
+        string? hipId,
         JsonElement callback,
         CancellationToken cancellationToken)
     {
         var transactionId = AbdmM3Client.TryReadString(callback, "transactionId");
-        if (string.IsNullOrWhiteSpace(hiuId) ||
-            !_store.TryGetForDataPush(
-                requestId,
+        if (!_store.TryGetForDataPush(
                 transactionId,
-                hiuId,
+                hipId,
                 out var transfer) ||
             transfer is null)
         {
@@ -943,14 +954,67 @@ public sealed class AbdmM3Coordinator
             decryptedRecords.Add(record);
         }
 
-        var pageNumber = TryReadInt(callback, "pageNumber") ?? 1;
-        var pageCount = TryReadInt(callback, "pageCount") ?? pageNumber;
+        var pageNumber = TryReadInt(callback, "pageNumber");
+        var pageCount = TryReadInt(callback, "pageCount");
+        if (pageNumber is null || pageCount is null)
+        {
+            _store.MarkFailed(
+                transfer.PollId,
+                transfer.ConsentArtefactId,
+                "ABDM data push is missing the required pageNumber or pageCount.");
+            return true;
+        }
+
         return _store.AddPage(
             transfer.PollId,
             transfer.ConsentArtefactId,
-            pageNumber,
-            pageCount,
+            pageNumber.Value,
+            pageCount.Value,
             decryptedRecords);
+    }
+
+    public bool OnHealthInformationRequested(
+        string requestId,
+        string hiuId,
+        JsonElement callback)
+    {
+        if (!_store.TryGetForHealthRequest(requestId, hiuId, out var transfer) ||
+            transfer is null)
+        {
+            return false;
+        }
+
+        var hiRequest = TryGetProperty(callback, "hiRequest", out var request)
+            ? request
+            : callback;
+        var sessionStatus = AbdmM3Client.TryReadString(hiRequest, "sessionStatus");
+        if (!string.Equals(
+                sessionStatus,
+                "ACKNOWLEDGED",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            var errorMessage = TryGetProperty(callback, "error", out var error)
+                ? AbdmM3Client.TryReadString(error, "message")
+                : null;
+            _store.MarkFailed(
+                transfer.PollId,
+                transfer.ConsentArtefactId,
+                errorMessage ?? $"ABDM did not acknowledge the health request (status: {sessionStatus ?? "unknown"}).");
+            return true;
+        }
+
+        var transactionId = AbdmM3Client.TryReadString(hiRequest, "transactionId");
+        if (string.IsNullOrWhiteSpace(transactionId))
+        {
+            _store.MarkFailed(
+                transfer.PollId,
+                transfer.ConsentArtefactId,
+                "ABDM acknowledged the health request without a transaction ID.");
+            return true;
+        }
+
+        _store.AddTransaction(requestId, transactionId);
+        return true;
     }
 
     private static bool TryBuildConsentSummary(

@@ -37,6 +37,8 @@ import VisitsEncounters from "./PatientDetails/VisitsEncounters";
 import CareContexts from "./PatientDetails/CareContexts";
 import Documents from "./PatientDetails/Documents";
 import ABDMStatus from "./PatientDetails/ABDMStatus";
+import PatientConsents from "./PatientDetails/PatientConsents";
+import type { PatientTabKey } from "./PatientDetails/PatientTopTabs";
 
 const DetailsScreen = ({ route }: any) => {
   const { item } = route.params || {};
@@ -61,7 +63,7 @@ const DetailsScreen = ({ route }: any) => {
   const lastScale = useRef(1);
   const lastTranslate = useRef({ x: 0, y: 0 });
   const [activeTab, setActiveTab] =
-    useState<any>('overview');
+    useState<PatientTabKey>('overview');
   const [getBridgeServices] =
     useLazyGetBridgeServicesQuery();
 
@@ -758,21 +760,8 @@ const DetailsScreen = ({ route }: any) => {
 
       case 'careContexts':
         return <CareContexts
-          onCreateCareContext={() => {
-            // navigation.navigate('CreateCareContext', {
-            //   patientId: patient.id,
-            // });
-          }}
-          onContextPress={context => {
-            // navigation.navigate('CareContextDetails', {
-            //   careContextId: context.referenceId,
-            // });
-          }}
-          onLinkPress={context => {
-            // navigation.navigate('LinkCareContext', {
-            //   careContextId: context.referenceId,
-            // });
-          }}
+          patientId={String(item?.id ?? '')}
+          abhaDetail={abhaDetail}
         />;
 
       case 'documents':
@@ -803,20 +792,16 @@ const DetailsScreen = ({ route }: any) => {
           }}
         />;
 
+      case 'consent':
+        return <PatientConsents
+          patientId={String(item?.id ?? "")}
+          abhaDetail={abhaDetail}
+        />;
+
       case 'abdmStatus':
         return <ABDMStatus
-          patientName="Rahul Shah"
-          patientId="P10021"
-          abhaAddress="rahul@abdm"
-          lastSync="14 Aug 2026, 10:32 AM"
-          referenceId="abdm-cc-2026-001-8f3a2c"
-          onRefresh={async () => {
-            // Call your ABDM status API here
-            // await fetchABDMStatus();
-          }}
-          onCopyReference={() => {
-            // Copy reference ID
-          }}
+          patientId={String(item?.id ?? '')}
+          abhaDetail={abhaDetail}
         />;
 
       default:

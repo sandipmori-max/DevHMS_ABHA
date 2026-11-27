@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { CommonActions, useNavigation } from "@react-navigation/native";
 import {
     ActivityIndicator,
     SafeAreaView,
@@ -27,6 +28,7 @@ import {
 import { showToast } from "../../utils/toast";
 import {
     ConsentDataFetchResult,
+    FhirAttachment,
     FhirResource,
     ConsentRequestStatusResult,
     getSafeConsentRequestErrorMessage,
@@ -35,9 +37,10 @@ import {
     usePollConsentRequestStatusMutation,
     useStartConsentDataFetchMutation,
 } from "../../redux/api/consentRequestApi";
-import { useDispatch } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { hideLoader, showLoader } from "../../redux/slices/loaderSlice";
 import { useCreateSessionMutation } from "../../redux/api/sessionApi";
+import { monitorAndPersistConsent } from "../../redux/api/consentPersistence";
 
 
 //"code": "CAREMGT",//CAREMGT,BTG ,PUBHLTH ,HPAYMT ,DSRCH
@@ -176,8 +179,17 @@ const getFhirResources = (
             : [bundle],
     );
 
+const getFhirResourceAttachments = (resource: FhirResource): FhirAttachment[] => [
+    ...(resource.content ?? [])
+        .map(item => item.attachment)
+        .filter((attachment): attachment is FhirAttachment => Boolean(attachment)),
+    ...(resource.presentedForm ?? []),
+];
+
 const getFhirResourceLabel = (resource: FhirResource) =>
     resource.title ||
+    resource.description ||
+    getFhirResourceAttachments(resource)[0]?.title ||
     resource.code?.text ||
     resource.code?.coding?.find(coding => coding.display)?.display ||
     resource.resourceType ||
@@ -212,7 +224,9 @@ const ConsentDetailRow = ({ label, value }: { label: string; value: string }) =>
 const ConsentFormScreen = ({ route }: any) => {
     const { abhaDetail, bridgeServices } = route.params || {};
     const [purpose, setPurpose] = useState(PURPOSES[0].value);
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
+    const navigation = useNavigation<any>();
+    const erpToken = useAppSelector(state => state.auth.user?.token);
     const [selectedHip, setSelectedHip] = useState<any>(null);
     const [service, setSelectedService] = useState<any>(null);
     const hiuServices = (Array.isArray(bridgeServices?.services)
@@ -307,6 +321,30 @@ const ConsentFormScreen = ({ route }: any) => {
             : String(field.text).trim();
     };
 
+    const returnToMainScreen = () => {
+        const listRoute = [...navigation.getState().routes]
+            .reverse()
+            .find(routeItem => routeItem.name === "List");
+
+        if (!listRoute) {
+            if (navigation.canGoBack()) {
+                navigation.goBack();
+                return;
+            }
+            showToast(
+                "error",
+                "Navigation Failed",
+                "The main List page is not available in the current navigation stack.",
+            );
+            return;
+        }
+
+        navigation.dispatch(CommonActions.reset({
+            index: 0,
+            routes: [{ name: "List", params: listRoute.params }],
+        }));
+    };
+
     const toggleHiType = (item: string) => {
         if (selectedHiTypes.includes(item)) {
             setSelectedHiTypes(selectedHiTypes.filter(x => x !== item));
@@ -335,12 +373,7 @@ const ConsentFormScreen = ({ route }: any) => {
                 }
             }
         } catch (error: any) {
-            const message =
-                error?.data?.message ||
-                error?.data?.detail ||
-                error?.data?.error ||
-                error?.error ||
-                "Could not check consent status.";
+            const message = getSafeConsentRequestErrorMessage(error);
             if (isMounted.current) {
                 setStatusPollError(message);
                 if (showFailureToast) {
@@ -643,6 +676,15 @@ const ConsentFormScreen = ({ route }: any) => {
             return;
         }
 
+        if (!erpToken) {
+            showToast(
+                "error",
+                "ERP session unavailable",
+                "Sign in again before creating a consent request so its result can be saved to ERP.",
+            );
+            return;
+        }
+
         const patientAddress = getValue("preferredabhaaddress");
         if (!patientAddress) {
             showToast(
@@ -739,29 +781,31 @@ const ConsentFormScreen = ({ route }: any) => {
         try {
             await createSession().unwrap();
             const response = await consentRequest(payload).unwrap();
-            setStatusPollError(null);
-            setDataTransfers({});
-            setDataTransferErrors({});
-            setStartingDataFetches([]);
-            autoFetchStartedPollId.current = null;
-            lastNotifiedConsentStatus.current = null;
-            setConsentPollId(response.pollId);
-            setConsentStatus({
-                status: "PENDING",
-                consentArtefactIds: [],
+            void monitorAndPersistConsent(dispatch, {
+                requestId: response.requestId,
+                pollId: response.pollId,
+                erpToken,
+                patientReference: getValue("patientabhaid"),
+                abhaNumber: getValue("abhanumber"),
+                patientName: [
+                    getValue("firstname"),
+                    getValue("middlename"),
+                    getValue("lastname"),
+                ].filter(Boolean).join(" "),
+                submittedAt: new Date().toISOString(),
+                requestPayload: payload,
             });
             showToast(
                 "success",
                 "Request Submitted",
-                "Patient can review the consent request in the ABHA app.",
+                "Consent is sent to the patient. Its decision and artefacts will be saved to ERP.",
             );
+            returnToMainScreen();
         } catch (error: any) {
             showToast(
                 "error",
                 "Consent Request Failed",
-                error?.data?.message ||
-                    error?.error ||
-                    "Something went wrong."
+                getSafeConsentRequestErrorMessage(error)
             );
         } finally {
             dispatch(hideLoader());
@@ -1025,6 +1069,10 @@ const ConsentFormScreen = ({ route }: any) => {
                         {(consentStatus?.consentArtefactIds ?? []).map(artefactId => {
                             const transfer = dataTransfers[artefactId];
                             const error = dataTransferErrors[artefactId];
+                            const transferFailure =
+                                transfer?.status === "FAILED"
+                                    ? getSafeConsentRequestErrorMessage(transfer)
+                                    : undefined;
                             const isStarting =
                                 startingDataFetches.includes(artefactId);
                             const isInProgress =
@@ -1194,9 +1242,9 @@ const ConsentFormScreen = ({ route }: any) => {
                                             {getFhirResources(transfer.records).length} health record(s) received
                                         </Text>
                                     )}
-                                    {(error || transfer?.error) && (
+                                    {(error || transferFailure) && (
                                         <Text style={styles.recordsError}>
-                                            {error || transfer?.error}
+                                            {error || transferFailure}
                                         </Text>
                                     )}
 
@@ -1246,6 +1294,37 @@ const ConsentFormScreen = ({ route }: any) => {
                                                             {getFhirResourceValue(resource)}
                                                         </Text>
                                                     ) : null}
+                                                    {getFhirResourceAttachments(resource).map(
+                                                        (attachment, attachmentIndex) => (
+                                                            <View
+                                                                key={`${attachment.title ?? attachment.contentType ?? "attachment"}-${attachmentIndex}`}
+                                                                style={styles.attachmentRow}
+                                                            >
+                                                                <MaterialIcons
+                                                                    name="attach-file"
+                                                                    size={17}
+                                                                    color="#475467"
+                                                                />
+                                                                <View style={styles.attachmentDetails}>
+                                                                    <Text style={styles.attachmentTitle}>
+                                                                        {attachment.title ||
+                                                                            attachment.contentType ||
+                                                                            "Attached health document"}
+                                                                    </Text>
+                                                                    <Text style={styles.fhirResourceType}>
+                                                                        {attachment.data
+                                                                            ? "File content received"
+                                                                            : attachment.url
+                                                                                ? "File reference received"
+                                                                                : "Attachment listed"}
+                                                                        {attachment.size
+                                                                            ? ` · ${(attachment.size / 1024).toFixed(0)} KB`
+                                                                            : ""}
+                                                                    </Text>
+                                                                </View>
+                                                            </View>
+                                                        ),
+                                                    )}
                                                 </View>
                                             ),
                                         )}
@@ -1271,7 +1350,7 @@ const ConsentFormScreen = ({ route }: any) => {
                                 : consentStatus.status === "GRANTED"
                                 ? `Patient approved. ${consentStatus.consentArtefactIds.length} consent artefact(s) received.`
                                 : consentStatus.status === "FAILED"
-                                ? consentStatus.error || "ABDM could not create the request."
+                                ? getSafeConsentRequestErrorMessage(consentStatus)
                                 : `Consent ${consentStatus.status.toLowerCase()}.`}
                         </Text>
                         {statusPollError && (
@@ -1571,6 +1650,23 @@ const styles = StyleSheet.create({
         marginTop: 3,
         color: "#667085",
         fontSize: 11,
+    },
+    attachmentRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginTop: 8,
+        padding: 9,
+        borderRadius: 8,
+        backgroundColor: "#F8FAFC",
+    },
+    attachmentDetails: {
+        flex: 1,
+        marginLeft: 7,
+    },
+    attachmentTitle: {
+        color: "#344054",
+        fontSize: 12,
+        fontWeight: "600",
     },
     dateRangeHint: {
         marginHorizontal: 16,

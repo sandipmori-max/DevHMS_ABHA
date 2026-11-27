@@ -60,6 +60,7 @@ public sealed class AbdmCallbackStore
             _requests[requestId] = request with
             {
                 LinkToken = callback.LinkToken,
+                LinkTokenExpiresAt = GetJwtExpiration(callback.LinkToken!),
             };
             return true;
         }
@@ -99,7 +100,7 @@ public sealed class AbdmCallbackStore
             return new TokenRequestPollResult(
                 TokenRequestStatus.Ready,
                 request.LinkToken,
-                request.ExpiresAt);
+                request.LinkTokenExpiresAt);
         }
     }
 
@@ -212,12 +213,52 @@ public sealed class AbdmCallbackStore
 
     private static string NormalizeAddress(string address) => address.Trim();
 
+    private static DateTimeOffset? GetJwtExpiration(string token)
+    {
+        var parts = token.Split('.');
+        if (parts.Length != 3)
+        {
+            return null;
+        }
+
+        var payload = parts[1]
+            .Replace('-', '+')
+            .Replace('_', '/');
+        payload += new string('=', (4 - payload.Length % 4) % 4);
+
+        try
+        {
+            using var document = JsonDocument.Parse(
+                Convert.FromBase64String(payload));
+            if (!document.RootElement.TryGetProperty("exp", out var exp) ||
+                !exp.TryGetInt64(out var unixSeconds))
+            {
+                return null;
+            }
+
+            return DateTimeOffset.FromUnixTimeSeconds(unixSeconds);
+        }
+        catch (FormatException)
+        {
+            return null;
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return null;
+        }
+    }
+
     private sealed record PendingTokenRequest(
         string RequestId,
         string AbhaAddress,
         string AbdmRequestId,
         DateTimeOffset ExpiresAt,
-        string? LinkToken = null);
+        string? LinkToken = null,
+        DateTimeOffset? LinkTokenExpiresAt = null);
 
     private sealed record PendingCareContextRequest(
         string RequestId,

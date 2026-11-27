@@ -4,11 +4,11 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
-    Image,
 } from "react-native";
 
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 
+type MaterialIconName = React.ComponentProps<typeof MaterialIcons>["name"];
 
 type Props = {
     hospitalName: string;
@@ -16,13 +16,17 @@ type Props = {
     purpose: string;
     requestDate: string;
     expiryDate: string;
+    expiryLabel?: string;
+    requesterLabel?: string;
+    referenceId?: string;
 
     status:
     | "Pending"
     | "Granted"
     | "Denied"
     | "Expired"
-    | "Revoked";
+    | "Revoked"
+    | "Failed";
 
     isRequest?: boolean;
 
@@ -38,6 +42,9 @@ export default function ConsentCard({
     purpose,
     requestDate,
     expiryDate,
+    expiryLabel = "Valid Till",
+    requesterLabel = "Requested By",
+    referenceId,
     status,
     isRequest = true,
     onApprove,
@@ -59,13 +66,13 @@ export default function ConsentCard({
                 <View style={styles.profileSection}>
 
 
-                    <Image
-                        source={{
-                            uri:
-                                "https://dummyimage.com/100x100/1565C0/ffffff.png&text=H"
-                        }}
-                        style={styles.logo}
-                    />
+                    <View style={styles.logo}>
+                        <MaterialIcons
+                            name="local-hospital"
+                            size={26}
+                            color="#1565C0"
+                        />
+                    </View>
 
 
                     <View style={{ flex: 1 }}>
@@ -158,7 +165,7 @@ export default function ConsentCard({
 
             <InfoRow
                 icon="person"
-                label="Requested By"
+                label={requesterLabel}
                 value={requester}
             />
 
@@ -172,13 +179,17 @@ export default function ConsentCard({
 
             <InfoRow
                 icon="event"
-                label="Valid Till"
+                label={expiryLabel}
                 value={expiryDate}
             />
 
-
-
-
+            {referenceId ? (
+                <InfoRow
+                    icon="fingerprint"
+                    label={isRequest ? "Request ID" : "Consent artefact ID"}
+                    value={referenceId}
+                />
+            ) : null}
 
             {/* ACTIONS */}
 
@@ -276,7 +287,7 @@ const InfoRow = ({
     label,
     value
 }: {
-    icon: string;
+    icon: MaterialIconName;
     label: string;
     value: string;
 }) => (
@@ -334,6 +345,7 @@ const getStatusBg = (status: string) => {
 
         case "Denied":
         case "Revoked":
+        case "Failed":
             return {
                 backgroundColor: "#FFEBEE"
             };
@@ -372,6 +384,7 @@ const getStatusColor = (status: string) => {
 
         case "Denied":
         case "Revoked":
+        case "Failed":
             return {
                 color: "#C62828"
             };
@@ -433,7 +446,10 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 8,
-        marginRight: 12
+        marginRight: 12,
+        backgroundColor: "#E3F2FD",
+        alignItems: "center",
+        justifyContent: "center",
     },
 
 

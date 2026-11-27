@@ -14,6 +14,7 @@ Configure the registered HIP bridge URL as the public HTTPS base URL only
 - `POST /api/v3/hiu/consent/request/on-init`
 - `POST /api/v3/hiu/consent/request/notify`
 - `POST /api/v3/hiu/consent/on-fetch`
+- `POST /api/v3/hiu/health-information/on-request`
 - `POST /api/v3/hiu/health-information/data-push`
 
 The token callback is matched against the ABHA address and the `REQUEST-ID`
@@ -142,6 +143,12 @@ decrypted records are not logged or sent to the Fidelius service from the
 mobile app. OS push notifications while the app is backgrounded are not
 configured by this flow.
 
+ABDM asynchronously notifies the HIU at
+`/api/v3/hiu/health-information/on-request` with the transaction ID and session
+status. The backend registers that transaction before matching the HIP's
+data-push callback. Each push must include the transaction ID, page number and
+count, encrypted entries, and sender key material.
+
 The consent notification initially supplies artefact IDs, not clinical files.
 The screen shows the requested terms until the approved artefact is fetched,
 then shows its approved scope. Only a completed health-information transfer
@@ -199,7 +206,9 @@ response bodies. The client is used by the M3 health-record retrieval flow above
 2. The app calls ABDM's `generate-token` endpoint with that request ID.
 3. ABDM posts the token to the HIP callback route above.
 4. The app polls `POST /mobile/abdm/link-token-requests/poll` with the mobile
-   poll ID. The API returns `202` while waiting, then returns the token once.
+   poll ID. The API returns `202` while waiting, then returns the token and its
+   JWT `exp` timestamp once. The poll request's 10-minute lifetime is separate
+   from the link token's expiry.
 5. Failed or timed-out mobile requests are cancelled through
    `POST /mobile/abdm/link-token-requests/cancel`.
 6. Before linking care contexts, the app registers the link request ID with

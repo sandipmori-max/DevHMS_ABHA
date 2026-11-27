@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -7,8 +7,20 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useAppDispatch } from '../../../store/hooks';
+import { getERPListDataThunk } from '../../../store/slices/auth/thunk';
+import {
+  getERPField,
+  matchesERPPatient,
+  normalizeERPKey,
+  parseERPListRows,
+  type ERPRecord,
+} from '../../utils/erpRecords';
+import { getErrorMessage } from '../../utils/helpers';
+import { showToast } from '../../utils/toast';
 
 type StepStatus = 'success' | 'pending' | 'failed';
+type ActivityType = 'care' | 'consent';
 
 interface ABDMStep {
   id: string;
@@ -16,227 +28,497 @@ interface ABDMStep {
   description: string;
   date: string;
   status: StepStatus;
-  icon: 'patient' | 'abha' | 'encounter' | 'care' | 'link';
+  icon: ActivityType;
+  timestamp: number;
+  referenceId: string;
 }
 
 interface ABDMStatusProps {
   patientName?: string;
   patientId?: string;
   abhaAddress?: string;
-  lastSync?: string;
-  referenceId?: string;
-
-  steps?: ABDMStep[];
-
-  onRefresh?: () => Promise<void> | void;
-  onCopyReference?: () => void;
+  abhaNumber?: string;
+  abhaDetail: Array<{ field: string; text: string }>;
 }
 
-/* =====================================================
-   DEFAULT DATA
-===================================================== */
+const normalizeStatus = (value: unknown) =>
+  String(value ?? '').trim().toUpperCase();
 
-const DEFAULT_STEPS: ABDMStep[] = [
-  {
-    id: 'patient',
-    title: 'Patient Identified',
-    description: 'Patient details verified',
-    date: '14 Aug 2026, 10:21 AM',
-    status: 'success',
-    icon: 'patient',
-  },
+const getLinkStepStatus = (value: unknown): StepStatus => {
+  const status = normalizeStatus(value);
+  if (
+    ['LINKED', 'SUCCESS', 'COMPLETED', 'GRANTED'].includes(status) ||
+    status.includes('SUCCESSFULLY LINKED')
+  ) {
+    return 'success';
+  }
+  if (['FAILED', 'ERROR', 'DENIED'].includes(status)) {
+    return 'failed';
+  }
+  return 'pending';
+};
 
-  {
-    id: 'abha',
-    title: 'ABHA Verified',
-    description: 'ABHA details fetched from ABDM',
-    date: '14 Aug 2026, 10:24 AM',
-    status: 'success',
-    icon: 'abha',
-  },
+const getConsentStepStatus = (value: unknown): StepStatus => {
+  const status = normalizeStatus(value);
+  if (['GRANTED', 'APPROVED'].includes(status)) {
+    return 'success';
+  }
+  if (['DENIED', 'EXPIRED', 'REVOKED', 'FAILED', 'ERROR'].includes(status)) {
+    return 'failed';
+  }
+  return 'pending';
+};
 
-  {
-    id: 'encounter',
-    title: 'Encounter Created',
-    description: 'Visit/Encounter created',
-    date: '14 Aug 2026, 10:28 AM',
-    status: 'success',
-    icon: 'encounter',
-  },
+const formatDate = (value: unknown) => {
+  if (typeof value !== 'string' || !value.trim()) {
+    return '-';
+  }
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime())
+    ? value
+    : parsed.toLocaleString();
+};
 
-  {
-    id: 'care-context',
-    title: 'Care Context Created',
-    description: 'Care context created',
-    date: '14 Aug 2026, 10:30 AM',
-    status: 'success',
-    icon: 'care',
-  },
+const getTimestamp = (value: unknown) => {
+  if (typeof value !== 'string') {
+    return 0;
+  }
+  return Date.parse(value) || 0;
+};
 
-  {
-    id: 'linked',
-    title: 'Linked to ABDM',
-    description: 'Care context linked successfully',
-    date: '14 Aug 2026, 10:32 AM',
-    status: 'success',
-    icon: 'link',
-  },
-];
+const dedupeRequests = (
+  rows: ERPRecord[],
+  timeFields: string[],
+): ERPRecord[] => {
+  const latest = new Map<string, { row: ERPRecord; timestamp: number }>();
+  const rowsWithoutId: ERPRecord[] = [];
+
+  rows.forEach(row => {
+    const requestId = String(getERPField(row, ['requestid']) ?? '').trim();
+    if (!requestId) {
+      rowsWithoutId.push(row);
+      return;
+    }
+
+    const timestamp = timeFields.reduce<number>((latestTimestamp, field) => {
+      const fieldTimestamp = getTimestamp(getERPField(row, [field]));
+      return fieldTimestamp || latestTimestamp;
+    }, 0);
+    const previous = latest.get(requestId);
+    if (!previous || timestamp >= previous.timestamp) {
+      latest.set(requestId, { row, timestamp });
+    }
+  });
+
+  return [...rowsWithoutId, ...[...latest.values()].map(item => item.row)];
+};
 
 /* =====================================================
    MAIN COMPONENT
 ===================================================== */
 
 const ABDMStatus: React.FC<ABDMStatusProps> = ({
-  patientName = 'Rahul Shah',
-  patientId = 'P10021',
-  abhaAddress = 'rahul@abdm',
-  lastSync = '14 Aug 2026, 10:32 AM',
-  referenceId = 'abdm-cc-2026-001-8f3a2c',
-
-  steps = DEFAULT_STEPS,
-
-  onRefresh,
-  onCopyReference,
+  patientName,
+  patientId,
+  abhaAddress,
+  abhaNumber,
+  abhaDetail,
 }) => {
-  const [refreshing, setRefreshing] =
-    useState(false);
+  const dispatch = useAppDispatch();
+  const [steps, setSteps] = useState<ABDMStep[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleRefresh = useCallback(async () => {
-    if (refreshing) {
-      return;
-    }
+  const getProfileValue = useCallback((fieldName: string) => {
+    const normalized = normalizeERPKey(fieldName);
+    return (
+      abhaDetail.find(item => normalizeERPKey(item.field) === normalized)?.text ??
+      ''
+    ).trim();
+  }, [abhaDetail]);
 
-    try {
+  const address =
+    abhaAddress ||
+    getProfileValue('preferredabhaaddress') ||
+    getProfileValue('abhaaddress');
+  const normalizedAbhaNumber =
+    (abhaNumber || getProfileValue('abhanumber')).replace(/\D/g, '');
+  const patientReferences = [
+    String(patientId ?? '').trim(),
+    getProfileValue('patientabhaid'),
+  ];
+
+  const loadStatus = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
       setRefreshing(true);
-
-      await onRefresh?.();
-    } catch (error) {
-      console.log(
-        'ABDM refresh error:',
-        error,
+    } else {
+      setIsLoading(true);
+    }
+    setError(null);
+    try {
+      const [linkResult, consentResult] = await Promise.allSettled([
+        dispatch(getERPListDataThunk({
+          page: 'Linkcarecontextrequest',
+          fromDate: '',
+          toDate: '',
+          param: '',
+          branch: '',
+        })).unwrap(),
+        dispatch(getERPListDataThunk({
+          page: 'ConsentRequest',
+          fromDate: '',
+          toDate: '',
+          param: '',
+          branch: '',
+        })).unwrap(),
+      ]);
+      const failures: string[] = [];
+      const getRows = (
+        result: PromiseSettledResult<unknown>,
+        pageLabel: string,
+      ) => {
+        if (result.status === 'rejected') {
+          failures.push(getErrorMessage(result.reason));
+          return [];
+        }
+        try {
+          return parseERPListRows(result.value, pageLabel);
+        } catch (parseError) {
+          failures.push(getErrorMessage(parseError));
+          return [];
+        }
+      };
+      const identifiers = {
+        address,
+        abhaNumber: normalizedAbhaNumber,
+        patientReferences,
+      };
+      const linkRows = dedupeRequests(
+        getRows(linkResult, 'care context').filter(row =>
+          matchesERPPatient(row, identifiers),
+        ),
+        ['completedat', 'updatedat', 'linkedat', 'createdat'],
       );
+      const consentRows = dedupeRequests(
+        getRows(consentResult, 'consent').filter(row =>
+          matchesERPPatient(row, identifiers),
+        ),
+        ['decisionat', 'crcreatedat', 'createdat'],
+      );
+
+      const linkSteps = linkRows.map((row, index): ABDMStep => {
+        const statusValue =
+          getERPField(row, ['status']) || getERPField(row, ['linkstatus']);
+        const status = getLinkStepStatus(statusValue);
+        const requestId = String(
+          getERPField(row, ['requestid']) || `link-${index + 1}`,
+        );
+        const dateValue =
+          getERPField(row, ['completedat']) ||
+          getERPField(row, ['updatedat']) ||
+          getERPField(row, ['linkedat']) ||
+          getERPField(row, ['createdat']);
+        const description = String(
+          getERPField(row, ['errormessage']) ||
+          getERPField(row, ['linkstatus']) ||
+          (status === 'success'
+            ? 'ABDM confirmed the care-context link.'
+            : status === 'failed'
+              ? 'ABDM could not complete the care-context link.'
+              : 'Waiting for ABDM to confirm the care-context link.'),
+        );
+        const displayStatus =
+          status === 'success' ? 'Linked' : status === 'failed' ? 'Failed' : 'Requested';
+
+        return {
+          id: `care-${requestId}`,
+          title: `Care Context ${displayStatus}`,
+          description,
+          date: formatDate(dateValue),
+          status,
+          icon: 'care',
+          timestamp: getTimestamp(dateValue),
+          referenceId: requestId,
+        };
+      });
+
+      const consentSteps = consentRows.map((row, index): ABDMStep => {
+        const statusValue = getERPField(row, ['status']);
+        const status = getConsentStepStatus(statusValue);
+        const requestId = String(
+          getERPField(row, ['consentrequestid']) ||
+          getERPField(row, ['requestid']) ||
+          `consent-${index + 1}`,
+        );
+        const dateValue =
+          getERPField(row, ['decisionat']) ||
+          getERPField(row, ['crcreatedat']) ||
+          getERPField(row, ['createdat']);
+        const purpose = String(getERPField(row, ['purposetext']) ?? '').trim();
+        const description = String(
+          getERPField(row, ['errormessage']) ||
+          (status === 'success'
+            ? `Consent was approved${purpose ? ` for ${purpose}` : ''}.`
+            : status === 'failed'
+              ? `Consent request ${normalizeStatus(statusValue).toLowerCase()}${purpose ? ` for ${purpose}` : ''}.`
+              : `Waiting for the patient to respond to the consent request.${purpose ? ` Purpose: ${purpose}` : ''}`),
+        );
+        const displayStatus =
+          status === 'success'
+            ? 'Approved'
+            : status === 'failed'
+              ? normalizeStatus(statusValue) || 'Failed'
+              : 'Pending';
+
+        return {
+          id: `consent-${requestId}`,
+          title: `Consent Request ${displayStatus}`,
+          description,
+          date: formatDate(dateValue),
+          status,
+          icon: 'consent',
+          timestamp: getTimestamp(dateValue),
+          referenceId: requestId,
+        };
+      });
+
+      setSteps(
+        [...linkSteps, ...consentSteps].sort(
+          (left, right) => left.timestamp - right.timestamp,
+        ),
+      );
+      if (failures.length > 0) {
+        const message = failures.join(' ');
+        setError(message);
+        showToast('error', 'ABDM Status Partially Loaded', message);
+      }
+    } catch (loadError) {
+      const message = getErrorMessage(loadError);
+      setError(message);
+      showToast('error', 'ABDM Status Failed', message);
     } finally {
+      setIsLoading(false);
       setRefreshing(false);
     }
-  }, [refreshing, onRefresh]);
+  }, [
+    address,
+    dispatch,
+    normalizedAbhaNumber,
+    patientReferences.join('|'),
+  ]);
+
+  useEffect(() => {
+    void loadStatus();
+  }, [loadStatus]);
+
+  const overallStatus = useMemo<StepStatus | 'empty'>(() => {
+    if (steps.length === 0) {
+      return 'empty';
+    }
+    if (steps.some(step => step.status === 'failed')) {
+      return 'failed';
+    }
+    if (steps.some(step => step.status === 'pending')) {
+      return 'pending';
+    }
+    return 'success';
+  }, [steps]);
+
+  const lastStep = steps[steps.length - 1];
+  const displayPatientName =
+    patientName ||
+    [
+      getProfileValue('firstname'),
+      getProfileValue('middlename'),
+      getProfileValue('lastname'),
+    ].filter(Boolean).join(' ') ||
+    'Patient';
+  const displayStatus =
+    overallStatus === 'success'
+      ? 'Success'
+      : overallStatus === 'pending'
+        ? 'Pending'
+        : overallStatus === 'failed'
+          ? 'Failed'
+          : 'No Activity';
 
   return (
     <View style={styles.container}>
-
-      {/* =================================================
-          HEADER
-      ================================================= */}
-
-       
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={
           styles.scrollContent
         }
       >
+        <View style={styles.patientInfoRow}>
+          <View style={styles.patientAvatar}>
+            <Text style={styles.patientAvatarText}>
+              {displayPatientName.slice(0, 1).toUpperCase()}
+            </Text>
+          </View>
+          <View style={styles.patientInfo}>
+            <Text style={styles.patientName}>{displayPatientName}</Text>
+            <Text style={styles.patientMeta}>
+              {[patientId, address].filter(Boolean).join(' • ') || 'ABHA patient'}
+            </Text>
+          </View>
+        </View>
 
-        {/* =================================================
-            ALL SYSTEMS SYNCED
-        ================================================= */}
-
-        <View style={styles.syncedCard}>
-
-          <View style={styles.syncedIcon}>
+        <View
+          style={[
+            styles.syncedCard,
+            overallStatus === 'pending' && styles.syncedCardPending,
+            overallStatus === 'failed' && styles.syncedCardFailed,
+            overallStatus === 'empty' && styles.syncedCardEmpty,
+          ]}
+        >
+          <View
+            style={[
+              styles.syncedIcon,
+              overallStatus === 'pending' && styles.syncedIconPending,
+              overallStatus === 'failed' && styles.syncedIconFailed,
+              overallStatus === 'empty' && styles.syncedIconEmpty,
+            ]}
+          >
             <Text style={styles.syncedCheck}>
-              ✓
+              {overallStatus === 'success'
+                ? '✓'
+                : overallStatus === 'failed'
+                  ? '!'
+                  : overallStatus === 'pending'
+                    ? '…'
+                    : '–'}
             </Text>
           </View>
-
           <View style={styles.syncedContent}>
-            <Text style={styles.syncedTitle}>
-              All Systems Synced
+            <Text
+              style={[
+                styles.syncedTitle,
+                overallStatus === 'pending' && styles.syncedTitlePending,
+                overallStatus === 'failed' && styles.syncedTitleFailed,
+                overallStatus === 'empty' && styles.syncedTitleEmpty,
+              ]}
+            >
+              {overallStatus === 'success'
+                ? 'ABDM Activity Synced'
+                : overallStatus === 'pending'
+                  ? 'ABDM Requests In Progress'
+                  : overallStatus === 'failed'
+                    ? 'ABDM Activity Needs Attention'
+                    : 'No ABDM Activity Yet'}
             </Text>
-
             <Text style={styles.syncedDescription}>
-              Patient record is successfully linked with ABDM
+              {overallStatus === 'empty'
+                ? 'Care-context link and consent request statuses will appear here.'
+                : `${steps.filter(step => step.status === 'success').length} completed, ${steps.filter(step => step.status === 'pending').length} pending, ${steps.filter(step => step.status === 'failed').length} failed`}
             </Text>
           </View>
-
-        </View>
- 
-
-        <View style={styles.timeline}>
-
-          {steps.map((step, index) => (
-            <TimelineItem
-              key={step.id}
-              step={step}
-              isLast={
-                index === steps.length - 1
-              }
-            />
-          ))}
-
         </View>
 
+        <Pressable
+          accessibilityRole="button"
+          disabled={isLoading || refreshing}
+          onPress={() => void loadStatus(true)}
+          style={styles.refreshButton}
+        >
+          <Text style={styles.refreshText}>
+            {refreshing ? 'Refreshing…' : 'Refresh status'}
+          </Text>
+        </Pressable>
+
+        {isLoading ? (
+          <ActivityIndicator style={styles.loading} />
+        ) : error && steps.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyText}>{error}</Text>
+            <Pressable
+              onPress={() => void loadStatus()}
+              style={styles.retryButton}
+            >
+              <Text style={styles.retryText}>Try again</Text>
+            </Pressable>
+          </View>
+        ) : steps.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyText}>
+              No care-context link or consent request records were found for this patient.
+            </Text>
+          </View>
+        ) : (
+          <>
+            {error ? (
+              <Text style={styles.partialError}>
+                Some status records could not be loaded: {error}
+              </Text>
+            ) : null}
+            <View style={styles.timeline}>
+              {steps.map((step, index) => (
+                <TimelineItem
+                  key={step.id}
+                  step={step}
+                  isLast={index === steps.length - 1}
+                />
+              ))}
+            </View>
+          </>
+        )}
 
         <View style={styles.currentStatusCard}>
-
           <View style={styles.currentStatusHeader}>
-
             <Text style={styles.currentStatusTitle}>
               Current Status
             </Text>
-
-            <View style={styles.successBadge}>
-
-              <View style={styles.successBadgeDot} />
-
-              <Text style={styles.successBadgeText}>
-                Success
+            <View
+              style={[
+                styles.successBadge,
+                overallStatus === 'pending' && styles.pendingBadge,
+                overallStatus === 'failed' && styles.failedBadge,
+                overallStatus === 'empty' && styles.emptyBadge,
+              ]}
+            >
+              <View
+                style={[
+                  styles.successBadgeDot,
+                  overallStatus === 'pending' && styles.pendingBadgeDot,
+                  overallStatus === 'failed' && styles.failedBadgeDot,
+                  overallStatus === 'empty' && styles.emptyBadgeDot,
+                ]}
+              />
+              <Text
+                style={[
+                  styles.successBadgeText,
+                  overallStatus === 'pending' && styles.pendingBadgeText,
+                  overallStatus === 'failed' && styles.failedBadgeText,
+                  overallStatus === 'empty' && styles.emptyBadgeText,
+                ]}
+              >
+                {displayStatus}
               </Text>
-
             </View>
-
           </View>
-
-          {/* Last Sync */}
-
           <View style={styles.statusRow}>
-
             <Text style={styles.statusLabel}>
-              Last Sync
+              Latest Activity
             </Text>
-
             <Text style={styles.statusValue}>
-              {lastSync}
+              {lastStep?.date ?? '-'}
             </Text>
-
           </View>
-
-          {/* Reference ID */}
-
           <View style={styles.statusRow}>
-
             <Text style={styles.statusLabel}>
-              Reference ID
+              Latest Request ID
             </Text>
-
             <View style={styles.referenceContainer}>
-
               <Text
                 style={styles.referenceValue}
                 numberOfLines={1}
               >
-                {referenceId}
+                {lastStep?.referenceId ?? '-'}
               </Text>
-
-              
-
             </View>
-
           </View>
-
         </View>
-
-        
       </ScrollView>
     </View>
   );
@@ -407,27 +689,6 @@ const StepIcon = ({
   }
 
   switch (type) {
-    case 'patient':
-      return (
-        <Text style={styles.iconText}>
-          ♙
-        </Text>
-      );
-
-    case 'abha':
-      return (
-        <Text style={styles.iconText}>
-          ♙
-        </Text>
-      );
-
-    case 'encounter':
-      return (
-        <Text style={styles.iconText}>
-          □
-        </Text>
-      );
-
     case 'care':
       return (
         <Text style={styles.iconText}>
@@ -435,10 +696,10 @@ const StepIcon = ({
         </Text>
       );
 
-    case 'link':
+    case 'consent':
       return (
         <Text style={styles.iconText}>
-          ▣
+          ✓
         </Text>
       );
 
@@ -505,6 +766,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  syncedCardPending: {
+    backgroundColor: '#FFFAEB',
+  },
+
+  syncedCardFailed: {
+    backgroundColor: '#FEF3F2',
+  },
+
+  syncedCardEmpty: {
+    backgroundColor: '#F2F4F7',
+  },
+
   syncedIcon: {
     width: 38,
     height: 38,
@@ -517,6 +790,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
 
     marginRight: 11,
+  },
+
+  syncedIconPending: {
+    backgroundColor: '#F79009',
+  },
+
+  syncedIconFailed: {
+    backgroundColor: '#D92D20',
+  },
+
+  syncedIconEmpty: {
+    backgroundColor: '#98A2B3',
   },
 
   syncedCheck: {
@@ -533,6 +818,18 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: '#027A48',
+  },
+
+  syncedTitlePending: {
+    color: '#B54708',
+  },
+
+  syncedTitleFailed: {
+    color: '#B42318',
+  },
+
+  syncedTitleEmpty: {
+    color: '#475467',
   },
 
   syncedDescription: {
@@ -846,6 +1143,42 @@ const styles = StyleSheet.create({
     color: '#027A48',
   },
 
+  pendingBadge: {
+    backgroundColor: '#FFFAEB',
+  },
+
+  pendingBadgeDot: {
+    backgroundColor: '#F79009',
+  },
+
+  pendingBadgeText: {
+    color: '#B54708',
+  },
+
+  failedBadge: {
+    backgroundColor: '#FEF3F2',
+  },
+
+  failedBadgeDot: {
+    backgroundColor: '#D92D20',
+  },
+
+  failedBadgeText: {
+    color: '#B42318',
+  },
+
+  emptyBadge: {
+    backgroundColor: '#F2F4F7',
+  },
+
+  emptyBadgeDot: {
+    backgroundColor: '#98A2B3',
+  },
+
+  emptyBadgeText: {
+    color: '#475467',
+  },
+
   /* =====================================================
      STATUS ROW
   ===================================================== */
@@ -959,5 +1292,38 @@ const styles = StyleSheet.create({
     fontWeight: '600',
 
     color: '#1565C0',
+  },
+
+  loading: {
+    marginVertical: 28,
+  },
+
+  emptyState: {
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 28,
+  },
+
+  emptyText: {
+    color: '#667085',
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
+  },
+
+  partialError: {
+    color: '#B54708',
+    fontSize: 12,
+    marginBottom: 10,
+  },
+
+  retryButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+
+  retryText: {
+    color: '#1565C0',
+    fontWeight: '700',
   },
 });

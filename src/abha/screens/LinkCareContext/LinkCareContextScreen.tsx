@@ -21,14 +21,17 @@ import {
     usePollCareContextLinkStatusMutation,
 } from '../../redux/api/linkCareContextApi';
 import { showToast } from '../../utils/toast';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useCreateSessionMutation } from '../../redux/api/sessionApi';
 import { hideLoader, showLoader } from '../../redux/slices/loaderSlice';
-import { setLinkToken } from '../../redux/slices/abhaSlice';
+import { clearLinkToken } from '../../redux/slices/abhaSlice';
 import {
     getErrorMessage,
     M2_BASE_URL_API_HIP,
 } from '../../utils/helpers';
+import { getSavePagePayload, savePageApi } from '../../redux/api/savePageApi';
+import type { LinkCareContextPayload } from '../../redux/api/linkCareContextApi';
+import { useAppDispatch } from '../../../store/hooks';
 
  
 interface CareContextItem {
@@ -80,7 +83,9 @@ const LinkCareContextScreen = ({ route }: any) => {
     const baseURL = useSelector((state: any) => state.auth.user?.companyLink)
     const baseUrl = baseURL.substring(0, baseURL.lastIndexOf("/") + 1);
     const url = new URL(baseUrl).origin;
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
+    const erpToken = useSelector((state: any) => state.auth.user?.token);
+    const selectedXCMID = useSelector((state: any) => state.abha.selectedXCMID);
 
     const [linkCareContext, { isLoading }] =
         useLinkCareContextMutation();
@@ -110,6 +115,91 @@ const LinkCareContextScreen = ({ route }: any) => {
             abhaDetail.map(item => [item.field, item.text])
         );
         return fieldMap[fieldName];
+    };
+
+    const saveCareContextStatus = async (
+        requestId: string,
+        payload: LinkCareContextPayload,
+        status: 'pending' | 'linked' | 'failed',
+        linkStatus: string,
+        submittedAt: string,
+    ) => {
+        if (!erpToken) {
+            throw new Error('ERP session token is unavailable.');
+        }
+
+        const updatedAt = new Date().toISOString();
+        const careContexts = payload.patient.flatMap(group =>
+            group.careContexts.map(context => ({
+                ...context,
+                hiType: group.hiType,
+            })),
+        );
+        const record = {
+            lcid: '',
+            requestid: requestId,
+            patientreference: payload.patient[0]?.referenceNumber ?? '',
+            patientname: [
+                getValue('firstname'),
+                getValue('middlename'),
+                getValue('lastname'),
+            ].filter(Boolean).join(' '),
+            abhanumber: payload.abhaNumber,
+            abhaaddress: payload.abhaAddress,
+            hipid: String(selectedXCMID ?? ''),
+            status,
+            carecontextcount: careContexts.length,
+            carecontexts: JSON.stringify(careContexts),
+            createdat: submittedAt,
+            completedat: status === 'pending' ? '' : updatedAt,
+            errormessage: status === 'failed' ? linkStatus : '',
+        };
+        const request = dispatch(savePageApi.endpoints.savePage.initiate(
+            getSavePagePayload(erpToken, 'Linkcarecontextrequest', JSON.stringify(record)),
+        ));
+
+        try {
+            const response = await request.unwrap();
+            if (
+                response.success !== undefined &&
+                Number(response.success) !== 1
+            ) {
+                throw new Error(
+                    response.message || 'The Linkcarecontextrequest record could not be saved.',
+                );
+            }
+        } finally {
+            request.reset();
+        }
+    };
+
+    const persistCareContextStatus = async (
+        requestId: string,
+        payload: LinkCareContextPayload,
+        status: 'pending' | 'linked' | 'failed',
+        linkStatus: string,
+        submittedAt: string,
+    ) => {
+        try {
+            await saveCareContextStatus(
+                requestId,
+                payload,
+                status,
+                linkStatus,
+                submittedAt,
+            );
+        } catch (error) {
+            console.error('[ABHA care context] ERP persistence failed', {
+                requestId,
+                status,
+                name: error instanceof Error ? error.name : 'UnknownError',
+            });
+            showToast(
+                'error',
+                'Care Context Status Not Saved',
+                getErrorMessage(error),
+            );
+        }
     };
 
     const buildPayload = (
@@ -229,7 +319,9 @@ const LinkCareContextScreen = ({ route }: any) => {
         }
     };
 
-    const waitForCareContextStatus = async (requestId: string) => {
+    const waitForCareContextStatus = async (
+        requestId: string,
+    ): Promise<CareContextLinkStatusResponse | undefined> => {
         const deadline = Date.now() + CARE_CONTEXT_STATUS_POLL_TIMEOUT_MS;
         if (!hasReturnedToList.current) {
             setIsCheckingLinkStatus(true);
@@ -239,7 +331,7 @@ const LinkCareContextScreen = ({ route }: any) => {
             while (Date.now() < deadline) {
                 const result = await pollCareContextLinkStatus(requestId).unwrap();
                 if (applyCareContextStatus(result)) {
-                    return;
+                    return result;
                 }
 
                 await new Promise<void>(resolve =>
@@ -252,12 +344,14 @@ const LinkCareContextScreen = ({ route }: any) => {
                     'Still waiting for ABDM. Use Check Link Status to check again.',
                 );
             }
+            return undefined;
         } catch {
             if (!hasReturnedToList.current) {
                 setLinkStatusMessage(
                     'The request is pending, but its status could not be checked. Try again.',
                 );
             }
+            return undefined;
         } finally {
             if (!hasReturnedToList.current) {
                 setIsCheckingLinkStatus(false);
@@ -327,16 +421,37 @@ const LinkCareContextScreen = ({ route }: any) => {
             const acceptedRequest = await linkCareContext(payload).unwrap();
             linkRequestAccepted = true;
             const requestId = acceptedRequest.response.requestId;
+            const submittedAt = new Date().toISOString();
 
             setLinkRequestId(requestId);
             setLinkStatus('pending');
             setLinkStatusMessage(
                 'Request accepted. Waiting for ABDM to confirm the link.',
             );
-            dispatch(setLinkToken(""));
+            const pendingPersistence = persistCareContextStatus(
+                requestId,
+                payload,
+                'pending',
+                'Waiting for ABDM confirmation.',
+                submittedAt,
+            );
+            dispatch(clearLinkToken());
             dispatch(hideLoader());
             resetToList();
-            await waitForCareContextStatus(requestId);
+            const result = await waitForCareContextStatus(requestId);
+            if (result) {
+                await pendingPersistence;
+                const isLinked =
+                    result.linkStatus?.trim().toLowerCase() ===
+                    'successfully linked care context';
+                await persistCareContextStatus(
+                    requestId,
+                    payload,
+                    isLinked ? 'linked' : 'failed',
+                    result.linkStatus || result.error || 'ABDM could not link the care context.',
+                    submittedAt,
+                );
+            }
         } catch (error) {
             if (linkRequestAccepted) {
                 setLinkStatus('pending');
@@ -349,7 +464,7 @@ const LinkCareContextScreen = ({ route }: any) => {
             }
         } finally {
             dispatch(hideLoader());
-            dispatch(setLinkToken(""))
+            dispatch(clearLinkToken())
         }
     };
 

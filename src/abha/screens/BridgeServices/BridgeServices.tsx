@@ -5,9 +5,15 @@ import Header from '../../Components/Header'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useGenerateLinkTokenMutation } from '../../redux/api/linkAbhaApi'
 import { useCreateSessionMutation } from '../../redux/api/sessionApi'
-import { useDispatch } from 'react-redux'
+import forge from 'node-forge'
+import { useAppDispatch } from '../../../store/hooks'
+import { getERPListDataThunk } from '../../../store/slices/auth/thunk'
 import { hideLoader, showLoader } from '../../redux/slices/loaderSlice'
-import { setLinkToken, setSelectedXCMID } from '../../redux/slices/abhaSlice'
+import {
+    clearLinkToken,
+    setActiveLinkToken,
+    setSelectedXCMID,
+} from '../../redux/slices/abhaSlice'
 import { showToast } from '../../utils/toast'
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import NoData from '../../../components/no_data/NoData'
@@ -33,6 +39,204 @@ const getBridgeServiceItems = (response: any): BridgeService[] => {
     return candidates.find(Array.isArray) ?? [];
 };
 
+const getHipServiceId = (service: BridgeService) => {
+    const value =
+        service.serviceId ??
+        service.facilityId ??
+        service.hipId ??
+        service.id;
+    return value === undefined || value === null ? "" : String(value).trim();
+};
+
+const normalizeRecordKey = (value: string) =>
+    value.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+const getRecordValue = (record: Record<string, unknown>, names: string[]) => {
+    const wantedNames = new Set(names.map(normalizeRecordKey));
+    const match = Object.entries(record).find(([key]) =>
+        wantedNames.has(normalizeRecordKey(key)),
+    );
+    return match?.[1];
+};
+
+const firstNonEmptyValue = (...values: unknown[]) =>
+    values.find(value =>
+        value !== undefined &&
+        value !== null &&
+        String(value).trim() !== "",
+    );
+
+const getLinkTokenClaims = (token: string) => {
+    const payloadSegment = token.split(".")[1];
+    if (!payloadSegment || !/^[A-Za-z0-9_-]+$/.test(payloadSegment)) {
+        return undefined;
+    }
+
+    const base64Payload = payloadSegment
+        .replace(/-/g, "+")
+        .replace(/_/g, "/")
+        .padEnd(Math.ceil(payloadSegment.length / 4) * 4, "=");
+
+    let claims: unknown;
+    try {
+        claims = JSON.parse(
+            forge.util.decodeUtf8(forge.util.decode64(base64Payload)),
+        );
+    } catch (error) {
+        if (error instanceof SyntaxError) {
+            return undefined;
+        }
+        throw error;
+    }
+
+    return claims && typeof claims === "object" && !Array.isArray(claims)
+        ? claims as Record<string, unknown>
+        : undefined;
+};
+
+const parseListDataRows = (raw: unknown): Record<string, unknown>[] => {
+    let parsed: unknown = raw;
+
+    for (let depth = 0; depth < 5; depth += 1) {
+        if (typeof parsed === "string") {
+            try {
+                parsed = JSON.parse(parsed);
+            } catch {
+                throw new Error("TokenGenerate returned invalid JSON.");
+            }
+        }
+
+        if (Array.isArray(parsed)) {
+            return parsed.filter(
+                (item): item is Record<string, unknown> =>
+                    Boolean(item) && typeof item === "object" && !Array.isArray(item),
+            );
+        }
+
+        if (!parsed || typeof parsed !== "object") {
+            break;
+        }
+
+        const response = parsed as Record<string, unknown>;
+        if (response.success === 0) {
+            throw new Error(
+                typeof response.message === "string"
+                    ? response.message
+                    : "Could not read TokenGenerate records.",
+            );
+        }
+
+        const numericKeys = Object.keys(response)
+            .filter(key => /^\d+$/.test(key))
+            .sort((left, right) => Number(left) - Number(right));
+        if (numericKeys.length > 0) {
+            return numericKeys
+                .map(key => response[key])
+                .filter(
+                    (item): item is Record<string, unknown> =>
+                        Boolean(item) &&
+                        typeof item === "object" &&
+                        !Array.isArray(item),
+                );
+        }
+
+        if (
+            response.success !== 0 &&
+            Object.prototype.hasOwnProperty.call(response, "data") &&
+            (response.data == null || response.data === "")
+        ) {
+            return [];
+        }
+
+        const nestedData =
+            response.data ?? response.d ?? response.list ?? response.records;
+        if (nestedData === undefined) {
+            break;
+        }
+        parsed = nestedData;
+    }
+
+    throw new Error("TokenGenerate response did not contain a valid record list.");
+};
+
+const formatErpDate = (date: Date) => {
+    const monthNames = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    ];
+    return `${String(date.getDate()).padStart(2, "0")}-${monthNames[date.getMonth()]}-${date.getFullYear()}`;
+};
+
+const findValidSavedLinkToken = (
+    rows: Record<string, unknown>[],
+    abhaNumber: string,
+    abhaAddress: string,
+    hipId: string,
+) => {
+    const normalizedAddress = abhaAddress.trim().toLowerCase();
+    const normalizedNumber = abhaNumber.replace(/\D/g, "");
+    const normalizedHipId = hipId.trim().toLowerCase();
+
+    return rows
+        .map(row => {
+            const token = getRecordValue(row, ["linktoken", "linkToken"]);
+            const expiresAt = getRecordValue(row, ["expiresat", "expiresAt"]);
+            const claims = typeof token === "string"
+                ? getLinkTokenClaims(token)
+                : undefined;
+            const rowAddress = firstNonEmptyValue(
+                getRecordValue(row, ["abhaAddress", "preferredabhaaddress"]),
+                getRecordValue(claims ?? {}, ["abhaAddress", "sub"]),
+            );
+            const rowNumber = firstNonEmptyValue(
+                getRecordValue(row, ["abhaNumber"]),
+                getRecordValue(claims ?? {}, ["abhaNumber"]),
+            );
+            const rowHipId = firstNonEmptyValue(
+                getRecordValue(row, ["hipid", "hipserviceid", "serviceid"]),
+                getRecordValue(claims ?? {}, ["hipId"]),
+            );
+            const status = String(getRecordValue(row, ["status"]) ?? "").toLowerCase();
+            const tokenExpirationSeconds = Number(
+                getRecordValue(claims ?? {}, ["exp"]),
+            );
+            const expirationTime = Number.isFinite(tokenExpirationSeconds) &&
+                tokenExpirationSeconds > 0
+                ? tokenExpirationSeconds * 1_000
+                : Date.parse(String(expiresAt ?? ""));
+            const excludedStatus = ["expired", "used", "consumed", "inactive"];
+
+            if (
+                typeof token !== "string" ||
+                !token.trim() ||
+                !Number.isFinite(expirationTime) ||
+                expirationTime <= Date.now() ||
+                String(rowAddress ?? "").trim().toLowerCase() !== normalizedAddress ||
+                String(rowNumber ?? "").replace(/\D/g, "") !== normalizedNumber ||
+                String(rowHipId ?? "").trim().toLowerCase() !== normalizedHipId ||
+                excludedStatus.includes(status)
+            ) {
+                return undefined;
+            }
+
+            return {
+                token: token.trim(),
+                expiresAt: new Date(expirationTime).toISOString(),
+                expirationTime,
+            };
+        })
+        .filter(
+            (
+                candidate,
+            ): candidate is {
+                token: string;
+                expiresAt: string;
+                expirationTime: number;
+            } => candidate !== undefined,
+        )
+        .sort((left, right) => right.expirationTime - left.expirationTime)[0];
+};
+
 type BridgeServicesNavigation = {
     LinkCareContext: {
         abhaDetail: Array<{ field: string; text: string }>;
@@ -50,7 +254,8 @@ const BridgeServices = ({ route }: any) => {
     const [isSearchActive, setIsSearchActive] = useState(false);
     const [selectedBridge, setSelectedBridge] = useState<BridgeService | null>(null);
     const [isAddHelpVisible, setIsAddHelpVisible] = useState(false);
-    const dispatch = useDispatch();
+    const [isCheckingSavedToken, setIsCheckingSavedToken] = useState(false);
+    const dispatch = useAppDispatch();
     const [generateLinkToken, { isLoading }] =
         useGenerateLinkTokenMutation();
     const [createSession, { isLoading: isCreatingSession }] =
@@ -149,6 +354,7 @@ const BridgeServices = ({ route }: any) => {
         return date.split(" ")[0];
     };
     const handleLinkAbha = async () => {
+        let loaderShown = false;
         try {
 
             if (!selectedBridge) {
@@ -174,6 +380,66 @@ const BridgeServices = ({ route }: any) => {
                 return;
             }
 
+            const hipId = getHipServiceId(selectedBridge);
+            if (!hipId) {
+                showToast(
+                    "error",
+                    "HIP service ID unavailable",
+                    "Select a service that has an ABDM HIP service ID before generating a token.",
+                );
+                return;
+            }
+
+            const abhaNumber = String(getValue("abhanumber")).replace(/\D/g, "");
+            if (!abhaNumber) {
+                showToast(
+                    "error",
+                    "ABHA number unavailable",
+                    "Reload the ABHA profile and try again.",
+                );
+                return;
+            }
+
+            dispatch(clearLinkToken());
+            dispatch(showLoader());
+            loaderShown = true;
+            setIsCheckingSavedToken(true);
+            const listEndDate = new Date();
+            const listStartDate = new Date(listEndDate);
+            listStartDate.setDate(listStartDate.getDate() - 1);
+            const rawTokenList = await dispatch(
+                getERPListDataThunk({
+                    page: "TokenGenerate",
+                    fromDate: formatErpDate(listStartDate),
+                    toDate: formatErpDate(listEndDate),
+                    param: "",
+                    branch: "",
+                }),
+            ).unwrap();
+            const tokenRows = parseListDataRows(rawTokenList);
+            const savedToken = findValidSavedLinkToken(
+                tokenRows,
+                abhaNumber,
+                abhaAddress,
+                hipId,
+            );
+            if (savedToken) {
+                dispatch(setActiveLinkToken({
+                    token: savedToken.token,
+                    expiresAt: savedToken.expiresAt,
+                    abhaAddress,
+                    abhaNumber,
+                    hipId,
+                }));
+                showToast(
+                    "info",
+                    "Active token found",
+                    "Reusing the saved token for this ABHA profile and HIP service.",
+                );
+                navigation.navigate("LinkCareContext", { abhaDetail });
+                return;
+            }
+
             const genderValue = getValue("gender").toLowerCase();
             const genderCodes: Record<string, "M" | "F" | "O"> = {
                 m: "M",
@@ -193,8 +459,6 @@ const BridgeServices = ({ route }: any) => {
                 return;
             }
 
-            dispatch(showLoader())
-            dispatch(setLinkToken(""))
             await createSession().unwrap();
 
             const payload = {
@@ -211,8 +475,13 @@ const BridgeServices = ({ route }: any) => {
                 hasLinkToken: Boolean(response.linkToken),
                 hasExpiry: Boolean(response.expiresAt),
             });
-            dispatch(setLinkToken(response.linkToken));
-            dispatch(hideLoader())
+            dispatch(setActiveLinkToken({
+                token: response.linkToken,
+                expiresAt: response.expiresAt,
+                abhaAddress,
+                abhaNumber,
+                hipId,
+            }));
             navigation.navigate("LinkCareContext", {
                 abhaDetail: abhaDetail
             })
@@ -221,7 +490,16 @@ const BridgeServices = ({ route }: any) => {
             console.error("[ABHA M2] Token retrieval failed", {
                 name: error instanceof Error ? error.name : "UnknownError",
             });
-            dispatch(hideLoader())
+            showToast(
+                "error",
+                "Token check or generation failed",
+                getErrorMessage(error),
+            );
+        } finally {
+            if (loaderShown) {
+                dispatch(hideLoader());
+            }
+            setIsCheckingSavedToken(false);
         }
     };
 
@@ -233,15 +511,7 @@ const BridgeServices = ({ route }: any) => {
             <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => {
-                    const selectedHipId =
-                        item?.serviceId ??
-                        item?.facilityId ??
-                        item?.hipId ??
-                        item?.id;
-                    const hipId =
-                        selectedHipId === undefined || selectedHipId === null
-                            ? ""
-                            : String(selectedHipId).trim();
+                    const hipId = getHipServiceId(item);
 
                     if (!hipId) {
                         showToast(
@@ -339,6 +609,7 @@ const BridgeServices = ({ route }: any) => {
             </ScrollView>
             {
                 services.length > 0 && selectedBridge && <TouchableOpacity
+                    disabled={isCheckingSavedToken || isLoading || isCreatingSession}
                     onPress={() => {
                         handleLinkAbha()
                     }}
@@ -357,7 +628,9 @@ const BridgeServices = ({ route }: any) => {
                         color: '#fff',
                         fontSize: 16,
                         fontWeight: '600'
-                    }}>Generate Token</Text>
+                    }}>
+                    "Check Saved Token / Continue"
+                    </Text>
                 </TouchableOpacity>
             }
 

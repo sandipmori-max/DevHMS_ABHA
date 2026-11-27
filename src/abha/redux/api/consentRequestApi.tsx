@@ -70,9 +70,12 @@ export interface ConsentRequestStatusResult {
 export interface FhirResource {
   resourceType?: string;
   title?: string;
+  description?: string;
   date?: string;
   authoredOn?: string;
   effectiveDateTime?: string;
+  content?: { attachment?: FhirAttachment }[];
+  presentedForm?: FhirAttachment[];
   entry?: { resource?: FhirResource }[];
   code?: {
     text?: string;
@@ -80,6 +83,15 @@ export interface FhirResource {
   };
   valueString?: string;
   valueQuantity?: { value?: number; unit?: string };
+}
+
+export interface FhirAttachment {
+  contentType?: string;
+  title?: string;
+  url?: string;
+  data?: string;
+  size?: number;
+  creation?: string;
 }
 
 export type FhirBundle = FhirResource;
